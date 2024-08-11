@@ -21,7 +21,7 @@
 
             {{#if this.selected.monster}}
                 {{#with this.selected.monster}}
-                    {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" selected=../selected }}
+                    {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" selected=../selected user=../user }}
                 {{/with}}
             {{else}}
                 <div class="type-overview-container">

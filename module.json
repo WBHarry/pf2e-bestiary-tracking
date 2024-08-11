@@ -21,6 +21,7 @@
      "styles": [
          "styles/pf2e-bestiary-tracking.css"
      ],
+    "socket": true,
     "languages": [
         {
             "lang": "en",

@@ -61,11 +61,33 @@
 
             .flex-data {
                 display: flex;
+                align-items: center;
                 gap: @titleSpacing;
             }
 
             .flex-value {
                 font-weight: bold;
+            }
+
+            .toggle-container {
+                background: red;
+                border-radius: 6px;
+                padding: 4px;
+                cursor: pointer;
+
+                &.revealed {
+                    background: green;
+                }
+            }
+
+            .monster-data-list {
+                display: flex;
+                align-items: center;
+                gap: 2px;
+
+                &.no-gap {
+                    gap: 0;
+                }
             }
 
             .left-monster-container {
@@ -86,6 +108,28 @@
                     border-bottom: 1px solid;
                     border-color: #7a7971;
                     margin-bottom: 4px;
+                }
+
+                .speeds-container {
+                    display: flex;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: 4px;
+
+                    .speed-container {
+                        padding: 2px;
+                        border: 1px solid black;
+                        border-radius: 6px;
+                        width: calc(50% - 2px);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                    .base-colour {
+                        background: grey;
+                        color: white;
+                    }
                 }
 
                 .saves-container {
@@ -148,13 +192,17 @@
                         .monster-trait {
                             padding: 4px;
                             border: 1px solid black;
-                            background: var(--color-bg-trait);
-                            color: white;
+                            
                             display: flex;
                             align-items: center;
                             justify-content: center;
                             text-transform: uppercase;
                             max-width: 20%;
+
+                            &.base-colour {
+                                background: var(--color-bg-trait);
+                                color: white;
+                            }
                         }
                     }
                 }
@@ -175,15 +223,21 @@
                 }
 
                 .data-header {
+                    padding: 8px;
                     display: flex;
+                    align-items: center;
+                    justify-content: space-between;
                     background: var(--color-bg-trait);
                     border-radius: 4px 4px 0 0;
                     border: 1px solid black;
                     color: white;
-                    text-transform: uppercase;
-                    padding: 8px;
-                    gap: 8px;
+                }
+
+                .data-header-label {
+                    display: flex;
                     align-items: center;
+                    text-transform: uppercase;
+                    gap: 8px;
                 }
 
                 .data-body {
