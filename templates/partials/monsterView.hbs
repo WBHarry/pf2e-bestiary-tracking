@@ -1,0 +1,219 @@
+<div class="monster-container flex-col">
+    <div class="left-monster-container">
+        <img class="monster-image" src="{{this.img}}" />
+
+        <div class="monster-left-data">
+            <div class="flex-data">
+                <i class="fa-solid fa-fw fa-shield-halved"></i>
+                <div>AC</div>
+            </div>
+            <div class="flex-value">{{this.ac}}</div>
+        </div>
+
+         <div class="monster-left-data">
+            <div class="flex-data">
+                <i class="fa-solid fa-fw fa-heart"></i>
+                <div>HP</div>
+            </div>
+            <div class="flex-value">{{this.hp}}</div>
+        </div>
+
+        <div class="flexcol">
+            <div class="monster-left-data">
+                <div class="flex-data">
+                    <i class="fa-solid fa-fw fa-ankh"></i>
+                    <div>Immunities</div>
+                </div>
+            </div>
+            <div class="flex-row">
+                {{#each this.immunities}}
+                    {{this}}
+                {{/each}}
+            </div>
+        </div>
+
+        <div class="flexcol">
+            <div class="monster-left-data">
+                <div class="flex-data">
+                    <i class="fa-solid fa-fw fa-heart-broken"></i>
+                    <div>Weaknesses</div>
+                </div>
+            </div>
+            <div class="flex-row">
+                {{#each this.weaknesses}}
+                    {{this}}
+                {{/each}}
+            </div>
+        </div>
+
+        <div class="monster-left-data">
+            <div class="flex-data">
+                <i class="fa-solid fa-fw fa-shield-virus"></i>
+                <div>Resistances</div>
+            </div>
+            
+            <div class="flex-row">
+                {{#each this.resistances}}
+                    {{this}}
+                {{/each}}
+            </div>
+        </div>
+
+        <div class="flexcol">
+            <div class="monster-left-data">
+                <div class="flex-data">
+                    <i class="fa-solid fa-fw fa-heart-pulse"></i>
+                    <div>Saves</div>
+                </div>
+            </div>
+            <div class="saves-container">
+                <div class="save-container">
+                    <div class="saves-title">Fort</div>
+                    <div class="saves-value">+{{this.saves.fortitude.value}}</div>
+                </div>
+                <div class="save-container">
+                    <div class="saves-title">Ref</div>
+                    <div class="saves-value">+{{this.saves.reflex.value}}</div>
+                </div>
+                <div class="save-container">
+                    <div class="saves-title">Will</div>
+                    <div class="saves-value">+{{this.saves.will.value}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flexcol">
+            <div class="monster-left-data">
+                <div class="flex-data">
+                    <i class="fa-solid fa-fw fa-shoe-prints"></i>
+                    <div>Speeds</div>
+                </div>
+            </div>
+            <div class="flexcol">
+                {{#each this.speeds}}
+                    <div class="flexrow">
+                        {{this.name}}
+                        {{this.value}}
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+
+    <div class="right-monster-container">
+        <div class="monster-name">{{this.name}}</div>
+
+        <div class="monster-traits-row">
+            <div class="monster-size">{{this.size}}</div>
+            <div class="monster-traits flexrow">
+                {{#each this.traits}}
+                    <div class="monster-trait">
+                        {{localize this}}
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+
+        <div class="data-sections">
+            <div class="data-section">
+                <div class="data-header">
+                    <i class="fa-solid fa-dumbbell"></i>
+                    <div class="flex-value">Attribute Modifiers</div>
+                </div>
+                <div class="data-body">
+                    <div class="abilities-container">
+                        {{#each this.abilities}}
+                            <div class="ability-container">
+                                <div class="ability-label">{{localize this.label}}</div>
+                                {{this.value}}
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+            <div class="data-section">
+                <div class="data-header">
+                    <i class="fa-solid fa-eye"></i>
+                    <div class="flex-value">Senses</div>
+                </div>
+                <div class="data-body">
+                    <div class="flexrow">
+                        <div class="pf2e-bestiary-bold">Perception</div>
+                        {{this.perception}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-section">
+            <div class="data-header">
+                    <img class="data-icon" src="icons/svg/combat.svg" />
+                    <div class="flex-value">Attacks</div>
+                </div>
+                <div class="data-body">
+                    {{#each this.attacks}}
+                        <div class="attack-container">
+                            <div class="flex-col">
+                                <div class="attack-header">
+                                    <div>{{this.range}}</div>
+                                    <span class="action-glyph">1</span>
+                                    <div>{{this.label}}</div>
+                                    <div class="attack-traits-container">(
+                                        {{#each this.traits as |trait index|}}
+                                            <div class="attack-trait-label" title="{{localize trait.description}}">{{trait.label}}</div>
+                                            {{#if (not (eq (add index 1) ../this.traits.length))}},&nbsp;{{/if}} 
+                                        {{/each}}    
+                                    )</div>
+                                </div>
+                                <div class="attack-body">
+                                    {{#each this.variants}}
+                                        <div class="attack-variant">{{this}}</div>
+                                    {{/each}}
+                                    <div class="attack-damage">{{this.damage}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    {{/each}}
+                </div>
+        </div>
+
+        <div class="data-section">
+            <div class="data-header">
+                <img class="data-icon" src="icons/svg/explosion.svg" />
+                <div class="flex-value">Abilities</div>
+            </div>
+            <div class="data-body">
+                {{#each this.actions}}
+                    <div class="actions-container">
+                        <div class="action-container">
+                            <div class="action-name" data-action="toggleAbility" data-ability="{{this.uuid}}">{{this.name}}</div>
+                            <span class="action-glyph">{{#if this.actions}}{{else}}R{{/if}}</span>
+                        </div>
+                        <div class="action-description {{#if (includes ../selected.abilities this.uuid)}}expanded{{/if}}">
+                            {{{this.description}}}
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+
+        <div class="data-section">
+            <div class="data-header">
+                <img class="data-icon" src="icons/svg/paralysis.svg" />
+                <div class="flex-value">Passives</div>
+            </div>
+            <div class="data-body">
+                {{#each this.passives}}
+                    <div class="actions-container">
+                        <div class="action-container">
+                            <div class="action-name" data-action="toggleAbility" data-ability="{{this.uuid}}">{{this.name}}></div>
+                        </div>
+                        <div class="action-description {{#if (includes ../selected.abilities this.uuid)}}expanded{{/if}}">
+                            {{{this.description}}}
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,356 @@
+.bestiary-tracking {
+    overflow-y: visible;
+    overflow-x: visible;
+
+    &.bestiary {
+        .return-container {
+            cursor: pointer;
+            margin-bottom: 8px;
+            font-size: 20px;
+        }
+
+        .type-overview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            
+            .type-container {
+                position: relative;
+                display: flex;
+                padding: 4px 8px;
+                align-items: center;
+                font-size: 48px;
+                width: calc(50% - 4px);
+                border: 3px solid red;
+                border-radius: 6px;
+                background: @main;
+                cursor: pointer;
+
+                &:hover :not(.delete-button:hover) {
+                    background: @mainDark;
+                }
+
+                img {
+                    height: 120px;
+                }
+
+                .type-text-container {
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .delete-button {
+                    position: absolute;
+                    top: 4px;
+                    right: 8px;
+                    font-size: 32px;
+                    cursor: pointer;
+
+                    &:hover {
+                        filter: drop-shadow(0 0 3px black);
+                    }
+                }
+            }
+        }
+        
+        .monster-container {
+            display: flex;
+            gap: 16px;
+
+            .flex-data {
+                display: flex;
+                gap: @titleSpacing;
+            }
+
+            .flex-value {
+                font-weight: bold;
+            }
+
+            .left-monster-container {
+                width: 150px;
+                gap: 12px;
+                display: flex;
+                flex-direction: column;
+
+                .monster-image {
+                    height: 150;
+                    border-radius: 0.5rem;
+                }
+
+                .monster-left-data {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    border-bottom: 1px solid;
+                    border-color: #7a7971;
+                    margin-bottom: 4px;
+                }
+
+                .saves-container {
+                    display: flex;
+                    justify-content: space-around;
+                    align-items: center;
+
+                    .save-container {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+
+                        .saves-title {
+                            font-weight: bold;
+                            font-size: 14px;
+                        }
+    
+                        .saves-value {
+                            font-size: 16px;
+                        }
+                    }
+                }
+            }
+
+            .right-monster-container {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+
+                .monster-name {
+                    font-weight: bold;
+                    font-size: 36px;
+                }
+
+                .monster-traits-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 16px;
+                    padding: 2px;
+                    border: 3px solid black;
+                    border-radius: 6px;
+
+                    .monster-size {
+                        flex: 1;
+                        padding: 4px;
+                        border: 1px solid black;
+                        background: var(--color-bg-size);
+                        color: white;
+                        text-transform: uppercase;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    
+                    .monster-traits {
+                        gap: 4px;
+                        flex: 5;
+    
+                        .monster-trait {
+                            padding: 4px;
+                            border: 1px solid black;
+                            background: var(--color-bg-trait);
+                            color: white;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            text-transform: uppercase;
+                            max-width: 20%;
+                        }
+                    }
+                }
+
+                .data-sections {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 16px;
+
+                    .data-section {
+                        flex: 1;
+                    }
+                }
+
+                .data-section {
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .data-header {
+                    display: flex;
+                    background: var(--color-bg-trait);
+                    border-radius: 4px 4px 0 0;
+                    border: 1px solid black;
+                    color: white;
+                    text-transform: uppercase;
+                    padding: 8px;
+                    gap: 8px;
+                    align-items: center;
+                }
+
+                .data-body {
+                    display: flex;
+                    flex-direction: column;
+                    padding: 4px;
+                    border-width: 0 1px 1px 1px;
+                    border-color: black;
+                    border-style: solid;
+                    border-radius: 0 0 4px 4px;
+
+                    .abilities-container {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        flex-wrap: wrap;
+
+                        .ability-container {    
+                            width: calc(33% - 5px);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            .ability-label {
+                                font-weight: bold;
+                                margin-right: 4px;
+                            }
+                        }
+                    }
+
+                    .actions-container {
+                        display: flex;
+                        flex-direction: column;
+
+                        .action-container {
+                            display: flex;
+                            align-items: center;
+                            font-weight: bold;
+
+                            .action-name {
+                                cursor: pointer;
+
+                                &:hover {
+                                    filter: drop-shadow(0 0 3px red);
+                                }
+                            }
+                        }
+
+                        .action-description {
+                            height: auto;
+                            max-height: 0;
+                            transition: max-height 0.5s;
+                            transition-timing-function: ease-in;
+                            overflow: hidden;
+
+                            &.expanded {
+                                max-height: 500px;
+                            }
+                        }
+                    }
+                }
+
+                .data-icon {
+                    width: 16px;
+                    border: 0;
+                    filter: drop-shadow(0 0 3px black);
+                }
+
+                .attack-container {
+                    display: flex;
+                    align-items: center;
+                    
+                    &:not(:last-child) {
+                        border-bottom: 1px solid black;
+                    }
+
+                    .attack-header {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+
+                        .attack-traits-container {
+                            display: flex;
+                            align-items: center;
+                            white-space: nowrap;
+
+                            > * {
+                                flex: 0;
+                            }
+
+                            .attack-trait-label {
+                                text-decoration: underline;
+                            }
+                        }
+                    }
+
+                    .attack-body {
+                        display: flex;
+                        align-items: center;
+                        gap: 4px;
+                        
+                        .attack-variant {
+                            border: 1px solid black;
+                            background-color: var(--color-pf-secondary);
+                            padding: 2px 6px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            text-transform: uppercase;
+                            color: white;
+                            font-size: 10px;
+                            margin-bottom: 4px;
+                        }
+
+                        .attack-damage {
+                            border: 1px solid black;
+                            background-color: var(--color-pf-primary);
+                            padding: 2px 6px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            text-transform: uppercase;
+                            color: white;
+                            font-size: 10px;
+                            margin-bottom: 4px;
+                        }
+                    }
+                }
+            }
+        }
+        
+        .right-bookmark-container {
+            position: absolute;
+            left: -60px;
+            top: 36px;
+            height: calc(100% - 36px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bookmark {
+            height: 16px;
+            width: 60px;
+            font-size: 8px;
+            font-weight: bold;
+            border: 2px solid;
+            border-color: @bookmark-border;
+            margin-bottom: 4px;
+            text-shadow: 0 0 black;
+            padding: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: @bookmark;
+            color: @bookmark-colour;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: width 0.5s ease-in-out;
+            transition: right 0.5s ease-in-out;
+
+            &:hover, &.selected {
+                background: @selectedBookmark;
+                width: 80px;
+                position: relative;
+                right: 20px;
+            }
+        }
+    }
+
+}

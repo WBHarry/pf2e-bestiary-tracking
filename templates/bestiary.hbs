@@ -1,0 +1,52 @@
+<div>
+    <header>
+        {{#if this.returnMessage}}
+            <div class="return-container" data-action="returnButton">
+                <i class="fa-solid fa-reply"></i>
+                {{this.returnMessage}}
+            </div>
+        {{/if}}
+        {{!-- <div class="statistics-container" data-action="toggleStatistics">
+            <h3>
+                Statistics
+                {{#if this.statistics.expanded}}
+                    <i class="fa-solid fa-minus"></i>
+                {{else}}
+                    <i class="fa-solid fa-plus"></i>
+                {{/if}}
+            </h3>
+        </div> --}}
+    </header>
+    <body>
+
+            {{#if this.selected.monster}}
+                {{#with this.selected.monster}}
+                    {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" selected=../selected }}
+                {{/with}}
+            {{else}}
+                <div class="type-overview-container">
+                    {{#each this.openType as |type key|}}
+                        <div class="type-container" data-action="selectMonster" data-monster="{{key}}">
+                            <img src="{{type.img}}" />
+                            <div class="type-text-container">
+                                <div>{{type.name}}</div>
+                            </div>
+
+                            <i class="fa-solid fa-delete-left delete-button" data-action="removeMonster" data-monster="{{key}}"></i>
+                        </div>
+                    {{/each}}
+                </div>
+            {{/if}}
+    </body>
+    <footer></footer>
+    <div class="bestiary-left-bookmark-container">
+
+    </div>
+    <div class="right-bookmark-container">
+        {{#each bestiary.monster as |type key|}}
+            <div class="bookmark {{#if (eq ../selected.type key)}}selected{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
+                {{key}}
+            </div>
+        {{/each}}
+    </div>
+</div>
