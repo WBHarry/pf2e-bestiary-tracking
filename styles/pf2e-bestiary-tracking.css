@@ -114,7 +114,7 @@
 }
 .bestiary-tracking.bestiary .monster-container .left-monster-container .saves-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
 }
 .bestiary-tracking.bestiary .monster-container .left-monster-container .saves-container .save-container {
@@ -165,6 +165,7 @@
 .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-traits-row .monster-traits .monster-trait {
   padding: 4px;
   border: 1px solid black;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -265,9 +266,15 @@
 .bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container:not(:last-child) {
   border-bottom: 1px solid black;
 }
+.bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-inner-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
 .bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-header {
   display: flex;
   align-items: center;
+  width: 100%;
   gap: 8px;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-header .attack-traits-container {

@@ -211,30 +211,39 @@
                     <div class="flex-value">Attacks</div>
                 </div>
             </div>
-            <div class="data-body">
-                {{#each this.attacks}}
-                    <div class="attack-container">
-                        <div class="flex-col">
-                            <div class="attack-header">
-                                <div>{{this.range}}</div>
-                                <span class="action-glyph">1</span>
-                                <div>{{this.label}}</div>
-                                <div class="attack-traits-container">(
-                                    {{#each this.traits as |trait index|}}
-                                        <div class="attack-trait-label" title="{{localize trait.description}}">{{trait.label}}</div>
-                                        {{#if (not (eq (add index 1) ../this.traits.length))}},&nbsp;{{/if}} 
-                                    {{/each}}    
-                                )</div>
+            <div class="data-body pf2e-bestiary-standard-gap">
+                {{#if (and (not this.user.isGM) (eq this.attacks.revealed 0))}}
+                    ?
+                {{else}}
+                    {{#each this.attacks.values as |attack key|}}
+                        {{#if (or ../user.isGM attack.revealed)}}
+                            <div class="attack-container">
+                                <div class="attack-inner-container">
+                                    <div class="attack-header {{#if ../user.isGM }}toggle-container {{#if attack.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key}}" data-parent="attacks">
+                                        <div>{{attack.range}}</div>
+                                        <span class="action-glyph">1</span>
+                                        <div>{{attack.label}}</div>
+                                        <div class="attack-traits-container">(
+                                            {{#each attack.traits as |trait index|}}
+                                                <div class="attack-trait-label" title="{{localize trait.description}}">{{trait.label}}</div>
+                                                {{#if (not (eq (add index 1) ../traits.length))}},&nbsp;{{/if}} 
+                                            {{/each}}    
+                                        )</div>
+                                    </div>
+                                    <div class="attack-body">
+                                        {{#if (or ../user.isGM attack.variants.revealed)}}
+                                            {{#each attack.variants.values}}
+                                                <div class="attack-variant">{{this}}</div>
+                                            {{/each}}
+                                            <div class="attack-damage">{{attack.damage}}</div>
+                                        {{/if}}
+                                        {{#if (and ../user.isGM attack.revealed)}}<i class="pf2e-bestiary-clickable-icon {{#if attack.variants.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key '.variants'}}"></i>{{/if}}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="attack-body">
-                                {{#each this.variants}}
-                                    <div class="attack-variant">{{this}}</div>
-                                {{/each}}
-                                <div class="attack-damage">{{this.damage}}</div>
-                            </div>
-                        </div>
-                    </div>
-                {{/each}}
+                        {{/if}}
+                    {{/each}}
+                {{/if}}
             </div>
         </div>
 
@@ -245,18 +254,24 @@
                     <div class="flex-value">Abilities</div>
                 </div>
             </div>
-            <div class="data-body">
-                {{#each this.actions}}
-                    <div class="actions-container">
-                        <div class="action-container">
-                            <div class="action-name" data-action="toggleAbility" data-ability="{{this.uuid}}">{{this.name}}</div>
-                            <span class="action-glyph">{{#if this.actions}}{{else}}R{{/if}}</span>
-                        </div>
-                        <div class="action-description {{#if (includes ../selected.abilities this.uuid)}}expanded{{/if}}">
-                            {{{this.description}}}
-                        </div>
-                    </div>
-                {{/each}}
+            <div class="data-body pf2e-bestiary-standard-gap">
+                {{#if (and (not this.user.isGM) (eq this.actions.revealed 0))}}
+                    ?
+                {{else}}
+                    {{#each this.actions.values as |action key|}}
+                        {{#if (or ../user.isGM action.revealed)}}
+                            <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if action.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'actions.values.' key}}" data-parent="actions">
+                                <div class="action-container">
+                                    <div class="action-name" data-action="toggleAbility" data-ability="{{action.uuid}}">{{action.name}}</div>
+                                    <span class="action-glyph">{{#if action.actions}}{{else}}R{{/if}}</span>
+                                </div>
+                                <div class="action-description {{#if (includes ../selected.abilities action.uuid)}}expanded{{/if}}">
+                                    {{{action.description}}}
+                                </div>
+                            </div>
+                        {{/if}}
+                    {{/each}}
+                {{/if}}
             </div>
         </div>
 
@@ -267,17 +282,23 @@
                     <div class="flex-value">Passives</div>
                 </div>
             </div>
-            <div class="data-body">
-                {{#each this.passives}}
-                    <div class="actions-container">
-                        <div class="action-container">
-                            <div class="action-name" data-action="toggleAbility" data-ability="{{this.uuid}}">{{this.name}}></div>
-                        </div>
-                        <div class="action-description {{#if (includes ../selected.abilities this.uuid)}}expanded{{/if}}">
-                            {{{this.description}}}
-                        </div>
-                    </div>
-                {{/each}}
+            <div class="data-body pf2e-bestiary-standard-gap">
+                {{#if (and (not this.user.isGM) (eq this.passives.revealed 0))}}
+                    ?
+                {{else}}
+                    {{#each this.passives.values as |passive key|}}
+                        {{#if (or ../user.isGM passive.revealed)}}
+                            <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if passive.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'passives.values.' key}}" data-parent="passives">
+                                <div class="action-container">
+                                    <div class="action-name" data-action="toggleAbility" data-ability="{{passive.uuid}}">{{passive.name}}></div>
+                                </div>
+                                <div class="action-description {{#if (includes ../selected.abilities passive.uuid)}}expanded{{/if}}">
+                                    {{{passive.description}}}
+                                </div>
+                            </div>
+                        {{/if}}
+                    {{/each}}
+                {{/if}}
             </div>
         </div>
     </div>

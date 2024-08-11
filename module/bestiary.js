@@ -152,145 +152,157 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
       }
   
     async _onDrop(event) {
-    const data = TextEditor.getDragEventData(event);
-    const item = await fromUuid(data.uuid);
-    if(item.type !== 'npc') return;
+        const data = TextEditor.getDragEventData(event);
+        const item = await fromUuid(data.uuid);
+        if(item.type !== 'npc') return;
 
-    var updatedBestiary = this.bestiary;
+        var updatedBestiary = this.bestiary;
 
-    const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
-    const types = item.system.traits.value.reduce((acc, x) => {
-        if(creatureTypes.includes(x)) acc.push({key: x, name: CONFIG.PF2E.creatureTypes[x]});
+        const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
+        const types = item.system.traits.value.reduce((acc, x) => {
+            if(creatureTypes.includes(x)) acc.push({key: x, name: CONFIG.PF2E.creatureTypes[x]});
 
-        return acc;
-    }, []);
+            return acc;
+        }, []);
 
-    const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits);
-    const traits = item.system.traits.value.reduce((acc, x, index) => {
-        if(creatureTraits.includes(x)){
-            acc.values[x] = { revealed: false, value: CONFIG.PF2E.creatureTraits[x] };
-        }
-        
-        return acc;
-    }, { revealed: 0, values: {} });
-
-
-    const actions = [];
-    const passives = [];
-    for(var action of item.items) {
-        if(action.type === 'action'){
-            if( ['action', 'reaction'].includes(action.system.actionType.value)){
-                actions.push({
-                    name: action.name,
-                    img: action.img,
-                    uuid: action.uuid,
-                    actions: action.system.actions.value,
-                    description: await TextEditor.enrichHTML(action.system.description.value),
-                });
+        const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits);
+        const traits = item.system.traits.value.reduce((acc, x, index) => {
+            if(creatureTraits.includes(x)){
+                acc.values[x] = { revealed: false, value: CONFIG.PF2E.creatureTraits[x] };
             }
-            else {
-                passives.push({
-                    name: action.name,
-                    img: action.img,
-                    uuid: action.uuid,
-                    description: await TextEditor.enrichHTML(action.system.description.value),
-                });
-            }
-        }
-    };
+            
+            return acc;
+        }, { revealed: 0, values: {} });
 
-    for(var type of types){
-        const slug = slugify(item.name);
-        updatedBestiary.monster[type.key][slug] = {
-            slug: slug,
-            traits: traits,
-            size: getCreatureSize(item.system.traits.size.value),
-            name: item.name,
-            img: item.img,
-            abilities: { 
-                revealed: false, 
-                values: Object.keys(item.system.abilities).map(x => { 
-                    const ability = item.system.abilities[x];
-                    return { label: x.capitalize(), value: ability.mod >= 0 ? `+${ability.mod}` : `${ability.mod}` }; 
-                }
-            )},
-            ac: { revealed: false, value: item.system.attributes.ac.value },
-            hp: { revealed: false, value: item.system.attributes.hp.max },
-            speeds: {
-                revealed: 0,
-                values: {
-                    land: { revealed: false, name: 'Land', value: item.system.attributes.speed.value },
-                    ...item.system.attributes.speed.otherSpeeds.reduce((acc, speed) => { 
-                        acc[speed.type] = {
-                            revealed: false,
-                            name: speed.label,
-                            value: speed.value
-                        };
-    
-                        return acc;
-                    }, {})
-                }
-            },
-            senses: {
-                revealed: 0,
-                values: {
-                    perception: {
+
+        const actions = { revealed: 0, values: {} };
+        const passives = { revealed: 0, values: {} };
+        for(var action of item.items) {
+            if(action.type === 'action'){
+                if( ['action', 'reaction'].includes(action.system.actionType.value)){
+                    actions.values[action.id] = {
                         revealed: false,
-                        label: 'Perception',
-                        value: item.system.perception.value,
-                    },
-                    ...item.system.perception.senses.reduce((acc, sense) => {
-                        acc[sense.type] = { revealed: false, label: sense.label };
-    
-                        return acc;
-                    }, {}),
-                    other: { revealed: false, label: item.system.perception.details },
+                        name: action.name,
+                        img: action.img,
+                        uuid: action.uuid,
+                        actions: action.system.actions.value,
+                        description: await TextEditor.enrichHTML(action.system.description.value),
+                    };
                 }
-            },
-            attacks: item.system.actions.map(action => ({
-                range: action.item.type === 'melee' ? 'Melee' : 'Ranged', 
-                label: action.label,
-                variants: action.variants.map(variant => variant.label),
-                damage: Object.values(action.item.system.damageRolls).reduce((acc, x) => {
-                    acc = acc.concat(`${acc ? ' + ' : ''}${x.damage} ${x.damageType}`);
-
-                    return acc;
-                }, ''),
-                traits: action.traits.map(trait => ({
-                    label: trait.label,
-                    description: trait.description,
-                }))
-            })),
-            immunities: item.system.attributes.immunities.length > 0  ? item.system.attributes.immunities.reduce((acc, immunity, index) => {
-                acc.values[slugify(immunity.label)] = { revealed: false, value: immunity.label, index: index+1 };
-
-                return acc;
-            }, { revealed: false, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
-            resistances: item.system.attributes.resistances.length > 0  ? item.system.attributes.resistances.reduce((acc, resistance, index) => {
-                acc.values[slugify(resistance.label)] = { revealed: false, value: resistance.label, index: index+1 };
-
-                return acc;
-            }, { revealed: false, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
-            weaknesses: item.system.attributes.weaknesses.length > 0  ? item.system.attributes.weaknesses.reduce((acc, weakness, index) => {
-                acc.values[slugify(weakness.label)] = { revealed: false, value: weakness.label, index: index+1 };
-
-                return acc;
-            }, { revealed: false, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
-            actions: actions,
-            passives: passives,
-            saves: {
-                fortitude: { value: item.system.saves.fortitude.value, category: getCategoryLabel(savingThrowTable, item.system.details.level.value, item.system.saves.fortitude.value), revealed: false },
-                reflex: { value: item.system.saves.reflex.value, category: getCategoryLabel(savingThrowTable, item.system.details.level.value, item.system.saves.reflex.value), revealed: false },
-                will: { value: item.system.saves.will.value, category: getCategoryLabel(savingThrowTable, item.system.details.level.value, item.system.saves.will.value), revealed: false },
+                else {
+                    passives.values[action.id] = {
+                        revealed: false,
+                        name: action.name,
+                        img: action.img,
+                        uuid: action.uuid,
+                        description: await TextEditor.enrichHTML(action.system.description.value),
+                    };
+                }
             }
         };
 
-        this.selected = { ...this.selected, category: 'monster', type: type.key, monster: updatedBestiary.monster[type.key][slug] };
-    }
-    
-    this.bestiary = updatedBestiary;
-    await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
-    this.render();
+        for(var type of types){
+            const slug = slugify(item.name);
+            updatedBestiary.monster[type.key][slug] = {
+                slug: slug,
+                traits: traits,
+                size: getCreatureSize(item.system.traits.size.value),
+                name: item.name,
+                img: item.img,
+                abilities: { 
+                    revealed: false, 
+                    values: Object.keys(item.system.abilities).map(x => { 
+                        const ability = item.system.abilities[x];
+                        return { label: x.capitalize(), value: ability.mod >= 0 ? `+${ability.mod}` : `${ability.mod}` }; 
+                    }
+                )},
+                ac: { revealed: false, value: item.system.attributes.ac.value },
+                hp: { revealed: false, value: item.system.attributes.hp.max },
+                speeds: {
+                    revealed: 0,
+                    values: {
+                        land: { revealed: false, name: 'Land', value: item.system.attributes.speed.value },
+                        ...item.system.attributes.speed.otherSpeeds.reduce((acc, speed) => { 
+                            acc[speed.type] = {
+                                revealed: false,
+                                name: speed.label,
+                                value: speed.value
+                            };
+        
+                            return acc;
+                        }, {})
+                    }
+                },
+                senses: {
+                    revealed: 0,
+                    values: {
+                        perception: {
+                            revealed: false,
+                            label: 'Perception',
+                            value: item.system.perception.value,
+                        },
+                        ...item.system.perception.senses.reduce((acc, sense) => {
+                            acc[sense.type] = { revealed: false, label: sense.label };
+        
+                            return acc;
+                        }, {}),
+                        other: { revealed: false, label: item.system.perception.details },
+                    }
+                },
+                attacks: item.system.actions.reduce((acc, action) => {
+                    acc.values[action.slug] = {
+                        revealed: false,
+                        slug: action.slug,
+                        range: action.item.type === 'melee' ? 'Melee' : 'Ranged', 
+                        label: action.label,
+                        variants: action.variants.reduce((acc, variant) => {
+                            acc.values[slugify(variant.label)] = variant.label;
+
+                            return acc;
+                        }, { revealed: false, values: {} }),
+                        damage: Object.values(action.item.system.damageRolls).reduce((acc, x) => {
+                            acc = acc.concat(`${acc ? ' + ' : ''}${x.damage} ${x.damageType}`);
+
+                            return acc;
+                        }, ''),
+                        traits: action.traits.map(trait => ({
+                            label: trait.label,
+                            description: trait.description,
+                        }))
+                    };
+
+                    return acc;
+                }, { revealed: 0, values: {} }),
+                immunities: item.system.attributes.immunities.length > 0  ? item.system.attributes.immunities.reduce((acc, immunity, index) => {
+                    acc.values[slugify(immunity.label)] = { revealed: false, value: immunity.label, index: index+1 };
+
+                    return acc;
+                }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
+                resistances: item.system.attributes.resistances.length > 0  ? item.system.attributes.resistances.reduce((acc, resistance, index) => {
+                    acc.values[slugify(resistance.label)] = { revealed: false, value: resistance.label, index: index+1 };
+
+                    return acc;
+                }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
+                weaknesses: item.system.attributes.weaknesses.length > 0  ? item.system.attributes.weaknesses.reduce((acc, weakness, index) => {
+                    acc.values[slugify(weakness.label)] = { revealed: false, value: weakness.label, index: index+1 };
+
+                    return acc;
+                }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
+                actions: actions,
+                passives: passives,
+                saves: {
+                    fortitude: { value: item.system.saves.fortitude.value, category: getCategoryLabel(savingThrowTable, item.system.details.level.value, item.system.saves.fortitude.value), revealed: false },
+                    reflex: { value: item.system.saves.reflex.value, category: getCategoryLabel(savingThrowTable, item.system.details.level.value, item.system.saves.reflex.value), revealed: false },
+                    will: { value: item.system.saves.will.value, category: getCategoryLabel(savingThrowTable, item.system.details.level.value, item.system.saves.will.value), revealed: false },
+                }
+            };
+
+            this.selected = { ...this.selected, category: 'monster', type: type.key, monster: updatedBestiary.monster[type.key][slug] };
+        }
+        
+        this.bestiary = updatedBestiary;
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
+        this.render();
     }
 
     onBestiaryUpdate = async ({ monsterSlug }) => {

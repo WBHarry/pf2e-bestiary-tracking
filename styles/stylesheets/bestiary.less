@@ -134,7 +134,7 @@
 
                 .saves-container {
                     display: flex;
-                    justify-content: space-around;
+                    justify-content: space-between;
                     align-items: center;
 
                     .save-container {
@@ -192,7 +192,7 @@
                         .monster-trait {
                             padding: 4px;
                             border: 1px solid black;
-                            
+                            border-radius: 0;
                             display: flex;
                             align-items: center;
                             justify-content: center;
@@ -314,9 +314,16 @@
                         border-bottom: 1px solid black;
                     }
 
+                    .attack-inner-container {
+                        display: flex;
+                        flex-direction: column;
+                        width: 100%;
+                    }
+
                     .attack-header {
                         display: flex;
                         align-items: center;
+                        width: 100%;
                         gap: 8px;
 
                         .attack-traits-container {
