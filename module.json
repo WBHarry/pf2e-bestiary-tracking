@@ -14,7 +14,17 @@
         "verified": "12.330",
         "maximum": 12
     },
-    "systems": ["pf2e"],
+    
+    "systems": [{
+        "id": "pf2e",
+        "type": "system",
+        "manifest": "https://raw.githubusercontent.com/foundryvtt/pf2e/master/system.json",
+        "compatibility": {
+            "minimum": "6.2.0",
+            "verified": "6.2.1",
+            "maximum": "6"
+        }
+    }],
     "esmodules": [
         "pf2e-bestiary-tracking.js"
     ],

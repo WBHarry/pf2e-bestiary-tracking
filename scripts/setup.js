@@ -35,7 +35,11 @@ export const registerGameSettings = () => {
         config: false,
         type: Object,
         default: {
-            monster: Object.keys(CONFIG.PF2E.creatureTypes),
+            monster: Object.keys(CONFIG.PF2E.creatureTypes).reduce((acc, type) => {  
+                acc[type] = {};
+
+                return acc;
+            }, {}),
             npc: {}
         },
     });
