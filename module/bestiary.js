@@ -373,7 +373,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     onBestiaryUpdate = async ({ monsterSlug }) => {
         this.bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         
-        if(!game.user.isGM){
+        if(!game.user.isGM && monsterSlug){
             if(this.selected.monster.slug === monsterSlug) {
                 this.selected.monster = this.bestiary[this.selected.category][this.selected.type][monsterSlug];
             }
