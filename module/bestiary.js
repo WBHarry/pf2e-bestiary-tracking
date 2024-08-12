@@ -176,16 +176,24 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
           return newHandler;
         });
-      }
-  
-    async _onDrop(event) {
-        if(!game.user.isGM) return;
+    }
 
-        const data = TextEditor.getDragEventData(event);
-        const item = await fromUuid(data.uuid);
+    static async addMonster(item){
+        const monster = await PF2EBestiary.getMonsterData(item);
+
+        const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+
+        if(bestiary.monster[monster.inTypes[0]][monster.slug]) return;
+
+        for(var type of monster.inTypes){
+            bestiary['monster'][type][monster.slug] = monster;
+        }
+
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
+    }
+
+    static async getMonsterData(item){
         if(item.type !== 'npc') return;
-
-        var updatedBestiary = this.bestiary;
 
         const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
         const types = item.system.traits.value.reduce((acc, x) => {
@@ -326,15 +334,28 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 will: { value: `${item.system.saves.will.value >= 0 ? '+' : '-'}${item.system.saves.will.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.will.value), revealed: false },
             }
         };
+        
+        return monster;
+    }
+  
+    async _onDrop(event) {
+        if(!game.user.isGM) return;
 
+        const data = TextEditor.getDragEventData(event);
+        const item = await fromUuid(data.uuid);
+
+        const slug = slugify(item.name);
+        const monster = await PF2EBestiary.getMonsterData(item);
+
+        const updatedBestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         const autoSelect = await game.settings.get('pf2e-bestiary-tracking', 'automatically-open-monster'); 
 
         this.selected.monster = null;
-        for(var type of types){
-            updatedBestiary.monster[type.key][slug] = monster;
+        for(var type of monster.inTypes){
+            updatedBestiary.monster[type][slug] = monster;
 
             if(autoSelect){
-                this.selected = this.selected.monster?.slug === slug ? this.selected : { ...this.selected, category: 'monster', type: type.key, monster: updatedBestiary.monster[type.key][slug] };
+                this.selected = this.selected.monster?.slug === slug ? this.selected : { ...this.selected, category: 'monster', type: type, monster: updatedBestiary.monster[type][slug] };
             }
         }
         
@@ -350,14 +371,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     onBestiaryUpdate = async ({ monsterSlug }) => {
+        this.bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+        
         if(!game.user.isGM){
-            this.bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
             if(this.selected.monster.slug === monsterSlug) {
                 this.selected.monster = this.bestiary[this.selected.category][this.selected.type][monsterSlug];
             }
-
-            this.render(true);
         }
+        
+        this.render(true);
     };
 
     close = async (options) => {

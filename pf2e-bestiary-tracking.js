@@ -1,7 +1,7 @@
 import PF2EBestiary from "./module/bestiary.js";
 import RegisterHandlebarsHelpers from "./scripts/handlebarHelpers.js";
 import { registerGameSettings } from "./scripts/setup.js";
-import { handleSocketEvent } from "./scripts/socket.js";
+import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
 
 Hooks.once('init', () => {
@@ -16,6 +16,24 @@ Hooks.once('init', () => {
 
 Hooks.once("ready", () => {
     game.modules.get('pf2e-bestiary-tracking').macros = macros;
+});
+
+Hooks.on("combatStart", async (encounter) => {
+    if(game.user.isGM){
+        const autoAddMonsters = await game.settings.get('pf2e-bestiary-tracking', 'automatic-combat-registration');
+        if(!autoAddMonsters) return;
+    
+        for(var combatant of encounter.combatants){
+            await PF2EBestiary.addMonster(combatant.actor);
+        } 
+    
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: {},
+        });
+
+        Hooks.callAll(socketEvent.UpdateBestiary, {});
+    }
 });
 
 Hooks.on('getSceneControlButtons', (controls) => {
