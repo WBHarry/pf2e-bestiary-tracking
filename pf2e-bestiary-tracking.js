@@ -2,6 +2,7 @@ import PF2EBestiary from "./module/bestiary.js";
 import RegisterHandlebarsHelpers from "./scripts/handlebarHelpers.js";
 import { registerGameSettings } from "./scripts/setup.js";
 import { handleSocketEvent } from "./scripts/socket.js";
+import * as macros from "./scripts/macros.js";
 
 Hooks.once('init', () => {
     registerGameSettings();
@@ -11,6 +12,10 @@ Hooks.once('init', () => {
     loadTemplates([
         "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs",
     ]);
+});
+
+Hooks.once("ready", () => {
+    game.modules.get('pf2e-bestiary-tracking').macros = macros;
 });
 
 Hooks.on('getSceneControlButtons', (controls) => {

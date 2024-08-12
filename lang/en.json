@@ -26,7 +26,16 @@
                     }
                 }
             }
+        },
+        "Settings": {
+            "AutomaticCombatRegistration": {
+                "Name": "Combat Registration",
+                "Hint": "Automtically add new enemies in a combat encounter to the bestiary when its started."
+            },
+            "AutomaticallyOpenMonster": {
+                "Name": "Auto Open Bestiary Entry",
+                "Hint": "Automatically open the bestiary entry for monsters you drop into it."   
+            }
         }
-
     }
 }

@@ -7,18 +7,15 @@ import { getCategoryFromIntervals, getCategoryLabel } from "../scripts/statistic
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
 export default class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
-    constructor(){
+    constructor({category = 'monster', type = null, monsterSlug = null} = {category: 'monster', type: null, monsterSlug: null}){
         super({});
 
         this.bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         this.selected = {
-            category: 'monster',
-            type: null,
-            monster: null,
+            category,
+            type,
+            monster: category && type && monsterSlug ? this.bestiary[category][type][monsterSlug] : null,
             abilities: [],
-        };
-        this.statistics = {
-            expanded: false,
         };
 
         Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
@@ -40,6 +37,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             returnButton: this.returnButton,
             toggleAbility: this.toggleAbility,
             toggleRevealed: this.toggleRevealed,
+            resetBestiary: this.resetBestiary,
         },
         form: { handler: this.updateData, submitOnChange: true },
         dragDrop: [
@@ -50,7 +48,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     static PARTS = {
         application: {
             id: "bestiary",
-            template: "modules/pf2e-bestiary-tracking/templates/bestiary.hbs"
+            template: "modules/pf2e-bestiary-tracking/templates/bestiary.hbs",
+            scrollable: [".left-monster-container", ".right-monster-container-data", ".type-overview-container"]
         }
     }
 
@@ -140,8 +139,29 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         });
     }
 
-    static async updateData(event, element, formData){
-        this.customActivity = foundry.utils.mergeObject(this.customActivity, formData.object);
+    static async resetBestiary(){
+        const confirmed = await Dialog.confirm({
+            title: "Reset Bestiary",
+            content: "Are you sure you want to reset all the bestiary data?",
+            yes: () => true,
+            no: () => false,
+        });
+
+        if(confirmed){
+            this.selected = { category: 'monster', type: null, monster: null, abilities: [] };
+            this.bestiary = { 
+                monster: Object.keys(CONFIG.PF2E.creatureTypes).reduce((acc, type) => {  
+                    acc[type] = {};
+
+                    return acc;
+                }, {}), 
+                npc: {} };
+            await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+            this.render();
+        }
+    }
+
+    static async updateData(){
         this.render();
     }
 
@@ -256,7 +276,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     
                         return acc;
                     }, {}),
-                    other: { revealed: false, label: item.system.perception.details },
+                    ...(item.system.perception.details ? { other: { revealed: false, label: item.system.perception.details }} : {}),
                 }
             },
             attacks: item.system.actions.reduce((acc, action) => {
@@ -307,9 +327,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             }
         };
 
+        const autoSelect = await game.settings.get('pf2e-bestiary-tracking', 'automatically-open-monster'); 
+
+        this.selected.monster = null;
         for(var type of types){
             updatedBestiary.monster[type.key][slug] = monster;
-            this.selected = this.selected.monster?.slug === slug ? this.selected : { ...this.selected, category: 'monster', type: type.key, monster: updatedBestiary.monster[type.key][slug] };
+
+            if(autoSelect){
+                this.selected = this.selected.monster?.slug === slug ? this.selected : { ...this.selected, category: 'monster', type: type.key, monster: updatedBestiary.monster[type.key][slug] };
+            }
         }
         
         this.bestiary = updatedBestiary;
@@ -317,7 +343,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
-            data: { monsterSlug: this.selected.monster.slug },
+            data: { monsterSlug: slug },
         });
 
         this.render();

@@ -143,38 +143,69 @@
     </div>
 
     <div class="right-monster-container">
-        <div class="monster-name">{{this.name}}</div>
-
-        <div class="monster-traits-row">
-            <div class="monster-size">{{this.size}}</div>
-            <div class="monster-traits flexrow">
-                {{#each this.traits.values as |trait key|}}
-                    {{#if (or ../user.isGM trait.revealed)}}
-                        <div class="monster-trait {{#if ../user.isGM }}toggle-container {{#if trait.revealed}}revealed{{/if}}{{else}}base-colour{{/if}}" data-action="toggleRevealed" data-path="{{concat 'traits.values.' key}}" data-parent="traits">
-                            {{localize trait.value}}
-                        </div>
-                    {{/if}}
-                {{/each}}
+        <div class="flexcol">
+            <div class="monster-name">{{this.name}}</div>
+            <div class="monster-traits-row">
+                <div class="monster-size">{{this.size}}</div>
+                <div class="monster-traits flexrow">
+                    {{#each this.traits.values as |trait key|}}
+                        {{#if (or ../user.isGM trait.revealed)}}
+                            <div class="monster-trait {{#if ../user.isGM }}toggle-container {{#if trait.revealed}}revealed{{/if}}{{else}}base-colour{{/if}}" data-action="toggleRevealed" data-path="{{concat 'traits.values.' key}}" data-parent="traits">
+                                {{localize trait.value}}
+                            </div>
+                        {{/if}}
+                    {{/each}}
+                </div>
             </div>
         </div>
 
-        <div class="data-sections">
-            <div class="data-section">
-                <div class="data-header">
-                    <div class="data-header-label">
-                        <img class="data-icon" src="systems/pf2e/icons/default-icons/feat.svg" />
-                        <div class="flex-value">Attribute Modifiers</div>
+        <div class="right-monster-container-data">
+            <div class="data-sections">
+                <div class="data-section">
+                    <div class="data-header">
+                        <div class="data-header-label">
+                            <img class="data-icon" src="systems/pf2e/icons/default-icons/feat.svg" />
+                            <div class="flex-value">Attribute Modifiers</div>
+                        </div>
+                        {{#if this.user.isGM}}<i class="pf2e-bestiary-clickable-icon {{#if this.abilities.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="abilities"></i>{{/if}}
                     </div>
-                    {{#if this.user.isGM}}<i class="pf2e-bestiary-clickable-icon {{#if this.abilities.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="abilities"></i>{{/if}}
+                    <div class="data-body">
+                        <div class="abilities-container">
+                            {{#each this.abilities.values}}
+                                <div class="ability-container">
+                                    <div class="ability-label">{{localize this.label}}</div>
+                                    {{#if (or ../abilities.revealed ../user.isGM)}}{{this.value}}{{else}}?{{/if}}
+                                </div>
+                            {{/each}}
+                        </div>
+                    </div>
                 </div>
-                <div class="data-body">
-                    <div class="abilities-container">
-                        {{#each this.abilities.values}}
-                            <div class="ability-container">
-                                <div class="ability-label">{{localize this.label}}</div>
-                                {{#if (or ../abilities.revealed ../user.isGM)}}{{this.value}}{{else}}?{{/if}}
-                            </div>
-                        {{/each}}
+
+                <div class="data-section">
+                    <div class="data-header">
+                        <div class="data-header-label">
+                            <img class="data-icon" src="icons/svg/eye.svg" />
+                            <div class="flex-value">Senses</div>
+                        </div>
+                    </div>
+                    <div class="data-body pf2e-bestiary-standard-gap">
+                        {{#if (and (not this.user.isGM) (eq this.senses.revealed 0))}}
+                            ?
+                        {{else}}
+                            {{#each this.senses.values as |sense key|}}
+                                {{#if (or ../user.isGM sense.revealed)}}
+                                    <div class="flexrow {{#if ../user.isGM }}toggle-container {{#if sense.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'senses.values.' key}}" data-parent="senses">
+                                        <div class="pf2e-bestiary-bold">{{sense.label}}</div>
+                                        {{#if (and (not ../user.isGM) (eq key 'perception'))}}
+                                            {{monsterValue sense ../vagueDescriptions.perception }}
+                                        {{else}}    
+                                            {{sense.value}}
+                                        {{/if}}
+                                    </div>
+                                {{/if}}
+                            {{/each}}
+                        {{/if}}
+                        
                     </div>
                 </div>
             </div>
@@ -182,127 +213,99 @@
             <div class="data-section">
                 <div class="data-header">
                     <div class="data-header-label">
-                        <img class="data-icon" src="icons/svg/eye.svg" />
-                        <div class="flex-value">Senses</div>
+                        <img class="data-icon" src="icons/svg/combat.svg" />
+                        <div class="flex-value">Attacks</div>
                     </div>
                 </div>
                 <div class="data-body pf2e-bestiary-standard-gap">
-                    {{#if (and (not this.user.isGM) (eq this.senses.revealed 0))}}
+                    {{#if (and (not this.user.isGM) (eq this.attacks.revealed 0))}}
                         ?
                     {{else}}
-                        {{#each this.senses.values as |sense key|}}
-                            {{#if (or ../user.isGM sense.revealed)}}
-                                <div class="flexrow {{#if ../user.isGM }}toggle-container {{#if sense.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'senses.values.' key}}" data-parent="senses">
-                                    <div class="pf2e-bestiary-bold">{{sense.label}}</div>
-                                    {{#if (and (not ../user.isGM) (eq key 'perception'))}}
-                                        {{monsterValue sense ../vagueDescriptions.perception }}
-                                    {{else}}    
-                                        {{sense.value}}
-                                    {{/if}}
+                        {{#each this.attacks.values as |attack key|}}
+                            {{#if (or ../user.isGM attack.revealed)}}
+                                <div class="attack-container">
+                                    <div class="attack-inner-container">
+                                        <div class="attack-header {{#if ../user.isGM }}toggle-container {{#if attack.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key}}" data-parent="attacks">
+                                            <div>{{attack.range}}</div>
+                                            <span class="action-glyph">1</span>
+                                            <div>{{attack.label}}</div>
+                                            <div class="attack-traits-container">(
+                                                {{#each attack.traits as |trait index|}}
+                                                    <div class="attack-trait-label" title="{{localize trait.description}}">{{trait.label}}</div>
+                                                    {{#if (not (eq (add index 1) ../traits.length))}},&nbsp;{{/if}} 
+                                                {{/each}}    
+                                            )</div>
+                                        </div>
+                                        <div class="attack-body">
+                                            {{#if (or ../user.isGM attack.variants.revealed)}}
+                                                {{#each attack.variants.values}}
+                                                    <div class="attack-variant">{{this}}</div>
+                                                {{/each}}
+                                                <div class="attack-damage">{{attack.damage}}</div>
+                                            {{/if}}
+                                            {{#if (and ../user.isGM attack.revealed)}}<i class="pf2e-bestiary-clickable-icon {{#if attack.variants.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key '.variants'}}"></i>{{/if}}
+                                        </div>
+                                    </div>
                                 </div>
                             {{/if}}
                         {{/each}}
                     {{/if}}
-                    
                 </div>
             </div>
-        </div>
 
-        <div class="data-section">
-            <div class="data-header">
-                <div class="data-header-label">
-                    <img class="data-icon" src="icons/svg/combat.svg" />
-                    <div class="flex-value">Attacks</div>
+            <div class="data-section">
+                <div class="data-header">
+                    <div class="data-header-label">
+                        <img class="data-icon" src="icons/svg/explosion.svg" />
+                        <div class="flex-value">Abilities</div>
+                    </div>
                 </div>
-            </div>
-            <div class="data-body pf2e-bestiary-standard-gap">
-                {{#if (and (not this.user.isGM) (eq this.attacks.revealed 0))}}
-                    ?
-                {{else}}
-                    {{#each this.attacks.values as |attack key|}}
-                        {{#if (or ../user.isGM attack.revealed)}}
-                            <div class="attack-container">
-                                <div class="attack-inner-container">
-                                    <div class="attack-header {{#if ../user.isGM }}toggle-container {{#if attack.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key}}" data-parent="attacks">
-                                        <div>{{attack.range}}</div>
-                                        <span class="action-glyph">1</span>
-                                        <div>{{attack.label}}</div>
-                                        <div class="attack-traits-container">(
-                                            {{#each attack.traits as |trait index|}}
-                                                <div class="attack-trait-label" title="{{localize trait.description}}">{{trait.label}}</div>
-                                                {{#if (not (eq (add index 1) ../traits.length))}},&nbsp;{{/if}} 
-                                            {{/each}}    
-                                        )</div>
+                <div class="data-body pf2e-bestiary-standard-gap">
+                    {{#if (and (not this.user.isGM) (eq this.actions.revealed 0))}}
+                        ?
+                    {{else}}
+                        {{#each this.actions.values as |action key|}}
+                            {{#if (or ../user.isGM action.revealed)}}
+                                <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if action.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'actions.values.' key}}" data-parent="actions">
+                                    <div class="action-container">
+                                        <div class="action-name" data-action="toggleAbility" data-ability="{{action.uuid}}">{{action.name}}</div>
+                                        <span class="action-glyph">{{#if action.actions}}{{else}}R{{/if}}</span>
                                     </div>
-                                    <div class="attack-body">
-                                        {{#if (or ../user.isGM attack.variants.revealed)}}
-                                            {{#each attack.variants.values}}
-                                                <div class="attack-variant">{{this}}</div>
-                                            {{/each}}
-                                            <div class="attack-damage">{{attack.damage}}</div>
-                                        {{/if}}
-                                        {{#if (and ../user.isGM attack.revealed)}}<i class="pf2e-bestiary-clickable-icon {{#if attack.variants.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key '.variants'}}"></i>{{/if}}
+                                    <div class="action-description {{#if (includes ../selected.abilities action.uuid)}}expanded{{/if}}">
+                                        {{{action.description}}}
                                     </div>
                                 </div>
-                            </div>
-                        {{/if}}
-                    {{/each}}
-                {{/if}}
-            </div>
-        </div>
-
-        <div class="data-section">
-            <div class="data-header">
-                <div class="data-header-label">
-                    <img class="data-icon" src="icons/svg/explosion.svg" />
-                    <div class="flex-value">Abilities</div>
+                            {{/if}}
+                        {{/each}}
+                    {{/if}}
                 </div>
             </div>
-            <div class="data-body pf2e-bestiary-standard-gap">
-                {{#if (and (not this.user.isGM) (eq this.actions.revealed 0))}}
-                    ?
-                {{else}}
-                    {{#each this.actions.values as |action key|}}
-                        {{#if (or ../user.isGM action.revealed)}}
-                            <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if action.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'actions.values.' key}}" data-parent="actions">
-                                <div class="action-container">
-                                    <div class="action-name" data-action="toggleAbility" data-ability="{{action.uuid}}">{{action.name}}</div>
-                                    <span class="action-glyph">{{#if action.actions}}{{else}}R{{/if}}</span>
-                                </div>
-                                <div class="action-description {{#if (includes ../selected.abilities action.uuid)}}expanded{{/if}}">
-                                    {{{action.description}}}
-                                </div>
-                            </div>
-                        {{/if}}
-                    {{/each}}
-                {{/if}}
-            </div>
-        </div>
 
-        <div class="data-section">
-            <div class="data-header">
-                <div class="data-header-label">
-                    <img class="data-icon" src="icons/svg/paralysis.svg" />
-                    <div class="flex-value">Passives</div>
+            <div class="data-section">
+                <div class="data-header">
+                    <div class="data-header-label">
+                        <img class="data-icon" src="icons/svg/paralysis.svg" />
+                        <div class="flex-value">Passives</div>
+                    </div>
                 </div>
-            </div>
-            <div class="data-body pf2e-bestiary-standard-gap">
-                {{#if (and (not this.user.isGM) (eq this.passives.revealed 0))}}
-                    ?
-                {{else}}
-                    {{#each this.passives.values as |passive key|}}
-                        {{#if (or ../user.isGM passive.revealed)}}
-                            <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if passive.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'passives.values.' key}}" data-parent="passives">
-                                <div class="action-container">
-                                    <div class="action-name" data-action="toggleAbility" data-ability="{{passive.uuid}}">{{passive.name}}</div>
+                <div class="data-body pf2e-bestiary-standard-gap">
+                    {{#if (and (not this.user.isGM) (eq this.passives.revealed 0))}}
+                        ?
+                    {{else}}
+                        {{#each this.passives.values as |passive key|}}
+                            {{#if (or ../user.isGM passive.revealed)}}
+                                <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if passive.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'passives.values.' key}}" data-parent="passives">
+                                    <div class="action-container">
+                                        <div class="action-name" data-action="toggleAbility" data-ability="{{passive.uuid}}">{{passive.name}}</div>
+                                    </div>
+                                    <div class="action-description {{#if (includes ../selected.abilities passive.uuid)}}expanded{{/if}}">
+                                        {{{passive.description}}}
+                                    </div>
                                 </div>
-                                <div class="action-description {{#if (includes ../selected.abilities passive.uuid)}}expanded{{/if}}">
-                                    {{{passive.description}}}
-                                </div>
-                            </div>
-                        {{/if}}
-                    {{/each}}
-                {{/if}}
+                            {{/if}}
+                        {{/each}}
+                    {{/if}}
+                </div>
             </div>
         </div>
     </div>

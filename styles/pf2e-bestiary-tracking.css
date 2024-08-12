@@ -2,6 +2,11 @@
   overflow-y: visible;
   overflow-x: visible;
 }
+.bestiary-tracking.bestiary [data-application-part="application"] {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 .bestiary-tracking.bestiary .return-container {
   cursor: pointer;
   margin-bottom: 8px;
@@ -18,9 +23,27 @@
 }
 .bestiary-tracking.bestiary .bestiary-welcome .sub-title {
   font-size: 20px;
+  display: flex;
+  align-items: center;
+}
+.bestiary-tracking.bestiary .bestiary-welcome .sub-title div {
+  margin-right: 8px;
+}
+.bestiary-tracking.bestiary .bestiary-welcome .bestiary-reset {
+  width: 26px;
+  padding: 4px 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bestiary-tracking.bestiary .bestiary-welcome .bestiary-reset i {
+  margin-right: 0;
 }
 .bestiary-tracking.bestiary .bestiary-welcome ul {
   margin-top: 4px;
+}
+.bestiary-tracking.bestiary .bestiary-list-point code {
+  color: white;
 }
 .bestiary-tracking.bestiary .statistics-title {
   display: flex;
@@ -43,6 +66,7 @@
 .bestiary-tracking.bestiary .type-overview-container {
   display: flex;
   flex-wrap: wrap;
+  overflow-y: auto;
   gap: 8px;
 }
 .bestiary-tracking.bestiary .type-overview-container .type-container {
@@ -64,10 +88,13 @@
   height: 150px;
 }
 .bestiary-tracking.bestiary .type-overview-container .type-container .type-text-container {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: -webkit-box;
+  max-width: 200px;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: 100%;
+  text-overflow: ellipsis;
 }
 .bestiary-tracking.bestiary .type-overview-container .type-container .delete-button {
   position: absolute;
@@ -81,6 +108,8 @@
 }
 .bestiary-tracking.bestiary .monster-container {
   display: flex;
+  overflow: auto;
+  height: 100%;
   gap: 16px;
 }
 .bestiary-tracking.bestiary .monster-container .flex-data {
@@ -104,6 +133,7 @@
 .bestiary-tracking.bestiary .monster-container .monster-data-list {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 2px;
 }
 .bestiary-tracking.bestiary .monster-container .monster-data-list.no-gap {
@@ -114,6 +144,7 @@
   gap: 12px;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 .bestiary-tracking.bestiary .monster-container .left-monster-container .monster-image {
   height: 150;
@@ -209,6 +240,11 @@
 .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-traits-row .monster-traits .monster-trait.base-colour {
   background: var(--color-bg-trait);
   color: white;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .right-monster-container-data {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .data-sections {
   display: flex;
@@ -354,7 +390,7 @@
 }
 .bestiary-tracking.bestiary .right-bookmark-container {
   position: absolute;
-  left: -60px;
+  left: -80px;
   top: 36px;
   height: calc(100% - 36px);
   display: flex;
@@ -362,8 +398,8 @@
 }
 .bestiary-tracking.bestiary .bookmark {
   height: 16px;
-  width: 60px;
-  font-size: 8px;
+  width: 80px;
+  font-size: 12px;
   font-weight: bold;
   border: 2px solid;
   border-color: coral;
@@ -382,10 +418,13 @@
 }
 .bestiary-tracking.bestiary .bookmark:hover,
 .bestiary-tracking.bestiary .bookmark.selected {
-  background: #d2d2c0;
-  width: 80px;
+  background: #e8e89a;
+  width: 100px;
   position: relative;
   right: 20px;
+}
+.bestiary-tracking.bestiary .bookmark.empty {
+  opacity: 0.5;
 }
 .pf2e-bestiary-bold {
   font-weight: bold;

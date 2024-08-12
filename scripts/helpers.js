@@ -1,5 +1,5 @@
 export const slugify = (name) => {
-    return name.toLowerCase().replace(' ', '-');
+    return name.toLowerCase().replaceAll(' ', '-');
 }
 
 export const getCreatureSize = (size) => {

@@ -3,6 +3,12 @@
     overflow-x: visible;
 
     &.bestiary {
+        [data-application-part="application"] {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
         .return-container {
             cursor: pointer;
             margin-bottom: 8px;
@@ -21,10 +27,34 @@
 
             .sub-title {
                 font-size: 20px;
+                display: flex;
+                align-items: center;
+
+                div {
+                    margin-right: 8px;
+                }
+            }
+
+            .bestiary-reset {
+                width: 26px;
+                padding: 4px 13px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                i {
+                    margin-right: 0;
+                }
             }
 
             ul {
                 margin-top: 4px;
+            }
+        }
+
+        .bestiary-list-point {
+            code {
+                color: white;
             }
         }
 
@@ -52,6 +82,7 @@
         .type-overview-container {
             display: flex;
             flex-wrap: wrap;
+            overflow-y: auto;
             gap: 8px;
             
             .type-container {
@@ -75,10 +106,13 @@
                 }
 
                 .type-text-container {
-                    flex: 1;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
+                    display: -webkit-box;
+                    max-width: 200px;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    max-height: 100%;
+                    text-overflow: ellipsis;
                 }
 
                 .delete-button {
@@ -97,6 +131,8 @@
         
         .monster-container {
             display: flex;
+            overflow: auto;
+            height: 100%;
             gap: 16px;
 
             .flex-data {
@@ -124,6 +160,7 @@
             .monster-data-list {
                 display: flex;
                 align-items: center;
+                flex-wrap: wrap;
                 gap: 2px;
 
                 &.no-gap {
@@ -136,6 +173,7 @@
                 gap: 12px;
                 display: flex;
                 flex-direction: column;
+                overflow-y: auto;
 
                 .monster-image {
                     height: 150;
@@ -246,6 +284,12 @@
                             }
                         }
                     }
+                }
+
+                .right-monster-container-data {
+                    display: flex;
+                    flex-direction: column;
+                    overflow-y: auto;
                 }
 
                 .data-sections {
@@ -420,7 +464,7 @@
         
         .right-bookmark-container {
             position: absolute;
-            left: -60px;
+            left: -80px;
             top: 36px;
             height: calc(100% - 36px);
             display: flex;
@@ -429,8 +473,8 @@
 
         .bookmark {
             height: 16px;
-            width: 60px;
-            font-size: 8px;
+            width: 80px;
+            font-size: 12px;
             font-weight: bold;
             border: 2px solid;
             border-color: @bookmark-border;
@@ -449,9 +493,13 @@
 
             &:hover, &.selected {
                 background: @selectedBookmark;
-                width: 80px;
+                width: 100px;
                 position: relative;
                 right: 20px;
+            }
+
+            &.empty {
+                opacity: 0.5;
             }
         }
     }

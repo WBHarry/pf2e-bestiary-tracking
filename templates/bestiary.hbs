@@ -11,31 +11,26 @@
             {{#if (not this.selected.type)}}
                 <div class="bestiary-welcome">
                     <h3 class="title">Welcome to the Bestiary!</h3> 
-                    <div class="sub-title">Players</div>
+                    <div class="sub-title">For Players</div>
                     <ul>
                         <li>Navigate between different creature types using the bookmarks on the left.</li>
+                        <li class="bestiary-list-point">
+                            <div>Add a macro to your hotbar with:</div>
+                            <code>game.modules.get('pf2e-bestiary-tracking').macros.showMonster();</code>
+                            <div>Select or target a monster and use the macro and you will go to its page in the bestiary.</div>
+                        </li>
                     </ul>
 
-                    <div class="sub-title">GM</div>
+                    <div class="sub-title">
+                        <div>For GMs</div>
+                        {{#if this.user.isGM}}<button class="bestiary-reset" data-action="resetBestiary" title="Reset Bestiary"><i class="fa-solid fa-link-slash"></i></button>{{/if}}
+                    </div>
                     <ul>
                         <li>Add new creatures the players have encountered by dragging them into the bestiary.</li>
+                        <li>Customize module behavior and the way monster information is shown in the module settings.</li>
                         <li>Toggle known information on individual monsters as the players learn information.</li>
                     </ul>
                 </div>
-                {{!-- <div class="statistics-title" data-action="toggleStatistics">
-                    <h3>Bestiary Statistics</h3>
-                </div>
-                <div class="statistics-container">
-                    <div class="statistics-inner-container">
-                        You have encountered 5 different creature types. Among them you've faced a total of 12 different creatures.
-                    </div>
-                    <div class="statistics-inner-container">
-                        You've encountered the most different creatures from the Giant creature type, a total of 12.
-                    </div>
-                    <div class="statistics-inner-container">
-                        Test
-                    </div>
-                </div> --}}
             {{else}}
                 {{#if this.selected.monster}}
                     {{#with this.selected.monster}}
@@ -49,9 +44,7 @@
                             {{#each this.openType as |type key|}}
                                 <div class="type-container" data-action="selectMonster" data-monster="{{key}}">
                                     <img src="{{type.img}}" />
-                                    <div class="type-text-container">
-                                        <div>{{type.name}}</div>
-                                    </div>
+                                    <div class="type-text-container">{{type.name}}</div>
 
                                     <i class="fa-solid fa-delete-left delete-button" data-action="removeMonster" data-monster="{{key}}"></i>
                                 </div>
@@ -61,13 +54,9 @@
                 {{/if}}
             {{/if}}
     </body>
-    <footer></footer>
-    <div class="bestiary-left-bookmark-container">
-
-    </div>
     <div class="right-bookmark-container">
         {{#each bestiary.monster as |type key|}}
-            <div class="bookmark {{#if (eq ../selected.type key)}}selected{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
+            <div class="bookmark{{#if (eq ../selected.type key)}} selected{{/if}}{{#if (eq (nrKeys type) 0)}} empty{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
                 {{key}}
             </div>
         {{/each}}
