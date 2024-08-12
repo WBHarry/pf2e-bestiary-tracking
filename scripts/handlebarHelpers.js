@@ -3,6 +3,8 @@ export default class RegisterHandlebarsHelpers {
         Handlebars.registerHelper({
             add: this.add,
             includes: this.includes,
+            nrKeys: this.nrKeys,
+            monsterValue: this.monsterValue,
         });
     };
 
@@ -14,5 +16,13 @@ export default class RegisterHandlebarsHelpers {
 
     static includes(array, item){
         return array?.includes(item);
+    }
+    
+    static nrKeys(obj) {
+        return obj ? Object.keys(obj).length : 0;
+    }
+
+    static monsterValue(prop, flag){
+        return flag && !game.user.isGM ? prop.category : prop.value;
     }
 }

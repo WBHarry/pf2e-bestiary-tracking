@@ -1,49 +1,40 @@
-export const registerGameSettings = () => {
-    // game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-tracking-settings", {
-    //     name: game.i18n.localize('pf2e-bestiary-tracking.bestiary-tracking-settings.label'),
-    //     label: game.i18n.localize('pf2e-bestiary-tracking.bestiary-tracking-settings.title'),
-    //     hint: "",
-    //     icon: "fas fa-cog",
-    //     type: DisplayBarSettingsMenu,
-    //     restricted: true
-    // });
+import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 
-    const monster = {
-        aberration: {},
-        animal: {},
-        astral: {},
-        beast: {},
-        celestial: {},
-        construct: {},
-        dragon: {},
-        elemental: {},
-        ethereal: {},
-        fey: {},
-        fiend: {},
-        fungus: {},
-        giant: {},
-        humanoid: {},
-        kami: {},
-        monitor: {},
-        negative: {},
-        ooze: {},
-        petitioner: {},
-        plant: {},
-        positive: {},
-        shadow: {},
-        spirit: {},
-        time: {},
-    };
+export const registerGameSettings = () => {
+    game.settings.registerMenu("pf2e-bestiary-tracking", "vague-descriptions", {
+        name: game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Menu.Name'),
+        label: game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Menu.Label'),
+        hint: game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Menu.Hint'),
+        icon: "fa-solid fa-eye-low-vision",
+        type: VagueDescriptionsMenu,
+        restricted: true
+    });
 
     game.settings.register('pf2e-bestiary-tracking', 'bestiary-tracking', {
-        name: game.i18n.localize("Bestiary"),
-        hint: game.i18n.localize("Hint"),
+        name: game.i18n.localize("PF2EBestiary.Menus.Data.Name"),
+        hint: game.i18n.localize("PF2EBestiary.Menus.Data.Hint"),
         scope: 'world',
         config: false,
         type: Object,
         default: {
-            monster: monster,
+            monster: Object.keys(CONFIG.PF2E.creatureTypes),
             npc: {}
+        },
+    });
+
+    game.settings.register('pf2e-bestiary-tracking', 'vague-descriptions', {
+        name: game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Hint'),
+        scope: 'world',
+        config: false,
+        type: Object,
+        default: {
+            ac: false,
+            hp: false,
+            resistances: false,
+            weaknesses: false,
+            saves: false,
+            perception: false,
         },
     });
 };

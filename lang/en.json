@@ -1,2 +1,32 @@
 {
+    "PF2EBestiary": {
+        "Bestiary": {
+
+        },
+        "Menus": {
+            "Data": {
+                "Name": "Bestiary data",
+                "Hint": "Monster data for the Bestiary."
+            },
+            "VagueDescriptions": {
+                "Name": "Vague Descriptions",
+                "Hint": "Toggle which monster qualities should be displayed using High/Medium/Low instead of exact values.",
+                "Menu": {
+                    "Name": "Vague Descriptions",
+                    "Label": "Vague Description Settings",
+                    "Hint": "Toggle monster properties where values should be vague",
+                    "Options": {
+                        "AC": "AC",
+                        "HP": "HP",
+                        "Immunities": "Immunities",
+                        "Resistances": "Resistances",
+                        "Weaknesses": "Weaknesses",
+                        "Saves": "Saves",
+                        "Perception": "Perception"
+                    }
+                }
+            }
+        }
+
+    }
 }

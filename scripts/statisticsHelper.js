@@ -17,6 +17,14 @@ export const getCategoryLabel = (savingThrowTable, level, save) => {
     return getSaveLabel(value.category);
 };
 
+export const getCategoryFromIntervals = (intervalTable, level, value) => {
+    const tableRow = intervalTable[level];
+    if(value > tableRow.high.high) return getSaveLabel('high');
+    if(value < tableRow.low.low) return getSaveLabel('low');
+
+    return getSaveLabel(Object.keys(tableRow).find(x => value <= tableRow[x].high || value >= tableRow[x].low));
+};
+
 const getSaveLabel = (category) => {
     switch(category){
         case 'extreme':

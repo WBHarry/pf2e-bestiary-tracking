@@ -7,6 +7,39 @@
   margin-bottom: 8px;
   font-size: 20px;
 }
+.bestiary-tracking.bestiary .bestiary-welcome {
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+}
+.bestiary-tracking.bestiary .bestiary-welcome .title {
+  align-self: center;
+  font-size: 28px;
+}
+.bestiary-tracking.bestiary .bestiary-welcome .sub-title {
+  font-size: 20px;
+}
+.bestiary-tracking.bestiary .bestiary-welcome ul {
+  margin-top: 4px;
+}
+.bestiary-tracking.bestiary .statistics-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bestiary-tracking.bestiary .statistics-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.bestiary-tracking.bestiary .statistics-container .statistics-inner-container {
+  padding: 8px;
+  background: #f5f5dc;
+  border: 2px solid black;
+  border-radius: 6px;
+  width: calc(50% - 4px);
+}
 .bestiary-tracking.bestiary .type-overview-container {
   display: flex;
   flex-wrap: wrap;
@@ -28,7 +61,7 @@
   background: rgba(255, 127, 80, 0.653);
 }
 .bestiary-tracking.bestiary .type-overview-container .type-container img {
-  height: 120px;
+  height: 150px;
 }
 .bestiary-tracking.bestiary .type-overview-container .type-container .type-text-container {
   flex: 1;
@@ -63,6 +96,7 @@
   border-radius: 6px;
   padding: 4px;
   cursor: pointer;
+  border: 1px solid black;
 }
 .bestiary-tracking.bestiary .monster-container .toggle-container.revealed {
   background: green;
@@ -270,6 +304,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  gap: 2px;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-header {
   display: flex;
@@ -347,7 +382,7 @@
 }
 .bestiary-tracking.bestiary .bookmark:hover,
 .bestiary-tracking.bestiary .bookmark.selected {
-  background: #737366;
+  background: #d2d2c0;
   width: 80px;
   position: relative;
   right: 20px;

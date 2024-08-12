@@ -7,7 +7,7 @@
                 <i class="fa-solid fa-fw fa-shield-halved"></i>
                 <div>AC</div>
             </div>
-            <div class="flex-value">{{#if (or this.ac.revealed this.user.isGM)}}{{this.ac.value}}{{else}}?{{/if}}</div>
+            <div class="flex-value">{{#if (or this.ac.revealed this.user.isGM)}}{{monsterValue this.ac this.vagueDescriptions.ac}}{{else}}?{{/if}}</div>
         </div>
 
          <div class="monster-left-data {{#if this.user.isGM}}toggle-container {{#if this.hp.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="hp">
@@ -15,7 +15,7 @@
                 <i class="fa-solid fa-fw fa-shield-halved"></i>
                 <div>HP</div>
             </div>
-            <div class="flex-value">{{#if (or this.hp.revealed this.user.isGM)}}{{this.hp.value}}{{else}}?{{/if}}</div>
+            <div class="flex-value">{{#if (or this.hp.revealed this.user.isGM)}}{{monsterValue this.hp this.vagueDescriptions.hp}}{{else}}?{{/if}}</div>
         </div>
 
         <div class="flexcol">
@@ -60,7 +60,7 @@
                     {{else}}
                         {{#each this.weaknesses.values as |weakness key|}}
                             {{#if (or ../user.isGM (and (not ../weaknesses.fake) weakness.revealed))}}
-                                <div class="{{#if ../user.isGM }}toggle-container {{#if weakness.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'weaknesses.values.' key}}" data-parent="weaknesses">{{weakness.value}}</div>
+                                <div class="{{#if ../user.isGM }}toggle-container {{#if weakness.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'weaknesses.values.' key}}" data-parent="weaknesses">{{monsterValue weakness ../vagueDescriptions.weaknesses}}</div>
                                 {{#if (and (not ../user.isGM) (gt ../this.weaknesses.currentRevealed weakness.index))}},&nbsp;{{/if}}
                             {{/if}}
                         {{/each}}
@@ -86,7 +86,7 @@
                     {{else}}
                         {{#each this.resistances.values as |resistance key|}}
                             {{#if (or ../user.isGM (and (not ../resistances.fake) resistance.revealed))}}
-                                <div class="{{#if ../user.isGM }}toggle-container {{#if resistance.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'resistances.values.' key}}" data-parent="resistances">{{resistance.value}}</div>
+                                <div class="{{#if ../user.isGM }}toggle-container {{#if resistance.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'resistances.values.' key}}" data-parent="resistances">{{monsterValue resistance ../vagueDescriptions.resistances}}</div>
                                 {{#if (and (not ../user.isGM) (gt ../this.resistances.currentRevealed resistance.index))}},&nbsp;{{/if}}
                             {{/if}}
                         {{/each}}
@@ -106,15 +106,15 @@
             <div class="saves-container">
                 <div class="save-container">
                     <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.fortitude.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.fortitude">Fort</div>
-                    <div class="saves-value">{{#if (or this.user.isGM this.saves.fortitude.revealed)}}+{{this.saves.fortitude.value}}{{else}}?{{/if}}</div>
+                    <div class="saves-value">{{#if (or this.user.isGM this.saves.fortitude.revealed)}}{{monsterValue this.saves.fortitude this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
                 <div class="save-container">
                     <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.reflex.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.reflex">Ref</div>
-                    <div class="saves-value">{{#if (or this.user.isGM this.saves.reflex.revealed)}}+{{this.saves.reflex.value}}{{else}}?{{/if}}</div>
+                    <div class="saves-value">{{#if (or this.user.isGM this.saves.reflex.revealed)}}{{monsterValue this.saves.reflex this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
                 <div class="save-container">
                     <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.will.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.will">Will</div>
-                    <div class="saves-value">{{#if (or this.user.isGM this.saves.will.revealed)}}+{{this.saves.will.value}}{{else}}?{{/if}}</div>
+                    <div class="saves-value">{{#if (or this.user.isGM this.saves.will.revealed)}}{{monsterValue this.saves.will this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
             </div>
         </div>
@@ -162,7 +162,7 @@
             <div class="data-section">
                 <div class="data-header">
                     <div class="data-header-label">
-                        <i class="fa-solid fa-dumbbell"></i>
+                        <img class="data-icon" src="systems/pf2e/icons/default-icons/feat.svg" />
                         <div class="flex-value">Attribute Modifiers</div>
                     </div>
                     {{#if this.user.isGM}}<i class="pf2e-bestiary-clickable-icon {{#if this.abilities.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="abilities"></i>{{/if}}
@@ -194,7 +194,11 @@
                             {{#if (or ../user.isGM sense.revealed)}}
                                 <div class="flexrow {{#if ../user.isGM }}toggle-container {{#if sense.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'senses.values.' key}}" data-parent="senses">
                                     <div class="pf2e-bestiary-bold">{{sense.label}}</div>
-                                    {{sense.value}}
+                                    {{#if (and (not ../user.isGM) (eq key 'perception'))}}
+                                        {{monsterValue sense ../vagueDescriptions.perception }}
+                                    {{else}}    
+                                        {{sense.value}}
+                                    {{/if}}
                                 </div>
                             {{/if}}
                         {{/each}}
@@ -290,7 +294,7 @@
                         {{#if (or ../user.isGM passive.revealed)}}
                             <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if passive.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'passives.values.' key}}" data-parent="passives">
                                 <div class="action-container">
-                                    <div class="action-name" data-action="toggleAbility" data-ability="{{passive.uuid}}">{{passive.name}}></div>
+                                    <div class="action-name" data-action="toggleAbility" data-ability="{{passive.uuid}}">{{passive.name}}</div>
                                 </div>
                                 <div class="action-description {{#if (includes ../selected.abilities passive.uuid)}}expanded{{/if}}">
                                     {{{passive.description}}}
