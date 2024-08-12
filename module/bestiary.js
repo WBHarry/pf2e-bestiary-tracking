@@ -94,6 +94,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this.selected.monster = null;
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: { },
+        });
+
         this.render();
     }
 
@@ -156,7 +161,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     return acc;
                 }, {}), 
                 npc: {} };
+
             await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+            await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+                action: socketEvent.UpdateBestiary,
+                data: { },
+            });
+
             this.render();
         }
     }
@@ -374,7 +385,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this.bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         
         if(!game.user.isGM && monsterSlug){
-            if(this.selected.monster.slug === monsterSlug) {
+            if(this.selected.monster?.slug === monsterSlug) {
                 this.selected.monster = this.bestiary[this.selected.category][this.selected.type][monsterSlug];
             }
         }

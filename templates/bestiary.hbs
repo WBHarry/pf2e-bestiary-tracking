@@ -46,7 +46,7 @@
                                     <img src="{{type.img}}" />
                                     <div class="type-text-container">{{type.name}}</div>
 
-                                    <i class="fa-solid fa-delete-left delete-button" data-action="removeMonster" data-monster="{{key}}"></i>
+                                    {{#if ../user.isGM}}<i class="fa-solid fa-delete-left delete-button" data-action="removeMonster" data-monster="{{key}}"></i>{{/if}}
                                 </div>
                             {{/each}}
                         {{/if}}
