@@ -19,6 +19,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
+  min-height: 32px;
 }
 .bestiary-tracking.bestiary header .return-container {
   cursor: pointer;

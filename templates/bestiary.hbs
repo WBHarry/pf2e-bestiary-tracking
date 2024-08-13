@@ -49,7 +49,7 @@
                     {{/with}}
                 {{else}}
                     <div class="type-overview-container">
-                        {{#if (eq (nrKeys this.openType) 0)}}
+                        {{#if (eq (PF2EBTNrKeys this.openType) 0)}}
                             {{localize "PF2EBestiary.Bestiary.CategoryView.EmptyText" category=this.selected.type}}
                         {{else}}
                             {{#each this.openType as |type key|}}
@@ -67,7 +67,7 @@
     </body>
     <div class="right-bookmark-container">
         {{#each bestiary.monster as |type key|}}
-            <div class="bookmark{{#if (eq ../selected.type key)}} selected{{/if}}{{#if (eq (nrKeys type) 0)}} empty{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
+            <div class="bookmark{{#if (eq ../selected.type key)}} selected{{/if}}{{#if (eq (PF2EBTNrKeys type) 0)}} empty{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
                 {{key}}
             </div>
         {{/each}}

@@ -7,7 +7,7 @@
                 <i class="fa-solid fa-fw fa-shield-halved"></i>
                 <div>{{localize "PF2EBestiary.Miscellaneous.AC"}}</div>
             </div>
-            <div class="flex-value">{{#if (or this.ac.revealed this.user.isGM)}}{{monsterValue this.ac this.vagueDescriptions.ac}}{{else}}?{{/if}}</div>
+            <div class="flex-value">{{#if (or this.ac.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.ac this.vagueDescriptions.ac}}{{else}}?{{/if}}</div>
         </div>
 
          <div class="monster-left-data {{#if this.user.isGM}}toggle-container {{#if this.hp.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="hp">
@@ -15,7 +15,7 @@
                 <i class="fa-solid fa-fw fa-shield-halved"></i>
                 <div>{{localize "PF2EBestiary.Miscellaneous.HP"}}</div>
             </div>
-            <div class="flex-value">{{#if (or this.hp.revealed this.user.isGM)}}{{monsterValue this.hp this.vagueDescriptions.hp}}{{else}}?{{/if}}</div>
+            <div class="flex-value">{{#if (or this.hp.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.hp this.vagueDescriptions.hp}}{{else}}?{{/if}}</div>
         </div>
 
         <div class="flexcol">
@@ -65,9 +65,9 @@
                                     data-action="toggleRevealed" 
                                     data-path="{{concat 'weaknesses.values.' key}}" 
                                     data-parent="weaknesses"
-                                    title="{{categoryClassTitle weakness.class 'Weakness' ../vagueDescriptions.weaknesses}}"
+                                    title="{{PF2EBTCategoryClassTitle weakness.class 'Weakness' ../vagueDescriptions.weaknesses}}"
                                 >
-                                    {{monsterValue weakness ../vagueDescriptions.weaknesses}}
+                                    {{PF2EBTMonsterValue weakness ../vagueDescriptions.weaknesses}}
                                 </div>
                                 {{#if (and (not ../user.isGM) (gt ../weaknesses.currentRevealed weakness.index))}},&nbsp;{{/if}}
                             {{/if}}
@@ -99,9 +99,9 @@
                                     data-action="toggleRevealed" 
                                     data-path="{{concat 'resistances.values.' key}}" 
                                     data-parent="resistances"
-                                    title="{{categoryClassTitle resistance.class 'Resistance' ../vagueDescriptions.resistances}}"
+                                    title="{{PF2EBTCategoryClassTitle resistance.class 'Resistance' ../vagueDescriptions.resistances}}"
                                 >
-                                    {{monsterValue resistance ../vagueDescriptions.resistances}}
+                                    {{PF2EBTMonsterValue resistance ../vagueDescriptions.resistances}}
                                 </div>
                                 {{#if (and (not ../user.isGM) (gt ../this.resistances.currentRevealed resistance.index))}},&nbsp;{{/if}}
                             {{/if}}
@@ -122,15 +122,15 @@
             <div class="saves-container">
                 <div class="save-container">
                     <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.fortitude.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.fortitude">{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}</div>
-                    <div class="saves-value">{{#if (or this.user.isGM this.saves.fortitude.revealed)}}{{monsterValue this.saves.fortitude this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
+                    <div class="saves-value">{{#if (or this.user.isGM this.saves.fortitude.revealed)}}{{PF2EBTMonsterValue this.saves.fortitude this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
                 <div class="save-container">
                     <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.reflex.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.reflex">{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}</div>
-                    <div class="saves-value">{{#if (or this.user.isGM this.saves.reflex.revealed)}}{{monsterValue this.saves.reflex this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
+                    <div class="saves-value">{{#if (or this.user.isGM this.saves.reflex.revealed)}}{{PF2EBTMonsterValue this.saves.reflex this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
                 <div class="save-container">
                     <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.will.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.will">{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}</div>
-                    <div class="saves-value">{{#if (or this.user.isGM this.saves.will.revealed)}}{{monsterValue this.saves.will this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
+                    <div class="saves-value">{{#if (or this.user.isGM this.saves.will.revealed)}}{{PF2EBTMonsterValue this.saves.will this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
             </div>
         </div>
@@ -160,7 +160,7 @@
 
     <div class="right-monster-container">
         <div class="flexcol">
-            <div class="monster-name {{#if this.user.isGM }}toggle-container {{#if this.name.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="name">{{#if (or this.user.isGM this.name.revealed)}}{{this.name.value}}{{else}}{{localize "PF2EBestiary.Miscellaneous.UnknownCreature"}}{{/if}}</div>
+            <div class="monster-name {{#if this.user.isGM }}toggle-container {{#if this.name.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="name">{{#if (or this.user.isGM this.name.revealed)}}{{this.name.value}}{{else}}{{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}{{/if}}</div>
             <div class="monster-traits-row">
                 <div class="monster-size">{{this.size}}</div>
                 <div class="monster-traits flexrow">
@@ -213,7 +213,7 @@
                                     <div class="flexrow {{#if ../user.isGM }}toggle-container {{#if sense.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'senses.values.' key}}" data-parent="senses">
                                         <div class="pf2e-bestiary-bold">{{sense.label}}</div>
                                         {{#if (and (not ../user.isGM) (eq key 'perception'))}}
-                                            {{monsterValue sense ../vagueDescriptions.perception }}
+                                            {{PF2EBTMonsterValue sense ../vagueDescriptions.perception }}
                                         {{else}}    
                                             {{sense.value}}
                                         {{/if}}

@@ -80,7 +80,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         context.selected = foundry.utils.deepClone(this.selected);
         context.openType = this.selected.type ? Object.keys(this.bestiary[this.selected.category][this.selected.type]).reduce((acc, key)=> {
             const monster = this.bestiary[this.selected.category][this.selected.type][key];
-            if(!this.search.name || monster.name.toLowerCase().match(this.search.name.toLowerCase())) {
+            if(!this.search.name || (monster.name.revealed && monster.name.value.toLowerCase().match(this.search.name.toLowerCase()))) {
                 acc[key] = monster;
             }
 
@@ -155,8 +155,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     static async toggleRevealed(_, button){
         if(!game.user.isGM) return;
 
-        foundry.utils.setProperty(this.selected.monster, `${button.dataset.path}.revealed`, !foundry.utils.getProperty(this.selected.monster, `${button.dataset.path}.revealed`));
-        
+        for(var type of this.selected.monster.inTypes){
+            foundry.utils.setProperty(this.bestiary.monster[type][this.selected.monster.slug], `${button.dataset.path}.revealed`, !foundry.utils.getProperty(this.bestiary.monster[type][this.selected.monster.slug]));
+        }
+
         if(button.dataset.parent){
             const values = Object.values(this.selected.monster[button.dataset.parent].values);
             this.selected.monster[button.dataset.parent].currentRevealed = values.filter(x => x.revealed).length;
@@ -296,7 +298,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             inTypes: types.map(x => x.key),
             traits: traits,
             size: getCreatureSize(item.system.traits.size.value),
-            name: item.name,
+            name: { reveal: false, value: item.name },
             img: item.img,
             abilities: { 
                 revealed: false, 
