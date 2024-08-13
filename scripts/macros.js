@@ -8,7 +8,7 @@ export const showMonster = async () => {
 
     if(!selectedMonster) 
     {
-        ui.notifications.info("No monster selected or targeted.");
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.NoTarget"));
         return;
     }
 
@@ -22,7 +22,7 @@ export const showMonster = async () => {
 
     if(!monster)
     {
-        ui.notifications.info("That monster hasn't been added to the bestiary yet!");
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.TargetNotInBestiary"));
         return;
     }
 

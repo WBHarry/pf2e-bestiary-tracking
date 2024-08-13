@@ -41,7 +41,7 @@ Hooks.on('getSceneControlButtons', (controls) => {
     if (notes) { notes.tools.push(...[
         {
             name: 'bestiary-tracking',
-            title: 'Bestiary Tracking',
+            title: game.i18n.localize("PF2EBestiary.Menus.Title"),
             icon: 'fa-solid fa-spaghetti-monster-flying',
             visible: true,
             onClick: () => new PF2EBestiary().render(true),

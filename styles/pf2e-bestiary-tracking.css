@@ -245,6 +245,12 @@
 .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name {
   font-weight: bold;
   font-size: 36px;
+  width: fit-content;
+  padding: 4px 0;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name.toggle-container {
+  width: fit-content;
+  padding: 4px 16px;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-traits-row {
   display: flex;

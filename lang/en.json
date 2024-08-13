@@ -1,9 +1,62 @@
 {
     "PF2EBestiary": {
+        "Miscellaneous": {
+            "AC": "AC",
+            "HP": "HP",
+            "Immunities": "Immunities",
+            "None": "None",
+            "Weaknesses": "Weaknesses",
+            "Resistances": "Resistances",
+            "Saves": {
+                "Title": "Saves",
+                "Fortitude": {
+                    "Short": "Fort"
+                },
+                "Reflex": {
+                    "Short": "Reflex"
+                },
+                "Will": {
+                    "Short": "Will"
+                }
+            },
+            "Speeds": "Speeds",
+            "Attributes": "Attribute Modifiers",
+            "Senses": "Senses",
+            "Attacks": "Attacks",
+            "Abilities": "Abilities",
+            "Passives": "Passives",
+            "Save": "Save"
+        },
         "Bestiary": {
-
+            "Title": "Bestiary",
+            "Welcome": {
+                "Greeting": "Welcome to the Bestiary!",
+                "PlayersSection": {
+                    "Title": "For Players",
+                    "NavigationTip": "Navigate between different creature types using the bookmarks on the left.",
+                    "MacroTipPreamble": "Add a macro to your hotbar with:",
+                    "MacroTipPost": "Select or target a monster and use the macro and you will go to its page in the bestiary."
+                },
+                "GMsSection": {
+                    "Title": "For GMs",
+                    "AddCreaturesTip": "Add new creatures the players have encountered by dragging them into the bestiary.",
+                    "ModuleSettingsTip": "Customize module behavior and the way monster information is shown in the module settings.",
+                    "ToggleInformationTip": "Toggle known information on individual monsters as the players learn information." 
+                }
+            },
+            "ReturnMessages": {
+                "ReturnToCategory": "Return to the ${type} category page",
+                "ReturnToWelcome": "Return to the main page"
+            },
+            "CategoryView": {
+                "EmptyText": "No {category} encountered yet. Enjoy it while you can."
+            },
+            "Miscellaneous": {
+                "UnknownCreature": "Unknown Creature"
+            }
         },
         "Menus": {
+            "Title": "Bestiary Tracking",
             "Data": {
                 "Name": "Bestiary data",
                 "Hint": "Monster data for the Bestiary."
@@ -36,6 +89,12 @@
             "AutomaticallyOpenMonster": {
                 "Name": "Auto Open Bestiary Entry",
                 "Hint": "Automatically open the bestiary entry for monsters you drop into it."   
+            }
+        },
+        "Macros": {
+            "ShowMonster": {
+                "NoTarget": "No monster selected or targeted.",
+                "TargetNotInBestiary": "That monster hasn't been added to the bestiary yet!"
             }
         }
     }

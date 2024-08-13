@@ -5,7 +5,7 @@
         <div class="monster-left-data {{#if this.user.isGM}}toggle-container {{#if this.ac.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="ac">
             <div class="flex-data">
                 <i class="fa-solid fa-fw fa-shield-halved"></i>
-                <div>AC</div>
+                <div>{{localize "PF2EBestiary.Miscellaneous.AC"}}</div>
             </div>
             <div class="flex-value">{{#if (or this.ac.revealed this.user.isGM)}}{{monsterValue this.ac this.vagueDescriptions.ac}}{{else}}?{{/if}}</div>
         </div>
@@ -13,7 +13,7 @@
          <div class="monster-left-data {{#if this.user.isGM}}toggle-container {{#if this.hp.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="hp">
             <div class="flex-data">
                 <i class="fa-solid fa-fw fa-shield-halved"></i>
-                <div>HP</div>
+                <div>{{localize "PF2EBestiary.Miscellaneous.HP"}}</div>
             </div>
             <div class="flex-value">{{#if (or this.hp.revealed this.user.isGM)}}{{monsterValue this.hp this.vagueDescriptions.hp}}{{else}}?{{/if}}</div>
         </div>
@@ -22,12 +22,12 @@
             <div class="monster-left-data">
                 <div class="flex-data">
                     <i class="fa-solid fa-fw fa-ankh"></i>
-                    <div>Immunities</div>
+                    <div>{{localize "PF2EBestiary.Miscellaneous.Immunities"}}</div>
                 </div>
             </div>
             <div class="monster-data-list {{#if (not this.user.isGM)}}no-gap{{/if}}">
                 {{#if (and (not this.user.isGM) (and (eq this.immunities.revealed 2) (or (eq this.immunities.values.length 0) this.immunities.fake)))}}
-                    <div>None</div>
+                    <div>{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
                 {{else}}
                     {{#if (and (not this.user.isGM) (eq this.immunities.revealed 0))}}
                         <div>?</div>
@@ -48,12 +48,12 @@
             <div class="monster-left-data">
                 <div class="flex-data">
                     <i class="fa-solid fa-fw fa-heart-broken"></i>
-                    <div>Weaknesses</div>
+                    <div>{{localize "PF2EBestiary.Miscellaneous.Weaknesses"}}</div>
                 </div>
             </div>
             <div class="monster-data-list {{#if (not this.user.isGM)}}no-gap{{/if}}">
                 {{#if (and (not this.user.isGM) (and (eq this.weaknesses.revealed 2) (or (eq this.weaknesses.values.length 0) this.weaknesses.fake)))}}
-                    <div>None</div>
+                    <div>{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
                 {{else}}
                     {{#if (and (not this.user.isGM) (eq this.weaknesses.revealed 0))}}
                         <div>?</div>
@@ -82,12 +82,12 @@
             <div class="monster-left-data">
                 <div class="flex-data">
                     <i class="fa-solid fa-fw fa-shield-virus"></i>
-                    <div>Resistances</div>
+                    <div>{{localize "PF2EBestiary.Miscellaneous.Resistances"}}</div>
                 </div>
             </div>
             <div class="monster-data-list {{#if (not this.user.isGM)}}no-gap{{/if}}">
                 {{#if (and (not this.user.isGM) (and (eq this.resistances.revealed 2) (or (eq this.resistances.values.length 0) this.resistances.fake)))}}
-                    <div>None</div>
+                    <div>{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
                 {{else}}
                     {{#if (and (not this.user.isGM) (eq this.resistances.revealed 0))}}
                         <div>?</div>
@@ -116,20 +116,20 @@
             <div class="monster-left-data">
                 <div class="flex-data">
                     <i class="fa-solid fa-fw fa-heart-pulse"></i>
-                    <div>Saves</div>
+                    <div>{{localize "PF2EBestiary.Miscellaneous.Saves.Title"}}</div>
                 </div>
             </div>
             <div class="saves-container">
                 <div class="save-container">
-                    <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.fortitude.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.fortitude">Fort</div>
+                    <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.fortitude.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.fortitude">{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}</div>
                     <div class="saves-value">{{#if (or this.user.isGM this.saves.fortitude.revealed)}}{{monsterValue this.saves.fortitude this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
                 <div class="save-container">
-                    <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.reflex.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.reflex">Ref</div>
+                    <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.reflex.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.reflex">{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}</div>
                     <div class="saves-value">{{#if (or this.user.isGM this.saves.reflex.revealed)}}{{monsterValue this.saves.reflex this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
                 <div class="save-container">
-                    <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.will.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.will">Will</div>
+                    <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.will.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.will">{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}</div>
                     <div class="saves-value">{{#if (or this.user.isGM this.saves.will.revealed)}}{{monsterValue this.saves.will this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
             </div>
@@ -138,7 +138,7 @@
             <div class="monster-left-data">
                 <div class="flex-data">
                     <i class="fa-solid fa-fw fa-shoe-prints"></i>
-                    <div>Speeds</div>
+                    <div>{{localize "PF2EBestiary.Miscellaneous.Speeds"}}</div>
                 </div>
             </div>
             <div class="speeds-container">
@@ -160,7 +160,7 @@
 
     <div class="right-monster-container">
         <div class="flexcol">
-            <div class="monster-name">{{this.name}}</div>
+            <div class="monster-name {{#if this.user.isGM }}toggle-container {{#if this.name.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="name">{{#if (or this.user.isGM this.name.revealed)}}{{this.name.value}}{{else}}{{localize "PF2EBestiary.Miscellaneous.UnknownCreature"}}{{/if}}</div>
             <div class="monster-traits-row">
                 <div class="monster-size">{{this.size}}</div>
                 <div class="monster-traits flexrow">
@@ -181,7 +181,7 @@
                     <div class="data-header">
                         <div class="data-header-label">
                             <img class="data-icon" src="systems/pf2e/icons/default-icons/feat.svg" />
-                            <div class="flex-value">Attribute Modifiers</div>
+                            <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attributes"}}</div>
                         </div>
                         {{#if this.user.isGM}}<i class="pf2e-bestiary-clickable-icon {{#if this.abilities.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="abilities"></i>{{/if}}
                     </div>
@@ -201,7 +201,7 @@
                     <div class="data-header">
                         <div class="data-header-label">
                             <img class="data-icon" src="icons/svg/eye.svg" />
-                            <div class="flex-value">Senses</div>
+                            <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Senses"}}</div>
                         </div>
                     </div>
                     <div class="data-body pf2e-bestiary-standard-gap">
@@ -230,7 +230,7 @@
                 <div class="data-header">
                     <div class="data-header-label">
                         <img class="data-icon" src="icons/svg/combat.svg" />
-                        <div class="flex-value">Attacks</div>
+                        <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attacks"}}</div>
                     </div>
                 </div>
                 <div class="data-body pf2e-bestiary-standard-gap">
@@ -273,7 +273,7 @@
                 <div class="data-header">
                     <div class="data-header-label">
                         <img class="data-icon" src="icons/svg/explosion.svg" />
-                        <div class="flex-value">Abilities</div>
+                        <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Abilities"}}</div>
                     </div>
                 </div>
                 <div class="data-body pf2e-bestiary-standard-gap">
@@ -301,7 +301,7 @@
                 <div class="data-header">
                     <div class="data-header-label">
                         <img class="data-icon" src="icons/svg/paralysis.svg" />
-                        <div class="flex-value">Passives</div>
+                        <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Passives"}}</div>
                     </div>
                 </div>
                 <div class="data-body pf2e-bestiary-standard-gap">

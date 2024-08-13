@@ -26,7 +26,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     get title(){
-        return 'Bestiary'; 
+        return game.i18n.localize("PF2EBestiary.Bestiary.Title"); 
     }
 
     static DEFAULT_OPTIONS = {
@@ -86,7 +86,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
             return acc;
         }, {}) : null;
-        context.returnMessage = this.selected.monster ? `Return to the ${this.selected.type.capitalize()} category page` : this.selected.type ? `Return to main page` : null;
+        context.returnMessage = this.selected.monster ? game.i18n.localize('PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory', { type: this.selected.type.capitalize() }) : this.selected.type ? game.i18n.localize('PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome') : null;
         context.user = game.user;
         context.vagueDescriptions = { ... (await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions')) };
         context.vagueDescriptions.playerBased = game.user.isGM ? false : context.vagueDescriptions.playerBased;
@@ -102,7 +102,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this.selected.type = button.dataset.bookmark;
         this.selected.monster = null;
         this.search.name = '';
-        
+
         this.render();
     }
 
@@ -292,10 +292,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const slug = slugify(item.name);
         const monster = {
             slug: slug,
+            id: item.id,
             inTypes: types.map(x => x.key),
             traits: traits,
             size: getCreatureSize(item.system.traits.size.value),
-            name: item.name,
+            name: { revealed: false, value: item.name },
             img: item.img,
             abilities: { 
                 revealed: false, 
