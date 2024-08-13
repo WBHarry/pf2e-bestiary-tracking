@@ -1,3 +1,7 @@
+.theme-dark .bestiary-tracking.bestiary .right-bookmark-container {
+  top: -8px !important;
+  height: 100%;
+}
 .bestiary-tracking {
   overflow-y: visible;
   overflow-x: visible;
@@ -6,6 +10,9 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+}
+.bestiary-tracking.bestiary .window-content {
+  overflow: visible;
 }
 .bestiary-tracking.bestiary header {
   display: flex;
