@@ -76,6 +76,8 @@
                         "Weaknesses": "Weaknesses",
                         "Saves": "Saves",
                         "Perception": "Perception",
+                        "Speed": "Speed",
+                        "Attributes": "Attribute Modifiers",
                         "PlayerBased": "Base Descriptions On Player Level"
                     }
                 }

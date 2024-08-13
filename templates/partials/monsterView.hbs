@@ -149,7 +149,7 @@
                         {{#if (or ../user.isGM speed.revealed)}}
                             <div class="speed-container {{#if ../user.isGM }}toggle-container {{#if speed.revealed}}revealed{{/if}}{{else}}base-colour{{/if}}" data-action="toggleRevealed" data-path="{{concat 'speeds.values.' key}}" data-parent="speeds">
                                 {{speed.name}}
-                                {{speed.value}}
+                                {{#if (not ../vagueDescriptions.speed)}}{{speed.value}}{{/if}}
                             </div>
                          {{/if}}
                     {{/each}}
@@ -183,14 +183,14 @@
                             <img class="data-icon" src="systems/pf2e/icons/default-icons/feat.svg" />
                             <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attributes"}}</div>
                         </div>
-                        {{#if this.user.isGM}}<i class="pf2e-bestiary-clickable-icon {{#if this.abilities.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="abilities"></i>{{/if}}
+                        {{!-- {{#if this.user.isGM}}<i class="pf2e-bestiary-clickable-icon {{#if this.abilities.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="abilities"></i>{{/if}} --}}
                     </div>
                     <div class="data-body">
                         <div class="abilities-container">
-                            {{#each this.abilities.values}}
-                                <div class="ability-container">
-                                    <div class="ability-label">{{localize this.label}}</div>
-                                    {{#if (or ../abilities.revealed ../user.isGM)}}{{this.value}}{{else}}?{{/if}}
+                            {{#each this.abilities.values as |ability key|}}
+                                <div class="ability-container {{#if ../user.isGM }}toggle-container {{#if ability.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'abilities.values.' key}}" data-parent="abilities">
+                                    <div class="ability-label">{{localize ability.label}}</div>
+                                    {{#if (or ../user.isGM ability.revealed)}}{{PF2EBTMonsterValue ability ../vagueDescriptions.attributes }}{{else}}?{{/if}}
                                 </div>
                             {{/each}}
                         </div>

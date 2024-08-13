@@ -28,5 +28,28 @@ export const handleDataMigration = async () => {
         version = '0.8.2';
     }
 
+    if(version === '0.8.2'){
+        version = '0.8.3';
+    }
+
     await game.settings.set('pf2e-bestiary-tracking', 'version', version);
 }
+
+const migrateBestiary = async (update) => {
+    const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+    Object.keys(bestiary.monster).forEach(type => {
+        Object.keys(bestiary.monster[type]).forEach(monsterKey => {
+            const monster = bestiary.monster[type][monsterKey];
+
+            update(bestiary, monster, type, monsterKey);
+
+            for(var inType of monster.inTypes){
+                if(type !== inType){
+                    bestiary.monster[inType][monsterKey] = foundry.utils.deepClone(bestiary.monster[type][monsterKey]);
+                }
+            }
+        });
+    });
+    
+    await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
+};

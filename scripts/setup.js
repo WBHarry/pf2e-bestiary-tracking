@@ -67,6 +67,8 @@ export const registerGameSettings = () => {
             weaknesses: false,
             saves: false,
             perception: false,
+            speed: false,
+            attributes: false,
         },
     });
 };

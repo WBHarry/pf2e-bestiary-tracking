@@ -1,7 +1,7 @@
 
 import { getCreatureSize, slugify } from "../scripts/helpers.js";
 import { socketEvent } from "../scripts/socket.js";
-import { acTable, hpTable, savingThrowPerceptionTable } from "../scripts/statisticsData.js";
+import { acTable, attributeTable, hpTable, savingThrowPerceptionTable } from "../scripts/statisticsData.js";
 import { getCategoryFromIntervals, getCategoryLabel, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -68,6 +68,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(!game.user.isGM && context.vagueDescriptions.playerBased && context.selected.monster){
             context.selected.monster.ac.category = getCategoryLabel(acTable, context.playerLevel, context.selected.monster.ac.value);
             context.selected.monster.hp.category = getCategoryFromIntervals(hpTable, context.playerLevel, context.selected.monster.hp.value);
+            Object.values(context.selected.monster.abilities.values).forEach(ability => ability.category = getCategoryLabel(attributeTable, context.playerLevel, ability.mod));
             context.selected.monster.senses.values.perception.category = getCategoryLabel(savingThrowPerceptionTable, context.playerLevel, context.selected.monster.senses.values.perception.value);
         }
 
@@ -295,16 +296,17 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const monster = {
             slug: slug,
             id: item.id,
+            level: item.system.details.level.value,
             inTypes: types.map(x => x.key),
             traits: traits,
             size: getCreatureSize(item.system.traits.size.value),
-            name: { reveal: false, value: item.name },
+            name: { revealed: false, value: item.name },
             img: item.img,
             abilities: { 
-                revealed: false, 
+                revealed: 0, 
                 values: Object.keys(item.system.abilities).map(x => { 
                     const ability = item.system.abilities[x];
-                    return { label: x.capitalize(), value: ability.mod >= 0 ? `+${ability.mod}` : `${ability.mod}` }; 
+                    return { revealed: false, label: x.capitalize(), mod: ability.mod, value: ability.mod >= 0 ? `+${ability.mod}` : `${ability.mod}`, category: getCategoryLabel(attributeTable, item.system.details.level.value, ability.mod), }; 
                 }
             )},
             ac: { revealed: false, value: item.system.attributes.ac.value, category: getCategoryLabel(acTable, item.system.details.level.value, item.system.attributes.ac.value) },
