@@ -18,6 +18,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             abilities: [],
         };
 
+        this.search = {
+            name: '',
+        };
+
         Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
     }
 
@@ -38,6 +42,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             toggleAbility: this.toggleAbility,
             toggleRevealed: this.toggleRevealed,
             resetBestiary: this.resetBestiary,
+            clearSearch: this.clearSearch,
         },
         form: { handler: this.updateData, submitOnChange: true },
         dragDrop: [
@@ -73,12 +78,20 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         var context = await super._prepareContext(_options);
         context.bestiary = foundry.utils.deepClone(this.bestiary);
         context.selected = foundry.utils.deepClone(this.selected);
-        context.openType = this.bestiary[this.selected.category][this.selected.type];
+        context.openType = this.selected.type ? Object.keys(this.bestiary[this.selected.category][this.selected.type]).reduce((acc, key)=> {
+            const monster = this.bestiary[this.selected.category][this.selected.type][key];
+            if(!this.search.name || monster.name.toLowerCase().match(this.search.name.toLowerCase())) {
+                acc[key] = monster;
+            }
+
+            return acc;
+        }, {}) : null;
         context.returnMessage = this.selected.monster ? `Return to the ${this.selected.type.capitalize()} category page` : this.selected.type ? `Return to main page` : null;
         context.user = game.user;
         context.vagueDescriptions = { ... (await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions')) };
         context.vagueDescriptions.playerBased = game.user.isGM ? false : context.vagueDescriptions.playerBased;
-        context.playerLevel = game.user.character ? game.user.character.system.details.level.value : null;;
+        context.playerLevel = game.user.character ? game.user.character.system.details.level.value : null;
+        context.search = this.search;
 
         context = this.getWithPlayerContext(context);
 
@@ -88,6 +101,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     static selectBookmark(_, button){
         this.selected.type = button.dataset.bookmark;
         this.selected.monster = null;
+        this.search.name = '';
+        
         this.render();
     }
 
@@ -188,7 +203,17 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }
     }
 
-    static async updateData(){
+    static clearSearch(){
+        this.search.name = '';
+        this.render();
+    }
+
+    static async updateData(event, element, formData){
+        const data = foundry.utils.expandObject(formData);
+        for(var key in data.object){
+            foundry.utils.setProperty(this, key, data.object[key]);
+        }
+
         this.render();
     }
 

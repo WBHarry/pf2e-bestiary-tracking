@@ -7,10 +7,35 @@
   display: flex;
   flex-direction: column;
 }
-.bestiary-tracking.bestiary .return-container {
-  cursor: pointer;
+.bestiary-tracking.bestiary header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 8px;
+}
+.bestiary-tracking.bestiary header .return-container {
+  cursor: pointer;
   font-size: 20px;
+}
+.bestiary-tracking.bestiary header .bestiary-search-container {
+  position: relative;
+}
+.bestiary-tracking.bestiary header .bestiary-search-container input {
+  width: 240px;
+  padding-left: 26px;
+  padding-right: 30px;
+}
+.bestiary-tracking.bestiary header .bestiary-search-container .search-icon {
+  position: absolute;
+  left: 8px;
+  top: calc(50% - 8px);
+  font-size: 16px;
+}
+.bestiary-tracking.bestiary header .bestiary-search-container .clear-icon {
+  position: absolute;
+  right: 8px;
+  top: calc(50% - 9px);
+  font-size: 18px;
 }
 .bestiary-tracking.bestiary .bestiary-welcome {
   display: flex;

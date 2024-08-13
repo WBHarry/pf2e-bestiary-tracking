@@ -1,11 +1,22 @@
 <div>
     <header>
-        {{#if this.returnMessage}}
-            <div class="return-container" data-action="returnButton">
-                <i class="fa-solid fa-reply"></i>
-                {{this.returnMessage}}
-            </div>
-        {{/if}}
+        <div>
+            {{#if this.returnMessage}}
+                <div class="return-container" data-action="returnButton">
+                    <i class="fa-solid fa-reply"></i>
+                    {{this.returnMessage}}
+                </div>
+            {{/if}}
+        </div>
+        <div>
+            {{#if (and this.selected.type (not this.selected.monster))}}
+                <div class="bestiary-search-container">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" name="search.name" value="{{this.search.name}}" />
+                    {{#if search.name}}<i class="fa-solid fa-circle-xmark clear-icon pf2e-bestiary-clickable-icon" data-action="clearSearch"></i>{{/if}}
+                </div>
+            {{/if}}
+        </div>
     </header>
     <body>
             {{#if (not this.selected.type)}}
