@@ -156,7 +156,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(!game.user.isGM) return;
 
         for(var type of this.selected.monster.inTypes){
-            foundry.utils.setProperty(this.bestiary.monster[type][this.selected.monster.slug], `${button.dataset.path}.revealed`, !foundry.utils.getProperty(this.bestiary.monster[type][this.selected.monster.slug]));
+            foundry.utils.setProperty(this.bestiary.monster[type][this.selected.monster.slug], `${button.dataset.path}.revealed`, !foundry.utils.getProperty(this.bestiary.monster[type][this.selected.monster.slug], `${button.dataset.path}.revealed`));
         }
 
         if(button.dataset.parent){
