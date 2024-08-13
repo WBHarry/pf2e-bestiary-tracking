@@ -45,7 +45,7 @@
                 }
             },
             "ReturnMessages": {
-                "ReturnToCategory": "Return to the ${type} category page",
+                "ReturnToCategory": "Return to the {type} category page",
                 "ReturnToWelcome": "Return to the main page"
             },
             "CategoryView": {
@@ -82,6 +82,10 @@
             }
         },
         "Settings": {
+            "Version": {
+                "Name": "Version",
+                "Hint": "The Module Version"
+            },
             "AutomaticCombatRegistration": {
                 "Name": "Combat Registration",
                 "Hint": "Automtically add new enemies in a combat encounter to the bestiary when its started."

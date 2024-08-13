@@ -1,6 +1,15 @@
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 
 export const registerGameSettings = () => {
+    game.settings.register('pf2e-bestiary-tracking', 'version', {
+        name: game.i18n.localize('PF2EBestiary.Settings.Version.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.Version.Hint'),
+        scope: 'world',
+        config: false,
+        type: String,
+        default: '',
+    });
+
     game.settings.register('pf2e-bestiary-tracking', 'automatic-combat-registration', {
         name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Name'),
         hint: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Hint'),

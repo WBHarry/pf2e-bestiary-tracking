@@ -3,6 +3,7 @@ import RegisterHandlebarsHelpers from "./scripts/handlebarHelpers.js";
 import { registerGameSettings } from "./scripts/setup.js";
 import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
+import { handleDataMigration } from "./scripts/migrationHandler.js";
 
 Hooks.once('init', () => {
     registerGameSettings();
@@ -16,6 +17,8 @@ Hooks.once('init', () => {
 
 Hooks.once("ready", () => {
     game.modules.get('pf2e-bestiary-tracking').macros = macros;
+    
+    handleDataMigration();
 });
 
 Hooks.on("combatStart", async (encounter) => {

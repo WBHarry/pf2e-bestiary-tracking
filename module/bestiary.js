@@ -86,7 +86,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
             return acc;
         }, {}) : null;
-        context.returnMessage = this.selected.monster ? game.i18n.localize('PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory', { type: this.selected.type.capitalize() }) : this.selected.type ? game.i18n.localize('PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome') : null;
+        context.returnMessage = this.selected.monster ? game.i18n.format('PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory', { type: this.selected.type.capitalize() }) : this.selected.type ? game.i18n.localize('PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome') : null;
         context.user = game.user;
         context.vagueDescriptions = { ... (await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions')) };
         context.vagueDescriptions.playerBased = game.user.isGM ? false : context.vagueDescriptions.playerBased;
@@ -296,7 +296,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             inTypes: types.map(x => x.key),
             traits: traits,
             size: getCreatureSize(item.system.traits.size.value),
-            name: { revealed: false, value: item.name },
+            name: item.name,
             img: item.img,
             abilities: { 
                 revealed: false, 
