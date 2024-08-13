@@ -8,6 +8,6 @@ A Foundry VTT module for the Pathfinder Second Edition (PF2E) system. It adds a 
 [PF2EBestiaryTracking.webm](https://github.com/user-attachments/assets/2771b33c-d97e-4d93-be7a-e21dd5cb27e6)
 
 # Dev Plans
-V0.8 - Bestiary release and bugfixes
-V0.9 - NPC Gallery section to keep track of the dispositions of NPCs the party has met.
-V1.0 - Stable. Unless..?
+**V0.8** - Bestiary release and bugfixes\
+**V0.9** - NPC Gallery section to keep track of the dispositions of NPCs the party has met.\
+**V1.0** - Stable. Unless..?
