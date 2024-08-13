@@ -2,7 +2,7 @@
 import { getCreatureSize, slugify } from "../scripts/helpers.js";
 import { socketEvent } from "../scripts/socket.js";
 import { acTable, hpTable, savingThrowPerceptionTable } from "../scripts/statisticsData.js";
-import { getCategoryFromIntervals, getCategoryLabel } from "../scripts/statisticsHelper.js";
+import { getCategoryFromIntervals, getCategoryLabel, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -17,6 +17,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             monster: category && type && monsterSlug ? this.bestiary[category][type][monsterSlug] : null,
             abilities: [],
         };
+
+        this.playerLevel = game.user.character ? game.user.character.system.details.level.value : null;
 
         Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
     }
@@ -57,14 +59,30 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this._dragDrop = this._createDragDropHandlers.bind(this)();
     }
 
+    getWithPlayerContext(context) {
+        context.vagueDescriptions.playerBased = game.user.isGM ? false : context.vagueDescriptions.playerBased;
+        
+        if(!game.user.isGM && context.vagueDescriptions.playerBased && context.selected.monster){
+            context.selected.monster.ac.category = getCategoryLabel(acTable, this.playerLevel, context.selected.monster.ac.value);
+            context.selected.monster.hp.category = getCategoryFromIntervals(hpTable, this.playerLevel, context.selected.monster.hp.value);
+            context.selected.monster.senses.values.perception.category = getCategoryLabel(savingThrowPerceptionTable, this.playerLevel, context.selected.monster.senses.values.perception.value);
+        }
+
+        return context;
+    }
+
     async _prepareContext(_options) {
-        const context = await super._prepareContext(_options);
-        context.bestiary = this.bestiary;
-        context.selected = this.selected;
+        var context = await super._prepareContext(_options);
+        context.bestiary = foundry.utils.deepClone(this.bestiary);
+        context.selected = foundry.utils.deepClone(this.selected);
         context.openType = this.bestiary[this.selected.category][this.selected.type];
         context.returnMessage = this.selected.monster ? `Return to the ${this.selected.type.capitalize()} category page` : this.selected.type ? `Return to main page` : null;
         context.user = game.user;
-        context.vagueDescriptions = await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
+        context.vagueDescriptions = { ... (await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions')) };
+        context.vagueDescriptions.playerBased = game.user.isGM ? false : context.vagueDescriptions.playerBased;
+        context.playerLevel = this.playerLevel;
+
+        context = this.getWithPlayerContext(context);
 
         return context;
     }
@@ -222,7 +240,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             return acc;
         }, { revealed: 0, values: {} });
 
-
         const actions = { revealed: 0, values: {} };
         const passives = { revealed: 0, values: {} };
         for(var action of item.items) {
@@ -328,15 +345,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 return acc;
             }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
             resistances: item.system.attributes.resistances.length > 0  ? item.system.attributes.resistances.reduce((acc, resistance, index) => {
-                acc.values[slugify(resistance.label)] = { revealed: false, value: resistance.label, category: resistance.type, index: index+1 };
+                acc.values[slugify(resistance.label)] = { revealed: false, value: resistance.label, class: getWeaknessCategoryClass(item.system.details.level.value, resistance.value), category: resistance.type, index: index+1 };
 
                 return acc;
             }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
             weaknesses: item.system.attributes.weaknesses.length > 0  ? item.system.attributes.weaknesses.reduce((acc, weakness, index) => {
-                acc.values[slugify(weakness.label)] = { revealed: false, value: weakness.label, category: weakness.type, index: index+1 };
+                acc.values[slugify(weakness.label)] = { revealed: false, value: weakness.label, class: getWeaknessCategoryClass(item.system.details.level.value, weakness.value), category: weakness.type, index: index+1 };
 
                 return acc;
             }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
+
             actions: actions,
             passives: passives,
             saves: {
@@ -361,12 +379,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const updatedBestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         const autoSelect = await game.settings.get('pf2e-bestiary-tracking', 'automatically-open-monster'); 
 
-        this.selected.monster = null;
         for(var type of monster.inTypes){
             updatedBestiary.monster[type][slug] = monster;
 
-            if(autoSelect){
-                this.selected = this.selected.monster?.slug === slug ? this.selected : { ...this.selected, category: 'monster', type: type, monster: updatedBestiary.monster[type][slug] };
+            if(autoSelect || this.selected.monster?.slug === slug){
+                this.selected = { ...this.selected, category: 'monster', type: type, monster: updatedBestiary.monster[type][slug] };
+            }
+            else {
+                this.selected.monster = null;
             }
         }
         
@@ -384,7 +404,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     onBestiaryUpdate = async ({ monsterSlug }) => {
         this.bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         
-        if(!game.user.isGM && monsterSlug){
+        if(monsterSlug){
             if(this.selected.monster?.slug === monsterSlug) {
                 this.selected.monster = this.bestiary[this.selected.category][this.selected.type][monsterSlug];
             }

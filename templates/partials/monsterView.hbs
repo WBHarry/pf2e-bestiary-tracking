@@ -60,8 +60,16 @@
                     {{else}}
                         {{#each this.weaknesses.values as |weakness key|}}
                             {{#if (or ../user.isGM (and (not ../weaknesses.fake) weakness.revealed))}}
-                                <div class="{{#if ../user.isGM }}toggle-container {{#if weakness.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'weaknesses.values.' key}}" data-parent="weaknesses">{{monsterValue weakness ../vagueDescriptions.weaknesses}}</div>
-                                {{#if (and (not ../user.isGM) (gt ../this.weaknesses.currentRevealed weakness.index))}},&nbsp;{{/if}}
+                                <div 
+                                    class="{{#if ../user.isGM }}toggle-container{{#if weakness.revealed}} revealed{{/if}}{{/if}}{{#if (and (not ../user.isGM) ../vagueDescriptions.weaknesses)}}{{weakness.class}}{{/if}}" 
+                                    data-action="toggleRevealed" 
+                                    data-path="{{concat 'weaknesses.values.' key}}" 
+                                    data-parent="weaknesses"
+                                    title="{{categoryClassTitle weakness.class 'Weakness' ../vagueDescriptions.weaknesses}}"
+                                >
+                                    {{monsterValue weakness ../vagueDescriptions.weaknesses}}
+                                </div>
+                                {{#if (and (not ../user.isGM) (gt ../weaknesses.currentRevealed weakness.index))}},&nbsp;{{/if}}
                             {{/if}}
                         {{/each}}
                     {{/if}}
@@ -86,7 +94,15 @@
                     {{else}}
                         {{#each this.resistances.values as |resistance key|}}
                             {{#if (or ../user.isGM (and (not ../resistances.fake) resistance.revealed))}}
-                                <div class="{{#if ../user.isGM }}toggle-container {{#if resistance.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'resistances.values.' key}}" data-parent="resistances">{{monsterValue resistance ../vagueDescriptions.resistances}}</div>
+                                <div 
+                                    class="{{#if ../user.isGM }}toggle-container{{#if resistance.revealed}} revealed{{/if}}{{/if}}{{#if (and (not ../user.isGM) ../vagueDescriptions.resistances)}}{{resistance.class}}{{/if}}" 
+                                    data-action="toggleRevealed" 
+                                    data-path="{{concat 'resistances.values.' key}}" 
+                                    data-parent="resistances"
+                                    title="{{categoryClassTitle resistance.class 'Resistance' ../vagueDescriptions.resistances}}"
+                                >
+                                    {{monsterValue resistance ../vagueDescriptions.resistances}}
+                                </div>
                                 {{#if (and (not ../user.isGM) (gt ../this.resistances.currentRevealed resistance.index))}},&nbsp;{{/if}}
                             {{/if}}
                         {{/each}}

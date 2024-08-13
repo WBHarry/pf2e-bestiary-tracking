@@ -1,3 +1,5 @@
+@import "../variables.less";
+
 .bestiary-tracking {
     overflow-y: visible;
     overflow-x: visible;
@@ -165,6 +167,19 @@
 
                 &.no-gap {
                     gap: 0;
+                    font-weight: 500;
+                }
+
+                .category-high {
+                    color: @categoryHigh;
+                }
+    
+                .category-medium {
+                    color: @categoryMedium;
+                }
+    
+                .category-low {
+                    color: @categoryLow;
                 }
             }
 

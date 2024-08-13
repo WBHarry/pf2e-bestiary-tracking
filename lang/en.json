@@ -22,7 +22,8 @@
                         "Resistances": "Resistances",
                         "Weaknesses": "Weaknesses",
                         "Saves": "Saves",
-                        "Perception": "Perception"
+                        "Perception": "Perception",
+                        "PlayerBased": "Base Descriptions On Player Level"
                     }
                 }
             }

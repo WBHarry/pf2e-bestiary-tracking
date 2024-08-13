@@ -51,6 +51,7 @@ export const registerGameSettings = () => {
         config: false,
         type: Object,
         default: {
+            playerBased: false,
             ac: false,
             hp: false,
             resistances: false,

@@ -633,3 +633,110 @@ export const strikeTable = {
         low: 36,
     },
 }
+
+export const weaknessTable = {
+    '-1': {
+        high: 1,
+        low: 1,
+    },
+    '0': {
+        high: 3,
+        low: 1,
+    },
+    '1': {
+        high: 3,
+        low: 2,
+    },
+    '2': {
+        high: 5,
+        low: 2,
+    },
+    '3': {
+        high: 6,
+        low: 3,
+    },
+    '4': {
+        high: 7,
+        low: 4,
+    },
+    '5': {
+        high: 8,
+        low: 4,
+    },
+    '6': {
+        high: 9,
+        low: 5,
+    },
+    '7': {
+        high: 10,
+        low: 5,
+    },
+    '8': {
+        high: 11,
+        low: 6,
+    },
+    '9': {
+        high: 12,
+        low: 6,
+    },
+    '10': {
+        high: 13,
+        low: 7,
+    },
+    '11': {
+        high: 14,
+        low: 7,
+    },
+    '12': {
+        high: 15,
+        low: 8,
+    },
+    '13': {
+        high: 16,
+        low: 8,
+    },
+    '14': {
+        high: 17,
+        low: 9,
+    },
+    '15': {
+        high: 18,
+        low: 9,
+    },
+    '16': {
+        high: 19,
+        low: 9,
+    },
+    '17': {
+        high: 19,
+        low: 10,
+    },
+    '18': {
+        high: 20,
+        low: 10,
+    },
+    '19': {
+        high: 21,
+        low: 11,
+    },
+    '20': {
+        high: 22,
+        low: 11,
+    },
+    '21': {
+        high: 23,
+        low: 12,
+    },
+    '22': {
+        high: 24,
+        low: 12,
+    },
+    '23': {
+        high: 25,
+        low: 13,
+    },
+    '24': {
+        high: 26,
+        low: 13,
+    }
+}

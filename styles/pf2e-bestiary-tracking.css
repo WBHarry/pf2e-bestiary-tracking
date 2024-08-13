@@ -138,6 +138,16 @@
 }
 .bestiary-tracking.bestiary .monster-container .monster-data-list.no-gap {
   gap: 0;
+  font-weight: 500;
+}
+.bestiary-tracking.bestiary .monster-container .monster-data-list .category-high {
+  color: crimson;
+}
+.bestiary-tracking.bestiary .monster-container .monster-data-list .category-medium {
+  color: olivedrab;
+}
+.bestiary-tracking.bestiary .monster-container .monster-data-list .category-low {
+  color: blue;
 }
 .bestiary-tracking.bestiary .monster-container .left-monster-container {
   width: 150px;
@@ -425,6 +435,11 @@
 }
 .bestiary-tracking.bestiary .bookmark.empty {
   opacity: 0.5;
+}
+.bestiary-tracking.vague-descriptions-menu .main-setting {
+  text-wrap: nowrap;
+  border-top: 2px solid black;
+  padding: 6px 0 12px;
 }
 .pf2e-bestiary-bold {
   font-weight: bold;

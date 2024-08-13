@@ -4,7 +4,7 @@ var less = require('gulp-less');
 
 gulp.task('less', function(cb) {
   gulp
-    .src('./styles/**/*.less')
+    .src('./styles/pf2e-bestiary-tracking.less')
     .pipe(less())
     .pipe(
       gulp.dest(function(f) {
