@@ -18,8 +18,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             abilities: [],
         };
 
-        this.playerLevel = game.user.character ? game.user.character.system.details.level.value : null;
-
         Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
     }
 
@@ -63,9 +61,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         context.vagueDescriptions.playerBased = game.user.isGM ? false : context.vagueDescriptions.playerBased;
         
         if(!game.user.isGM && context.vagueDescriptions.playerBased && context.selected.monster){
-            context.selected.monster.ac.category = getCategoryLabel(acTable, this.playerLevel, context.selected.monster.ac.value);
-            context.selected.monster.hp.category = getCategoryFromIntervals(hpTable, this.playerLevel, context.selected.monster.hp.value);
-            context.selected.monster.senses.values.perception.category = getCategoryLabel(savingThrowPerceptionTable, this.playerLevel, context.selected.monster.senses.values.perception.value);
+            context.selected.monster.ac.category = getCategoryLabel(acTable, context.playerLevel, context.selected.monster.ac.value);
+            context.selected.monster.hp.category = getCategoryFromIntervals(hpTable, context.playerLevel, context.selected.monster.hp.value);
+            context.selected.monster.senses.values.perception.category = getCategoryLabel(savingThrowPerceptionTable, context.playerLevel, context.selected.monster.senses.values.perception.value);
         }
 
         return context;
@@ -80,7 +78,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         context.user = game.user;
         context.vagueDescriptions = { ... (await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions')) };
         context.vagueDescriptions.playerBased = game.user.isGM ? false : context.vagueDescriptions.playerBased;
-        context.playerLevel = this.playerLevel;
+        context.playerLevel = game.user.character ? game.user.character.system.details.level.value : null;;
 
         context = this.getWithPlayerContext(context);
 

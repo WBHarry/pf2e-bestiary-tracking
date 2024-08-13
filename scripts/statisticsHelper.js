@@ -24,7 +24,7 @@ export const getCategoryFromIntervals = (intervalTable, level, value) => {
     if(value > tableRow.high.high) return getCategoryLabelValue('high');
     if(value < tableRow.low.low) return getCategoryLabelValue('low');
 
-    return getCategoryLabelValue(Object.keys(tableRow).find(x => value <= tableRow[x].high || value >= tableRow[x].low));
+    return getCategoryLabelValue(Object.keys(tableRow).find(x => value <= tableRow[x].high && value >= tableRow[x].low));
 };
 
 const derivedWeaknessTable = Object.keys(weaknessTable).reduce((acc, key) => {
