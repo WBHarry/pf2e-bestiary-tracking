@@ -34,8 +34,7 @@
                 "PlayersSection": {
                     "Title": "For Players",
                     "NavigationTip": "Navigate between different creature types using the bookmarks on the left.",
-                    "MacroTipPreamble": "Add a macro to your hotbar with:",
-                    "MacroTipPost": "Select or target a monster and use the macro and you will go to its page in the bestiary."
+                    "MacroTip": "Check the module's compendium and add useful macros to your hotbar."
                 },
                 "GMsSection": {
                     "Title": "For GMs",

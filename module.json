@@ -25,6 +25,18 @@
             "maximum": "6"
         }
     }],
+    "packs": [
+        {
+            "name": "pf2e-bestiary-tracking-macros",
+            "label": "Bestiary Tracking Macros",
+            "path": "packs/pf2e-bestiary-tracking",
+            "type": "Macro",
+            "ownership": {
+                "PLAYER": "OBSERVER",
+                "ASSISTANT": "OWNER"
+            }
+        }
+    ],
     "esmodules": [
         "pf2e-bestiary-tracking.js"
     ],

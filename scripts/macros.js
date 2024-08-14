@@ -1,6 +1,10 @@
 import PF2EBestiary from "../module/bestiary.js";
 import { slugify } from "./helpers.js";
 
+export const openBestiary = async () => {
+    new PF2EBestiary().render(true);
+};
+
 export const showMonster = async () => {
     const selectedMonster = canvas.tokens.controlled.length > 0 ? canvas.tokens.controlled[0].actor : 
         game.user.targets.size > 0 ? 
@@ -8,7 +12,7 @@ export const showMonster = async () => {
 
     if(!selectedMonster) 
     {
-        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.NoTarget"));
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoTarget"));
         return;
     }
 
@@ -22,7 +26,7 @@ export const showMonster = async () => {
 
     if(!monster)
     {
-        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.TargetNotInBestiary"));
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"));
         return;
     }
 
