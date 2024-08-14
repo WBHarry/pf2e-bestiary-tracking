@@ -43,6 +43,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             toggleRevealed: this.toggleRevealed,
             resetBestiary: this.resetBestiary,
             clearSearch: this.clearSearch,
+            obscureData: this.obscureData,
+            unObscureData: this.unObscureData,
         },
         form: { handler: this.updateData, submitOnChange: true },
         dragDrop: [
@@ -208,6 +210,48 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
     static clearSearch(){
         this.search.name = '';
+        this.render();
+    }
+
+    static async obscureData(_, button){
+        await Dialog.prompt({
+            title: `Missinformation - ${button.dataset.name}`,
+            content: `
+                <div class="form-group">
+                    <label for="exampleSelect">Fake Information</label>
+                    <input name="Custom_${button.dataset.name}" type="text" />
+                </div>
+            `,
+            callback: async ([html]) => {
+                const customValue = html.querySelector(`[name="Custom_${button.dataset.name}"]`)?.value;
+                if(customValue){
+                    for(var type of this.selected.monster.inTypes){
+                        foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${button.dataset.field}.custom`, customValue);
+                    }
+
+                    await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+                    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+                        action: socketEvent.UpdateBestiary,
+                        data: { },
+                    });
+
+                    this.render();
+                }
+            }
+        });   
+    }
+
+    static async unObscureData(_, button){
+        for(var type of this.selected.monster.inTypes){
+            foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${button.dataset.field}.custom`, null);
+        }
+
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: { },
+        });
+
         this.render();
     }
 

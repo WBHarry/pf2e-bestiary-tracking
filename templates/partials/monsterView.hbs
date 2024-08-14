@@ -160,7 +160,23 @@
 
     <div class="right-monster-container">
         <div class="flexcol">
-            <div class="monster-name {{#if this.user.isGM }}toggle-container {{#if this.name.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="name">{{#if (or this.user.isGM this.name.revealed)}}{{this.name.value}}{{else}}{{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}{{/if}}</div>
+            <div class="monster-name {{#if this.user.isGM }}toggle-container {{#if this.name.revealed}}revealed{{/if}}{{/if}}">
+                <div class="pf2e-bestiary-clickable-icon alternate" data-action="toggleRevealed" data-path="name">
+                    {{#if (or this.user.isGM this.name.revealed)}}
+                        {{PF2EBTTertiary this.name.custom this.name.value}}
+                    {{else}}
+                        {{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}
+                    {{/if}}
+                </div>
+                {{#if this.user.isGM}}
+                    {{#if this.name.custom}}
+                        <img class="obfuscate-icon obfuscated" src="icons/svg/mystery-man.svg" />
+                        <i class="fa-solid fa-ban ban-icon pf2e-bestiary-clickable-icon alternate" data-action="unObscureData" data-field="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}"></i>
+                    {{else}}
+                        <img class="obfuscate-icon pf2e-bestiary-clickable-icon alternate" src="icons/svg/mystery-man-black.svg" data-action="obscureData" data-field="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}" />
+                    {{/if}}
+                {{/if}}
+            </div>
             <div class="monster-traits-row">
                 <div class="monster-size">{{this.size}}</div>
                 <div class="monster-traits flexrow">
@@ -183,7 +199,6 @@
                             <img class="data-icon" src="systems/pf2e/icons/default-icons/feat.svg" />
                             <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attributes"}}</div>
                         </div>
-                        {{!-- {{#if this.user.isGM}}<i class="pf2e-bestiary-clickable-icon {{#if this.abilities.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="abilities"></i>{{/if}} --}}
                     </div>
                     <div class="data-body">
                         <div class="abilities-container">

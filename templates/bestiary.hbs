@@ -51,7 +51,7 @@
                             {{#each this.openType as |type key|}}
                                 <div class="type-container" data-action="selectMonster" data-monster="{{key}}">
                                     <img src="{{type.img}}" />
-                                    <div class="type-text-container">{{#if (or ../this.user.isGM type.name.revealed)}}{{type.name.value}}{{else}}{{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}{{/if}}</div>
+                                    <div class="type-text-container">{{#if (or ../this.user.isGM type.name.revealed)}}{{PF2EBTTertiary type.name.custom type.name.value}}{{else}}{{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}{{/if}}</div>
 
                                     {{#if ../user.isGM}}<i class="fa-solid fa-delete-left delete-button" data-action="removeMonster" data-monster="{{key}}"></i>{{/if}}
                                 </div>

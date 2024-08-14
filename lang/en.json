@@ -1,6 +1,7 @@
 {
     "PF2EBestiary": {
         "Miscellaneous": {
+            "Name": "Name",
             "AC": "AC",
             "HP": "HP",
             "Immunities": "Immunities",

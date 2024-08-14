@@ -4,6 +4,7 @@ export default class RegisterHandlebarsHelpers {
             PF2EBTNrKeys: this.nrKeys,
             PF2EBTMonsterValue: this.monsterValue,
             PF2EBTCategoryClassTitle: this.categoryClassTitle,
+            PF2EBTTertiary: this.tertiary,
         });
     };
     
@@ -12,7 +13,7 @@ export default class RegisterHandlebarsHelpers {
     }
 
     static monsterValue(prop, flag){
-        return flag && !game.user.isGM ? prop.category : prop.value;
+        return prop.custom ?? (flag && !game.user.isGM ? prop.category : prop.value);
     }
 
     static categoryClassTitle(classValue, type, useTitle){
@@ -28,5 +29,9 @@ export default class RegisterHandlebarsHelpers {
             default:
                 return '';
         }
+    }
+
+    static tertiary(a, b){
+        return a ?? b;
     }
 }

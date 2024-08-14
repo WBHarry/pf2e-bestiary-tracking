@@ -10,7 +10,11 @@
     cursor: pointer;
 
     &:hover {
-        filter: drop-shadow(0 0 3px red);
+        filter: drop-shadow(0 0 3px @mainHover);
+    }
+
+    &.alternate:hover {
+        filter: drop-shadow(0 0 3px @secondaryHover);
     }
 }
 
