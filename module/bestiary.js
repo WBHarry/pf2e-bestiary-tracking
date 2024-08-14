@@ -43,8 +43,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             toggleRevealed: this.toggleRevealed,
             resetBestiary: this.resetBestiary,
             clearSearch: this.clearSearch,
-            obscureData: this.obscureData,
-            unObscureData: this.unObscureData,
         },
         form: { handler: this.updateData, submitOnChange: true },
         dragDrop: [
@@ -58,6 +56,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             template: "modules/pf2e-bestiary-tracking/templates/bestiary.hbs",
             scrollable: [".left-monster-container", ".right-monster-container-data", ".type-overview-container"]
         }
+    }
+
+    _attachPartListeners(partId, htmlElement, options) {
+        super._attachPartListeners(partId, htmlElement, options);
+        $(htmlElement).find(".toggle-container:not(.misinformation)").on("contextmenu", this.obscureData.bind(this));
+        $(htmlElement).find(".misinformation").on("contextmenu", this.unObscureData.bind(this));
     }
 
     getTabs() {
@@ -105,7 +109,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
             return acc;
         }, {}) : null;
-        context.returnMessage = this.selected.monster ? game.i18n.format('PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory', { type: this.selected.type.capitalize() }) : this.selected.type ? game.i18n.localize('PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome') : null;
         context.user = game.user;
         context.vagueDescriptions = { ... (await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions')) };
         context.vagueDescriptions.playerBased = game.user.isGM ? false : context.vagueDescriptions.playerBased;
@@ -229,20 +232,22 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this.render();
     }
 
-    static async obscureData(_, button){
+    async obscureData(event){
+        if(!game.user.isGM || !event.currentTarget.dataset.name) return;
+
         await Dialog.prompt({
-            title: `Missinformation - ${button.dataset.name}`,
+            title: `Misinformation - ${event.currentTarget.dataset.name}`,
             content: `
                 <div class="form-group">
                     <label for="exampleSelect">Fake Information</label>
-                    <input name="Custom_${button.dataset.name}" type="text" />
+                    <input name="Custom_${event.currentTarget.dataset.name}" type="text" />
                 </div>
             `,
             callback: async ([html]) => {
-                const customValue = html.querySelector(`[name="Custom_${button.dataset.name}"]`)?.value;
+                const customValue = html.querySelector(`[name="Custom_${event.currentTarget.dataset.name}"]`)?.value;
                 if(customValue){
                     for(var type of this.selected.monster.inTypes){
-                        foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${button.dataset.field}.custom`, customValue);
+                        foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${event.currentTarget.dataset.path}.custom`, customValue);
                     }
 
                     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
@@ -257,9 +262,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         });   
     }
 
-    static async unObscureData(_, button){
+    async unObscureData(event){
+        if(!game.user.isGM) return;
+
         for(var type of this.selected.monster.inTypes){
-            foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${button.dataset.field}.custom`, null);
+            foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${event.currentTarget.dataset.path}.custom`, null);
         }
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);

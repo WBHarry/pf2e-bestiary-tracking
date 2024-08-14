@@ -1,25 +1,17 @@
 <div>
-    <header>
-        <div>
-            {{#if this.returnMessage}}
-                <div class="return-container" data-action="returnButton">
-                    <i class="fa-solid fa-reply"></i>
-                    {{this.returnMessage}}
-                </div>
-            {{else}}
-                {{!-- Monster | NPCs tabs --}}
-            {{/if}}
-        </div>
-        <div>
-            {{#if (and this.selected.type (not this.selected.monster))}}
-                <div class="bestiary-search-container">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" name="search.name" value="{{this.search.name}}" />
-                    {{#if search.name}}<i class="fa-solid fa-circle-xmark clear-icon pf2e-bestiary-clickable-icon" data-action="clearSearch"></i>{{/if}}
-                </div>
-            {{/if}}
-        </div>
-    </header>
+    {{#if (and this.selected.type (not this.selected.monster))}}
+        <header class="bestiary-header">
+            <div class="return-container" data-action="returnButton">
+                <i class="fa-solid fa-reply"></i>
+                {{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome"}}
+            </div>
+            <div class="bestiary-search-container">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" name="search.name" value="{{this.search.name}}" />
+                {{#if search.name}}<i class="fa-solid fa-circle-xmark clear-icon pf2e-bestiary-clickable-icon" data-action="clearSearch"></i>{{/if}}
+            </div>
+        </header>
+    {{/if}}
     <body>
         {{#if (not this.selected.type)}}
             <div class="bestiary-welcome">
@@ -37,7 +29,8 @@
                 <ul>
                     <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.AddCreaturesTip"}}</li>
                     <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ModuleSettingsTip"}}</li>
-                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleInformationTip"}}</li>
+                    <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.LeftClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleInformationTip"}}</li>
+                    <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RightClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleMisinformationTip"}}</li>
                 </ul>
             </div>
         {{else}}
@@ -53,7 +46,17 @@
                         {{#each this.openType as |type key|}}
                             <div class="type-container" data-action="selectMonster" data-monster="{{key}}">
                                 <img src="{{type.img}}" />
-                                <div class="type-text-container">{{#if (or ../this.user.isGM type.name.revealed)}}{{PF2EBTTertiary type.name.custom type.name.value}}{{else}}{{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}{{/if}}</div>
+                                <div class="type-text-container">
+                                    {{#if type.name.revealed}}
+                                        {{PF2EBTTertiary type.name.custom type.name.value}}
+                                    {{else}}
+                                        {{#if ../user.isGM}}
+                                            {{type.name.value}}
+                                        {{else}}
+                                            {{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}
+                                        {{/if}}
+                                    {{/if}}
+                                </div>
 
                                 {{#if ../user.isGM}}<i class="fa-solid fa-delete-left delete-button" data-action="removeMonster" data-monster="{{key}}"></i>{{/if}}
                             </div>

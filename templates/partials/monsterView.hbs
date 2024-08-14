@@ -2,7 +2,7 @@
     <div class="left-monster-container">
         <img class="monster-image" src="{{this.img}}" />
 
-        <div class="monster-left-data {{#if this.user.isGM}}toggle-container {{#if this.ac.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="ac">
+        <div class="monster-left-data {{PF2EBTToggleContainer this.user this.ac}}" data-action="toggleRevealed" data-path="ac" data-name="{{localize "PF2EBestiary.Miscellaneous.AC"}}">
             <div class="flex-data">
                 <i class="fa-solid fa-fw fa-shield-halved"></i>
                 <div>{{localize "PF2EBestiary.Miscellaneous.AC"}}</div>
@@ -10,7 +10,7 @@
             <div class="flex-value">{{#if (or this.ac.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.ac this.vagueDescriptions.ac}}{{else}}?{{/if}}</div>
         </div>
 
-         <div class="monster-left-data {{#if this.user.isGM}}toggle-container {{#if this.hp.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="hp">
+         <div class="monster-left-data {{PF2EBTToggleContainer this.user this.hp}}" data-action="toggleRevealed" data-path="hp" data-name="{{localize "PF2EBestiary.Miscellaneous.HP"}}">
             <div class="flex-data">
                 <i class="fa-solid fa-fw fa-shield-halved"></i>
                 <div>{{localize "PF2EBestiary.Miscellaneous.HP"}}</div>
@@ -121,15 +121,15 @@
             </div>
             <div class="saves-container">
                 <div class="save-container">
-                    <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.fortitude.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.fortitude">{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}</div>
+                    <div class="saves-title {{PF2EBTToggleContainer this.user this.saves.fortitude}}" data-action="toggleRevealed" data-path="saves.fortitude" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}">{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}</div>
                     <div class="saves-value">{{#if (or this.user.isGM this.saves.fortitude.revealed)}}{{PF2EBTMonsterValue this.saves.fortitude this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
                 <div class="save-container">
-                    <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.reflex.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.reflex">{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}</div>
+                    <div class="saves-title {{PF2EBTToggleContainer this.user this.saves.reflex}}" data-action="toggleRevealed" data-path="saves.reflex" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}">{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}</div>
                     <div class="saves-value">{{#if (or this.user.isGM this.saves.reflex.revealed)}}{{PF2EBTMonsterValue this.saves.reflex this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
                 <div class="save-container">
-                    <div class="saves-title {{#if this.user.isGM }}toggle-container {{#if this.saves.will.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="saves.will">{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}</div>
+                    <div class="saves-title {{PF2EBTToggleContainer this.user this.saves.will}}" data-action="toggleRevealed" data-path="saves.will" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}">{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}</div>
                     <div class="saves-value">{{#if (or this.user.isGM this.saves.will.revealed)}}{{PF2EBTMonsterValue this.saves.will this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
             </div>
@@ -161,21 +161,11 @@
     <div class="right-monster-container">
         <div class="flexcol">
             <div class="monster-name-container">
-                <div class="monster-name {{#if this.user.isGM }}toggle-container {{#if this.name.revealed}}revealed{{/if}}{{/if}}">
-                    <div class="pf2e-bestiary-clickable-icon alternate" data-action="toggleRevealed" data-path="name">
-                        {{#if (or this.user.isGM this.name.revealed)}}
-                            {{PF2EBTTertiary this.name.custom this.name.value}}
-                        {{else}}
-                            {{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}
-                        {{/if}}
-                    </div>
-                    {{#if this.user.isGM}}
-                        {{#if this.name.custom}}
-                            <img class="obfuscate-icon obfuscated" src="icons/svg/mystery-man.svg" />
-                            <i class="fa-solid fa-ban ban-icon pf2e-bestiary-clickable-icon alternate" data-action="unObscureData" data-field="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}" title="{{localize "PF2EBestiary.Bestiary.UnObscure"}}"></i>
-                        {{else}}
-                            <img class="obfuscate-icon pf2e-bestiary-clickable-icon alternate" src="icons/svg/mystery-man-black.svg" data-action="obscureData" data-field="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}" title="{{localize "PF2EBestiary.Bestiary.Obscure"}}" />
-                        {{/if}}
+                <div class="monster-name {{PF2EBTToggleContainer this.user this.name}}" data-action="toggleRevealed" data-path="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}">
+                    {{#if (or this.user.isGM this.name.revealed)}}
+                        {{PF2EBTTertiary this.name.custom this.name.value}}
+                    {{else}}
+                        {{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}
                     {{/if}}
                 </div>
                 <nav class="bestiary-tabs tabs">
@@ -191,6 +181,8 @@
                         </a>
                     {{/each}}
                 </nav>
+
+                <i class="fa-solid fa-reply monster-return-icon" data-action="returnButton" title="{{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory" type=(PF2EBTCaptialize this.selected.type)}}"></i>
             </div>
             <div class="monster-traits-row">
                 <div class="monster-size">{{this.size}}</div>
@@ -218,7 +210,7 @@
                         <div class="data-body">
                             <div class="abilities-container">
                                 {{#each this.abilities.values as |ability key|}}
-                                    <div class="ability-container {{#if ../user.isGM }}toggle-container {{#if ability.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'abilities.values.' key}}" data-parent="abilities">
+                                    <div class="ability-container {{PF2EBTToggleContainer ../user ability}}" data-action="toggleRevealed" data-path="{{concat 'abilities.values.' key}}" data-parent="abilities" data-name="{{localize "PF2EBestiary.Miscellaneous.Attributes"}}">
                                         <div class="ability-label">{{localize ability.label}}</div>
                                         {{#if (or ../user.isGM ability.revealed)}}{{PF2EBTMonsterValue ability ../vagueDescriptions.attributes }}{{else}}?{{/if}}
                                     </div>

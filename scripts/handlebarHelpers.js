@@ -4,7 +4,9 @@ export default class RegisterHandlebarsHelpers {
             PF2EBTNrKeys: this.nrKeys,
             PF2EBTMonsterValue: this.monsterValue,
             PF2EBTCategoryClassTitle: this.categoryClassTitle,
+            PF2EBTToggleContainer: this.toggleContainer,
             PF2EBTTertiary: this.tertiary,
+            PF2EBTCaptialize: this.capitalize,
         });
     };
     
@@ -31,7 +33,23 @@ export default class RegisterHandlebarsHelpers {
         }
     }
 
+    static toggleContainer(user, property){
+        var containerClass = '';
+        if(user.isGM) {
+            containerClass = containerClass.concat(' toggle-container');
+            if(property.revealed) containerClass = containerClass.concat(' revealed');
+        }
+
+        if(property.custom) containerClass = containerClass.concat(' misinformation');
+
+        return containerClass;
+    }
+
     static tertiary(a, b){
         return a ?? b;
+    }
+
+    static capitalize(text){
+        return text.capitalize();
     }
 }

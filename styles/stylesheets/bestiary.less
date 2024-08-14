@@ -32,7 +32,7 @@
             height: calc(100% - 75px); // Ugly
         }
 
-        header {
+        .bestiary-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -203,6 +203,11 @@
                 &.revealed {
                     background: green;
                 }
+
+                &.misinformation {
+                    color: lightgrey;
+                    text-decoration-line: grammar-error;
+                }
             }
 
             .monster-data-list {
@@ -322,23 +327,6 @@
                         &.toggle-container {
                             width: fit-content;
                             padding: 4px 18px;
-                            cursor: default;
-                        }
-    
-                        .obfuscate-icon {
-                            position: absolute;
-                            right: 2px;
-                            top: 2px;
-                            width: 18px;
-                            height: 18px;
-                            border: 0;
-    
-                            &.obfuscated{
-                                right: 3px;
-                                top: 3px;
-                                width: 16px;
-                                height: 16px;
-                            }
                         }
     
                         .ban-icon {
@@ -346,6 +334,19 @@
                             right: 2px;
                             top: 2px;
                             font-size: 18px;
+                        }
+                    }
+
+                    .monster-return-icon {
+                        cursor: pointer;
+                        position: absolute;
+                        right: 9px;
+                        top: 40px;
+                        font-size: 30px;
+                        z-index: 500;
+
+                        &:hover {
+                            filter: drop-shadow(0 0 3px @mainHover);
                         }
                     }
                 }
@@ -377,10 +378,13 @@
                             padding: 4px;
                             border: 1px solid black;
                             border-radius: 0;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
                             text-transform: uppercase;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 1;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            text-align: center;
                             max-width: 20%;
 
                             &.base-colour {

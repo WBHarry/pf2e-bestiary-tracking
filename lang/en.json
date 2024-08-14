@@ -41,7 +41,8 @@
                     "Title": "For GMs",
                     "AddCreaturesTip": "Add new creatures the players have encountered by dragging them into the bestiary.",
                     "ModuleSettingsTip": "Customize module behavior and the way monster information is shown in the module settings.",
-                    "ToggleInformationTip": "Toggle known information on individual monsters as the players learn information." 
+                    "ToggleInformationTip": "Toggle known information on individual monsters as the players learn information.",
+                    "ToggleMisinformationTip": "Toggle misinformation on a field. Enter false information and remove it the same way."
                 }
             },
             "ReturnMessages": {
@@ -53,7 +54,9 @@
             },
             "Miscellaneous": {
                 "UnknownCreature": "Unknown Creature",
-                "Unknown": "Unknown.."
+                "Unknown": "Unknown..",
+                "LeftClick": "Left Click",
+                "RightClick": "Right Click"
             },
             "Tabs": {
                 "Statistics": "Statistics",
@@ -66,9 +69,7 @@
             "Errors": {
                 "UnsupportedType": "Not a supported NPC type!",
                 "UnsupportedCharacterType": "Player Character are not supported in the bestiary."
-            },
-            "Obscure": "Set Missinformation",
-            "UnObscure": "Remove Missinformation"
+            }
         },
         "Menus": {
             "Title": "Bestiary Tracking",
