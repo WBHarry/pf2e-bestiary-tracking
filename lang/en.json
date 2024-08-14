@@ -94,7 +94,8 @@
                         "Perception": "Perception",
                         "Speed": "Speed",
                         "Attributes": "Attributes",
-                        "PlayerBased": "Base Descriptions On Player Level"
+                        "PlayerBased": "Base Descriptions On Player Level",
+                        "MisinformationOptions": "Vague Misinformation Categories"
                     }
                 }
             }
@@ -111,6 +112,10 @@
             "AutomaticallyOpenMonster": {
                 "Name": "Auto Open Bestiary Entry",
                 "Hint": "Automatically open the bestiary entry for monsters you drop into it."   
+            }, 
+            "UseTokenArt": {
+                "Name": "Use Token Art",
+                "Hint": "Token art will be used in the Bestiary."
             }
         },
         "Macros": {

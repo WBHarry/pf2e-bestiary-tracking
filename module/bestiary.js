@@ -235,31 +235,41 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     async obscureData(event){
         if(!game.user.isGM || !event.currentTarget.dataset.name) return;
 
-        await Dialog.prompt({
-            title: `Misinformation - ${event.currentTarget.dataset.name}`,
-            content: `
-                <div class="form-group">
-                    <label for="exampleSelect">Fake Information</label>
-                    <input name="Custom_${event.currentTarget.dataset.name}" type="text" />
-                </div>
-            `,
-            callback: async ([html]) => {
-                const customValue = html.querySelector(`[name="Custom_${event.currentTarget.dataset.name}"]`)?.value;
-                if(customValue){
-                    for(var type of this.selected.monster.inTypes){
-                        foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${event.currentTarget.dataset.path}.custom`, customValue);
-                    }
-
-                    await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
-                    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-                        action: socketEvent.UpdateBestiary,
-                        data: { monsterSlug: this.selected.monster.slug },
-                    });
-
-                    this.render();
+        const setValue = async (value) => {
+            if(value){
+                for(var type of this.selected.monster.inTypes){
+                    foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${event.currentTarget.dataset.path}.custom`, value);
                 }
+
+                await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+                await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+                    action: socketEvent.UpdateBestiary,
+                    data: { monsterSlug: this.selected.monster.slug },
+                });
+
+                this.render();
             }
-        });   
+        };
+
+        // const propertySplit = event.currentTarget.dataset.path.split('.');
+        // const vagueDescriptions = await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
+        // if(vagueDescriptions.misinformationOptions && vagueDescriptions[propertySplit[propertySplit.length-1]]){
+        //     // Make Dialog with choices
+        // } 
+        // else {
+            await Dialog.prompt({
+                title: `Misinformation - ${event.currentTarget.dataset.name}`,
+                content: `
+                    <div class="form-group">
+                        <label for="exampleSelect">Fake Information</label>
+                        <input name="Custom_${event.currentTarget.dataset.name}" type="text" />
+                    </div>
+                `,
+                callback: async ([html]) => {
+                    const customValue = html.querySelector(`[name="Custom_${event.currentTarget.dataset.name}"]`)?.value;
+                    await setValue(customValue);
+                }
+            });   
     }
 
     async unObscureData(event){
@@ -389,6 +399,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         if(Object.keys(attacks.values).length === 0) attacks.values['None'] = { revealed: false, label: 'None' }
 
+        const useTokenArt = await game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
         const slug = slugify(item.name);
         const monster = {
             slug: slug,
@@ -399,7 +410,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             traits: traits,
             size: getCreatureSize(item.system.traits.size.value),
             name: { revealed: false, value: item.name },
-            img: item.img,
+            img: useTokenArt ? item.prototypeToken.texture.src : item.img,
             abilities: { 
                 revealed: 0, 
                 values: Object.keys(item.system.abilities).map(x => { 

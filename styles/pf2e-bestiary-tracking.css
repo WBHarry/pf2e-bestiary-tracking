@@ -121,6 +121,7 @@
 }
 .bestiary-tracking.bestiary .type-overview-container .type-container img {
   height: 150px;
+  border-width: 0;
 }
 .bestiary-tracking.bestiary .type-overview-container .type-container .type-text-container {
   display: -webkit-box;
@@ -541,8 +542,13 @@
 }
 .bestiary-tracking.vague-descriptions-menu .main-setting {
   text-wrap: nowrap;
+}
+.bestiary-tracking.vague-descriptions-menu .main-setting.sectioned {
   border-top: 2px solid black;
-  padding: 6px 0 12px;
+  padding-top: 6px;
+}
+.bestiary-tracking.vague-descriptions-menu .main-setting:last-of-type {
+  padding-bottom: 12px;
 }
 .pf2e-bestiary-bold {
   font-weight: bold;
