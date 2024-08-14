@@ -1,4 +1,3 @@
-import { slugify } from "./helpers.js";
 import { attributeTable } from "./statisticsData.js";
 import { getCategoryLabel } from "./statisticsHelper.js";
 
@@ -87,7 +86,7 @@ export const handleDataMigration = async () => {
             });
         });
 
-        version = '0.8.3';
+        version = '0.8.4';
     }
 
     await game.settings.set('pf2e-bestiary-tracking', 'version', version);

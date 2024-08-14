@@ -171,9 +171,9 @@
                 {{#if this.user.isGM}}
                     {{#if this.name.custom}}
                         <img class="obfuscate-icon obfuscated" src="icons/svg/mystery-man.svg" />
-                        <i class="fa-solid fa-ban ban-icon pf2e-bestiary-clickable-icon alternate" data-action="unObscureData" data-field="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}"></i>
+                        <i class="fa-solid fa-ban ban-icon pf2e-bestiary-clickable-icon alternate" data-action="unObscureData" data-field="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}" title="{{localize "PF2EBestiary.Bestiary.UnObscure"}}"></i>
                     {{else}}
-                        <img class="obfuscate-icon pf2e-bestiary-clickable-icon alternate" src="icons/svg/mystery-man-black.svg" data-action="obscureData" data-field="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}" />
+                        <img class="obfuscate-icon pf2e-bestiary-clickable-icon alternate" src="icons/svg/mystery-man-black.svg" data-action="obscureData" data-field="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}" title="{{localize "PF2EBestiary.Bestiary.Obscure"}}" />
                     {{/if}}
                 {{/if}}
             </div>

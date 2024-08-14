@@ -53,7 +53,9 @@
             },
             "Miscellaneous": {
                 "UnknownCreature": "Unknown Creature"
-            }
+            },
+            "Obscure": "Set Missinformation",
+            "UnObscure": "Remove Missinformation"
         },
         "Menus": {
             "Title": "Bestiary Tracking",

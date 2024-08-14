@@ -232,7 +232,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
                     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
                         action: socketEvent.UpdateBestiary,
-                        data: { },
+                        data: { monsterSlug: this.selected.monster.slug },
                     });
 
                     this.render();
@@ -249,7 +249,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
-            data: { },
+            data: { monsterSlug: this.selected.monster.slug },
         });
 
         this.render();
