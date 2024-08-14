@@ -147,9 +147,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
     
     static toggleAbility(_, button) {
-        this.selected.abilities = this.selected.abilities.includes(button.dataset.ability) ? 
-            this.selected.abilities.filter(x => x !== button.dataset.ability) :
-            [...this.selected.abilities, button.dataset.ability];
+        this.selected.monster.abilities.values = this.selected.monster.abilities.values.includes(button.dataset.ability) ? 
+            this.selected.monster.abilities.values.filter(x => x !== button.dataset.ability) :
+            [...this.selected.monster.abilities.values, button.dataset.ability];
 
         const html = $($(this.element).find(`[data-ability="${button.dataset.ability}"]`)[0]).parent().parent().find('.action-description')[0];
         html.classList.toggle('expanded');
@@ -279,6 +279,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
     static async addMonster(item){
         const monster = await PF2EBestiary.getMonsterData(item);
+        if (!monster) return;
 
         const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
 
@@ -292,7 +293,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static async getMonsterData(item){
-        if(item.type !== 'npc') return;
+        if(!item || item.type !== 'npc') return null;
 
         const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
         const types = item.system.traits.value.reduce((acc, x) => {
@@ -450,6 +451,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         const data = TextEditor.getDragEventData(event);
         const item = await fromUuid(data.uuid);
+
+        if(item?.type === 'character'){
+            ui.notifications.error(game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedCharacterType"));
+            return;
+        }
+
+        if(!item || item.type !== 'npc'){
+            ui.notifications.error(game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedType"));
+            return;
+        }
 
         const slug = slugify(item.name);
         const monster = await PF2EBestiary.getMonsterData(item);

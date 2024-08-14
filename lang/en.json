@@ -54,6 +54,10 @@
             "Miscellaneous": {
                 "UnknownCreature": "Unknown Creature"
             },
+            "Errors": {
+                "UnsupportedType": "Not a supported NPC type!",
+                "UnsupportedCharacterType": "Player Character are not supported in the bestiary."
+            },
             "Obscure": "Set Missinformation",
             "UnObscure": "Remove Missinformation"
         },
