@@ -65,7 +65,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     getWithPlayerContext(context) {
         context.vagueDescriptions.playerBased = game.user.isGM ? false : context.vagueDescriptions.playerBased;
         
-        if(!game.user.isGM && context.vagueDescriptions.playerBased && context.selected.monster){
+        if(!game.user.isGM && context.vagueDescriptions.playerBased && context.playerLevel && context.selected.monster){
             context.selected.monster.ac.category = getCategoryLabel(acTable, context.playerLevel, context.selected.monster.ac.value);
             context.selected.monster.hp.category = getCategoryFromIntervals(hpTable, context.playerLevel, context.selected.monster.hp.value);
             Object.values(context.selected.monster.abilities.values).forEach(ability => ability.category = getCategoryLabel(attributeTable, context.playerLevel, ability.mod));
@@ -379,12 +379,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 return acc;
             }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
             resistances: item.system.attributes.resistances.length > 0  ? item.system.attributes.resistances.reduce((acc, resistance, index) => {
-                acc.values[slugify(resistance.label)] = { revealed: false, value: resistance.label, class: getWeaknessCategoryClass(item.system.details.level.value, resistance.value), category: resistance.type, index: index+1 };
+                acc.values[slugify(resistance.label)] = { revealed: false, value: resistance.label, class: getWeaknessCategoryClass(item.system.details.level.value, resistance.value), category: resistance.applicationLabel, index: index+1 };
 
                 return acc;
             }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
             weaknesses: item.system.attributes.weaknesses.length > 0  ? item.system.attributes.weaknesses.reduce((acc, weakness, index) => {
-                acc.values[slugify(weakness.label)] = { revealed: false, value: weakness.label, class: getWeaknessCategoryClass(item.system.details.level.value, weakness.value), category: weakness.type, index: index+1 };
+                acc.values[slugify(weakness.label)] = { revealed: false, value: weakness.label, class: getWeaknessCategoryClass(item.system.details.level.value, weakness.value), category: weakness.applicationLabel, index: index+1 };
 
                 return acc;
             }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },

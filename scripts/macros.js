@@ -21,13 +21,18 @@ export const showMonster = async () => {
 
     const category = 'monster'
     const type = selectedMonster.system.traits.value.find(x => creatureTypes.includes(x));
-    const monsterSlug = slugify(selectedMonster.name);
+    var monsterSlug = slugify(selectedMonster.name);
     const monster = settings[category][type][monsterSlug];
 
     if(!monster)
     {
-        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"));
-        return;
+        const slugById = Object.keys(settings[category][type]).find(key => settings[category][type][key].id === selectedMonster.id);
+        if(!slugById){
+            ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"));
+            return;
+        }
+
+        monsterSlug = slugById;
     }
 
     new PF2EBestiary({ category, type, monsterSlug }).render(true)

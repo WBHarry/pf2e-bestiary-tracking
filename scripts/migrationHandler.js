@@ -1,3 +1,4 @@
+import { slugify } from "./helpers.js";
 import { attributeTable } from "./statisticsData.js";
 import { getCategoryLabel } from "./statisticsHelper.js";
 
@@ -33,10 +34,11 @@ export const handleDataMigration = async () => {
 
     if(version === '0.8.2'){
         await migrateBestiary((bestiary, monster, type, monsterKey) => {
+            const origin = game.actors.find(x => x.id === monster.id);
+
             // Attributes should now have Mod aswell as Category attributes. Can't cleanly update this but make best attempt, otherwise remove failing creatures.
             var toRemoveMonster = false;
             for(var ability of bestiary.monster[type][monsterKey].abilities.values){
-                const origin = game.actors.find(x => x.id === monster.id);
                 if(!origin){
                     toRemoveMonster = true;
                     continue;
@@ -51,7 +53,7 @@ export const handleDataMigration = async () => {
                 return;
             }
 
-            //actions and passives and attacks should never be empty. Add a 'None' option.
+            //Actions and passives and attacks should never be empty. Add a 'None' option.
             const actionKeys = Object.keys(monster.actions.values);
             if(actionKeys.length === 0){
                 bestiary.monster[type][monsterKey].actions.values['None'] = { revealed: false, name: 'None' };
@@ -66,6 +68,23 @@ export const handleDataMigration = async () => {
             if(attackKeys.length === 0){
                 bestiary.monster[type][monsterKey].attacks.values['None'] = { revealed: false, label: 'None' };
             }
+
+            //Weaknesses and Resistances should use applicationLabel for type rather than the type property to include exceptions.
+            Object.keys(bestiary.monster[type][monsterKey].weaknesses.values).forEach(weaknessKey => {
+                const originWeakness = origin.system.attributes.weaknesses.find(x => x.label === bestiary.monster[type][monsterKey].weaknesses.values[weaknessKey].value);
+                if(originWeakness) 
+                {
+                    bestiary.monster[type][monsterKey].weaknesses.values[weaknessKey].category = originWeakness.applicationLabel;
+                }
+            });
+
+            Object.keys(bestiary.monster[type][monsterKey].resistances.values).forEach(resistanceKey => {
+                const originResistance = origin.system.attributes.resistances.find(x => x.label === bestiary.monster[type][monsterKey].resistances.values[resistanceKey].value);
+                if(originResistance) 
+                {
+                    bestiary.monster[type][monsterKey].resistances.values[resistanceKey].category = originResistance.applicationLabel;
+                }
+            });
         });
 
         version = '0.8.3';
