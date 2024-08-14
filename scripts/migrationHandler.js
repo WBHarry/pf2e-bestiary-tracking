@@ -1,3 +1,6 @@
+import { attributeTable } from "./statisticsData.js";
+import { getCategoryLabel } from "./statisticsHelper.js";
+
 export const handleDataMigration = async () => {
     if(!game.user.isGM) return;
     
@@ -29,6 +32,42 @@ export const handleDataMigration = async () => {
     }
 
     if(version === '0.8.2'){
+        await migrateBestiary((bestiary, monster, type, monsterKey) => {
+            // Attributes should now have Mod aswell as Category attributes. Can't cleanly update this but make best attempt, otherwise remove failing creatures.
+            var toRemoveMonster = false;
+            for(var ability of bestiary.monster[type][monsterKey].abilities.values){
+                const origin = game.actors.find(x => x.id === monster.id);
+                if(!origin){
+                    toRemoveMonster = true;
+                    continue;
+                }
+
+                ability.mod = ability.value.replace('+', '');
+                ability.category = getCategoryLabel(attributeTable, origin.system.details.level.value, ability.mod);              
+            }
+
+            if(toRemoveMonster) {
+                delete bestiary.monster[type][monsterKey];
+                return;
+            }
+
+            //actions and passives and attacks should never be empty. Add a 'None' option.
+            const actionKeys = Object.keys(monster.actions.values);
+            if(actionKeys.length === 0){
+                bestiary.monster[type][monsterKey].actions.values['None'] = { revealed: false, name: 'None' };
+            }
+
+            const passivesKeys = Object.keys(monster.passives.values);
+            if(passivesKeys.length === 0){
+                bestiary.monster[type][monsterKey].passives.values['None'] = { revealed: false, name: 'None' };
+            }
+
+            const attackKeys = Object.keys(monster.attacks.values);
+            if(attackKeys.length === 0){
+                bestiary.monster[type][monsterKey].attacks.values['None'] = { revealed: false, label: 'None' };
+            }
+        });
+
         version = '0.8.3';
     }
 

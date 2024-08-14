@@ -242,25 +242,31 @@
                                 <div class="attack-container">
                                     <div class="attack-inner-container">
                                         <div class="attack-header {{#if ../user.isGM }}toggle-container {{#if attack.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key}}" data-parent="attacks">
-                                            <div>{{attack.range}}</div>
-                                            <span class="action-glyph">1</span>
-                                            <div>{{attack.label}}</div>
-                                            <div class="attack-traits-container">(
-                                                {{#each attack.traits as |trait index|}}
-                                                    <div class="attack-trait-label" title="{{localize trait.description}}">{{trait.label}}</div>
-                                                    {{#if (not (eq (add index 1) ../traits.length))}},&nbsp;{{/if}} 
-                                                {{/each}}    
-                                            )</div>
-                                        </div>
-                                        <div class="attack-body">
-                                            {{#if (or ../user.isGM attack.variants.revealed)}}
-                                                {{#each attack.variants.values}}
-                                                    <div class="attack-variant">{{this}}</div>
-                                                {{/each}}
-                                                <div class="attack-damage">{{attack.damage}}</div>
+                                            {{#if (not (eq attack.label 'None'))}}
+                                                <div>{{attack.range}}</div>
+                                                <span class="action-glyph">1</span>
                                             {{/if}}
-                                            {{#if (and ../user.isGM attack.revealed)}}<i class="pf2e-bestiary-clickable-icon {{#if attack.variants.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key '.variants'}}"></i>{{/if}}
+                                            <div>{{attack.label}}</div>
+                                            {{#if (gt (PF2EBTNrKeys attack.traits) 0)}}
+                                                <div class="attack-traits-container">(
+                                                    {{#each attack.traits as |trait index|}}
+                                                        <div class="attack-trait-label" title="{{localize trait.description}}">{{trait.label}}</div>
+                                                        {{#if (not (eq (add index 1) ../traits.length))}},&nbsp;{{/if}} 
+                                                    {{/each}}    
+                                                )</div>
+                                            {{/if}}
                                         </div>
+                                        {{#if (gt (PF2EBTNrKeys attack.variants.values) 0)}}
+                                            <div class="attack-body">
+                                                {{#if (or ../user.isGM attack.variants.revealed)}}
+                                                    {{#each attack.variants.values}}
+                                                        <div class="attack-variant">{{this}}</div>
+                                                    {{/each}}
+                                                    <div class="attack-damage">{{attack.damage}}</div>
+                                                {{/if}}
+                                                {{#if (and ../user.isGM attack.revealed)}}<i class="pf2e-bestiary-clickable-icon {{#if attack.variants.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key '.variants'}}"></i>{{/if}}
+                                            </div>
+                                        {{/if}}
                                     </div>
                                 </div>
                             {{/if}}
@@ -284,8 +290,8 @@
                             {{#if (or ../user.isGM action.revealed)}}
                                 <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if action.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'actions.values.' key}}" data-parent="actions">
                                     <div class="action-container">
-                                        <div class="action-name" data-action="toggleAbility" data-ability="{{action.uuid}}">{{action.name}}</div>
-                                        <span class="action-glyph">{{#if action.actions}}{{else}}R{{/if}}</span>
+                                        <div class="{{#if (not (eq action.name 'None'))}}action-name{{/if}}" data-action="toggleAbility" data-ability="{{action.uuid}}">{{action.name}}</div>
+                                        <span class="action-glyph">{{#if action.actions}}{{action.actions}}{{else}}{{#if (not (eq action.name 'None'))}}R{{/if}}{{/if}}</span>
                                     </div>
                                     <div class="action-description {{#if (includes ../selected.abilities action.uuid)}}expanded{{/if}}">
                                         {{{action.description}}}
@@ -312,7 +318,7 @@
                             {{#if (or ../user.isGM passive.revealed)}}
                                 <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if passive.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'passives.values.' key}}" data-parent="passives">
                                     <div class="action-container">
-                                        <div class="action-name" data-action="toggleAbility" data-ability="{{passive.uuid}}">{{passive.name}}</div>
+                                        <div class="{{#if (not (eq passive.name 'None'))}}action-name{{/if}}" data-action="toggleAbility" data-ability="{{passive.uuid}}">{{passive.name}}</div>
                                     </div>
                                     <div class="action-description {{#if (includes ../selected.abilities passive.uuid)}}expanded{{/if}}">
                                         {{{passive.description}}}

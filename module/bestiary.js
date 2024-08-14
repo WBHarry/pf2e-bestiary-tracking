@@ -291,6 +291,35 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 }
             }
         };
+        if(Object.keys(actions.values).length === 0) actions.values['None'] = { revealed: false, name: 'None' }
+        if(Object.keys(passives.values).length === 0) passives.values['None'] = { revealed: false, name: 'None' }
+
+        const attacks = item.system.actions.reduce((acc, action) => {
+            acc.values[action.slug] = {
+                revealed: false,
+                slug: action.slug,
+                range: action.item.type === 'melee' ? 'Melee' : 'Ranged', 
+                label: action.label,
+                variants: action.variants.reduce((acc, variant) => {
+                    acc.values[slugify(variant.label)] = variant.label;
+
+                    return acc;
+                }, { revealed: false, values: {} }),
+                damage: Object.values(action.item.system.damageRolls).reduce((acc, x) => {
+                    acc = acc.concat(`${acc ? ' + ' : ''}${x.damage} ${x.damageType}`);
+
+                    return acc;
+                }, ''),
+                traits: action.traits.map(trait => ({
+                    label: trait.label,
+                    description: trait.description,
+                }))
+            };
+
+            return acc;
+        }, { revealed: 0, values: {} })
+
+        if(Object.keys(attacks.values).length === 0) attacks.values['None'] = { revealed: false, label: 'None' }
 
         const slug = slugify(item.name);
         const monster = {
@@ -343,30 +372,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     ...(item.system.perception.details ? { other: { revealed: false, label: item.system.perception.details }} : {}),
                 }
             },
-            attacks: item.system.actions.reduce((acc, action) => {
-                acc.values[action.slug] = {
-                    revealed: false,
-                    slug: action.slug,
-                    range: action.item.type === 'melee' ? 'Melee' : 'Ranged', 
-                    label: action.label,
-                    variants: action.variants.reduce((acc, variant) => {
-                        acc.values[slugify(variant.label)] = variant.label;
-
-                        return acc;
-                    }, { revealed: false, values: {} }),
-                    damage: Object.values(action.item.system.damageRolls).reduce((acc, x) => {
-                        acc = acc.concat(`${acc ? ' + ' : ''}${x.damage} ${x.damageType}`);
-
-                        return acc;
-                    }, ''),
-                    traits: action.traits.map(trait => ({
-                        label: trait.label,
-                        description: trait.description,
-                    }))
-                };
-
-                return acc;
-            }, { revealed: 0, values: {} }),
+            attacks: attacks,
             immunities: item.system.attributes.immunities.length > 0  ? item.system.attributes.immunities.reduce((acc, immunity, index) => {
                 acc.values[slugify(immunity.label)] = { revealed: false, value: immunity.label, index: index+1 };
 
