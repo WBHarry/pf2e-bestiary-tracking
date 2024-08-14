@@ -160,22 +160,37 @@
 
     <div class="right-monster-container">
         <div class="flexcol">
-            <div class="monster-name {{#if this.user.isGM }}toggle-container {{#if this.name.revealed}}revealed{{/if}}{{/if}}">
-                <div class="pf2e-bestiary-clickable-icon alternate" data-action="toggleRevealed" data-path="name">
-                    {{#if (or this.user.isGM this.name.revealed)}}
-                        {{PF2EBTTertiary this.name.custom this.name.value}}
-                    {{else}}
-                        {{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}
+            <div class="monster-name-container">
+                <div class="monster-name {{#if this.user.isGM }}toggle-container {{#if this.name.revealed}}revealed{{/if}}{{/if}}">
+                    <div class="pf2e-bestiary-clickable-icon alternate" data-action="toggleRevealed" data-path="name">
+                        {{#if (or this.user.isGM this.name.revealed)}}
+                            {{PF2EBTTertiary this.name.custom this.name.value}}
+                        {{else}}
+                            {{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}
+                        {{/if}}
+                    </div>
+                    {{#if this.user.isGM}}
+                        {{#if this.name.custom}}
+                            <img class="obfuscate-icon obfuscated" src="icons/svg/mystery-man.svg" />
+                            <i class="fa-solid fa-ban ban-icon pf2e-bestiary-clickable-icon alternate" data-action="unObscureData" data-field="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}" title="{{localize "PF2EBestiary.Bestiary.UnObscure"}}"></i>
+                        {{else}}
+                            <img class="obfuscate-icon pf2e-bestiary-clickable-icon alternate" src="icons/svg/mystery-man-black.svg" data-action="obscureData" data-field="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}" title="{{localize "PF2EBestiary.Bestiary.Obscure"}}" />
+                        {{/if}}
                     {{/if}}
                 </div>
-                {{#if this.user.isGM}}
-                    {{#if this.name.custom}}
-                        <img class="obfuscate-icon obfuscated" src="icons/svg/mystery-man.svg" />
-                        <i class="fa-solid fa-ban ban-icon pf2e-bestiary-clickable-icon alternate" data-action="unObscureData" data-field="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}" title="{{localize "PF2EBestiary.Bestiary.UnObscure"}}"></i>
-                    {{else}}
-                        <img class="obfuscate-icon pf2e-bestiary-clickable-icon alternate" src="icons/svg/mystery-man-black.svg" data-action="obscureData" data-field="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}" title="{{localize "PF2EBestiary.Bestiary.Obscure"}}" />
-                    {{/if}}
-                {{/if}}
+                <nav class="bestiary-tabs tabs">
+                    {{#each this.tabs as |tab|}}
+                        <a 
+                            class="bestiary-tab {{tab.cssClass}}{{#if (and (not ../user.isGM) (and (eq tab.id 'lore') (and (not ../notes.public.revealed) (not ../notes.private.revealed))))}} empty{{/if}}" 
+                            data-action="tab" 
+                            data-group="{{tab.group}}" 
+                            data-tab="{{tab.id}}"
+                        >
+                            <i class="{{tab.icon}}"></i>
+                            <label>{{tab.label}}</label>
+                        </a>
+                    {{/each}}
+                </nav>
             </div>
             <div class="monster-traits-row">
                 <div class="monster-size">{{this.size}}</div>
@@ -190,24 +205,53 @@
                 </div>
             </div>
         </div>
-
-        <div class="right-monster-container-data">
-            <div class="data-sections">
-                <div class="data-section">
-                    <div class="data-header">
-                        <div class="data-header-label">
-                            <img class="data-icon" src="systems/pf2e/icons/default-icons/feat.svg" />
-                            <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attributes"}}</div>
+        <div class="tab {{this.tabs.statistics.cssClass}}" data-group="primary" data-tab="statistics">
+            <div class="right-monster-container-data">
+                <div class="data-sections">
+                    <div class="data-section">
+                        <div class="data-header">
+                            <div class="data-header-label">
+                                <img class="data-icon" src="systems/pf2e/icons/default-icons/feat.svg" />
+                                <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attributes"}}</div>
+                            </div>
+                        </div>
+                        <div class="data-body">
+                            <div class="abilities-container">
+                                {{#each this.abilities.values as |ability key|}}
+                                    <div class="ability-container {{#if ../user.isGM }}toggle-container {{#if ability.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'abilities.values.' key}}" data-parent="abilities">
+                                        <div class="ability-label">{{localize ability.label}}</div>
+                                        {{#if (or ../user.isGM ability.revealed)}}{{PF2EBTMonsterValue ability ../vagueDescriptions.attributes }}{{else}}?{{/if}}
+                                    </div>
+                                {{/each}}
+                            </div>
                         </div>
                     </div>
-                    <div class="data-body">
-                        <div class="abilities-container">
-                            {{#each this.abilities.values as |ability key|}}
-                                <div class="ability-container {{#if ../user.isGM }}toggle-container {{#if ability.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'abilities.values.' key}}" data-parent="abilities">
-                                    <div class="ability-label">{{localize ability.label}}</div>
-                                    {{#if (or ../user.isGM ability.revealed)}}{{PF2EBTMonsterValue ability ../vagueDescriptions.attributes }}{{else}}?{{/if}}
-                                </div>
-                            {{/each}}
+
+                    <div class="data-section">
+                        <div class="data-header">
+                            <div class="data-header-label">
+                                <img class="data-icon" src="icons/svg/eye.svg" />
+                                <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Senses"}}</div>
+                            </div>
+                        </div>
+                        <div class="data-body pf2e-bestiary-standard-gap">
+                            {{#if (and (not this.user.isGM) (eq this.senses.revealed 0))}}
+                                ?
+                            {{else}}
+                                {{#each this.senses.values as |sense key|}}
+                                    {{#if (or ../user.isGM sense.revealed)}}
+                                        <div class="flexrow {{#if ../user.isGM }}toggle-container {{#if sense.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'senses.values.' key}}" data-parent="senses">
+                                            <div class="pf2e-bestiary-bold">{{sense.label}}</div>
+                                            {{#if (and (not ../user.isGM) (eq key 'perception'))}}
+                                                {{PF2EBTMonsterValue sense ../vagueDescriptions.perception }}
+                                            {{else}}    
+                                                {{sense.value}}
+                                            {{/if}}
+                                        </div>
+                                    {{/if}}
+                                {{/each}}
+                            {{/if}}
+                            
                         </div>
                     </div>
                 </div>
@@ -215,134 +259,130 @@
                 <div class="data-section">
                     <div class="data-header">
                         <div class="data-header-label">
-                            <img class="data-icon" src="icons/svg/eye.svg" />
-                            <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Senses"}}</div>
+                            <img class="data-icon" src="icons/svg/combat.svg" />
+                            <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attacks"}}</div>
                         </div>
                     </div>
                     <div class="data-body pf2e-bestiary-standard-gap">
-                        {{#if (and (not this.user.isGM) (eq this.senses.revealed 0))}}
+                        {{#if (and (not this.user.isGM) (eq this.attacks.revealed 0))}}
                             ?
                         {{else}}
-                            {{#each this.senses.values as |sense key|}}
-                                {{#if (or ../user.isGM sense.revealed)}}
-                                    <div class="flexrow {{#if ../user.isGM }}toggle-container {{#if sense.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'senses.values.' key}}" data-parent="senses">
-                                        <div class="pf2e-bestiary-bold">{{sense.label}}</div>
-                                        {{#if (and (not ../user.isGM) (eq key 'perception'))}}
-                                            {{PF2EBTMonsterValue sense ../vagueDescriptions.perception }}
-                                        {{else}}    
-                                            {{sense.value}}
-                                        {{/if}}
+                            {{#each this.attacks.values as |attack key|}}
+                                {{#if (or ../user.isGM attack.revealed)}}
+                                    <div class="attack-container">
+                                        <div class="attack-inner-container">
+                                            <div class="attack-header {{#if ../user.isGM }}toggle-container {{#if attack.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key}}" data-parent="attacks">
+                                                {{#if (not (eq attack.label 'None'))}}
+                                                    <div>{{attack.range}}</div>
+                                                    <span class="action-glyph">1</span>
+                                                {{/if}}
+                                                <div>{{attack.label}}</div>
+                                                {{#if (gt (PF2EBTNrKeys attack.traits) 0)}}
+                                                    <div class="attack-traits-container">(
+                                                        {{#each attack.traits as |trait index|}}
+                                                            <div class="attack-trait-label" title="{{localize trait.description}}">{{trait.label}}</div>
+                                                            {{#if (not (eq (add index 1) ../traits.length))}},&nbsp;{{/if}} 
+                                                        {{/each}}    
+                                                    )</div>
+                                                {{/if}}
+                                            </div>
+                                            {{#if (gt (PF2EBTNrKeys attack.variants.values) 0)}}
+                                                <div class="attack-body">
+                                                    {{#if (or ../user.isGM attack.variants.revealed)}}
+                                                        {{#each attack.variants.values}}
+                                                            <div class="attack-variant">{{this}}</div>
+                                                        {{/each}}
+                                                        <div class="attack-damage">{{attack.damage}}</div>
+                                                    {{/if}}
+                                                    {{#if (and ../user.isGM attack.revealed)}}<i class="pf2e-bestiary-clickable-icon {{#if attack.variants.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key '.variants'}}"></i>{{/if}}
+                                                </div>
+                                            {{/if}}
+                                        </div>
                                     </div>
                                 {{/if}}
                             {{/each}}
                         {{/if}}
-                        
                     </div>
                 </div>
-            </div>
 
-            <div class="data-section">
-                <div class="data-header">
-                    <div class="data-header-label">
-                        <img class="data-icon" src="icons/svg/combat.svg" />
-                        <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attacks"}}</div>
+                <div class="data-section">
+                    <div class="data-header">
+                        <div class="data-header-label">
+                            <img class="data-icon" src="icons/svg/explosion.svg" />
+                            <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Abilities"}}</div>
+                        </div>
                     </div>
-                </div>
-                <div class="data-body pf2e-bestiary-standard-gap">
-                    {{#if (and (not this.user.isGM) (eq this.attacks.revealed 0))}}
-                        ?
-                    {{else}}
-                        {{#each this.attacks.values as |attack key|}}
-                            {{#if (or ../user.isGM attack.revealed)}}
-                                <div class="attack-container">
-                                    <div class="attack-inner-container">
-                                        <div class="attack-header {{#if ../user.isGM }}toggle-container {{#if attack.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key}}" data-parent="attacks">
-                                            {{#if (not (eq attack.label 'None'))}}
-                                                <div>{{attack.range}}</div>
-                                                <span class="action-glyph">1</span>
-                                            {{/if}}
-                                            <div>{{attack.label}}</div>
-                                            {{#if (gt (PF2EBTNrKeys attack.traits) 0)}}
-                                                <div class="attack-traits-container">(
-                                                    {{#each attack.traits as |trait index|}}
-                                                        <div class="attack-trait-label" title="{{localize trait.description}}">{{trait.label}}</div>
-                                                        {{#if (not (eq (add index 1) ../traits.length))}},&nbsp;{{/if}} 
-                                                    {{/each}}    
-                                                )</div>
-                                            {{/if}}
+                    <div class="data-body pf2e-bestiary-standard-gap">
+                        {{#if (and (not this.user.isGM) (eq this.actions.revealed 0))}}
+                            ?
+                        {{else}}
+                            {{#each this.actions.values as |action key|}}
+                                {{#if (or ../user.isGM action.revealed)}}
+                                    <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if action.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'actions.values.' key}}" data-parent="actions">
+                                        <div class="action-container">
+                                            <div class="{{#if (not (eq action.name 'None'))}}action-name{{/if}}" data-action="toggleAbility" data-ability="{{action.uuid}}">{{action.name}}</div>
+                                            <span class="action-glyph">{{#if action.actions}}{{action.actions}}{{else}}{{#if (not (eq action.name 'None'))}}R{{/if}}{{/if}}</span>
                                         </div>
-                                        {{#if (gt (PF2EBTNrKeys attack.variants.values) 0)}}
-                                            <div class="attack-body">
-                                                {{#if (or ../user.isGM attack.variants.revealed)}}
-                                                    {{#each attack.variants.values}}
-                                                        <div class="attack-variant">{{this}}</div>
-                                                    {{/each}}
-                                                    <div class="attack-damage">{{attack.damage}}</div>
-                                                {{/if}}
-                                                {{#if (and ../user.isGM attack.revealed)}}<i class="pf2e-bestiary-clickable-icon {{#if attack.variants.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key '.variants'}}"></i>{{/if}}
-                                            </div>
-                                        {{/if}}
+                                        <div class="action-description {{#if (includes ../selected.abilities action.uuid)}}expanded{{/if}}">
+                                            {{{action.description}}}
+                                        </div>
                                     </div>
-                                </div>
-                            {{/if}}
-                        {{/each}}
-                    {{/if}}
-                </div>
-            </div>
-
-            <div class="data-section">
-                <div class="data-header">
-                    <div class="data-header-label">
-                        <img class="data-icon" src="icons/svg/explosion.svg" />
-                        <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Abilities"}}</div>
+                                {{/if}}
+                            {{/each}}
+                        {{/if}}
                     </div>
                 </div>
-                <div class="data-body pf2e-bestiary-standard-gap">
-                    {{#if (and (not this.user.isGM) (eq this.actions.revealed 0))}}
-                        ?
-                    {{else}}
-                        {{#each this.actions.values as |action key|}}
-                            {{#if (or ../user.isGM action.revealed)}}
-                                <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if action.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'actions.values.' key}}" data-parent="actions">
-                                    <div class="action-container">
-                                        <div class="{{#if (not (eq action.name 'None'))}}action-name{{/if}}" data-action="toggleAbility" data-ability="{{action.uuid}}">{{action.name}}</div>
-                                        <span class="action-glyph">{{#if action.actions}}{{action.actions}}{{else}}{{#if (not (eq action.name 'None'))}}R{{/if}}{{/if}}</span>
-                                    </div>
-                                    <div class="action-description {{#if (includes ../selected.abilities action.uuid)}}expanded{{/if}}">
-                                        {{{action.description}}}
-                                    </div>
-                                </div>
-                            {{/if}}
-                        {{/each}}
-                    {{/if}}
-                </div>
-            </div>
 
-            <div class="data-section">
-                <div class="data-header">
-                    <div class="data-header-label">
-                        <img class="data-icon" src="icons/svg/paralysis.svg" />
-                        <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Passives"}}</div>
+                <div class="data-section">
+                    <div class="data-header">
+                        <div class="data-header-label">
+                            <img class="data-icon" src="icons/svg/paralysis.svg" />
+                            <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Passives"}}</div>
+                        </div>
+                    </div>
+                    <div class="data-body pf2e-bestiary-standard-gap">
+                        {{#if (and (not this.user.isGM) (eq this.passives.revealed 0))}}
+                            ?
+                        {{else}}
+                            {{#each this.passives.values as |passive key|}}
+                                {{#if (or ../user.isGM passive.revealed)}}
+                                    <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if passive.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'passives.values.' key}}" data-parent="passives">
+                                        <div class="action-container">
+                                            <div class="{{#if (not (eq passive.name 'None'))}}action-name{{/if}}" data-action="toggleAbility" data-ability="{{passive.uuid}}">{{passive.name}}</div>
+                                        </div>
+                                        <div class="action-description {{#if (includes ../selected.abilities passive.uuid)}}expanded{{/if}}">
+                                            {{{passive.description}}}
+                                        </div>
+                                    </div>
+                                {{/if}}
+                            {{/each}}
+                        {{/if}}
                     </div>
                 </div>
-                <div class="data-body pf2e-bestiary-standard-gap">
-                    {{#if (and (not this.user.isGM) (eq this.passives.revealed 0))}}
-                        ?
+            </div>        
+        </div>
+        <div class="tab {{this.tabs.lore.cssClass}}" data-group="primary" data-tab="lore">
+            <div class="bestiary-notes-page">
+                <fieldset class="bestiary-notes-legend">
+                    <legend class="{{#if this.user.isGM }}toggle-container {{#if this.notes.public.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="notes.public">
+                        {{localize "PF2EBestiary.Bestiary.Lore.Public"}}
+                    </legend>
+
+                    {{#if (or this.user.isGM this.notes.public.revealed)}}
+                        {{{this.notes.public.text}}}
                     {{else}}
-                        {{#each this.passives.values as |passive key|}}
-                            {{#if (or ../user.isGM passive.revealed)}}
-                                <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if passive.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'passives.values.' key}}" data-parent="passives">
-                                    <div class="action-container">
-                                        <div class="{{#if (not (eq passive.name 'None'))}}action-name{{/if}}" data-action="toggleAbility" data-ability="{{passive.uuid}}">{{passive.name}}</div>
-                                    </div>
-                                    <div class="action-description {{#if (includes ../selected.abilities passive.uuid)}}expanded{{/if}}">
-                                        {{{passive.description}}}
-                                    </div>
-                                </div>
-                            {{/if}}
-                        {{/each}}
+                        {{localize "PF2EBestiary.Bestiary.Miscellaneous.Unknown"}}
                     {{/if}}
-                </div>
+                </fieldset>
+                {{#if (or this.user.isGM this.notes.private.revealed)}}
+                    <fieldset class="bestiary-notes-legend private">
+                        <legend class="{{#if this.user.isGM }}toggle-container {{#if this.notes.private.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="notes.private">
+                            {{localize "PF2EBestiary.Bestiary.Lore.Private"}}
+                        </legend>
+                        
+                        {{{this.notes.private.text}}}
+                    </fieldset>
+                {{/if}}
             </div>
         </div>
     </div>

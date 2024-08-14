@@ -52,7 +52,16 @@
                 "EmptyText": "No {category} encountered yet. Enjoy it while you can."
             },
             "Miscellaneous": {
-                "UnknownCreature": "Unknown Creature"
+                "UnknownCreature": "Unknown Creature",
+                "Unknown": "Unknown.."
+            },
+            "Tabs": {
+                "Statistics": "Statistics",
+                "Lore": "Lore"
+            },
+            "Lore": {
+                "Public": "Description",
+                "Private": "Private Notes"
             },
             "Errors": {
                 "UnsupportedType": "Not a supported NPC type!",

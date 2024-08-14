@@ -60,6 +60,20 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }
     }
 
+    getTabs() {
+        const tabs = {
+            statistics: { active: true, cssClass: '', group: 'primary', id: 'statistics', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Statistics") },
+            lore: { active: false, cssClass: '', group: 'primary', id: 'lore', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Lore") },
+        }
+
+        for ( const v of Object.values(tabs) ) {
+            v.active = this.tabGroups[v.group] ? this.tabGroups[v.group] === v.id : v.active;
+            v.cssClass = v.active ? "active" : "";
+        }
+
+        return tabs;
+    }
+
     _onRender(context, options) {
         this._dragDrop = this._createDragDropHandlers.bind(this)();
     }
@@ -79,6 +93,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
     async _prepareContext(_options) {
         var context = await super._prepareContext(_options);
+
+        context.tabs = this.getTabs();
         context.bestiary = foundry.utils.deepClone(this.bestiary);
         context.selected = foundry.utils.deepClone(this.selected);
         context.openType = this.selected.type ? Object.keys(this.bestiary[this.selected.category][this.selected.type]).reduce((acc, key)=> {
@@ -370,6 +386,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const monster = {
             slug: slug,
             id: item.id,
+            uuid: item.uuid,
             level: item.system.details.level.value,
             inTypes: types.map(x => x.key),
             traits: traits,
@@ -440,6 +457,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 fortitude: { value: `${item.system.saves.fortitude.value >= 0 ? '+' : '-'}${item.system.saves.fortitude.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.fortitude.value), revealed: false },
                 reflex: { value: `${item.system.saves.reflex.value >= 0 ? '+' : '-'}${item.system.saves.reflex.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.reflex.value), revealed: false },
                 will: { value: `${item.system.saves.will.value >= 0 ? '+' : '-'}${item.system.saves.will.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.will.value), revealed: false },
+            },
+            notes: {
+                public: { revealed: false, text: item.system.details.publicNotes },
+                private: { revealed: false, text: item.system.details.privateNotes },
             }
         };
         

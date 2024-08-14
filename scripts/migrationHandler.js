@@ -10,46 +10,27 @@ export const handleDataMigration = async () => {
     }
 
     if(version === '0.8.1'){
-        const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-        Object.keys(bestiary.monster).forEach(type => {
-            Object.keys(bestiary.monster[type]).forEach(monsterKey => {
-                const monster = bestiary.monster[type][monsterKey];
-
-                if(!monster.name.value){
-                    bestiary.monster[type][monsterKey].name = { revealed: false, value: monster.name };
-                }
-
-                for(var inType of monster.inTypes){
-                    if(type !== inType){
-                        bestiary.monster[inType][monsterKey] = foundry.utils.deepClone(bestiary.monster[type][monsterKey]);
-                    }
-                }
-            });
+        await migrateBestiary((bestiary, monster, type, monsterKey) => {
+            if(!monster.name.value){
+                bestiary.monster[type][monsterKey].name = { revealed: false, value: monster.name };
+            }
         });
 
-        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
         version = '0.8.2';
     }
 
     if(version === '0.8.2'){
         await migrateBestiary((bestiary, monster, type, monsterKey) => {
             const origin = game.actors.find(x => x.id === monster.id);
-
-            // Attributes should now have Mod aswell as Category attributes. Can't cleanly update this but make best attempt, otherwise remove failing creatures.
-            var toRemoveMonster = false;
-            for(var ability of bestiary.monster[type][monsterKey].abilities.values){
-                if(!origin){
-                    toRemoveMonster = true;
-                    continue;
-                }
-
-                ability.mod = ability.value.replace('+', '');
-                ability.category = getCategoryLabel(attributeTable, origin.system.details.level.value, ability.mod);              
-            }
-
-            if(toRemoveMonster) {
+            if(!origin){
                 delete bestiary.monster[type][monsterKey];
                 return;
+            }
+
+            // Attributes should now have Mod aswell as Category attributes. Can't cleanly update this but make best attempt, otherwise remove failing creatures.
+            for(var ability of bestiary.monster[type][monsterKey].abilities.values){
+                ability.mod = ability.value.replace('+', '');
+                ability.category = getCategoryLabel(attributeTable, origin.system.details.level.value, ability.mod);              
             }
 
             //Actions and passives and attacks should never be empty. Add a 'None' option.
@@ -87,6 +68,24 @@ export const handleDataMigration = async () => {
         });
 
         version = '0.8.4';
+    }
+
+    if(version === '0.8.4'){
+        await migrateBestiary((bestiary, monster, type, monsterKey) => {
+            const origin = game.actors.find(x => x.id === monster.id);
+            if(!origin){
+                delete bestiary.monster[type][monsterKey];
+                return;
+            }
+
+            // Creatures should have notes available to be revealed.
+            bestiary.monster[type][monsterKey].notes = {
+                public: { revealed: false, text: origin.system.details.publicNotes },
+                private: { revealed: false, text: origin.system.details.privateNotes },
+            };
+        });
+
+        version = '0.8.5';
     }
 
     await game.settings.set('pf2e-bestiary-tracking', 'version', version);

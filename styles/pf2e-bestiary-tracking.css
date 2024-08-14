@@ -11,8 +11,13 @@
   display: flex;
   flex-direction: column;
 }
+.bestiary-tracking.bestiary .tab {
+  height: 100%;
+  overflow: hidden;
+}
 .bestiary-tracking.bestiary .window-content {
   overflow: visible;
+  height: calc(100% - 75px);
 }
 .bestiary-tracking.bestiary header {
   display: flex;
@@ -75,26 +80,23 @@
 .bestiary-tracking.bestiary .bestiary-welcome ul {
   margin-top: 4px;
 }
-.bestiary-tracking.bestiary .bestiary-list-point code {
-  color: white;
+.bestiary-tracking.bestiary .bestiary-tabs {
+  gap: 0;
+  align-self: end;
 }
-.bestiary-tracking.bestiary .statistics-title {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.bestiary-tracking.bestiary .statistics-container {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.bestiary-tracking.bestiary .statistics-container .statistics-inner-container {
-  padding: 8px;
+.bestiary-tracking.bestiary .bestiary-tabs .bestiary-tab {
   background: #f5f5dc;
-  border: 2px solid black;
-  border-radius: 6px;
-  width: calc(50% - 4px);
+  border-style: solid;
+  border-color: coral;
+  border-width: 2px 0 2px 2px;
+  padding: 6px;
+  font-weight: 600;
+}
+.bestiary-tracking.bestiary .bestiary-tabs .bestiary-tab.empty {
+  opacity: 0.5;
+}
+.bestiary-tracking.bestiary .bestiary-tabs .bestiary-tab:last-of-type {
+  border-right-width: 2px;
 }
 .bestiary-tracking.bestiary .type-overview-container {
   display: flex;
@@ -242,20 +244,32 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: calc(100% - 166px);
 }
-.bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name {
+.bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-name {
   position: relative;
   font-weight: bold;
   font-size: 36px;
-  width: fit-content;
   padding: 4px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: 100%;
+  text-overflow: ellipsis;
 }
-.bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name.toggle-container {
+.bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-name.toggle-container {
   width: fit-content;
   padding: 4px 18px;
   cursor: default;
 }
-.bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name .obfuscate-icon {
+.bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-name .obfuscate-icon {
   position: absolute;
   right: 2px;
   top: 2px;
@@ -263,13 +277,13 @@
   height: 18px;
   border: 0;
 }
-.bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name .obfuscate-icon.obfuscated {
+.bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-name .obfuscate-icon.obfuscated {
   right: 3px;
   top: 3px;
   width: 16px;
   height: 16px;
 }
-.bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name .ban-icon {
+.bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-name .ban-icon {
   position: absolute;
   right: 2px;
   top: 2px;
@@ -281,7 +295,6 @@
   gap: 16px;
   padding: 2px;
   border: 3px solid black;
-  border-radius: 6px;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-traits-row .monster-size {
   flex: 1;
@@ -313,6 +326,7 @@
   color: white;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .right-monster-container-data {
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -458,6 +472,31 @@
   color: white;
   font-size: 10px;
   margin-bottom: 4px;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  overflow: hidden;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .bestiary-notes-legend {
+  font-size: 14px;
+  font-style: italic;
+  min-height: 48px;
+  overflow: auto;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .bestiary-notes-legend.private {
+  margin-top: 4px;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .bestiary-notes-legend legend {
+  font-size: 18px;
+  font-weight: bold;
+  font-style: normal;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .bestiary-notes-legend hr {
+  background-image: none;
+  background-color: black;
 }
 .bestiary-tracking.bestiary .right-bookmark-container {
   position: absolute;

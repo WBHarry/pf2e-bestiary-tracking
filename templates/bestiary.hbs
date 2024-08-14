@@ -6,6 +6,8 @@
                     <i class="fa-solid fa-reply"></i>
                     {{this.returnMessage}}
                 </div>
+            {{else}}
+                {{!-- Monster | NPCs tabs --}}
             {{/if}}
         </div>
         <div>
@@ -19,47 +21,47 @@
         </div>
     </header>
     <body>
-            {{#if (not this.selected.type)}}
-                <div class="bestiary-welcome">
-                    <h3 class="title">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h3> 
-                    <div class="sub-title">{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.Title"}}</div>
-                    <ul>
-                        <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.NavigationTip"}}</li>
-                        <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.MacroTip"}}</li>
-                    </ul>
+        {{#if (not this.selected.type)}}
+            <div class="bestiary-welcome">
+                <h3 class="title">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h3> 
+                <div class="sub-title">{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.Title"}}</div>
+                <ul>
+                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.NavigationTip"}}</li>
+                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.MacroTip"}}</li>
+                </ul>
 
-                    <div class="sub-title">
-                        <div>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.Title"}}</div>
-                        {{#if this.user.isGM}}<button class="bestiary-reset" data-action="resetBestiary" title="Reset Bestiary"><i class="fa-solid fa-link-slash"></i></button>{{/if}}
-                    </div>
-                    <ul>
-                        <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.AddCreaturesTip"}}</li>
-                        <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ModuleSettingsTip"}}</li>
-                        <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleInformationTip"}}</li>
-                    </ul>
+                <div class="sub-title">
+                    <div>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.Title"}}</div>
+                    {{#if this.user.isGM}}<button class="bestiary-reset" data-action="resetBestiary" title="Reset Bestiary"><i class="fa-solid fa-link-slash"></i></button>{{/if}}
                 </div>
+                <ul>
+                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.AddCreaturesTip"}}</li>
+                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ModuleSettingsTip"}}</li>
+                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleInformationTip"}}</li>
+                </ul>
+            </div>
+        {{else}}
+            {{#if this.selected.monster}}
+                {{#with this.selected.monster}}
+                    {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" selected=../selected user=../user vagueDescriptions=../vagueDescriptions tabs=../tabs }}
+                {{/with}}
             {{else}}
-                {{#if this.selected.monster}}
-                    {{#with this.selected.monster}}
-                        {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" selected=../selected user=../user vagueDescriptions=../vagueDescriptions }}
-                    {{/with}}
-                {{else}}
-                    <div class="type-overview-container">
-                        {{#if (eq (PF2EBTNrKeys this.openType) 0)}}
-                            {{localize "PF2EBestiary.Bestiary.CategoryView.EmptyText" category=this.selected.type}}
-                        {{else}}
-                            {{#each this.openType as |type key|}}
-                                <div class="type-container" data-action="selectMonster" data-monster="{{key}}">
-                                    <img src="{{type.img}}" />
-                                    <div class="type-text-container">{{#if (or ../this.user.isGM type.name.revealed)}}{{PF2EBTTertiary type.name.custom type.name.value}}{{else}}{{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}{{/if}}</div>
+                <div class="type-overview-container">
+                    {{#if (eq (PF2EBTNrKeys this.openType) 0)}}
+                        {{localize "PF2EBestiary.Bestiary.CategoryView.EmptyText" category=this.selected.type}}
+                    {{else}}
+                        {{#each this.openType as |type key|}}
+                            <div class="type-container" data-action="selectMonster" data-monster="{{key}}">
+                                <img src="{{type.img}}" />
+                                <div class="type-text-container">{{#if (or ../this.user.isGM type.name.revealed)}}{{PF2EBTTertiary type.name.custom type.name.value}}{{else}}{{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}{{/if}}</div>
 
-                                    {{#if ../user.isGM}}<i class="fa-solid fa-delete-left delete-button" data-action="removeMonster" data-monster="{{key}}"></i>{{/if}}
-                                </div>
-                            {{/each}}
-                        {{/if}}
-                    </div>
-                {{/if}}
+                                {{#if ../user.isGM}}<i class="fa-solid fa-delete-left delete-button" data-action="removeMonster" data-monster="{{key}}"></i>{{/if}}
+                            </div>
+                        {{/each}}
+                    {{/if}}
+                </div>
             {{/if}}
+        {{/if}}
     </body>
     <div class="right-bookmark-container">
         {{#each bestiary.monster as |type key|}}

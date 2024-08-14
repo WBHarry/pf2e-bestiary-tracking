@@ -22,8 +22,14 @@
             flex-direction: column;
         }
 
+        .tab {
+            height: 100%;
+            overflow: hidden;
+        }
+
         .window-content {
             overflow: visible;
+            height: calc(100% - 75px); // Ugly
         }
 
         header {
@@ -99,30 +105,25 @@
             }
         }
 
-        .bestiary-list-point {
-            code {
-                color: white;
-            }
-        }
+        .bestiary-tabs {
+            gap: 0;
+            align-self: end;
 
-        .statistics-title {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .statistics-container {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-
-            .statistics-inner-container {
-                padding: 8px;
+            .bestiary-tab {
                 background: @bookmark;
-                border: 2px solid black;
-                border-radius: 6px;
-                width: calc(50% - 4px);
+                border-style: solid;
+                border-color: @bookmark-border;
+                border-width: 2px 0 2px 2px;
+                padding: 6px;
+                font-weight: 600;
+
+                &.empty {
+                    opacity: 0.5;
+                }
+            }
+
+            .bestiary-tab:last-of-type {
+                border-right-width: 2px;
             }
         }
 
@@ -298,41 +299,54 @@
                 display: flex;
                 flex-direction: column;
                 gap: 8px;
+                width: calc(100% - 166px); // Ugly
 
-                .monster-name {
-                    position: relative;
-                    font-weight: bold;
-                    font-size: 36px;
-                    width: fit-content;
-                    padding: 4px 0;
+                .monster-name-container {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    flex-wrap: nowrap;
 
-                    &.toggle-container {
-                        width: fit-content;
-                        padding: 4px 18px;
-                        cursor: default;
-                    }
-
-                    .obfuscate-icon {
-                        position: absolute;
-                        right: 2px;
-                        top: 2px;
-                        width: 18px;
-                        height: 18px;
-                        border: 0;
-
-                        &.obfuscated{
-                            right: 3px;
-                            top: 3px;
-                            width: 16px;
-                            height: 16px;
+                    .monster-name {
+                        position: relative;
+                        font-weight: bold;
+                        font-size: 36px;
+                        padding: 4px 0;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                        max-height: 100%;
+                        text-overflow: ellipsis;
+    
+                        &.toggle-container {
+                            width: fit-content;
+                            padding: 4px 18px;
+                            cursor: default;
                         }
-                    }
-
-                    .ban-icon {
-                        position: absolute;
-                        right: 2px;
-                        top: 2px;
-                        font-size: 18px;
+    
+                        .obfuscate-icon {
+                            position: absolute;
+                            right: 2px;
+                            top: 2px;
+                            width: 18px;
+                            height: 18px;
+                            border: 0;
+    
+                            &.obfuscated{
+                                right: 3px;
+                                top: 3px;
+                                width: 16px;
+                                height: 16px;
+                            }
+                        }
+    
+                        .ban-icon {
+                            position: absolute;
+                            right: 2px;
+                            top: 2px;
+                            font-size: 18px;
+                        }
                     }
                 }
 
@@ -342,7 +356,6 @@
                     gap: 16px;
                     padding: 2px;
                     border: 3px solid black;
-                    border-radius: 6px;
 
                     .monster-size {
                         flex: 1;
@@ -379,6 +392,7 @@
                 }
 
                 .right-monster-container-data {
+                    height: 100%;
                     display: flex;
                     flex-direction: column;
                     overflow-y: auto;
@@ -548,6 +562,36 @@
                             color: white;
                             font-size: 10px;
                             margin-bottom: 4px;
+                        }
+                    }
+                }
+
+                .bestiary-notes-page {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    height: 100%;
+                    overflow: hidden;
+
+                    .bestiary-notes-legend {
+                        font-size: 14px;
+                        font-style: italic;
+                        min-height: 48px;
+                        overflow: auto;
+                        
+                        &.private {
+                            margin-top: 4px;
+                        }
+    
+                        legend {
+                            font-size: 18px;
+                            font-weight: bold;
+                            font-style: normal;
+                        }
+    
+                        hr {
+                            background-image: none;
+                            background-color: black;;
                         }
                     }
                 }
