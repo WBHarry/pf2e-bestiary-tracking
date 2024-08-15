@@ -112,6 +112,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(!game.user.isGM && context.vagueDescriptions.playerBased && context.playerLevel && context.selected.monster){
             context.selected.monster.ac.category = getCategoryLabel(acTable, context.playerLevel, context.selected.monster.ac.value);
             context.selected.monster.hp.category = getCategoryFromIntervals(hpTable, context.playerLevel, context.selected.monster.hp.value);
+            Object.values(context.selected.monster.saves).forEach(save => save.category = getCategoryLabel(savingThrowPerceptionTable, context.playerLevel, save.value));
             Object.values(context.selected.monster.abilities.values).forEach(ability => ability.category = getCategoryLabel(attributeTable, context.playerLevel, ability.mod));
             context.selected.monster.senses.values.perception.category = getCategoryLabel(savingThrowPerceptionTable, context.playerLevel, context.selected.monster.senses.values.perception.value);
         }
@@ -200,8 +201,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     static async toggleRevealed(_, button){
         if(!game.user.isGM) return;
 
+        const newValue = !foundry.utils.getProperty(this.bestiary.monster[this.selected.type][this.selected.monster.slug], `${button.dataset.path}.revealed`);
         for(var type of this.selected.monster.inTypes){
-            foundry.utils.setProperty(this.bestiary.monster[type][this.selected.monster.slug], `${button.dataset.path}.revealed`, !foundry.utils.getProperty(this.bestiary.monster[type][this.selected.monster.slug], `${button.dataset.path}.revealed`));
+            foundry.utils.setProperty(this.bestiary.monster[type][this.selected.monster.slug], `${button.dataset.path}.revealed`, newValue);
         }
 
         if(button.dataset.parent){
@@ -381,6 +383,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     } 
 
     static async createMisinformation(_, button){
+        if(!game.user.isGM) return;
+
         const addValue = async ({value, errors}) => {
             if(errors.length > 0) ui.notifications.error(game.i18n.format("PF2EBestiary.Bestiary.Misinformation.Dialog.Errors.RequiredFields", { fields: errors.map((x, index) => `${x}${index !== errors.length-1 ? ', ' : ''}`) }));
 

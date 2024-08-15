@@ -25,7 +25,7 @@
                         <i class="fa-solid fa-fw fa-ankh"></i>
                         <div>{{localize "PF2EBestiary.Miscellaneous.Immunities"}}</div>
                     </div>
-                    <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="immunities" data-name="Immunity" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
+                    {{#if this.user.isGM}}<i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="immunities" data-name="Immunity" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                 </div>
             </div>
             <div class="monster-data-list {{#if (not this.user.isGM)}}no-gap{{/if}}">
@@ -55,7 +55,7 @@
                         <div>{{localize "PF2EBestiary.Miscellaneous.Weaknesses"}}</div>
                     </div>
 
-                    <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="weaknesses" data-name="Weakness" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
+                    {{#if this.user.isGM}}<i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="weaknesses" data-name="Weakness" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                 </div>
             </div>
             <div class="monster-data-list {{#if (not this.user.isGM)}}no-gap{{/if}}">
@@ -94,7 +94,7 @@
                         <div>{{localize "PF2EBestiary.Miscellaneous.Resistances"}}</div>
                     </div>
 
-                    <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="resistances" data-name="Resistance" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
+                    {{#if this.user.isGM}}<i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="resistances" data-name="Resistance" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                 </div>
             </div>
             <div class="monster-data-list {{#if (not this.user.isGM)}}no-gap{{/if}}">
@@ -240,7 +240,7 @@
                                     <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Senses"}}</div>
                                 </div>
 
-                                <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="senses" data-name="Sense" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
+                                {{#if this.user.isGM}}<i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="senses" data-name="Sense" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                             </div>
                         </div>
                         <div class="data-body pf2e-bestiary-standard-gap">
@@ -278,7 +278,7 @@
                                 <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attacks"}}</div>
                             </div>
                         
-                            <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="attacks" data-name="Attack" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
+                            {{#if this.user.isGM}}<i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="attacks" data-name="Attack" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                         </div>
                     </div>
                     <div class="data-body pf2e-bestiary-standard-gap">
@@ -331,7 +331,7 @@
                                 <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Abilities"}}</div>
                             </div>
 
-                            <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="actions" data-name="Action" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
+                            {{#if this.user.isGM}}<i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="actions" data-name="Action" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                         </div>
                     </div>
                     <div class="data-body pf2e-bestiary-standard-gap">
@@ -363,7 +363,7 @@
                                 <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Passives"}}</div>
                             </div>
 
-                            <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="passives" data-name="Passive" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
+                            {{#if this.user.isGM}}<i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="passives" data-name="Passive" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                         </div>
                     </div>
                     <div class="data-body pf2e-bestiary-standard-gap">
