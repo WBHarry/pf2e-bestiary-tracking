@@ -44,6 +44,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             resetBestiary: this.resetBestiary,
             clearSearch: this.clearSearch,
             createMisinformation: this.createMisinformation,
+            imagePopout: this.imagePopout,
         },
         form: { handler: this.updateData, submitOnChange: true },
         dragDrop: [
@@ -115,6 +116,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         context.vagueDescriptions.playerBased = game.user.isGM ? false : context.vagueDescriptions.playerBased;
         context.playerLevel = game.user.character ? game.user.character.system.details.level.value : null;
         context.search = this.search;
+        context.useTokenArt = await game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
 
         context = this.getWithPlayerContext(context);
 
@@ -391,6 +393,17 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             window: {title: game.i18n.localize('PF2EBestiary.Bestiary.Misinformation.Dialog.Title')},
             position: { width }
         });
+    }
+
+    static async imagePopout(){
+        const actor = await fromUuid(this.selected.monster.uuid);
+        if(!actor) {
+            ui.notifications.warn(game.i18n.localize("PF2EBestiary.Bestiary.Errors.DataMissing"));
+            return;
+        }
+
+        const {prototypeToken, name, uuid} = actor;
+        new ImagePopout(prototypeToken.texture.src, {title: name, uuid: uuid}).render(true);
     }
 
     async obscureData(event){

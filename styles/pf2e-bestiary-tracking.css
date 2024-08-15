@@ -208,6 +208,10 @@
 .bestiary-tracking.bestiary .monster-container .left-monster-container .monster-image {
   height: 150;
   border-radius: 0.5rem;
+  cursor: pointer;
+}
+.bestiary-tracking.bestiary .monster-container .left-monster-container .monster-image.token {
+  border-width: 0;
 }
 .bestiary-tracking.bestiary .monster-container .left-monster-container .monster-left-data {
   display: flex;
@@ -265,6 +269,7 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: nowrap;
+  margin-bottom: 4px;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-name {
   position: relative;
@@ -343,6 +348,7 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  gap: 4px;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .data-sections {
   display: flex;

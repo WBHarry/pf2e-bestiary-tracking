@@ -36,7 +36,7 @@
         {{else}}
             {{#if this.selected.monster}}
                 {{#with this.selected.monster}}
-                    {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" selected=../selected user=../user vagueDescriptions=../vagueDescriptions tabs=../tabs }}
+                    {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" selected=../selected user=../user vagueDescriptions=../vagueDescriptions tabs=../tabs useTokenArt=../useTokenArt }}
                 {{/with}}
             {{else}}
                 <div class="type-overview-container">

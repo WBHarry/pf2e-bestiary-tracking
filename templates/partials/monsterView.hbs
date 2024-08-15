@@ -1,6 +1,6 @@
 <div class="monster-container flex-col">
     <div class="left-monster-container">
-        <img class="monster-image" src="{{this.img}}" />
+        <img class="monster-image {{#if this.useTokenArt}}token{{/if}}" src="{{this.img}}" data-action="imagePopout" />
 
         <div class="monster-left-data {{PF2EBTToggleContainer this.user this.ac}}" data-action="toggleRevealed" data-path="ac" data-name="{{localize "PF2EBestiary.Miscellaneous.AC"}}" data-vague-property="ac">
             <div class="flex-data">
