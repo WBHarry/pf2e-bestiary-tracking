@@ -130,7 +130,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         context.openType = this.selected.type ? Object.keys(this.bestiary[this.selected.category][this.selected.type]).reduce((acc, key)=> {
             const monster = this.bestiary[this.selected.category][this.selected.type][key];
-            if(!this.search.name || (monster.name.revealed && monster.name.value.toLowerCase().match(this.search.name.toLowerCase()))) {
+            const match = monster.name.value.toLowerCase().match(this.search.name.toLowerCase());
+            const unrevealedMatch = game.i18n.localize('PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature').toLowerCase().match(this.search.name.toLowerCase());
+            if(!this.search.name || ((monster.name.revealed || game.user.isGM) && match) || (!monster.name.revealed && !game.user.isGM && unrevealedMatch)) {
                 acc[key] = monster;
             }
 
