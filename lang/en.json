@@ -140,6 +140,7 @@
         "Macros": {
             "ShowMonster": {
                 "NoTarget": "No monster selected or targeted.",
+                "InvalidTarget": "Target must be an NPC creature!",
                 "TargetNotInBestiary": "That monster hasn't been added to the bestiary yet!"
             }
         }

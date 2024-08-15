@@ -6,13 +6,18 @@ export const openBestiary = async () => {
 };
 
 export const showMonster = async () => {
-    const selectedMonster = canvas.tokens.controlled.length > 0 ? canvas.tokens.controlled[0].actor : 
-        game.user.targets.size > 0 ? 
-        game.user.targets.values().next().value.actor : null;
+    const selectedMonster = game.user.targets.size > 0 ? game.user.targets.values().next().value.actor : 
+        canvas.tokens.controlled.length > 0 ? canvas.tokens.controlled[0].actor
+         : null;
 
     if(!selectedMonster) 
     {
         ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoTarget"));
+        return;
+    }
+
+    if(selectedMonster.type !== 'npc'){
+        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"))
         return;
     }
 
