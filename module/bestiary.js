@@ -31,6 +31,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
     static DEFAULT_OPTIONS = {
         tag: 'form',
+        id: 'pf2e-bestiary-tracking-bestiary',
         classes: ["bestiary-tracking", "bestiary"],
         position: { width: 800, height: 800 },
         actions: {
@@ -84,6 +85,27 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this._dragDrop = this._createDragDropHandlers.bind(this)();
     }
 
+    async enrichTexts(selected) {
+        if(!selected.monster) return;
+
+        const newActions = {};
+        for(var actionKey of Object.keys(selected.monster.actions.values)){
+            const description = await TextEditor.enrichHTML(selected.monster.actions.values[actionKey].description);
+            newActions[actionKey] = { ...selected.monster.actions.values[actionKey], description };
+        }
+
+        const newPassives = {};
+        for(var passiveKey of Object.keys(selected.monster.passives.values)){
+            const description = await TextEditor.enrichHTML(selected.monster.passives.values[passiveKey].description);
+            newPassives[passiveKey] = { ...selected.monster.passives.values[passiveKey], description };
+        }
+
+        selected.monster.notes.public.text = await TextEditor.enrichHTML(selected.monster.notes.public.text);
+        selected.monster.notes.private.text = await TextEditor.enrichHTML(selected.monster.notes.private.text);
+        selected.monster.actions.values = newActions;
+        selected.monster.passives.values = newPassives;
+    }
+
     getWithPlayerContext(context) {
         context.vagueDescriptions.playerBased = game.user.isGM ? false : context.vagueDescriptions.playerBased;
         
@@ -103,6 +125,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         context.tabs = this.getTabs();
         context.bestiary = foundry.utils.deepClone(this.bestiary);
         context.selected = foundry.utils.deepClone(this.selected);
+        await this.enrichTexts(context.selected);
+
         context.openType = this.selected.type ? Object.keys(this.bestiary[this.selected.category][this.selected.type]).reduce((acc, key)=> {
             const monster = this.bestiary[this.selected.category][this.selected.type][key];
             if(!this.search.name || (monster.name.revealed && monster.name.value.toLowerCase().match(this.search.name.toLowerCase()))) {
@@ -567,7 +591,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                         img: action.img,
                         uuid: action.uuid,
                         actions: action.system.actions.value,
-                        description: await TextEditor.enrichHTML(action.system.description.value),
+                        description: action.system.description.value,
                     };
                 }
                 else {
@@ -576,7 +600,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                         name: action.name,
                         img: action.img,
                         uuid: action.uuid,
-                        description: await TextEditor.enrichHTML(action.system.description.value),
+                        description: action.system.description.value,
                     };
                 }
             }
