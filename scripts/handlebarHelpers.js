@@ -5,6 +5,7 @@ export default class RegisterHandlebarsHelpers {
             PF2EBTMonsterValue: this.monsterValue,
             PF2EBTCategoryClassTitle: this.categoryClassTitle,
             PF2EBTToggleContainer: this.toggleContainer,
+            PF2EBTFilter: this.filter,
             PF2EBTTertiary: this.tertiary,
             PF2EBTCaptialize: this.capitalize,
         });
@@ -15,7 +16,7 @@ export default class RegisterHandlebarsHelpers {
     }
 
     static monsterValue(prop, flag){
-        return prop.custom ?? (flag && !game.user.isGM ? prop.category : prop.value);
+        return prop.custom ?? (flag && !game.user.isGM && prop.category ? prop.category : prop.value);
     }
 
     static categoryClassTitle(classValue, type, useTitle){
@@ -44,6 +45,27 @@ export default class RegisterHandlebarsHelpers {
 
         return containerClass;
     }
+
+    static filter(prop, fallback, context, options) {
+        var ret = "";
+      
+        var keys = Object.keys(context);
+        var filteredContext = {};
+        for (var i = 0; i < keys.length; i++) {
+            if(foundry.utils.getProperty(context[keys[i]], prop)){
+                filteredContext[keys[i]] = context[keys[i]];
+            }
+        }
+
+        keys = Object.keys(filteredContext);
+        if(keys.length === 0) return fallback;
+
+        for(var i = 0; i < keys.length; i++){
+            ret = ret + options.fn({ ...context[keys[i]], last: i === keys.length-1 });
+        }
+      
+        return ret;
+    };
 
     static tertiary(a, b){
         return a ?? b;

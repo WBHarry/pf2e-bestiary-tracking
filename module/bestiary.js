@@ -206,15 +206,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             foundry.utils.setProperty(this.bestiary.monster[type][this.selected.monster.slug], `${button.dataset.path}.revealed`, newValue);
         }
 
-        if(button.dataset.parent){
-            const values = Object.values(this.selected.monster[button.dataset.parent].values);
-            this.selected.monster[button.dataset.parent].currentRevealed = values.filter(x => x.revealed).length;
-            this.selected.monster[button.dataset.parent].revealed = 
-                values.every(x => !x.revealed) ? 0 :
-                values.every(x => x.revealed) ? 2 :
-                1;
-        }
-
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         this.render();
 
@@ -689,21 +680,21 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 }
             },
             attacks: attacks,
-            immunities: item.system.attributes.immunities.length > 0  ? item.system.attributes.immunities.reduce((acc, immunity, index) => {
-                acc.values[slugify(immunity.label)] = { revealed: false, value: immunity.label, index: index+1 };
+            immunities: item.system.attributes.immunities.length > 0  ? item.system.attributes.immunities.reduce((acc, immunity) => {
+                acc.values[slugify(immunity.label)] = { revealed: false, value: immunity.label };
 
                 return acc;
-            }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
-            resistances: item.system.attributes.resistances.length > 0  ? item.system.attributes.resistances.reduce((acc, resistance, index) => {
-                acc.values[slugify(resistance.label)] = { revealed: false, value: resistance.label, class: getWeaknessCategoryClass(item.system.details.level.value, resistance.value), category: resistance.applicationLabel, index: index+1 };
+            }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: game.i18n.localize("PF2EBestiary.Miscellaneous.None") } } },
+            resistances: item.system.attributes.resistances.length > 0  ? item.system.attributes.resistances.reduce((acc, resistance) => {
+                acc.values[slugify(resistance.label)] = { revealed: false, value: resistance.label, class: getWeaknessCategoryClass(item.system.details.level.value, resistance.value), category: resistance.applicationLabel };
 
                 return acc;
-            }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
-            weaknesses: item.system.attributes.weaknesses.length > 0  ? item.system.attributes.weaknesses.reduce((acc, weakness, index) => {
-                acc.values[slugify(weakness.label)] = { revealed: false, value: weakness.label, class: getWeaknessCategoryClass(item.system.details.level.value, weakness.value), category: weakness.applicationLabel, index: index+1 };
+            }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: game.i18n.localize("PF2EBestiary.Miscellaneous.None") } } },
+            weaknesses: item.system.attributes.weaknesses.length > 0  ? item.system.attributes.weaknesses.reduce((acc, weakness) => {
+                acc.values[slugify(weakness.label)] = { revealed: false, value: weakness.label, class: getWeaknessCategoryClass(item.system.details.level.value, weakness.value), category: weakness.applicationLabel };
 
                 return acc;
-            }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: 'None' } }, fake: true },
+            }, { revealed: 0, currentRevealed: 0, values: {} }) : { revealed: 0, currentRevealed: 0, values: { none: { revealed: false, value: game.i18n.localize("PF2EBestiary.Miscellaneous.None") } } },
 
             actions: actions,
             passives: passives,
