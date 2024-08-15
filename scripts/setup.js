@@ -1,4 +1,5 @@
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
+import { migrateBestiary } from "./migrationHandler.js";
 
 export const registerGameSettings = () => {
     game.settings.register('pf2e-bestiary-tracking', 'version', {
@@ -17,6 +18,14 @@ export const registerGameSettings = () => {
         config: true,
         type: Boolean,
         default: false,
+        onChange: async value => {
+            await migrateBestiary(async (bestiary, monster, type, monsterKey) => {
+                const origin = monster.uuid ? await fromUuid(monster.uuid) : monster.id ? game.actors.find(x => x.id) : null;
+                if(!origin) return;
+
+                bestiary.monster[type][monsterKey].img = value ? origin.prototypeToken.texture.src : origin.img;
+            });
+        }
     });
 
     game.settings.register('pf2e-bestiary-tracking', 'automatic-combat-registration', {

@@ -91,21 +91,21 @@ export const handleDataMigration = async () => {
     await game.settings.set('pf2e-bestiary-tracking', 'version', version);
 }
 
-const migrateBestiary = async (update) => {
+export const migrateBestiary = async (update) => {
     const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-    Object.keys(bestiary.monster).forEach(type => {
-        Object.keys(bestiary.monster[type]).forEach(monsterKey => {
-            const monster = bestiary.monster[type][monsterKey];
+    for(var typeKey in bestiary.monster){
+        for(var monsterKey in bestiary.monster[typeKey]){
+            const monster = bestiary.monster[typeKey][monsterKey];
 
-            update(bestiary, monster, type, monsterKey);
+            await update(bestiary, monster, typeKey, monsterKey);
 
             for(var inType of monster.inTypes){
-                if(type !== inType){
-                    bestiary.monster[inType][monsterKey] = foundry.utils.deepClone(bestiary.monster[type][monsterKey]);
+                if(typeKey !== inType){
+                    bestiary.monster[inType][monsterKey] = foundry.utils.deepClone(bestiary.monster[typeKey][monsterKey]);
                 }
             }
-        });
-    });
+        }
+    }
     
     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
 };

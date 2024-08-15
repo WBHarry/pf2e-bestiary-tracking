@@ -251,25 +251,48 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             }
         };
 
-        // const propertySplit = event.currentTarget.dataset.path.split('.');
-        // const vagueDescriptions = await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
-        // if(vagueDescriptions.misinformationOptions && vagueDescriptions[propertySplit[propertySplit.length-1]]){
-        //     // Make Dialog with choices
-        // } 
-        // else {
-            await Dialog.prompt({
-                title: `Misinformation - ${event.currentTarget.dataset.name}`,
-                content: `
-                    <div class="form-group">
-                        <label for="exampleSelect">Fake Information</label>
-                        <input name="Custom_${event.currentTarget.dataset.name}" type="text" />
-                    </div>
-                `,
-                callback: async ([html]) => {
-                    const customValue = html.querySelector(`[name="Custom_${event.currentTarget.dataset.name}"]`)?.value;
-                    await setValue(customValue);
-                }
-            });   
+        const vagueDescriptions = await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
+        if(vagueDescriptions.misinformationOptions && vagueDescriptions[event.currentTarget.dataset.vagueProperty]){     
+            const content = new foundry.data.fields.StringField({
+                label: game.i18n.format("PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel", { property: event.currentTarget.dataset.name }),
+                choices: ['High', 'Med', 'Low'],
+                required: true
+            }).toFormGroup({}, {name: "misinformation"}).outerHTML;
+            
+            async function callback(_, button) {
+                const choice = choices[Number.parseInt(button.form.elements.misinformation.value)];
+                await setValue(choice);
+            }
+            
+            await foundry.applications.api.DialogV2.prompt({
+                content: content,
+                rejectClose: false,
+                modal: true,
+                ok: {callback: callback},
+                window: {title: game.i18n.localize('PF2EBestiary.Bestiary.Misinformation.Dialog.Title')},
+                position: {width: 400}
+            });
+        } 
+        else {
+            const content = new foundry.data.fields.StringField({
+                label: game.i18n.format("PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel", { property: event.currentTarget.dataset.name }),
+                required: true
+            }).toFormGroup({}, {name: "misinformation"}).outerHTML;
+            
+            async function callback(_, button) {
+                const choice = button.form.elements.misinformation.value;
+                await setValue(choice);
+            }
+
+            await foundry.applications.api.DialogV2.prompt({
+                content: content,
+                rejectClose: false,
+                modal: true,
+                ok: { callback: callback },
+                window: {title: game.i18n.localize('PF2EBestiary.Bestiary.Misinformation.Dialog.Title')},
+                position: {width: 400}
+            });
+        }
     }
 
     async unObscureData(event){

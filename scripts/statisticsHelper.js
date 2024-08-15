@@ -59,7 +59,7 @@ const getCategoryLabelValue = (category) => {
         case 'high':
             return 'High';
         case 'moderate':
-            return 'Moderate';
+            return 'Mod';
         case 'low':
         case 'terrible':
             return 'Low';

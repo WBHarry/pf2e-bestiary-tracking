@@ -2,7 +2,7 @@
     <div class="left-monster-container">
         <img class="monster-image" src="{{this.img}}" />
 
-        <div class="monster-left-data {{PF2EBTToggleContainer this.user this.ac}}" data-action="toggleRevealed" data-path="ac" data-name="{{localize "PF2EBestiary.Miscellaneous.AC"}}">
+        <div class="monster-left-data {{PF2EBTToggleContainer this.user this.ac}}" data-action="toggleRevealed" data-path="ac" data-name="{{localize "PF2EBestiary.Miscellaneous.AC"}}" data-vague-property="ac">
             <div class="flex-data">
                 <i class="fa-solid fa-fw fa-shield-halved"></i>
                 <div>{{localize "PF2EBestiary.Miscellaneous.AC"}}</div>
@@ -10,7 +10,7 @@
             <div class="flex-value">{{#if (or this.ac.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.ac this.vagueDescriptions.ac}}{{else}}?{{/if}}</div>
         </div>
 
-         <div class="monster-left-data {{PF2EBTToggleContainer this.user this.hp}}" data-action="toggleRevealed" data-path="hp" data-name="{{localize "PF2EBestiary.Miscellaneous.HP"}}">
+         <div class="monster-left-data {{PF2EBTToggleContainer this.user this.hp}}" data-action="toggleRevealed" data-path="hp" data-name="{{localize "PF2EBestiary.Miscellaneous.HP"}}" data-vague-property="hp">
             <div class="flex-data">
                 <i class="fa-solid fa-fw fa-shield-halved"></i>
                 <div>{{localize "PF2EBestiary.Miscellaneous.HP"}}</div>
@@ -121,15 +121,15 @@
             </div>
             <div class="saves-container">
                 <div class="save-container">
-                    <div class="saves-title {{PF2EBTToggleContainer this.user this.saves.fortitude}}" data-action="toggleRevealed" data-path="saves.fortitude" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}">{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}</div>
+                    <div class="saves-title {{PF2EBTToggleContainer this.user this.saves.fortitude}}" data-action="toggleRevealed" data-path="saves.fortitude" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}" data-vague-property="saves">{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}</div>
                     <div class="saves-value">{{#if (or this.user.isGM this.saves.fortitude.revealed)}}{{PF2EBTMonsterValue this.saves.fortitude this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
                 <div class="save-container">
-                    <div class="saves-title {{PF2EBTToggleContainer this.user this.saves.reflex}}" data-action="toggleRevealed" data-path="saves.reflex" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}">{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}</div>
+                    <div class="saves-title {{PF2EBTToggleContainer this.user this.saves.reflex}}" data-action="toggleRevealed" data-path="saves.reflex" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}" data-vague-property="saves">{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}</div>
                     <div class="saves-value">{{#if (or this.user.isGM this.saves.reflex.revealed)}}{{PF2EBTMonsterValue this.saves.reflex this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
                 <div class="save-container">
-                    <div class="saves-title {{PF2EBTToggleContainer this.user this.saves.will}}" data-action="toggleRevealed" data-path="saves.will" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}">{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}</div>
+                    <div class="saves-title {{PF2EBTToggleContainer this.user this.saves.will}}" data-action="toggleRevealed" data-path="saves.will" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}" data-vague-property="saves">{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}</div>
                     <div class="saves-value">{{#if (or this.user.isGM this.saves.will.revealed)}}{{PF2EBTMonsterValue this.saves.will this.vagueDescriptions.saves}}{{else}}?{{/if}}</div>
                 </div>
             </div>
@@ -210,7 +210,7 @@
                         <div class="data-body">
                             <div class="abilities-container">
                                 {{#each this.abilities.values as |ability key|}}
-                                    <div class="ability-container {{PF2EBTToggleContainer ../user ability}}" data-action="toggleRevealed" data-path="{{concat 'abilities.values.' key}}" data-parent="abilities" data-name="{{localize "PF2EBestiary.Miscellaneous.Attributes"}}">
+                                    <div class="ability-container {{PF2EBTToggleContainer ../user ability}}" data-action="toggleRevealed" data-path="{{concat 'abilities.values.' key}}" data-parent="abilities" data-name="{{localize "PF2EBestiary.Miscellaneous.Attributes"}}" data-vague-property="attributes">
                                         <div class="ability-label">{{localize ability.label}}</div>
                                         {{#if (or ../user.isGM ability.revealed)}}{{PF2EBTMonsterValue ability ../vagueDescriptions.attributes }}{{else}}?{{/if}}
                                     </div>
@@ -232,14 +232,19 @@
                             {{else}}
                                 {{#each this.senses.values as |sense key|}}
                                     {{#if (or ../user.isGM sense.revealed)}}
-                                        <div class="flexrow {{#if ../user.isGM }}toggle-container {{#if sense.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'senses.values.' key}}" data-parent="senses">
-                                            <div class="pf2e-bestiary-bold">{{sense.label}}</div>
-                                            {{#if (and (not ../user.isGM) (eq key 'perception'))}}
-                                                {{PF2EBTMonsterValue sense ../vagueDescriptions.perception }}
-                                            {{else}}    
+                                        {{#if (eq key 'perception')}}
+                                            <div class="flexrow {{PF2EBTToggleContainer ../user sense}}" data-action="toggleRevealed" data-path="senses.values.perception" data-parent="senses" data-name="Perception" data-vague-property="perception">
+                                                <div class="pf2e-bestiary-bold">{{sense.label}}</div>
+  
+                                                    {{PF2EBTMonsterValue sense ../vagueDescriptions.perception }}
+     
+                                            </div>
+                                        {{else}}
+                                            <div class="flexrow {{#if ../user.isGM }}toggle-container {{#if sense.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'senses.values.' key}}" data-parent="senses">
+                                                <div class="pf2e-bestiary-bold">{{sense.label}}</div>
                                                 {{sense.value}}
-                                            {{/if}}
-                                        </div>
+                                            </div>
+                                        {{/if}}
                                     {{/if}}
                                 {{/each}}
                             {{/if}}

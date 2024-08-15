@@ -66,6 +66,12 @@
                 "Public": "Description",
                 "Private": "Private Notes"
             },
+            "Misinformation": {
+                "Dialog": {
+                    "Title": "Missinformation Select",
+                    "SelectLabel": "Fake {property}"
+                }
+            },
             "Errors": {
                 "UnsupportedType": "Not a supported NPC type!",
                 "UnsupportedCharacterType": "Player Character are not supported in the bestiary."
