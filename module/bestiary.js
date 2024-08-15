@@ -43,6 +43,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             toggleRevealed: this.toggleRevealed,
             resetBestiary: this.resetBestiary,
             clearSearch: this.clearSearch,
+            createMisinformation: this.createMisinformation,
         },
         form: { handler: this.updateData, submitOnChange: true },
         dragDrop: [
@@ -166,10 +167,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
     
     static toggleAbility(_, button) {
-        this.selected.monster.abilities.values = this.selected.monster.abilities.values.includes(button.dataset.ability) ? 
-            this.selected.monster.abilities.values.filter(x => x !== button.dataset.ability) :
-            [...this.selected.monster.abilities.values, button.dataset.ability];
-
         const html = $($(this.element).find(`[data-ability="${button.dataset.ability}"]`)[0]).parent().parent().find('.action-description')[0];
         html.classList.toggle('expanded');
     }
@@ -232,6 +229,170 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this.render();
     }
 
+    getMisinformationDialogData(name){
+        switch(name){
+            case 'Immunity':
+            case 'Weakness':
+            case 'Resistance':
+                return {
+                    width: 400,
+                    content: new foundry.data.fields.StringField({
+                        label: game.i18n.format("PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel", { property: name }),
+                        required: true
+                    }).toFormGroup({}, {name: "misinformation"}).outerHTML,
+                    getValue: (elements) => {
+                        if(!elements.misinformation?.value) return { value: null, errors: [`Fake ${name}`] };
+
+                        return {
+                            value: {
+                                slug: slugify(elements.misinformation.value),
+                                value: {
+                                    revealed: false, value: elements.misinformation.value, fake: true,
+                                },
+                            },
+                            errors: []
+                        }
+                    }
+                }
+            case 'Sense':
+                return {
+                    width: 400,
+                    content: new foundry.data.fields.StringField({
+                        label: game.i18n.format("PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel", { property: name }),
+                        required: true
+                    }).toFormGroup({}, {name: "misinformation"}).outerHTML,
+                    getValue: (elements) => {
+                        if(!elements.misinformation?.value) return { value: null, errors: [`Fake ${name}`] };
+
+                        return {
+                            value: {
+                                slug: slugify(elements.misinformation.value),
+                                value: {
+                                    revealed: false, label: elements.misinformation.value, fake: true,
+                                },
+                            },
+                            errors: []
+                        }
+                    }
+                }
+            case 'Attack':
+                const rangeOptions = ['Melee', 'Ranged'];
+                return {
+                    width: 400,
+                    content: `
+                        <div>
+                            ${new foundry.data.fields.StringField({
+                                label: game.i18n.format("PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel", { property: name }),
+                                required: true
+                            }).toFormGroup({}, {name: "misinformation"}).outerHTML}
+                            ${new foundry.data.fields.StringField({
+                                choices: rangeOptions,
+                                label: game.i18n.localize("PF2EBestiary.Bestiary.Misinformation.Dialog.Attack.Range"),
+                                required: true
+                            }).toFormGroup({}, {name: "range"}).outerHTML}
+                            ${new foundry.data.fields.StringField({
+                                label: game.i18n.localize("PF2EBestiary.Bestiary.Misinformation.Dialog.Attack.Damage"),
+                                required: false
+                            }).toFormGroup({}, {name: "damage"}).outerHTML}
+                    </div>`,
+                    getValue: (elements) => {
+                        const errors = [];
+                        if(!elements.misinformation?.value) errors.push(`Fake ${name}`);
+                        if(!elements.range?.value) errors.push('Range')
+
+                        if(errors.length > 0) return { value: null, errors };
+
+                        return {
+                            value: {
+                                slug: slugify(elements.misinformation.value),
+                                value: {
+                                    revealed: false, label: elements.misinformation.value, range: rangeOptions[Number.parseInt(elements.range.value)], damage: elements.damage?.value, fake: true,
+                                },
+                            },
+                            errors: []
+                        };
+                    },
+                }
+            case 'Action':
+            case 'Passive':
+                const actionOptions = name === 'Action' ? [{value: 'F', label: 'Free Action'}, {value: '1', label: '1 Action'}, { value: '2', label: '2 Actions' }, { value: '3', label: '3 Actions' }, { value: 'R', label: 'Reaction' }] : [];
+                return {
+                    width: 600,
+                    content: `
+                        <div class="pf2e-bestiary-misinformation-dialog">
+                            ${new foundry.data.fields.StringField({
+                                label: game.i18n.format("PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel", { property: name }),
+                                required: true
+                            }).toFormGroup({}, {name: "misinformation"}).outerHTML}
+                            ${actionOptions.length > 0 ? new foundry.data.fields.StringField({
+                                choices: actionOptions.map(x => x.label),
+                                label: game.i18n.localize("PF2EBestiary.Bestiary.Misinformation.Dialog.Attack.Actions"),
+                                required: true
+                            }).toFormGroup({}, {name: "actions"}).outerHTML : ''}
+                            ${new foundry.data.fields.HTMLField({
+                                label: game.i18n.localize("PF2EBestiary.Bestiary.Misinformation.Dialog.Ability.Description"),
+                                required: false
+                            }).toFormGroup({}, { value: '', name: "description" }).outerHTML}
+                    </div>`,
+                    getValue: (elements) => {
+                        const errors = [];
+                        if(!elements.misinformation?.value) errors.push(`Fake ${name}`);
+                        if(name === 'Action' && !elements.actions?.value) errors.push('Actions Value');
+
+                        if(errors.length > 0) return { value: null, errors };
+
+                        const base = {
+                            slug: slugify(elements.misinformation.value),
+                            value: {
+                                revealed: false, uuid: `FakeUuid-${name}-${foundry.utils.randomID()}`, name: elements.misinformation.value, description: elements.description?.value, fake: true,
+                            },
+                        };
+
+                        if(name === 'Action'){
+                            base.value.actions = actionOptions[Number.parseInt(elements.actions.value)]?.value;
+                        }
+
+                        return { value: base, errors: [] };
+                    }
+                }
+        }
+    } 
+
+    static async createMisinformation(_, button){
+        const addValue = async ({value, errors}) => {
+            if(errors.length > 0) ui.notifications.error(game.i18n.format("PF2EBestiary.Bestiary.Misinformation.Dialog.Errors.RequiredFields", { fields: errors.map((x, index) => `${x}${index !== errors.length-1 ? ', ' : ''}`) }));
+
+            for(var type of this.selected.monster.inTypes){
+                const newValues = foundry.utils.getProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${button.dataset.path}.values`);
+                newValues[value.slug] = value.value;
+                foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${button.dataset.path}.values`, newValues);
+            }
+
+            await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+            await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+                action: socketEvent.UpdateBestiary,
+                data: { monsterSlug: this.selected.monster.slug },
+            });
+
+            this.render();
+        };
+
+        const { content, getValue, width } = this.getMisinformationDialogData(button.dataset.name);
+        
+        async function callback(_, button) {
+            await addValue(getValue(button.form.elements));
+        }
+
+        await foundry.applications.api.DialogV2.prompt({
+            content: content,
+            rejectClose: false,
+            modal: true,
+            ok: { callback: callback },
+            window: {title: game.i18n.localize('PF2EBestiary.Bestiary.Misinformation.Dialog.Title')},
+            position: { width }
+        });
+    }
+
     async obscureData(event){
         if(!game.user.isGM || !event.currentTarget.dataset.name) return;
 
@@ -253,9 +414,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         const vagueDescriptions = await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
         if(vagueDescriptions.misinformationOptions && vagueDescriptions[event.currentTarget.dataset.vagueProperty]){     
+            const choices = ['High', 'Med', 'Low'];
             const content = new foundry.data.fields.StringField({
                 label: game.i18n.format("PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel", { property: event.currentTarget.dataset.name }),
-                choices: ['High', 'Med', 'Low'],
+                choices: choices,
                 required: true
             }).toFormGroup({}, {name: "misinformation"}).outerHTML;
             
@@ -299,7 +461,21 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(!game.user.isGM) return;
 
         for(var type of this.selected.monster.inTypes){
-            foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${event.currentTarget.dataset.path}.custom`, null);
+            if(event.currentTarget.dataset.fake){
+                const pathSplit = event.currentTarget.dataset.path.split('.');
+                const deletePath = pathSplit.slice(0, pathSplit.length-1).join('.');
+                const newValues = foundry.utils.getProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], deletePath);
+                foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], deletePath, Object.keys(newValues).reduce((acc,key) => {
+                    if(key !== pathSplit[pathSplit.length-1]){
+                        acc[key] = newValues[key];
+                    }
+
+                    return acc;
+                }, {}));
+            }
+            else {
+                foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${event.currentTarget.dataset.path}.custom`, null);
+            }
         }
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);

@@ -1,6 +1,9 @@
 .theme-dark .bestiary-tracking.bestiary .right-bookmark-container {
-  top: -8px !important;
+  top: 0;
   height: 100%;
+}
+.theme-dark .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-return-icon {
+  top: 2px;
 }
 .bestiary-tracking {
   overflow-y: visible;
@@ -97,6 +100,12 @@
 }
 .bestiary-tracking.bestiary .bestiary-tabs .bestiary-tab:last-of-type {
   border-right-width: 2px;
+}
+.bestiary-tracking.bestiary .bestiary-fakable-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 .bestiary-tracking.bestiary .type-overview-container {
   display: flex;
@@ -564,4 +573,7 @@
 }
 .pf2e-bestiary-standard-gap {
   gap: 4px;
+}
+.pf2e-bestiary-misinformation-dialog .editor-container {
+  overflow: auto;
 }

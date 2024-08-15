@@ -4,8 +4,18 @@
     .bestiary-tracking {
         &.bestiary {
             .right-bookmark-container {
-                top: -8px !important;
+                top: 0;
                 height: 100%;
+            }
+
+            .monster-container {
+                .right-monster-container {
+                    .monster-name-container {
+                        .monster-return-icon{
+                            top: 2px;
+                        }
+                    }
+                }
             }
         }
     }
@@ -125,6 +135,13 @@
             .bestiary-tab:last-of-type {
                 border-right-width: 2px;
             }
+        }
+        
+        .bestiary-fakable-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
         }
 
         .type-overview-container {

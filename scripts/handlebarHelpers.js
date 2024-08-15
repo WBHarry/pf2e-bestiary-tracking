@@ -40,7 +40,7 @@ export default class RegisterHandlebarsHelpers {
             if(property.revealed) containerClass = containerClass.concat(' revealed');
         }
 
-        if(property.custom) containerClass = containerClass.concat(' misinformation');
+        if(property.custom || property.fake) containerClass = containerClass.concat(' misinformation');
 
         return containerClass;
     }

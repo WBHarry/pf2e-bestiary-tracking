@@ -67,9 +67,21 @@
                 "Private": "Private Notes"
             },
             "Misinformation": {
+                "AddMisinformation": "Add Misinformation",
                 "Dialog": {
                     "Title": "Missinformation Select",
-                    "SelectLabel": "Fake {property}"
+                    "SelectLabel": "Fake {property}",
+                    "Attack": {
+                        "Range": "Range",
+                        "Actions": "Actions",
+                        "Damage": "Damage"
+                    },
+                    "Ability": {
+                        "Description": "Description"
+                    },
+                    "Errors": {
+                        "RequiredFields": "Required fields not filled: {fields}"
+                    }
                 }
             },
             "Errors": {

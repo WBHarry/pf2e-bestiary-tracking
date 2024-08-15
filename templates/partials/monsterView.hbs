@@ -20,9 +20,12 @@
 
         <div class="flexcol">
             <div class="monster-left-data">
-                <div class="flex-data">
-                    <i class="fa-solid fa-fw fa-ankh"></i>
-                    <div>{{localize "PF2EBestiary.Miscellaneous.Immunities"}}</div>
+                <div class="bestiary-fakable-container">
+                    <div class="flex-data">
+                        <i class="fa-solid fa-fw fa-ankh"></i>
+                        <div>{{localize "PF2EBestiary.Miscellaneous.Immunities"}}</div>
+                    </div>
+                    <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="immunities" data-name="Immunity" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
                 </div>
             </div>
             <div class="monster-data-list {{#if (not this.user.isGM)}}no-gap{{/if}}">
@@ -34,7 +37,7 @@
                     {{else}}
                         {{#each this.immunities.values as |immunity key|}}
                             {{#if (or ../user.isGM (and (not ../immunities.fake) immunity.revealed))}}
-                                <div class="{{#if ../user.isGM }}toggle-container {{#if immunity.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'immunities.values.' key}}" data-parent="immunities">{{immunity.value}}</div>
+                                <div class="{{PF2EBTToggleContainer ../user immunity}}" data-action="toggleRevealed" data-path="{{concat 'immunities.values.' key}}" data-parent="immunities" data-fake="{{immunity.fake}}">{{immunity.value}}</div>
                                 {{#if (and (not ../user.isGM) (gt ../this.immunities.currentRevealed immunity.index))}},&nbsp;{{/if}}
                             {{/if}}
                         {{/each}}
@@ -46,9 +49,13 @@
 
         <div class="flexcol">
             <div class="monster-left-data">
-                <div class="flex-data">
-                    <i class="fa-solid fa-fw fa-heart-broken"></i>
-                    <div>{{localize "PF2EBestiary.Miscellaneous.Weaknesses"}}</div>
+                <div class="bestiary-fakable-container">
+                    <div class="flex-data">
+                        <i class="fa-solid fa-fw fa-heart-broken"></i>
+                        <div>{{localize "PF2EBestiary.Miscellaneous.Weaknesses"}}</div>
+                    </div>
+
+                    <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="weaknesses" data-name="Weakness" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
                 </div>
             </div>
             <div class="monster-data-list {{#if (not this.user.isGM)}}no-gap{{/if}}">
@@ -61,10 +68,11 @@
                         {{#each this.weaknesses.values as |weakness key|}}
                             {{#if (or ../user.isGM (and (not ../weaknesses.fake) weakness.revealed))}}
                                 <div 
-                                    class="{{#if ../user.isGM }}toggle-container{{#if weakness.revealed}} revealed{{/if}}{{/if}}{{#if (and (not ../user.isGM) ../vagueDescriptions.weaknesses)}}{{weakness.class}}{{/if}}" 
+                                    class="{{PF2EBTToggleContainer ../user weakness}}{{#if (and (not ../user.isGM) ../vagueDescriptions.weaknesses)}}{{weakness.class}}{{/if}}" 
                                     data-action="toggleRevealed" 
                                     data-path="{{concat 'weaknesses.values.' key}}" 
                                     data-parent="weaknesses"
+                                    data-fake="{{weakness.fake}}"
                                     title="{{PF2EBTCategoryClassTitle weakness.class 'Weakness' ../vagueDescriptions.weaknesses}}"
                                 >
                                     {{PF2EBTMonsterValue weakness ../vagueDescriptions.weaknesses}}
@@ -80,9 +88,13 @@
 
         <div class="flexcol">
             <div class="monster-left-data">
-                <div class="flex-data">
-                    <i class="fa-solid fa-fw fa-shield-virus"></i>
-                    <div>{{localize "PF2EBestiary.Miscellaneous.Resistances"}}</div>
+                <div class="bestiary-fakable-container">
+                    <div class="flex-data">
+                        <i class="fa-solid fa-fw fa-shield-virus"></i>
+                        <div>{{localize "PF2EBestiary.Miscellaneous.Resistances"}}</div>
+                    </div>
+
+                    <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="resistances" data-name="Resistance" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
                 </div>
             </div>
             <div class="monster-data-list {{#if (not this.user.isGM)}}no-gap{{/if}}">
@@ -95,10 +107,11 @@
                         {{#each this.resistances.values as |resistance key|}}
                             {{#if (or ../user.isGM (and (not ../resistances.fake) resistance.revealed))}}
                                 <div 
-                                    class="{{#if ../user.isGM }}toggle-container{{#if resistance.revealed}} revealed{{/if}}{{/if}}{{#if (and (not ../user.isGM) ../vagueDescriptions.resistances)}}{{resistance.class}}{{/if}}" 
+                                    class="{{PF2EBTToggleContainer ../user resistance}}{{#if (and (not ../user.isGM) ../vagueDescriptions.resistances)}}{{resistance.class}}{{/if}}" 
                                     data-action="toggleRevealed" 
                                     data-path="{{concat 'resistances.values.' key}}" 
                                     data-parent="resistances"
+                                    data-fake="{{resistance.fake}}"
                                     title="{{PF2EBTCategoryClassTitle resistance.class 'Resistance' ../vagueDescriptions.resistances}}"
                                 >
                                     {{PF2EBTMonsterValue resistance ../vagueDescriptions.resistances}}
@@ -221,9 +234,13 @@
 
                     <div class="data-section">
                         <div class="data-header">
-                            <div class="data-header-label">
-                                <img class="data-icon" src="icons/svg/eye.svg" />
-                                <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Senses"}}</div>
+                            <div class="bestiary-fakable-container">
+                                <div class="data-header-label">
+                                    <img class="data-icon" src="icons/svg/eye.svg" />
+                                    <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Senses"}}</div>
+                                </div>
+
+                                <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="senses" data-name="Sense" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
                             </div>
                         </div>
                         <div class="data-body pf2e-bestiary-standard-gap">
@@ -240,7 +257,7 @@
      
                                             </div>
                                         {{else}}
-                                            <div class="flexrow {{#if ../user.isGM }}toggle-container {{#if sense.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'senses.values.' key}}" data-parent="senses">
+                                            <div class="flexrow {{PF2EBTToggleContainer ../user sense}}" data-action="toggleRevealed" data-path="{{concat 'senses.values.' key}}" data-parent="senses" data-fake="{{sense.fake}}">
                                                 <div class="pf2e-bestiary-bold">{{sense.label}}</div>
                                                 {{sense.value}}
                                             </div>
@@ -255,9 +272,13 @@
 
                 <div class="data-section">
                     <div class="data-header">
-                        <div class="data-header-label">
-                            <img class="data-icon" src="icons/svg/combat.svg" />
-                            <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attacks"}}</div>
+                        <div class="bestiary-fakable-container">
+                            <div class="data-header-label">
+                                <img class="data-icon" src="icons/svg/combat.svg" />
+                                <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attacks"}}</div>
+                            </div>
+                        
+                            <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="attacks" data-name="Attack" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
                         </div>
                     </div>
                     <div class="data-body pf2e-bestiary-standard-gap">
@@ -268,7 +289,7 @@
                                 {{#if (or ../user.isGM attack.revealed)}}
                                     <div class="attack-container">
                                         <div class="attack-inner-container">
-                                            <div class="attack-header {{#if ../user.isGM }}toggle-container {{#if attack.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key}}" data-parent="attacks">
+                                            <div class="attack-header {{PF2EBTToggleContainer ../user attack}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key}}" data-parent="attacks" data-fake="{{attack.fake}}">
                                                 {{#if (not (eq attack.label 'None'))}}
                                                     <div>{{attack.range}}</div>
                                                     <span class="action-glyph">1</span>
@@ -304,9 +325,13 @@
 
                 <div class="data-section">
                     <div class="data-header">
-                        <div class="data-header-label">
-                            <img class="data-icon" src="icons/svg/explosion.svg" />
-                            <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Abilities"}}</div>
+                        <div class="bestiary-fakable-container">
+                            <div class="data-header-label">
+                                <img class="data-icon" src="icons/svg/explosion.svg" />
+                                <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Abilities"}}</div>
+                            </div>
+
+                            <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="actions" data-name="Action" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
                         </div>
                     </div>
                     <div class="data-body pf2e-bestiary-standard-gap">
@@ -315,7 +340,7 @@
                         {{else}}
                             {{#each this.actions.values as |action key|}}
                                 {{#if (or ../user.isGM action.revealed)}}
-                                    <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if action.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'actions.values.' key}}" data-parent="actions">
+                                    <div class="actions-container {{PF2EBTToggleContainer ../user action}}" data-action="toggleRevealed" data-path="{{concat 'actions.values.' key}}" data-parent="actions" data-fake="{{action.fake}}">
                                         <div class="action-container">
                                             <div class="{{#if (not (eq action.name 'None'))}}action-name{{/if}}" data-action="toggleAbility" data-ability="{{action.uuid}}">{{action.name}}</div>
                                             <span class="action-glyph">{{#if action.actions}}{{action.actions}}{{else}}{{#if (not (eq action.name 'None'))}}R{{/if}}{{/if}}</span>
@@ -332,9 +357,13 @@
 
                 <div class="data-section">
                     <div class="data-header">
-                        <div class="data-header-label">
-                            <img class="data-icon" src="icons/svg/paralysis.svg" />
-                            <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Passives"}}</div>
+                        <div class="bestiary-fakable-container">
+                            <div class="data-header-label">
+                                <img class="data-icon" src="icons/svg/paralysis.svg" />
+                                <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Passives"}}</div>
+                            </div>
+
+                            <i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="passives" data-name="Passive" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>
                         </div>
                     </div>
                     <div class="data-body pf2e-bestiary-standard-gap">
@@ -343,7 +372,7 @@
                         {{else}}
                             {{#each this.passives.values as |passive key|}}
                                 {{#if (or ../user.isGM passive.revealed)}}
-                                    <div class="actions-container {{#if ../user.isGM }}toggle-container {{#if passive.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'passives.values.' key}}" data-parent="passives">
+                                    <div class="actions-container {{PF2EBTToggleContainer ../user passive}}" data-action="toggleRevealed" data-path="{{concat 'passives.values.' key}}" data-parent="passives" data-fake="{{passive.fake}}">
                                         <div class="action-container">
                                             <div class="{{#if (not (eq passive.name 'None'))}}action-name{{/if}}" data-action="toggleAbility" data-ability="{{passive.uuid}}">{{passive.name}}</div>
                                         </div>
