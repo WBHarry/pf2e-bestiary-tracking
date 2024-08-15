@@ -30,6 +30,9 @@
         },
         "Bestiary": {
             "Title": "Bestiary",
+            "WindowControls": {
+                "ResetBestiary": "Reset Bestiary"
+            },
             "Welcome": {
                 "Greeting": "Welcome to the Bestiary!",
                 "PlayersSection": {

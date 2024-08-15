@@ -48,6 +48,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             imagePopout: this.imagePopout,
         },
         form: { handler: this.updateData, submitOnChange: true },
+        window: {
+            controls: [
+                {
+                    icon: 'fa-solid fa-link-slash',
+                    label: 'PF2EBestiary.Bestiary.WindowControls.ResetBestiary',
+                    action: 'resetBestiary',
+                },
+            ]
+        },
         dragDrop: [
             {dragSelector: null, dropSelector: null },
         ],
