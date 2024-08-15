@@ -316,10 +316,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                                 label: game.i18n.localize("PF2EBestiary.Bestiary.Misinformation.Dialog.Attack.Range"),
                                 required: true
                             }).toFormGroup({}, {name: "range"}).outerHTML}
-                            ${new foundry.data.fields.StringField({
-                                label: game.i18n.localize("PF2EBestiary.Bestiary.Misinformation.Dialog.Attack.Damage"),
-                                required: false
-                            }).toFormGroup({}, {name: "damage"}).outerHTML}
                     </div>`,
                     getValue: (elements) => {
                         const errors = [];
@@ -332,7 +328,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                             value: {
                                 slug: slugify(elements.misinformation.value),
                                 value: {
-                                    revealed: false, label: elements.misinformation.value, range: rangeOptions[Number.parseInt(elements.range.value)], damage: elements.damage?.value, fake: true,
+                                    revealed: false, label: elements.misinformation.value, range: rangeOptions[Number.parseInt(elements.range.value)], fake: true,
                                 },
                             },
                             errors: []
