@@ -23,19 +23,21 @@ Hooks.once("ready", () => {
 
 Hooks.on("combatStart", async (encounter) => {
     if(game.user.isGM){
-        const autoAddMonsters = await game.settings.get('pf2e-bestiary-tracking', 'automatic-combat-registration');
-        if(!autoAddMonsters) return;
-    
-        for(var combatant of encounter.combatants){
-            await PF2EBestiary.addMonster(combatant.actor);
-        } 
-    
-        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-            action: socketEvent.UpdateBestiary,
-            data: {},
-        });
+        const automaticCombatSetting = await game.settings.get('pf2e-bestiary-tracking', 'automatic-combat-registration');
+        if(automaticCombatSetting === 1){
+            for(var combatant of encounter.combatants){
+                await PF2EBestiary.addMonster(combatant.actor);
+            } 
+        }
+    }
+});
 
-        Hooks.callAll(socketEvent.UpdateBestiary, {});
+Hooks.on("updateCombatant", async (combatant, changes) => {
+    if(game.user.isGM){
+        const automaticCombatSetting = await game.settings.get('pf2e-bestiary-tracking', 'automatic-combat-registration');
+        if(automaticCombatSetting === 2 && changes.defeated){
+            await PF2EBestiary.addMonster(combatant.actor);
+        }
     }
 });
 

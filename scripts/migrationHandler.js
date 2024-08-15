@@ -88,6 +88,20 @@ export const handleDataMigration = async () => {
         version = '0.8.6';
     }
 
+    // if(version === '0.8.6'){
+    //     await migrateBestiary(async (bestiary, monster, type, monsterKey) => {
+    //         const origin = monster.uuid ? await fromUuid(monster.uuid) : game.actors.find(x => x.id === monster.id);
+    //         if(!origin){
+    //             delete bestiary.monster[type][monsterKey];
+    //             return;
+    //         }
+
+
+    //     });
+        
+    //     version === '0.8.7';
+    // }
+
     await game.settings.set('pf2e-bestiary-tracking', 'version', version);
 }
 

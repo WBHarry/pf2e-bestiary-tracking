@@ -11,6 +11,20 @@ export const registerGameSettings = () => {
         default: '',
     });
 
+    game.settings.register('pf2e-bestiary-tracking', 'automatic-combat-registration', {
+        name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Hint'),
+        scope: 'world',
+        config: true,
+        type: Number,
+        choices: {
+            0: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.Never'),
+            1: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.StartOfCombat'),
+            2: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.CreatureDefeated'),
+        },
+        default: 0,
+    });
+
     game.settings.register('pf2e-bestiary-tracking', 'use-token-art', {
         name: game.i18n.localize('PF2EBestiary.Settings.UseTokenArt.Name'),
         hint: game.i18n.localize('PF2EBestiary.Settings.UseTokenArt.Hint'),
@@ -26,15 +40,6 @@ export const registerGameSettings = () => {
                 bestiary.monster[type][monsterKey].img = value ? origin.prototypeToken.texture.src : origin.img;
             });
         }
-    });
-
-    game.settings.register('pf2e-bestiary-tracking', 'automatic-combat-registration', {
-        name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Name'),
-        hint: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Hint'),
-        scope: 'world',
-        config: true,
-        type: Boolean,
-        default: false,
     });
 
     game.settings.register('pf2e-bestiary-tracking', 'automatically-open-monster', {

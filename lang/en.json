@@ -126,7 +126,12 @@
             },
             "AutomaticCombatRegistration": {
                 "Name": "Combat Registration",
-                "Hint": "Automtically add new enemies in a combat encounter to the bestiary when its started."
+                "Hint": "Automtically add new enemies to the Bestiary during a selected stage of combat.",
+                "Choices": {
+                    "Never": "Never",
+                    "StartOfCombat": "Start Of Combat",
+                    "CreatureDefeated": "On Creature Defeated"
+                }
             },
             "AutomaticallyOpenMonster": {
                 "Name": "Auto Open Bestiary Entry",

@@ -552,6 +552,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: { },
+        });
+
+        Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
 
     static async getMonsterData(item){
