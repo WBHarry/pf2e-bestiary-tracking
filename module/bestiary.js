@@ -41,6 +41,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             toggleStatistics: this.toggleStatistics,
             returnButton: this.returnButton,
             toggleAbility: this.toggleAbility,
+            toggleSpell: this.toggleSpell,
             toggleRevealed: this.toggleRevealed,
             resetBestiary: this.resetBestiary,
             clearSearch: this.clearSearch,
@@ -66,7 +67,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         application: {
             id: "bestiary",
             template: "modules/pf2e-bestiary-tracking/templates/bestiary.hbs",
-            scrollable: [".left-monster-container", ".right-monster-container-data", ".type-overview-container", ".spell-list-container"]
+            scrollable: [".left-monster-container", ".right-monster-container-data", ".type-overview-container", ".spells-tab"]
         }
     }
 
@@ -156,7 +157,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             passives: monster.passives,
             saves: monster.saves,
             spells: {
-                ...monster.spells,
+                ...monster.spells, 
                 entries: Object.keys(monster.spells.entries).reduce((acc, entryKey) => {
                     acc[entryKey] = {
                         ...monster.spells.entries[entryKey],
@@ -171,9 +172,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                                 revealed: spellArray.some(spell => spell.revealed),
                                 level: levelKey,
                                 label: Number.isNaN(Number.parseInt(levelKey)) ? levelKey : `${levelKey}${levelKey === '1' ? 'st' : 'nd'} Rank`,
-                                spells: Object.keys(spells).map(spellKey => ({
-                                    ...spells[spellKey]
-                                }))
+                                spells: Object.keys(spells).map(spellKey => spells[spellKey])
                             });
 
                             return acc;
@@ -274,6 +273,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     
     static toggleAbility(_, button) {
         const html = $($(this.element).find(`[data-ability="${button.dataset.ability}"]`)[0]).parent().parent().find('.action-description')[0];
+        html.classList.toggle('expanded');
+    }
+
+    static toggleSpell(_, button) {
+        const html = $($(this.element).find(`[data-spell="${button.dataset.spell}"]`)[0]).parent().parent().parent().parent().find(`.spell-body-row.description[data-spell="${button.dataset.spell}"]`)[0];
         html.classList.toggle('expanded');
     }
 
@@ -719,20 +723,22 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
             const levels = {};
             for(var spell of subItem.spells){
-                const level = spell.system.traits.value.find(x => x === 'cantrip') ? 'Cantrips' : spell.system.level.value;
+                const level = spell.isCantrip ? 'Cantrips' : spell.level;
                 if(!levels[level]) levels[level] = {};
 
                 levels[level][spell.id] = {
                     revealed: false,
                     id: spell.id,
+                    uuid: spell.uuid,
                     name: spell.name,
                     img: spell.img,
-                    actions: spell.system.time.value,
+                    actions: spell.actionGlyph,
                     defense: spell.system.defense?.save?.statistic ? `${spell.system.defense.save.basic ? 'basic ' : ''} ${spell.system.defense.save.statistic}` : null,
                     range: spell.system.range.value,
+                    traits: spell.system.traits,
                     description: {
                         gm: spell.system.description.gm,
-                        value: spell.system.description.gm,
+                        value: spell.system.description.value,
                     }
                 };
             }
@@ -826,6 +832,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 will: { value: `${item.system.saves.will.value >= 0 ? '+' : '-'}${item.system.saves.will.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.will.value, true), revealed: false },
             },
             spells: {
+                fake: Object.keys(spellcastingEntries).length > 0 ? null : { revealed: false },
                 entries: spellcastingEntries,
             },
             notes: {

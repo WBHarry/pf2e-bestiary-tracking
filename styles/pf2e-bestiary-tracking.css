@@ -1,5 +1,12 @@
-.bestiary-tracking.bestiary .monster-container .right-monster-container .spell-section {
-  height: 100%;
+.bestiary-tracking.bestiary .monster-container .right-monster-container .spells-tab {
+  overflow: auto;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .spells-unknown {
+  font-size: 22px;
+  font-style: italic;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .spell-section:not(:last-of-type) {
+  margin-bottom: 4px;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container {
   border-width: 0 1px 1px 1px;
@@ -22,20 +29,49 @@
 .bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-body-row {
   line-height: 10px;
 }
+.bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-body-row.even {
+  background-color: rgba(120, 100, 82, 0.1);
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-body-row.description {
+  display: none;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-body-row.description.expanded {
+  display: table-row;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-body-row.description td .spell-description {
+  height: auto;
+  max-height: 500;
+  transition: max-height 0.5s;
+  transition-timing-function: ease-in;
+  overflow: hidden;
+  line-height: normal;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-body-row.description td .spell-description.expanded {
+  max-height: 500px;
+}
 .bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-name-cell {
   text-align: left;
   padding: 0 4px;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-name-cell.body {
-  display: flex;
-  align-items: center;
   margin: 3px 0;
 }
-.bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-name-cell.body .cell-name {
+.bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-name-cell.body .spell-data-container {
+  display: flex;
+  align-items: center;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-name-cell.body .spell-data-container .cell-name {
   margin: 0 4px 0 4px;
+  font-weight: bold;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-cell {
   text-align: center;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-cell.range {
+  width: 88px;
+}
+.bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container .spell-cell.defense {
+  width: 150px;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .spell-list-container img {
   height: 100%;
@@ -441,29 +477,31 @@
   font-weight: bold;
   margin-right: 4px;
 }
-.bestiary-tracking.bestiary .monster-container .right-monster-container .data-body .actions-container {
+.bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container {
   display: flex;
   flex-direction: column;
 }
-.bestiary-tracking.bestiary .monster-container .right-monster-container .data-body .actions-container .action-container {
+.bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container .action-container {
   display: flex;
   align-items: center;
   font-weight: bold;
+  gap: 4px;
 }
-.bestiary-tracking.bestiary .monster-container .right-monster-container .data-body .actions-container .action-container .action-name {
+.bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container .action-container .action-name {
   cursor: pointer;
 }
-.bestiary-tracking.bestiary .monster-container .right-monster-container .data-body .actions-container .action-container .action-name:hover {
+.bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container .action-container .action-name:hover {
   filter: drop-shadow(0 0 3px red);
 }
-.bestiary-tracking.bestiary .monster-container .right-monster-container .data-body .actions-container .action-description {
+.bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container .action-description {
   height: auto;
   max-height: 0;
   transition: max-height 0.5s;
   transition-timing-function: ease-in;
   overflow: hidden;
+  line-height: normal;
 }
-.bestiary-tracking.bestiary .monster-container .right-monster-container .data-body .actions-container .action-description.expanded {
+.bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container .action-description.expanded {
   max-height: 500px;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .data-icon {

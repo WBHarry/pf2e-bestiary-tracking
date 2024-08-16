@@ -475,35 +475,37 @@
                             }
                         }
                     }
+                }
 
-                    .actions-container {
+                .actions-container {
+                    display: flex;
+                    flex-direction: column;
+
+                    .action-container {
                         display: flex;
-                        flex-direction: column;
+                        align-items: center;
+                        font-weight: bold;
+                        gap: 4px;
 
-                        .action-container {
-                            display: flex;
-                            align-items: center;
-                            font-weight: bold;
+                        .action-name {
+                            cursor: pointer;
 
-                            .action-name {
-                                cursor: pointer;
-
-                                &:hover {
-                                    filter: drop-shadow(0 0 3px red);
-                                }
+                            &:hover {
+                                filter: drop-shadow(0 0 3px red);
                             }
                         }
+                    }
 
-                        .action-description {
-                            height: auto;
-                            max-height: 0;
-                            transition: max-height 0.5s;
-                            transition-timing-function: ease-in;
-                            overflow: hidden;
+                    .action-description {
+                        height: auto;
+                        max-height: 0;
+                        transition: max-height 0.5s;
+                        transition-timing-function: ease-in;
+                        overflow: hidden;
+                        line-height: normal;
 
-                            &.expanded {
-                                max-height: 500px;
-                            }
+                        &.expanded {
+                            max-height: 500px;
                         }
                     }
                 }

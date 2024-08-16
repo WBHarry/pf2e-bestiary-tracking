@@ -9,6 +9,7 @@ export default class RegisterHandlebarsHelpers {
             PF2EBTTertiary: this.tertiary,
             PF2EBTCaptialize: this.capitalize,
             PF2EBTSub: this.sub,
+            PF2EBTEven: this.even,
         });
     };
     
@@ -78,5 +79,9 @@ export default class RegisterHandlebarsHelpers {
 
     static sub(a, b){
         return a-b;
+    }
+
+    static even(a){
+        return a%2;
     }
 }

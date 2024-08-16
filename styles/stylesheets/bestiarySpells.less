@@ -4,8 +4,19 @@
     &.bestiary {
         .monster-container {
             .right-monster-container {
+                .spells-tab {
+                    overflow: auto;
+                }
+
+                .spells-unknown {
+                    font-size: 22px;
+                    font-style: italic;
+                }
+
                 .spell-section {
-                    height: 100%;
+                    &:not(:last-of-type) {
+                        margin-bottom: 4px;
+                    }
                 }
 
                 .spell-list-container {
@@ -31,6 +42,33 @@
 
                     .spell-body-row {
                         line-height: 10px;
+
+                        &.even {
+                            background-color: rgba(120, 100, 82, 0.1);
+                        }
+
+                        &.description {
+                            display: none;
+
+                            &.expanded {
+                                display: table-row;
+                            }
+
+                            td {
+                                .spell-description {
+                                    height: auto;
+                                    max-height: 500;
+                                    transition: max-height 0.5s;
+                                    transition-timing-function: ease-in;
+                                    overflow: hidden;
+                                    line-height: normal;
+            
+                                    &.expanded {
+                                        max-height: 500px;
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     .spell-name-cell {
@@ -38,18 +76,30 @@
                         padding: 0 4px;
 
                         &.body {
-                            display: flex;
-                            align-items: center;
                             margin: 3px 0;
 
-                            .cell-name {
-                                margin: 0 4px 0 4px;
+                            .spell-data-container {
+                                display: flex;
+                                align-items: center;
+
+                                .cell-name {
+                                    margin: 0 4px 0 4px;
+                                    font-weight: bold;
+                                }
                             }
                         }
                     }
                     
                     .spell-cell {
                         text-align: center;
+
+                        &.range {
+                            width: 88px;
+                        }
+
+                        &.defense {
+                            width: 150px;
+                        }
                     }
 
                     img {

@@ -441,7 +441,17 @@
             </div>        
         </div>
 
-        <div class="tab {{this.tabs.spells.cssClass}}" data-group="primary" data-tab="spells">
+        <div class="tab {{this.tabs.spells.cssClass}} spells-tab" data-group="primary" data-tab="spells">
+            {{#if (and (not this.user.isGM) this.spells.fake)}}
+                {{#if this.spells.fake.revealed}}
+                    <div class="spells-unknown">{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
+                {{else}}
+                    <div class="spells-unknown">{{localize "PF2EBestiary.Bestiary.Miscellaneous.Unknown"}}</div>
+                {{/if}}
+            {{/if}}
+            {{#if (and this.user.isGM this.spells.fake)}}
+                <div class="{{PF2EBTToggleContainer this.user this.spells.fake}}" data-action="toggleRevealed" data-path="spells.fake">{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
+            {{/if}}
             {{#each this.spells.entries as |entry entryKey|}}
                 {{#if (or ../user.isGM entry.revealed)}}
                     <div class="data-section spell-section">
@@ -462,19 +472,28 @@
                                     {{#if (or ../../user.isGM this.revealed)}}
                                         <tr class="spell-header-row">
                                             <th class="spell-name-cell">{{this.label}}</th>
-                                            <th class="spell-cell">{{localize "Defense"}}</th>
-                                            <th class="spell-cell">{{localize "Range"}}</th>
+                                            <th class="spell-cell defense">{{localize "Defense"}}</th>
+                                            <th class="spell-cell range">{{localize "Range"}}</th>
                                         </tr>
                                         {{#each this.spells}}
                                             {{#if (or ../../../user.isGM this.revealed)}}
-                                                <tr class="spell-body-row {{PF2EBTToggleContainer ../../../user this}}" data-action="toggleRevealed" data-path="{{concat "spells.entries." ../../id ".levels." ../level '.' this.id}}">
-                                                    <td class="spell-name-cell body">
-                                                        <img src="{{this.img}}" />
-                                                        <div class="cell-name">{{this.name}}</div>
-                                                        <div class="action-glyph">{{this.actions}}</div>
+                                                <tr class="spell-body-row {{PF2EBTToggleContainer ../../../user this}} {{#if (and (not ../../../user.isGM) (PF2EBTEven @key))}}even{{/if}}" data-action="toggleRevealed" data-path="{{concat "spells.entries." ../../id ".levels." ../level '.' this.id}}">
+                                                    <td class="spell-name-cell body actions-container">
+                                                        <div class="spell-data-container">
+                                                            <img src="{{this.img}}" />
+                                                            <div class="cell-name pf2e-bestiary-clickable-icon" data-action="toggleSpell" data-spell="{{this.uuid}}">{{this.name}}</div>
+                                                            <div class="action-glyph">{{{this.actions}}}</div>
+                                                        </div>
                                                     </td>
-                                                    <td class="spell-cell">{{this.defense}}</td>
-                                                    <td class="spell-cell">{{this.range}}</td>
+                                                    <td class="spell-cell defense">{{this.defense}}</td>
+                                                    <td class="spell-cell range">{{this.range}}</td>
+                                                </tr>
+                                                <tr class="spell-body-row description" data-spell="{{this.uuid}}">
+                                                    <td colspan="3">
+                                                        <div class="spell-description">
+                                                            {{{this.description.value}}}
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             {{/if}}
                                         {{/each}}
