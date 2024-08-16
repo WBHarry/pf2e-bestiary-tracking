@@ -123,6 +123,49 @@ export const handleDataMigration = async () => {
             bestiary.monster[type][monsterKey].saves.will.category = getCategoryLabel(savingThrowPerceptionTable, origin.system.details.level.value, bestiary.monster[type][monsterKey].saves.will.value);
             bestiary.monster[type][monsterKey].abilities.values.forEach(ability => ability.category = getCategoryLabel(attributeTable, origin.system.details.level.value, ability.mod));
             bestiary.monster[type][monsterKey].senses.values.perception.category = getCategoryLabel(savingThrowPerceptionTable, origin.system.details.level.value, bestiary.monster[type][monsterKey].senses.values.perception.value);
+
+            // All spellcasting creatures should have spell data
+            const spellcastingEntries = {};
+            for(var subItem of origin.items){
+                if(subItem.type !== 'spellcastingEntry') {
+                    continue;
+                }
+
+                const levels = {};
+                for(var spell of subItem.spells){
+                    const level = spell.isCantrip ? 'Cantrips' : spell.level;
+                    if(!levels[level]) levels[level] = {};
+
+                    levels[level][spell.id] = {
+                        revealed: false,
+                        id: spell.id,
+                        uuid: spell.uuid,
+                        name: spell.name,
+                        img: spell.img,
+                        actions: spell.actionGlyph,
+                        defense: spell.system.defense?.save?.statistic ? `${spell.system.defense.save.basic ? 'basic ' : ''} ${spell.system.defense.save.statistic}` : null,
+                        range: spell.system.range.value,
+                        traits: spell.system.traits,
+                        description: {
+                            gm: spell.system.description.gm,
+                            value: spell.system.description.value,
+                        }
+                    };
+                }
+
+                spellcastingEntries[subItem.id] = {
+                    revealed: false,
+                    name: subItem.name,
+                    dc: { revealed: false, value: subItem.system.spelldc.dc },
+                    attack: { revealed: false, value: subItem.system.spelldc.value },
+                    levels: levels,
+                };
+            }
+            
+            bestiary.monster[type][monsterKey].spells = {
+                fake: Object.keys(spellcastingEntries).length > 0 ? null : { revealed: false },
+                entries: spellcastingEntries,
+            };
         });
         
         version = '0.8.7';

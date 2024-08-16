@@ -111,6 +111,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             newPassives[passiveKey] = { ...selected.monster.passives.values[passiveKey], description };
         }
 
+        for(var entryKey in selected.monster.spells.entries){
+            const entry = selected.monster.spells.entries[entryKey]
+            for(var levelKey in entry.levels){
+                for(var spellKey in entry.levels[levelKey]){
+                    const spell = entry.levels[levelKey][spellKey];
+                    spell.description = { ...spell.description, value: await TextEditor.enrichHTML(spell.description.value) };
+                }
+            }
+        }
+
         selected.monster.notes.public.text = await TextEditor.enrichHTML(selected.monster.notes.public.text);
         selected.monster.notes.private.text = await TextEditor.enrichHTML(selected.monster.notes.private.text);
         selected.monster.actions.values = newActions;
