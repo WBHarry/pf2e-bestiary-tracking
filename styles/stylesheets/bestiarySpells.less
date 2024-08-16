@@ -1,0 +1,69 @@
+@import "../variables.less";
+
+.bestiary-tracking {
+    &.bestiary {
+        .monster-container {
+            .right-monster-container {
+                .spell-section {
+                    height: 100%;
+                }
+
+                .spell-list-container {
+                    border-width: 0 1px 1px 1px;
+                    border-color: black;
+                    border-style: solid;
+                    border-radius: 0 0 4px 4px;
+                    overflow: auto;
+
+                    table {
+                        margin: 0;
+                        overflow: auto;
+
+                        tbody {
+                            padding: 0 4px;
+                        }
+                    }
+
+                    .spell-header-row {
+                        line-height: 10px;
+                        background: rgba(96, 88, 86, 0.25);
+                    }
+
+                    .spell-body-row {
+                        line-height: 10px;
+                    }
+
+                    .spell-name-cell {
+                        text-align: left;
+                        padding: 0 4px;
+
+                        &.body {
+                            display: flex;
+                            align-items: center;
+                            margin: 3px 0;
+
+                            .cell-name {
+                                margin: 0 4px 0 4px;
+                            }
+                        }
+                    }
+                    
+                    .spell-cell {
+                        text-align: center;
+                    }
+
+                    img {
+                        height: 100%;
+                        width: 30px;
+                        padding: 0;
+                        margin: 0;
+                        --inset-shadow-length: 0.25rem;
+                        border: none;
+                        border-radius: 2px;
+                        box-shadow: 0 0 0 1px var(--tertiary), 0 0 0 2px #9f725b, inset 0 0 var(--inset-shadow-length) rgba(0, 0, 0, 0.5);
+                    }
+                }
+            }
+        }
+    }
+}

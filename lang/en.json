@@ -62,7 +62,8 @@
                 "RightClick": "Right Click"
             },
             "Tabs": {
-                "Statistics": "Statistics",
+                "Statistics": "Stats",
+                "Spells": "Spells",
                 "Lore": "Lore"
             },
             "Lore": {

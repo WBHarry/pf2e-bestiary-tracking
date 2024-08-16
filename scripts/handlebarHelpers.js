@@ -8,11 +8,12 @@ export default class RegisterHandlebarsHelpers {
             PF2EBTFilter: this.filter,
             PF2EBTTertiary: this.tertiary,
             PF2EBTCaptialize: this.capitalize,
+            PF2EBTSub: this.sub,
         });
     };
     
-    static nrKeys(obj) {
-        return obj ? Object.keys(obj).length : 0;
+    static nrKeys(obj, prop, context) {
+        return obj ? (prop && context) ? Object.keys(obj).filter(x => obj[x][prop]).length : Object.keys(obj).length : 0;
     }
 
     static monsterValue(prop, flag){
@@ -73,5 +74,9 @@ export default class RegisterHandlebarsHelpers {
 
     static capitalize(text){
         return text.capitalize();
+    }
+
+    static sub(a, b){
+        return a-b;
     }
 }

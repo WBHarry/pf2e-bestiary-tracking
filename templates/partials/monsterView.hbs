@@ -184,7 +184,11 @@
                 <nav class="bestiary-tabs tabs">
                     {{#each this.tabs as |tab|}}
                         <a 
-                            class="bestiary-tab {{tab.cssClass}}{{#if (and (not ../user.isGM) (and (eq tab.id 'lore') (and (not ../notes.public.revealed) (not ../notes.private.revealed))))}} empty{{/if}}" 
+                            class="
+                                bestiary-tab {{tab.cssClass}}
+                                {{#if (and (not ../user.isGM) (and (eq tab.id 'lore') (and (not ../notes.public.revealed) (not ../notes.private.revealed))))}} empty{{/if}}
+                                {{#if (and (not ../user.isGM) (and (eq tab.id 'spells') (eq (PF2EBTNrKeys ../this.spells.entries 'revealed') 0)))}} empty{{/if}}
+                            " 
                             data-action="tab" 
                             data-group="{{tab.group}}" 
                             data-tab="{{tab.id}}"
@@ -436,6 +440,53 @@
                 </div>
             </div>        
         </div>
+
+        <div class="tab {{this.tabs.spells.cssClass}}" data-group="primary" data-tab="spells">
+            {{#each this.spells.entries as |entry entryKey|}}
+                {{#if (or ../user.isGM entry.revealed)}}
+                    <div class="data-section spell-section">
+                        <div class="data-header">
+                            <div class="bestiary-fakable-container">
+                                <div class="data-header-label">
+                                    <div class="flex-value {{PF2EBTToggleContainer ../user entry}}" data-action="toggleRevealed" data-path="{{concat "spells.entries." entryKey}}">{{entry.name}}</div>
+                                    {{#if (or ../user.isGM entry.dc.revealed)}}<div class="{{PF2EBTToggleContainer ../user entry.dc}}" data-action="toggleRevealed" data-path="{{concat "spells.entries." entryKey ".dc"}}">DC:&nbsp;{{entry.dc.value}}</div>{{/if}}
+                                    {{#if (or ../user.isGM entry.attack.revealed)}}<div class="{{PF2EBTToggleContainer ../user entry.attack}}" data-action="toggleRevealed" data-path="{{concat "spells.entries." entryKey ".attack"}}">Attack:&nbsp;{{entry.attack.value}}</div>{{/if}}
+                                </div>
+
+                                {{!-- {{#if this.user.isGM}}<i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="senses" data-name="Sense" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}} --}}
+                            </div>
+                        </div>
+                        <div class="spell-list-container">   
+                            <table>
+                                {{#each entry.levels}}
+                                    {{#if (or ../../user.isGM this.revealed)}}
+                                        <tr class="spell-header-row">
+                                            <th class="spell-name-cell">{{this.label}}</th>
+                                            <th class="spell-cell">{{localize "Defense"}}</th>
+                                            <th class="spell-cell">{{localize "Range"}}</th>
+                                        </tr>
+                                        {{#each this.spells}}
+                                            {{#if (or ../../../user.isGM this.revealed)}}
+                                                <tr class="spell-body-row {{PF2EBTToggleContainer ../../../user this}}" data-action="toggleRevealed" data-path="{{concat "spells.entries." ../../id ".levels." ../level '.' this.id}}">
+                                                    <td class="spell-name-cell body">
+                                                        <img src="{{this.img}}" />
+                                                        <div class="cell-name">{{this.name}}</div>
+                                                        <div class="action-glyph">{{this.actions}}</div>
+                                                    </td>
+                                                    <td class="spell-cell">{{this.defense}}</td>
+                                                    <td class="spell-cell">{{this.range}}</td>
+                                                </tr>
+                                            {{/if}}
+                                        {{/each}}
+                                    {{/if}}
+                                {{/each}}
+                            </table>
+                        </div>
+                    </div>
+                {{/if}}
+            {{/each}}
+        </div>
+
         <div class="tab {{this.tabs.lore.cssClass}}" data-group="primary" data-tab="lore">
             <div class="bestiary-notes-page">
                 <fieldset class="bestiary-notes-legend">

@@ -66,7 +66,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         application: {
             id: "bestiary",
             template: "modules/pf2e-bestiary-tracking/templates/bestiary.hbs",
-            scrollable: [".left-monster-container", ".right-monster-container-data", ".type-overview-container"]
+            scrollable: [".left-monster-container", ".right-monster-container-data", ".type-overview-container", ".spell-list-container"]
         }
     }
 
@@ -79,6 +79,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     getTabs() {
         const tabs = {
             statistics: { active: true, cssClass: '', group: 'primary', id: 'statistics', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Statistics") },
+            spells: { active: false, cssClass: '', group: 'primary', id: 'spells', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Spells") },
             lore: { active: false, cssClass: '', group: 'primary', id: 'lore', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Lore") },
         }
 
@@ -129,6 +130,70 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         return context;
     }
 
+    prepareData(monster) {
+        if(!monster) return monster;
+
+        return {
+            slug: monster.slug,
+            id: monster.id,
+            uuid: monster.uuid,
+            level: monster.value,
+            inTypes: monster.inTypes,
+            traits: monster.traits,
+            size: monster.size,
+            name: monster.name,
+            img: monster.img,
+            abilities: monster.abilities,
+            ac: monster.ac,
+            hp: monster.hp,
+            speeds: monster.speeds,
+            senses: monster.senses,
+            attacks: monster.attacks,
+            immunities: monster.immunities,
+            resistances: monster.resistances,
+            weaknesses: monster.weaknesses,
+            actions: monster.actions,
+            passives: monster.passives,
+            saves: monster.saves,
+            spells: {
+                ...monster.spells,
+                entries: Object.keys(monster.spells.entries).reduce((acc, entryKey) => {
+                    acc[entryKey] = {
+                        ...monster.spells.entries[entryKey],
+                        id: entryKey,
+                        levels: Object.keys(monster.spells.entries[entryKey].levels).reduce((acc, levelKey) => {
+                            const spells = monster.spells.entries[entryKey].levels[levelKey];
+                            const spellArray = Object.keys(spells).map(spellKey => ({
+                                ...spells[spellKey]
+                            }));
+
+                            acc.push({
+                                revealed: spellArray.some(spell => spell.revealed),
+                                level: levelKey,
+                                label: Number.isNaN(Number.parseInt(levelKey)) ? levelKey : `${levelKey}${levelKey === '1' ? 'st' : 'nd'} Rank`,
+                                spells: Object.keys(spells).map(spellKey => ({
+                                    ...spells[spellKey]
+                                }))
+                            });
+
+                            return acc;
+                        }, []).sort((a, b) => {
+                            if(a.level === 'Cantrips' && b.level !== 'Cantrips') return -1;
+                            if(a.level !== 'Cantrips' && b.level === 'Cantrips') return 1;
+                            
+                            if(a.level === b.level) return 0;
+                            else if(a.level > b.level) return 1;
+                            else return -1;
+                        }),
+                    };
+
+                    return acc;
+                }, {})
+            },
+            notes: monster.notes,
+        };
+    }
+
     async _prepareContext(_options) {
         var context = await super._prepareContext(_options);
 
@@ -136,6 +201,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         context.bestiary = foundry.utils.deepClone(this.bestiary);
         context.selected = foundry.utils.deepClone(this.selected);
         await this.enrichTexts(context.selected);
+        context.selected.monster = this.prepareData(context.selected.monster);
 
         context.openType = this.selected.type ? Object.keys(this.bestiary[this.selected.category][this.selected.type]).reduce((acc, key)=> {
             const monster = this.bestiary[this.selected.category][this.selected.type][key];
@@ -147,6 +213,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
             return acc;
         }, {}) : null;
+
         context.user = game.user;
         context.vagueDescriptions = { ... (await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions')) };
         context.vagueDescriptions.settings.playerBased = game.user.isGM ? false : context.vagueDescriptions.settings.playerBased;
@@ -169,6 +236,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
     static selectMonster(_, button){
         this.selected.monster = this.bestiary[this.selected.category][this.selected.type][button.dataset.monster];
+        this.tabGroups = { primary: 'statistics' };
         this.render();
     }
 
@@ -642,7 +710,43 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             return acc;
         }, { revealed: 0, values: {} })
 
-        if(Object.keys(attacks.values).length === 0) attacks.values['None'] = { revealed: false, label: 'None' }
+        // Join all iterations over item.items in a method?
+        const spellcastingEntries = {};
+        for(var subItem of item.items){
+            if(subItem.type !== 'spellcastingEntry') {
+                continue;
+            }
+
+            const levels = {};
+            for(var spell of subItem.spells){
+                const level = spell.system.traits.value.find(x => x === 'cantrip') ? 'Cantrips' : spell.system.level.value;
+                if(!levels[level]) levels[level] = {};
+
+                levels[level][spell.id] = {
+                    revealed: false,
+                    id: spell.id,
+                    name: spell.name,
+                    img: spell.img,
+                    actions: spell.system.time.value,
+                    defense: spell.system.defense?.save?.statistic ? `${spell.system.defense.save.basic ? 'basic ' : ''} ${spell.system.defense.save.statistic}` : null,
+                    range: spell.system.range.value,
+                    description: {
+                        gm: spell.system.description.gm,
+                        value: spell.system.description.gm,
+                    }
+                };
+            }
+
+            spellcastingEntries[subItem.id] = {
+                revealed: false,
+                name: subItem.name,
+                dc: { revealed: false, value: subItem.system.spelldc.dc },
+                attack: { revealed: false, value: subItem.system.spelldc.value },
+                levels: levels,
+            };
+        }
+
+        if(Object.keys(attacks.values).length === 0) attacks.values['None'] = { revealed: false, label: 'None' } // Is this needed anymore?
 
         const useTokenArt = await game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
         const slug = slugify(item.name);
@@ -720,6 +824,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 fortitude: { value: `${item.system.saves.fortitude.value >= 0 ? '+' : '-'}${item.system.saves.fortitude.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.fortitude.value, true), revealed: false },
                 reflex: { value: `${item.system.saves.reflex.value >= 0 ? '+' : '-'}${item.system.saves.reflex.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.reflex.value, true), revealed: false },
                 will: { value: `${item.system.saves.will.value >= 0 ? '+' : '-'}${item.system.saves.will.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.will.value, true), revealed: false },
+            },
+            spells: {
+                entries: spellcastingEntries,
             },
             notes: {
                 public: { revealed: false, text: item.system.details.publicNotes },
