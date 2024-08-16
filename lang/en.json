@@ -118,6 +118,40 @@
                         "Attributes": "Attributes",
                         "PlayerBased": "Base Descriptions On Player Level",
                         "MisinformationOptions": "Vague Misinformation Categories"
+                    },
+                    "Sections": {
+                        "Properties": {
+                            "Title": "Vague Properties"
+                        },
+                        "Settings": {
+                            "Title": "Settings"
+                        }
+                    }
+                }
+            },
+            "BestiaryLabels": {
+                "Name": "Bestiary Labels",
+                "Hint": "Exchange labels used in the bestiary for custom ones",
+                "Menu": {
+                    "Name": "Bestiary Labels",
+                    "Label": "Bestiary Label Settings",
+                    "Hint": "Customize labels used in the Bestiary"
+                },
+                "Misinformation": {
+                    "Name": "Misinformation",
+                    "FullOptions": {
+                        "Extreme": "Extreme",
+                        "High": "High",
+                        "Moderate": "Moderate",
+                        "Low": "Low",
+                        "Terrible": "Terrible"
+                    },
+                    "ShortOptions": {
+                        "Extreme": "Ex",
+                        "High": "High",
+                        "Moderate": "Mod",
+                        "Low": "Low",
+                        "Terrible": "Ter"
                     }
                 }
             }

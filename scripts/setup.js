@@ -1,16 +1,17 @@
+import { getMisinformationLabels } from "../data/bestiaryLabels.js";
+import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { migrateBestiary } from "./migrationHandler.js";
+import { socketEvent } from "./socket.js";
 
 export const registerGameSettings = () => {
-    game.settings.register('pf2e-bestiary-tracking', 'version', {
-        name: game.i18n.localize('PF2EBestiary.Settings.Version.Name'),
-        hint: game.i18n.localize('PF2EBestiary.Settings.Version.Hint'),
-        scope: 'world',
-        config: false,
-        type: String,
-        default: '',
-    });
+    configSettings();
+    generalNonConfigSettings();
+    vagueDescriptions();
+    bestiaryLabels();
+};
 
+const configSettings = () => {
     game.settings.register('pf2e-bestiary-tracking', 'automatic-combat-registration', {
         name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Name'),
         hint: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Hint'),
@@ -38,6 +39,13 @@ export const registerGameSettings = () => {
                 if(!origin) return;
 
                 bestiary.monster[type][monsterKey].img = value ? origin.prototypeToken.texture.src : origin.img;
+
+                await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+                    action: socketEvent.UpdateBestiary,
+                    data: { },
+                });
+        
+                Hooks.callAll(socketEvent.UpdateBestiary, {});
             });
         }
     });
@@ -50,14 +58,16 @@ export const registerGameSettings = () => {
         type: Boolean,
         default: false,
     });
+};
 
-    game.settings.registerMenu("pf2e-bestiary-tracking", "vague-descriptions", {
-        name: game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Menu.Name'),
-        label: game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Menu.Label'),
-        hint: game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Menu.Hint'),
-        icon: "fa-solid fa-eye-low-vision",
-        type: VagueDescriptionsMenu,
-        restricted: true
+const generalNonConfigSettings = () => {
+    game.settings.register('pf2e-bestiary-tracking', 'version', {
+        name: game.i18n.localize('PF2EBestiary.Settings.Version.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.Version.Hint'),
+        scope: 'world',
+        config: false,
+        type: String,
+        default: '',
     });
 
     game.settings.register('pf2e-bestiary-tracking', 'bestiary-tracking', {
@@ -75,6 +85,17 @@ export const registerGameSettings = () => {
             npc: {}
         },
     });
+};
+
+const vagueDescriptions = () => {
+    game.settings.registerMenu("pf2e-bestiary-tracking", "vague-descriptions", {
+        name: game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Menu.Name'),
+        label: game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Menu.Label'),
+        hint: game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Menu.Hint'),
+        icon: "fa-solid fa-eye-low-vision",
+        type: VagueDescriptionsMenu,
+        restricted: true
+    });
 
     game.settings.register('pf2e-bestiary-tracking', 'vague-descriptions', {
         name: game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Name'),
@@ -83,16 +104,44 @@ export const registerGameSettings = () => {
         config: false,
         type: Object,
         default: {
-            playerBased: false,
-            misinformationOptions: false,
-            ac: false,
-            hp: false,
-            resistances: false,
-            weaknesses: false,
-            saves: false,
-            perception: false,
-            speed: false,
-            attributes: false,
+            properties: {
+                ac: false,
+                hp: false,
+                resistances: false,
+                weaknesses: false,
+                saves: false,
+                perception: false,
+                speed: false,
+                attributes: false,
+            },
+            settings: {
+                playerBased: false,
+                misinformationOptions: false,
+            }
+        },
+    });
+};
+
+const bestiaryLabels = () => {
+    game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-labels", {
+        name: game.i18n.localize('PF2EBestiary.Menus.BestiaryLabels.Menu.Name'),
+        label: game.i18n.localize('PF2EBestiary.Menus.BestiaryLabels.Menu.Label'),
+        hint: game.i18n.localize('PF2EBestiary.Menus.BestiaryLabels.Menu.Hint'),
+        icon: "fa-solid fa-tags",
+        type: BestiaryLabelsMenu,
+        restricted: true
+    });
+
+    game.settings.register('pf2e-bestiary-tracking', 'bestiary-labels', {
+        name: game.i18n.localize('PF2EBestiary.Menus.BestiaryLabels.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Menus.BestiaryLabels.Hint'),
+        scope: 'world',
+        config: false,
+        type: Object,
+        default: {
+            misinformation: {
+                ...getMisinformationLabels()
+            }
         },
     });
 };

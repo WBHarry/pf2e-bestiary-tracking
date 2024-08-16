@@ -2,7 +2,7 @@
 import { getCreatureSize, slugify } from "../scripts/helpers.js";
 import { socketEvent } from "../scripts/socket.js";
 import { acTable, attributeTable, hpTable, savingThrowPerceptionTable } from "../scripts/statisticsData.js";
-import { getCategoryFromIntervals, getCategoryLabel, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
+import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -116,12 +116,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     getWithPlayerContext(context) {
-        context.vagueDescriptions.playerBased = game.user.isGM ? false : context.vagueDescriptions.playerBased;
+        context.vagueDescriptions.settings.playerBased = game.user.isGM ? false : context.vagueDescriptions.settings.playerBased;
         
-        if(!game.user.isGM && context.vagueDescriptions.playerBased && context.playerLevel && context.selected.monster){
+        if(!game.user.isGM && context.vagueDescriptions.settings.playerBased && context.playerLevel && context.selected.monster){
             context.selected.monster.ac.category = getCategoryLabel(acTable, context.playerLevel, context.selected.monster.ac.value);
             context.selected.monster.hp.category = getCategoryFromIntervals(hpTable, context.playerLevel, context.selected.monster.hp.value);
-            Object.values(context.selected.monster.saves).forEach(save => save.category = getCategoryLabel(savingThrowPerceptionTable, context.playerLevel, save.value));
+            Object.values(context.selected.monster.saves).forEach(save => save.category = getCategoryLabel(savingThrowPerceptionTable, context.playerLevel, save.value, true));
             Object.values(context.selected.monster.abilities.values).forEach(ability => ability.category = getCategoryLabel(attributeTable, context.playerLevel, ability.mod));
             context.selected.monster.senses.values.perception.category = getCategoryLabel(savingThrowPerceptionTable, context.playerLevel, context.selected.monster.senses.values.perception.value);
         }
@@ -149,7 +149,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }, {}) : null;
         context.user = game.user;
         context.vagueDescriptions = { ... (await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions')) };
-        context.vagueDescriptions.playerBased = game.user.isGM ? false : context.vagueDescriptions.playerBased;
+        context.vagueDescriptions.settings.playerBased = game.user.isGM ? false : context.vagueDescriptions.settings.playerBased;
         context.playerLevel = game.user.character ? game.user.character.system.details.level.value : null;
         context.search = this.search;
         context.useTokenArt = await game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
@@ -429,7 +429,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }
 
         const {prototypeToken, name, uuid} = actor;
-        new ImagePopout(prototypeToken.texture.src, {title: name, uuid: uuid}).render(true);
+        const useTokenArt = await game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
+        new ImagePopout(useTokenArt ? prototypeToken.texture.src : actor.img, {title: name, uuid: uuid}).render(true);
     }
 
     async obscureData(event){
@@ -452,8 +453,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         };
 
         const vagueDescriptions = await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
-        if(vagueDescriptions.misinformationOptions && vagueDescriptions[event.currentTarget.dataset.vagueProperty]){     
-            const choices = ['High', 'Med', 'Low'];
+        if(vagueDescriptions.settings.misinformationOptions && vagueDescriptions.properties[event.currentTarget.dataset.vagueProperty]){     
+            const choices = await getCategoryRange(event.currentTarget.dataset.vagueProperty);
             const content = new foundry.data.fields.StringField({
                 label: game.i18n.format("PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel", { property: event.currentTarget.dataset.name }),
                 choices: choices,
@@ -716,9 +717,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             actions: actions,
             passives: passives,
             saves: {
-                fortitude: { value: `${item.system.saves.fortitude.value >= 0 ? '+' : '-'}${item.system.saves.fortitude.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.fortitude.value), revealed: false },
-                reflex: { value: `${item.system.saves.reflex.value >= 0 ? '+' : '-'}${item.system.saves.reflex.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.reflex.value), revealed: false },
-                will: { value: `${item.system.saves.will.value >= 0 ? '+' : '-'}${item.system.saves.will.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.will.value), revealed: false },
+                fortitude: { value: `${item.system.saves.fortitude.value >= 0 ? '+' : '-'}${item.system.saves.fortitude.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.fortitude.value, true), revealed: false },
+                reflex: { value: `${item.system.saves.reflex.value >= 0 ? '+' : '-'}${item.system.saves.reflex.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.reflex.value, true), revealed: false },
+                will: { value: `${item.system.saves.will.value >= 0 ? '+' : '-'}${item.system.saves.will.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.will.value, true), revealed: false },
             },
             notes: {
                 public: { revealed: false, text: item.system.details.publicNotes },

@@ -1,85 +1,98 @@
 <div class="flexcol">
-    <div class="form-group">
-        <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.AC"}}</label>
-        <div class="form-fields">
+    <fieldset class="menu-category">
+        <legend class="pf2e-bestiary-clickable-icon" data-action="toggleSection" data-section="properties">
+            <h4>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Sections.Properties.Title"}}</h4>
+        </legend>
+
+        <div class="form-group underlined">
+            <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.AC"}}</label>
             <div class="form-fields">
-                <input type="checkbox" name="ac" {{checked settings.ac}} />
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.properties.ac" {{checked settings.properties.ac}} />
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.HP"}}</label>
-        <div class="form-fields">
+        <div class="form-group underlined">
+            <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.HP"}}</label>
             <div class="form-fields">
-                <input type="checkbox" name="hp" {{checked settings.hp}} />
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.properties.hp" {{checked settings.properties.hp}} />
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.Resistances"}}</label>
-        <div class="form-fields">
+        <div class="form-group underlined">
+            <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.Resistances"}}</label>
             <div class="form-fields">
-                <input type="checkbox" name="resistances" {{checked settings.resistances}} />
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.properties.resistances" {{checked settings.properties.resistances}} />
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.Weaknesses"}}</label>
-        <div class="form-fields">
+        <div class="form-group underlined">
+            <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.Weaknesses"}}</label>
             <div class="form-fields">
-                <input type="checkbox" name="weaknesses" {{checked settings.weaknesses}} />
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.properties.weaknesses" {{checked settings.properties.weaknesses}} />
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.Saves"}}</label>
-        <div class="form-fields">
+        <div class="form-group underlined">
+            <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.Saves"}}</label>
             <div class="form-fields">
-                <input type="checkbox" name="saves" {{checked settings.saves}} />
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.properties.saves" {{checked settings.properties.saves}} />
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.Perception"}}</label>
-        <div class="form-fields">
+        <div class="form-group underlined">
+            <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.Perception"}}</label>
             <div class="form-fields">
-                <input type="checkbox" name="perception" {{checked settings.perception}} />
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.properties.perception" {{checked settings.properties.perception}} />
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.Speed"}}</label>
-        <div class="form-fields">
+        <div class="form-group underlined">
+            <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.Speed"}}</label>
             <div class="form-fields">
-                <input type="checkbox" name="speed" {{checked settings.speed}} />
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.properties.speed" {{checked settings.properties.speed}} />
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.Attributes"}}</label>
-        <div class="form-fields">
+        <div class="form-group underlined">
+            <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.Attributes"}}</label>
             <div class="form-fields">
-                <input type="checkbox" name="attributes" {{checked settings.attributes}} />
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.properties.attributes" {{checked settings.properties.attributes}} />
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group main-setting sectioned">
-        <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.PlayerBased"}}</label>
-        <div class="form-fields">
+    </fieldset>
+
+    <fieldset class="menu-category">
+        <legend class="pf2e-bestiary-clickable-icon" data-action="toggleSection" data-section="settings">
+            <h4>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Sections.Settings.Title"}}</h4>
+        </legend>
+
+        <div class="form-group underlined">
+            <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.PlayerBased"}}</label>
             <div class="form-fields">
-                <input type="checkbox" name="playerBased" {{checked settings.playerBased}} />
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.settings.playerBased" {{checked settings.settings.playerBased}} />
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group main-setting">
-        <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.MisinformationOptions"}}</label>
-        <div class="form-fields">
+        <div class="form-group underlined">
+            <label>{{localize "PF2EBestiary.Menus.VagueDescriptions.Menu.Options.MisinformationOptions"}}</label>
             <div class="form-fields">
-                <input type="checkbox" name="misinformationOptions" {{checked settings.misinformationOptions}} />
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.settings.misinformationOptions" {{checked settings.settings.misinformationOptions}} />
+                </div>
             </div>
         </div>
-    </div>
+    </fieldset>
     <footer>
-        <button>{{localize "PF2EBestiary.Miscellaneous.Save"}}</button>
+        <button data-action="save">{{localize "PF2EBestiary.Miscellaneous.Save"}}</button>
     </footer>
 </div>
