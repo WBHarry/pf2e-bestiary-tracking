@@ -697,7 +697,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
         if(doubleClickOpenActivated){
-            await item.update({ "ownership.default": item.ownership.default > 1 ? item.ownership.default : 1 });
+            const ownership = item.ownership.default > 1 ? item.ownership.default : 1;
+            const baseItem = await fromUuid(`Actor.${item.id}`);
+            
+            await item.update({ "ownership.default": ownership });
+            await baseItem.update({ "ownership.default": ownership });
         }
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
@@ -946,7 +950,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
         if(doubleClickOpenActivated){
-            await item.update({ "ownership.default": item.ownership.default > 1 ? item.ownership.default : 1 });
+            const ownership = item.ownership.default > 1 ? item.ownership.default : 1;
+            const baseItem = await fromUuid(`Actor.${item.id}`);
+            
+            await item.update({ "ownership.default": ownership });
+            await baseItem.update({ "ownership.default": ownership });
         }
         
         this.bestiary = updatedBestiary;
