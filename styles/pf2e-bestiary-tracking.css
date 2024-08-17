@@ -413,9 +413,9 @@
 .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-return-icon {
   cursor: pointer;
   position: absolute;
-  left: 9px;
-  top: 40px;
-  font-size: 30px;
+  right: 9px;
+  top: 38px;
+  font-size: 24px;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-return-icon:hover {
   filter: drop-shadow(0 0 3px red);
