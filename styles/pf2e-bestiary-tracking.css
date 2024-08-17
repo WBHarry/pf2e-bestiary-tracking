@@ -191,9 +191,10 @@
 .bestiary-tracking.bestiary .type-overview-container .type-container {
   position: relative;
   display: flex;
-  padding: 4px 8px;
+  flex-direction: column;
   align-items: center;
-  font-size: 48px;
+  padding: 4px 8px 0;
+  font-size: 36px;
   width: calc(50% - 4px);
   border: 3px solid red;
   border-radius: 6px;
@@ -208,13 +209,11 @@
   border-width: 0;
 }
 .bestiary-tracking.bestiary .type-overview-container .type-container .type-text-container {
-  display: -webkit-box;
-  max-width: 200px;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  width: 100%;
   overflow: hidden;
   max-height: 100%;
   text-overflow: ellipsis;
+  text-align: center;
 }
 .bestiary-tracking.bestiary .type-overview-container .type-container .delete-button {
   position: absolute;
@@ -349,7 +348,7 @@
 .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-name {
   position: relative;
   font-weight: bold;
-  font-size: 36px;
+  font-size: 28px;
   padding: 4px 0;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -399,6 +398,8 @@
 .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-traits-row .monster-traits {
   gap: 4px;
   flex: 5;
+  overflow: auto;
+  flex-wrap: nowrap;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-traits-row .monster-traits .monster-trait {
   padding: 4px;
@@ -411,7 +412,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
-  max-width: 20%;
+  min-width: 20%;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-traits-row .monster-traits .monster-trait.base-colour {
   background: var(--color-bg-trait);
@@ -525,19 +526,21 @@
 .bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-header {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   width: 100%;
   gap: 8px;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-header .attack-traits-container {
   display: flex;
   align-items: center;
-  white-space: nowrap;
+  flex-wrap: wrap;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-header .attack-traits-container > * {
   flex: 0;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-header .attack-traits-container .attack-trait-label {
   text-decoration: underline;
+  white-space: nowrap;
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-body {
   display: flex;

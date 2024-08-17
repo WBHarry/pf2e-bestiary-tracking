@@ -54,7 +54,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 {
                     icon: 'fa-solid fa-link-slash',
                     label: 'PF2EBestiary.Bestiary.WindowControls.ResetBestiary',
-                    action: 'resetBestiary',
+                    action: 'resetBestiary'
                 },
             ]
         },
@@ -75,6 +75,20 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         super._attachPartListeners(partId, htmlElement, options);
         $(htmlElement).find(".toggle-container:not(.misinformation)").on("contextmenu", this.obscureData.bind(this));
         $(htmlElement).find(".misinformation").on("contextmenu", this.unObscureData.bind(this));
+    }
+
+    // Could possible rerender headercontrols here?
+    // _updateFrame(options) {
+    //     super._updateFrame(options);
+    // }
+
+    _getHeaderControls() {
+        return this.options.window.controls?.filter(control => {
+            switch(control.label){
+                case 'PF2EBestiary.Bestiary.WindowControls.ResetBestiary':
+                    return game.user.isGM;
+            }
+        }) || [];
     }
 
     getTabs() {
