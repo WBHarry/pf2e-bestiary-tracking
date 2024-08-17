@@ -118,21 +118,36 @@
   cursor: pointer;
   font-size: 20px;
 }
-.bestiary-tracking.bestiary .bestiary-header .bestiary-search-container {
+.bestiary-tracking.bestiary .bestiary-header .bestiary-toolbar {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+}
+.bestiary-tracking.bestiary .bestiary-header .bestiary-toolbar .bestiary-layout-settings {
+  display: flex;
+  gap: 8px;
+  border: 1px solid black;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.bestiary-tracking.bestiary .bestiary-header .bestiary-toolbar .bestiary-layout-settings i {
+  font-size: 26px;
+}
+.bestiary-tracking.bestiary .bestiary-header .bestiary-toolbar .bestiary-search-container {
   position: relative;
 }
-.bestiary-tracking.bestiary .bestiary-header .bestiary-search-container input {
+.bestiary-tracking.bestiary .bestiary-header .bestiary-toolbar .bestiary-search-container input {
   width: 240px;
   padding-left: 26px;
   padding-right: 30px;
 }
-.bestiary-tracking.bestiary .bestiary-header .bestiary-search-container .search-icon {
+.bestiary-tracking.bestiary .bestiary-header .bestiary-toolbar .bestiary-search-container .search-icon {
   position: absolute;
   left: 8px;
   top: calc(50% - 8px);
   font-size: 16px;
 }
-.bestiary-tracking.bestiary .bestiary-header .bestiary-search-container .clear-icon {
+.bestiary-tracking.bestiary .bestiary-header .bestiary-toolbar .bestiary-search-container .clear-icon {
   position: absolute;
   right: 8px;
   top: calc(50% - 9px);
@@ -201,6 +216,26 @@
   background: #ff7f50;
   cursor: pointer;
 }
+.bestiary-tracking.bestiary .type-overview-container .type-container.trio {
+  width: calc(33% - 3px);
+  font-size: 24px;
+}
+.bestiary-tracking.bestiary .type-overview-container .type-container.trio img {
+  height: 125px;
+}
+.bestiary-tracking.bestiary .type-overview-container .type-container.trio .delete-button {
+  font-size: 32px;
+}
+.bestiary-tracking.bestiary .type-overview-container .type-container.quarter {
+  width: calc(25% - 6px);
+  font-size: 18px;
+}
+.bestiary-tracking.bestiary .type-overview-container .type-container.quarter img {
+  height: 100px;
+}
+.bestiary-tracking.bestiary .type-overview-container .type-container.quarter .delete-button {
+  font-size: 24px;
+}
 .bestiary-tracking.bestiary .type-overview-container .type-container:hover :not(.delete-button:hover) {
   background: rgba(255, 127, 80, 0.653);
 }
@@ -219,7 +254,7 @@
   position: absolute;
   top: 4px;
   right: 8px;
-  font-size: 32px;
+  font-size: 48px;
   cursor: pointer;
 }
 .bestiary-tracking.bestiary .type-overview-container .type-container .delete-button:hover {
@@ -678,10 +713,12 @@
 .pf2e-bestiary-clickable-icon {
   cursor: pointer;
 }
-.pf2e-bestiary-clickable-icon:hover {
+.pf2e-bestiary-clickable-icon:hover,
+.pf2e-bestiary-clickable-icon.selected {
   filter: drop-shadow(0 0 3px red);
 }
-.pf2e-bestiary-clickable-icon.alternate:hover {
+.pf2e-bestiary-clickable-icon.alternate:hover,
+.pf2e-bestiary-clickable-icon.alternate.selected {
   filter: drop-shadow(0 0 3px grey);
 }
 .pf2e-bestiary-standard-gap {

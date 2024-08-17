@@ -9,11 +9,11 @@
 .pf2e-bestiary-clickable-icon {
     cursor: pointer;
 
-    &:hover {
+    &:hover, &.selected {
         filter: drop-shadow(0 0 3px @mainHover);
     }
 
-    &.alternate:hover {
+    &.alternate:hover, &.alternate.selected {
         filter: drop-shadow(0 0 3px @secondaryHover);
     }
 }

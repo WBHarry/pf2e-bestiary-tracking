@@ -54,27 +54,45 @@
                 cursor: pointer;
                 font-size: 20px;
             }
-            
-            .bestiary-search-container {
-                position: relative;
-    
-                input {
-                    width: 240px;
-                    padding-left: 26px;
-                    padding-right: 30px;
+
+            .bestiary-toolbar {
+                display: flex;
+                align-items: end;
+                gap: 8px;
+
+                .bestiary-layout-settings {
+                    display: flex;
+                    gap: 8px;
+                    border: 1px solid black;
+                    padding: 2px 8px;
+                    border-radius: 6px;
+
+                    i {
+                        font-size: 26px;
+                    }
                 }
 
-                .search-icon {
-                    position: absolute;
-                    left: 8px;
-                    top: calc(50% - 8px);
-                    font-size: 16px;
-                }
-                .clear-icon {
-                    position: absolute;
-                    right: 8px;
-                    top: calc(50% - 9px);
-                    font-size: 18px;
+                .bestiary-search-container {
+                    position: relative;
+        
+                    input {
+                        width: 240px;
+                        padding-left: 26px;
+                        padding-right: 30px;
+                    }
+    
+                    .search-icon {
+                        position: absolute;
+                        left: 8px;
+                        top: calc(50% - 8px);
+                        font-size: 16px;
+                    }
+                    .clear-icon {
+                        position: absolute;
+                        right: 8px;
+                        top: calc(50% - 9px);
+                        font-size: 18px;
+                    }
                 }
             }
         }
@@ -152,6 +170,32 @@
                 background: @main;
                 cursor: pointer;
 
+                &.trio {
+                    width: calc(33% - 3px);
+                    font-size: 24px;
+
+                    img {
+                        height: 125px;
+                    }
+
+                    .delete-button {
+                        font-size: 32px;
+                    }
+                }
+
+                &.quarter {
+                    width: calc(25% - 6px);
+                    font-size: 18px;
+
+                    img {
+                        height: 100px;
+                    }
+
+                    .delete-button {
+                        font-size: 24px;
+                    }
+                }
+
                 &:hover :not(.delete-button:hover) {
                     background: @mainDark;
                 }
@@ -173,7 +217,7 @@
                     position: absolute;
                     top: 4px;
                     right: 8px;
-                    font-size: 32px;
+                    font-size: 48px;
                     cursor: pointer;
 
                     &:hover {

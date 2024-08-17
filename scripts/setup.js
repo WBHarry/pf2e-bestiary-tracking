@@ -85,6 +85,19 @@ const generalNonConfigSettings = () => {
             npc: {}
         },
     });
+
+    game.settings.register('pf2e-bestiary-tracking', 'bestiary-layout', {
+        name: game.i18n.localize('PF2EBestiary.Settings.Version.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.Version.Hint'),
+        scope: 'client',
+        config: false,
+        type: Object,
+        default: {
+            categories: {
+                layout: 0,
+            }
+        },
+    });
 };
 
 const vagueDescriptions = () => {

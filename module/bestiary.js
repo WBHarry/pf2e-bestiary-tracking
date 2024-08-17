@@ -47,6 +47,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             clearSearch: this.clearSearch,
             createMisinformation: this.createMisinformation,
             imagePopout: this.imagePopout,
+            setCategoriesLayout: this.setCategoriesLayout,
         },
         form: { handler: this.updateData, submitOnChange: true },
         window: {
@@ -225,6 +226,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         var context = await super._prepareContext(_options);
 
         context.tabs = this.getTabs();
+        context.layout = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-layout');
+
         context.bestiary = foundry.utils.deepClone(this.bestiary);
         context.selected = foundry.utils.deepClone(this.selected);
         await this.enrichTexts(context.selected);
@@ -268,6 +271,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static async removeMonster(_, button){
+        const confirmed = await Dialog.confirm({
+            title: "Delete Monster",
+            content: "Are you sure you want to remove the creature from the Bestiary??",
+            yes: () => true,
+            no: () => false,
+        });
+
+        if(!confirmed) return;
+
         for(var type of this.bestiary[this.selected.category][this.selected.type][button.dataset.monster].inTypes){
             this.bestiary[this.selected.category][type] = Object.keys(this.bestiary[this.selected.category][type]).reduce((acc, monster) => {
                 if(monster !== button.dataset.monster){
@@ -535,6 +547,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const {prototypeToken, name, uuid} = actor;
         const useTokenArt = await game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
         new ImagePopout(useTokenArt ? prototypeToken.texture.src : actor.img, {title: name, uuid: uuid}).render(true);
+    }
+
+    static async setCategoriesLayout(_, button){
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-layout', { categories: { layout: Number.parseInt(button.dataset.option) } });
+        this.render();
     }
 
     async obscureData(event){
