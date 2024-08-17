@@ -459,8 +459,8 @@
                             <div class="bestiary-fakable-container">
                                 <div class="data-header-label">
                                     <div class="flex-value {{PF2EBTToggleContainer ../user entry}}" data-action="toggleRevealed" data-path="{{concat "spells.entries." entryKey}}">{{entry.name}}</div>
-                                    {{#if (or ../user.isGM entry.dc.revealed)}}<div class="{{PF2EBTToggleContainer ../user entry.dc}}" data-action="toggleRevealed" data-path="{{concat "spells.entries." entryKey ".dc"}}">DC:&nbsp;{{entry.dc.value}}</div>{{/if}}
-                                    {{#if (or ../user.isGM entry.attack.revealed)}}<div class="{{PF2EBTToggleContainer ../user entry.attack}}" data-action="toggleRevealed" data-path="{{concat "spells.entries." entryKey ".attack"}}">Attack:&nbsp;{{entry.attack.value}}</div>{{/if}}
+                                    {{#if (or ../user.isGM entry.dc.revealed)}}<div class="{{PF2EBTToggleContainer ../user entry.dc}}" data-action="toggleRevealed" data-path="{{concat "spells.entries." entryKey ".dc"}}">DC:&nbsp;{{PF2EBTMonsterValue entry.dc ../vagueDescriptions.properties.spells}}</div>{{/if}}
+                                    {{#if (or ../user.isGM entry.attack.revealed)}}<div class="{{PF2EBTToggleContainer ../user entry.attack}}" data-action="toggleRevealed" data-path="{{concat "spells.entries." entryKey ".attack"}}">Attack:&nbsp;{{PF2EBTMonsterValue entry.attack ../vagueDescriptions.properties.spells}}</div>{{/if}}
                                 </div>
 
                                 {{!-- {{#if this.user.isGM}}<i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="senses" data-name="Sense" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}} --}}

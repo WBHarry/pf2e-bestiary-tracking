@@ -916,3 +916,275 @@ export const weaknessTable = {
         low: 13,
     }
 }
+
+export const spellDCTable = {
+    range: ["extreme", "high", "moderate"],
+    values: {
+        "-1": {
+            extreme: 19,
+            high: 16,
+            moderate: 13,
+        },
+        '0': {
+            extreme: 19,
+            high: 16,
+            moderate: 13,
+        },
+        '1': {
+            extreme: 29,
+            high: 17,
+            moderate: 14,
+        },
+        '2': {
+            extreme: 22,
+            high: 18,
+            moderate: 15,
+        },
+        '3': {
+            extreme: 23,
+            high: 20,
+            moderate: 17,
+        },
+        '4': {
+            extreme: 25,
+            high: 21,
+            moderate: 18,
+        },
+        '5': {
+            extreme: 26,
+            high: 22,
+            moderate: 19,
+        },
+        '6': {
+            extreme: 27,
+            high: 24,
+            moderate: 21,
+        },
+        '7': {
+            extreme: 29,
+            high: 25,
+            moderate: 22,
+        },
+        '8': {
+            extreme: 30,
+            high: 26,
+            moderate: 23, 
+        },
+        '9': {
+            extreme: 32,
+            high: 28,
+            moderate: 25,
+        },
+        '10': {
+            extreme: 33,
+            high: 29,
+            moderate: 26,
+        },
+        '11': {
+            extreme: 34,
+            high: 30,
+            moderate: 27,
+        },
+        '12': {
+            extreme: 36,
+            high: 32,
+            moderate: 29,
+        },
+        '13': {
+            extreme: 37,
+            high: 33,
+            moderate: 30,
+        },
+        '14': {
+            extreme: 39,
+            high: 34,
+            moderate: 31,
+        },
+        '15': {
+            extreme: 40,
+            high: 36,
+            moderate: 33,
+        },
+        '16': {
+            extreme: 41,
+            high: 37,
+            moderate: 34,
+        },
+        '17': {
+            extreme: 43,
+            high: 38,
+            moderate: 35,
+        },
+        '18': {
+            extreme: 44,
+            high: 40,
+            moderate: 37,
+        },
+        '19': {
+            extreme: 46,
+            high: 41,
+            moderate: 38,
+        },
+        '20': {
+            extreme: 47,
+            high: 42,
+            moderate: 39,
+        },
+        '21': {
+            extreme: 48,
+            high: 44,
+            moderate: 41,
+        },
+        '22': {
+            extreme: 50,
+            high: 45,
+            moderate: 42,
+        },
+        '23': {
+            extreme: 51,
+            high: 46,
+            moderate: 43,
+        },
+        '24': {
+            extreme: 52,
+            high: 48,
+            moderate: 45,
+        },
+    }
+}
+
+export const spellAttackTable = {
+    range: ["extreme", "high", "moderate"],
+    values: {
+        "-1": {
+            extreme: 11,
+            high: 8,
+            moderate: 5,
+        },
+        '0': {
+            extreme: 11,
+            high: 8,
+            moderate: 5,
+        },
+        '1': {
+            extreme: 12,
+            high: 9,
+            moderate: 6,
+        },
+        '2': {
+            extreme: 14,
+            high: 10,
+            moderate: 7,
+        },
+        '3': {
+            extreme: 15,
+            high: 12,
+            moderate: 9,
+        },
+        '4': {
+            extreme: 17,
+            high: 13,
+            moderate: 10,
+        },
+        '5': {
+            extreme: 18,
+            high: 14,
+            moderate: 11,
+        },
+        '6': {
+            extreme: 19,
+            high: 16,
+            moderate: 13,
+        },
+        '7': {
+            extreme: 21,
+            high: 17,
+            moderate: 14,
+        },
+        '8': {
+            extreme: 22,
+            high: 18,
+            moderate: 15, 
+        },
+        '9': {
+            extreme: 24,
+            high: 29,
+            moderate: 17,
+        },
+        '10': {
+            extreme: 25,
+            high: 21,
+            moderate: 18,
+        },
+        '11': {
+            extreme: 26,
+            high: 22,
+            moderate: 19,
+        },
+        '12': {
+            extreme: 28,
+            high: 24,
+            moderate: 21,
+        },
+        '13': {
+            extreme: 29,
+            high: 25,
+            moderate: 22,
+        },
+        '14': {
+            extreme: 31,
+            high: 26,
+            moderate: 23,
+        },
+        '15': {
+            extreme: 32,
+            high: 28,
+            moderate: 25,
+        },
+        '16': {
+            extreme: 33,
+            high: 29,
+            moderate: 26,
+        },
+        '17': {
+            extreme: 43,
+            high: 30,
+            moderate: 27,    
+        },
+        '18': {
+            extreme: 44,
+            high: 32,
+            moderate: 29,
+        },
+        '19': {
+            extreme: 46,
+            high: 33,
+            moderate: 30,
+        },
+        '20': {
+            extreme: 47,
+            high: 34,
+            moderate: 31,
+        },
+        '21': {
+            extreme: 48,
+            high: 36,
+            moderate: 33,
+        },
+        '22': {
+            extreme: 50,
+            high: 37,
+            moderate: 34,
+        },
+        '23': {
+            extreme: 51,
+            high: 38,
+            moderate: 35,
+        },
+        '24': {
+            extreme: 52,
+            high: 40,
+            moderate: 37,
+        },
+    }
+}

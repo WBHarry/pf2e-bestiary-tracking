@@ -113,6 +113,7 @@ const vagueDescriptions = () => {
                 perception: false,
                 speed: false,
                 attributes: false,
+                spells: false,
             },
             settings: {
                 playerBased: false,

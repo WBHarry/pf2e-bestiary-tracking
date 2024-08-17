@@ -1,7 +1,7 @@
 
 import { getCreatureSize, slugify } from "../scripts/helpers.js";
 import { socketEvent } from "../scripts/socket.js";
-import { acTable, attributeTable, hpTable, savingThrowPerceptionTable } from "../scripts/statisticsData.js";
+import { acTable, attributeTable, hpTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "../scripts/statisticsData.js";
 import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -136,6 +136,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             Object.values(context.selected.monster.saves).forEach(save => save.category = getCategoryLabel(savingThrowPerceptionTable, context.playerLevel, save.value, true));
             Object.values(context.selected.monster.abilities.values).forEach(ability => ability.category = getCategoryLabel(attributeTable, context.playerLevel, ability.mod));
             context.selected.monster.senses.values.perception.category = getCategoryLabel(savingThrowPerceptionTable, context.playerLevel, context.selected.monster.senses.values.perception.value);
+            Object.values(context.selected.monster.spells.entries).forEach(entry => {
+                entry.dc.category = getCategoryLabel(spellDCTable, context.playerLevel, entry.dc.value);
+                entry.attack.category = getCategoryLabel(spellAttackTable, context.playerLevel, entry.attack.value);
+            });
         }
 
         return context;
@@ -309,6 +313,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static async resetBestiary(){
+        if(!game.user.isGM) {
+            ui.notifications.info(game.i18n.localize("PF2EBestiary.Bestiary.Info.GMOnly"));
+        }
+
         const confirmed = await Dialog.confirm({
             title: "Reset Bestiary",
             content: "Are you sure you want to reset all the bestiary data?",
@@ -756,8 +764,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             spellcastingEntries[subItem.id] = {
                 revealed: false,
                 name: subItem.name,
-                dc: { revealed: false, value: subItem.system.spelldc.dc },
-                attack: { revealed: false, value: subItem.system.spelldc.value },
+                dc: { revealed: false, value: subItem.system.spelldc.dc, category: getCategoryLabel(spellDCTable, item.system.details.level.value, subItem.system.spelldc.dc) },
+                attack: { revealed: false, value: subItem.system.spelldc.value, category: getCategoryLabel(spellAttackTable, item.system.details.level.value, subItem.system.spelldc.value) },
                 levels: levels,
             };
         }

@@ -1,4 +1,4 @@
-import { acTable, attributeTable, savingThrowPerceptionTable } from "./statisticsData.js";
+import { acTable, attributeTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "./statisticsData.js";
 import { getCategoryLabel } from "./statisticsHelper.js";
 
 export const handleDataMigration = async () => {
@@ -156,8 +156,8 @@ export const handleDataMigration = async () => {
                 spellcastingEntries[subItem.id] = {
                     revealed: false,
                     name: subItem.name,
-                    dc: { revealed: false, value: subItem.system.spelldc.dc },
-                    attack: { revealed: false, value: subItem.system.spelldc.value },
+                    dc: { revealed: false, value: subItem.system.spelldc.dc, category: getCategoryLabel(spellDCTable, origin.system.details.level.value, subItem.system.spelldc.dc) },
+                    attack: { revealed: false, value: subItem.system.spelldc.value, category: getCategoryLabel(spellAttackTable, origin.system.details.level.value, subItem.system.spelldc.value) },
                     levels: levels,
                 };
             }

@@ -92,6 +92,9 @@
                 "UnsupportedType": "Not a supported NPC type!",
                 "UnsupportedCharacterType": "Player Character are not supported in the bestiary.",
                 "DataMissing": "Some data is missing. You'll have to reimport the creature. Sorry about that!"
+            },
+            "Info": {
+                "GMOnly": "This is a GM only function."
             }
         },
         "Menus": {
@@ -117,6 +120,7 @@
                         "Perception": "Perception",
                         "Speed": "Speed",
                         "Attributes": "Attributes",
+                        "Spells": "Spells",
                         "PlayerBased": "Base Descriptions On Player Level",
                         "MisinformationOptions": "Vague Misinformation Categories"
                     },
