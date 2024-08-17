@@ -350,7 +350,7 @@
                                                     {{#each this.variants.values}}
                                                         <div class="attack-variant">{{this}}</div>
                                                     {{/each}}
-                                                    <div class="attack-damage">{{this.damage}}</div>
+                                                    {{#if this.damage}}<div class="attack-damage">{{this.damage}}</div>{{/if}}
                                                 {{/if}}
                                             </div>
                                         {{/if}}

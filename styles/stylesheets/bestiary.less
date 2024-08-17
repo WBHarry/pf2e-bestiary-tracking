@@ -534,13 +534,14 @@
                     .attack-header {
                         display: flex;
                         align-items: center;
+                        flex-wrap: wrap;
                         width: 100%;
                         gap: 8px;
 
                         .attack-traits-container {
                             display: flex;
                             align-items: center;
-                            white-space: nowrap;
+                            flex-wrap: wrap;
 
                             > * {
                                 flex: 0;
@@ -548,6 +549,7 @@
 
                             .attack-trait-label {
                                 text-decoration: underline;
+                                white-space: nowrap;
                             }
                         }
                     }
