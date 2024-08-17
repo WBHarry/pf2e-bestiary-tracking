@@ -25,6 +25,16 @@
             "maximum": "6"
         }
     }],
+    "relationships": {
+        "optional": [{
+            "id": "lib-wrapper",
+            "type": "module",
+            "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/download/v1.12.15.0/module.json",
+            "compatibility": {
+              "verified": "1.12.15.0"
+            }
+        }]
+    },
     "packs": [
         {
             "name": "pf2e-bestiary-tracking-macros",

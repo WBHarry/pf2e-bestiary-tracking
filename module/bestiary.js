@@ -43,6 +43,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             toggleAbility: this.toggleAbility,
             toggleSpell: this.toggleSpell,
             toggleRevealed: this.toggleRevealed,
+            refreshBestiary: this.refreshBestiary,
             resetBestiary: this.resetBestiary,
             clearSearch: this.clearSearch,
             createMisinformation: this.createMisinformation,
@@ -52,6 +53,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         form: { handler: this.updateData, submitOnChange: true },
         window: {
             controls: [
+                {
+                    icon: 'fa-solid fa-arrow-rotate-left',
+                    label: 'PF2EBestiary.Bestiary.WindowControls.RefreshBestiary',
+                    action: 'refreshBestiary'
+                },
                 {
                     icon: 'fa-solid fa-link-slash',
                     label: 'PF2EBestiary.Bestiary.WindowControls.ResetBestiary',
@@ -85,8 +91,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
     _getHeaderControls() {
         return this.options.window.controls?.filter(control => {
-            switch(control.label){
-                case 'PF2EBestiary.Bestiary.WindowControls.ResetBestiary':
+            switch(control.action){
+                case 'refreshBestiary':
+                    return game.user.isGM;
+                case 'resetBestiary':
                     return game.user.isGM;
             }
         }) || [];
@@ -337,6 +345,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             action: socketEvent.UpdateBestiary,
             data: { monsterSlug: this.selected.monster.slug },
         });
+    }
+
+    static async refreshBestiary(){
+
     }
 
     static async resetBestiary(){
@@ -683,6 +695,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             bestiary['monster'][type][monster.slug] = monster;
         }
 
+        const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
+        if(doubleClickOpenActivated){
+            await item.update({ "ownership.default": item.ownership.default > 1 ? item.ownership.default : 1 });
+        }
+
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
@@ -925,6 +942,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             else {
                 this.selected.monster = null;
             }
+        }
+
+        const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
+        if(doubleClickOpenActivated){
+            await item.update({ "ownership.default": item.ownership.default > 1 ? item.ownership.default : 1 });
         }
         
         this.bestiary = updatedBestiary;

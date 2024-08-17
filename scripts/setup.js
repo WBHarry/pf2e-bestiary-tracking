@@ -71,11 +71,20 @@ const configSettings = () => {
     game.settings.register('pf2e-bestiary-tracking', 'doubleClickOpen', {
         name: game.i18n.localize('PF2EBestiary.Settings.DoubleClickOpen.Name'),
         hint: game.i18n.localize('PF2EBestiary.Settings.DoubleClickOpen.Hint'),
-        scope: 'client',
+        scope: 'world',
         config: true,
-        requiresReload: true,
         type: Boolean,
         default: false,
+        onChange: async value => {
+            if(!value) return;
+
+            await migrateBestiary(async (_, monster) => {
+                const origin = await fromUuid(monster.uuid);
+                if(!origin) return;
+
+                await origin.update({ "ownership.default": origin.ownership.default > 1 ? origin.ownership.default : 1 });
+            });
+        }
     });
 };
 

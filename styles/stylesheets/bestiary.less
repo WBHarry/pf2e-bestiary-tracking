@@ -1,4 +1,5 @@
 @import "../variables.less";
+@import "../colors.less";
 @import "./bestiarySpells.less";
 
 .theme-dark {
@@ -244,14 +245,16 @@
             }
 
             .toggle-container {
-                background: @hiddenColor;
+                // background: @hiddenColor;
+                border: dotted;
                 border-radius: 6px;
                 padding: 4px;
                 cursor: pointer;
-                border: 1px solid @mainBorder;
+                border: 2px solid @mainBorder;
 
                 &.revealed {
-                    background: @revealedColor;
+                    // background: @revealedColor;
+                    border: solid;
                 }
 
                 &.misinformation {
@@ -292,7 +295,7 @@
                 overflow-y: auto;
 
                 .monster-image {
-                    height: 150;
+                    height: 150px;
                     border-radius: 0.5rem;
                     cursor: pointer;
                     

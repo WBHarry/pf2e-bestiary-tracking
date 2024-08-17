@@ -317,7 +317,7 @@
   overflow-y: auto;
 }
 .bestiary-tracking.bestiary .monster-container .left-monster-container .monster-image {
-  height: 150;
+  height: 150px;
   border-radius: 0.5rem;
   cursor: pointer;
 }

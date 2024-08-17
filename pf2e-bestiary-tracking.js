@@ -6,11 +6,6 @@ import * as macros from "./scripts/macros.js";
 import { handleDataMigration } from "./scripts/migrationHandler.js";
 import { slugify } from "./scripts/helpers.js";
 
-CONFIG.PF2EBestiaryTracking = { tokenClickOpenState: {
-    timer: null,
-    count: 0,
-} };
-
 Hooks.once('init', () => {
     registerGameSettings();
     RegisterHandlebarsHelpers.registerHelpers();
@@ -29,41 +24,33 @@ Hooks.once("ready", () => {
 });
 
 Hooks.once("setup", () => {
-    const openBestiary = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
-    if(openBestiary && !game.user.isGM){
-        Token.prototype.onclick = event => {
-            CONFIG.PF2EBestiaryTracking.tokenClickOpenState.count += 1;
-            if(CONFIG.PF2EBestiaryTracking.tokenClickOpenState.count > 1){
-                window.clearTimeout(CONFIG.PF2EBestiaryTracking.tokenClickOpenState.timer);
-                CONFIG.PF2EBestiaryTracking.tokenClickOpenState.count = 0;
-
-                const settings = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-                const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
-                const creature = event.currentTarget.actor;
-                
-                const category = 'monster'
-                const type = creature.system.traits.value.find(x => creatureTypes.includes(x));
-                var monsterSlug = slugify(creature.name);
-                const monster = settings[category][type] ? settings[category][type][monsterSlug] : null;
+    if(typeof libWrapper === 'function') {
+        libWrapper.register('pf2e-bestiary-tracking', 'Token.prototype._onClickLeft2', function (wrapped, ...args) {
+            const openBestiary = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
+            if(!openBestiary || game.user.isGM) return wrapped(...args);
+  
+            const settings = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+            const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
             
-                if(!monster)
-                {
-                    const slugById = settings[category][type] ? Object.keys(settings[category][type]).find(key => settings[category][type][key].id === creature.id) : null;
-                    if(!slugById){
-                        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"));
-                        return;
-                    }
-            
-                    monsterSlug = slugById;
+            const actor = args[0].currentTarget.actor;
+            const category = 'monster'
+            const type = actor.system.traits.value.find(x => creatureTypes.includes(x));
+            var monsterSlug = slugify(actor.name);
+            const monster = settings[category][type] ? settings[category][type][monsterSlug] : null;
+        
+            if(!monster)
+            {
+                const slugById = settings[category][type] ? Object.keys(settings[category][type]).find(key => settings[category][type][key].id === actor.id) : null;
+                if(!slugById){
+                    ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"));
+                    return;
                 }
-
-                new PF2EBestiary({ category, type, monsterSlug }).render(true)
+        
+                monsterSlug = slugById;
             }
 
-            CONFIG.PF2EBestiaryTracking.tokenClickOpenState.timer = window.setTimeout(() => {
-                CONFIG.PF2EBestiaryTracking.tokenClickOpenState.count = 0;
-            }, 500); 
-        }
+            new PF2EBestiary({ category, type, monsterSlug }).render(true);
+        });
     }
 });
 
