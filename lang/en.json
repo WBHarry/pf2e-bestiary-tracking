@@ -187,6 +187,10 @@
             "ShowMonsterLevel": {
                 "Name": "Show Monster Level",
                 "Hint": "Display the monster's level as a field the GM can toggle"
+            },
+            "DoubleClickOpen": {
+                "Name": "Double Click Open",
+                "Hint": "Opens the Bestiary when doubleclicking a creature (PC only)"
             }
         },
         "Macros": {

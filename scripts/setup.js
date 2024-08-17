@@ -67,6 +67,16 @@ const configSettings = () => {
         type: Boolean,
         default: false,
     });
+
+    game.settings.register('pf2e-bestiary-tracking', 'doubleClickOpen', {
+        name: game.i18n.localize('PF2EBestiary.Settings.DoubleClickOpen.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.DoubleClickOpen.Hint'),
+        scope: 'client',
+        config: true,
+        requiresReload: true,
+        type: Boolean,
+        default: false,
+    });
 };
 
 const generalNonConfigSettings = () => {

@@ -1,3 +1,5 @@
+/****  Colours  ****/
+/****  Distances  ****/
 .bestiary-tracking.bestiary .monster-container .right-monster-container .spells-tab {
   overflow: auto;
 }
@@ -258,7 +260,7 @@
   cursor: pointer;
 }
 .bestiary-tracking.bestiary .type-overview-container .type-container .delete-button:hover {
-  filter: drop-shadow(0 0 3px black);
+  filter: drop-shadow(0 0 3px grey);
 }
 .bestiary-tracking.bestiary .monster-container {
   display: flex;
@@ -372,7 +374,7 @@
 .bestiary-tracking.bestiary .monster-container .data-icon {
   width: 16px;
   border: 0;
-  filter: drop-shadow(0 0 3px black);
+  filter: drop-shadow(0 0 3px grey);
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container {
   flex: 1;

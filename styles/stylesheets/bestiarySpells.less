@@ -21,7 +21,7 @@
 
                 .spell-list-container {
                     border-width: 0 1px 1px 1px;
-                    border-color: black;
+                    border-color: @mainBorder;
                     border-style: solid;
                     border-radius: 0 0 4px 4px;
                     overflow: auto;
@@ -37,14 +37,14 @@
 
                     .spell-header-row {
                         line-height: 10px;
-                        background: rgba(96, 88, 86, 0.25);
+                        background: @spellRowHeader;
                     }
 
                     .spell-body-row {
                         line-height: 10px;
 
                         &.even {
-                            background-color: rgba(120, 100, 82, 0.1);
+                            background-color: @spellRowEven;
                         }
 
                         &.description {

@@ -326,7 +326,7 @@
                                                 {{#each attack.variants.values}}
                                                     <div class="attack-variant">{{this}}</div>
                                                 {{/each}}
-                                                <div class="attack-damage">{{attack.damage}}</div>
+                                                {{#if this.damage}}<div class="attack-damage">{{attack.damage}}</div>{{/if}}
                                                 {{#if attack.revealed}}<i class="pf2e-bestiary-clickable-icon {{#if attack.variants.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key '.variants'}}"></i>{{/if}}
                                             </div>
                                         {{/if}}

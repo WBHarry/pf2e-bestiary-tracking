@@ -6,7 +6,7 @@
             flex-direction: column;
             border-style: double;
             border-width: 4px;
-            border-color: black;
+            border-color: @mainBorder;
 
             legend {
                 font-weight: bold;
@@ -14,8 +14,8 @@
 
                 h4 {
                     margin: 0;
-                    color: black;
-                    text-shadow: 0 0 black;
+                    color: @mainBorder;
+                    text-shadow: 0 0 @mainBorder;
                 }
             }
 
@@ -41,18 +41,9 @@
                 text-wrap: nowrap;
 
                 &.underlined {
-                    border-bottom: 1px solid black;
+                    border-bottom: 1px solid @mainBorder;
                 }
             }
         }
     }
 }
-
-// &.sectioned {
-//     border-top: 2px solid black;
-//     padding-top: 6px;
-// }
-
-// &:last-of-type{
-//     padding-bottom: 12px;
-// }
