@@ -167,7 +167,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             slug: monster.slug,
             id: monster.id,
             uuid: monster.uuid,
-            level: monster.value,
+            level: monster.level,
             inTypes: monster.inTypes,
             traits: monster.traits,
             size: monster.size,
@@ -227,6 +227,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         context.tabs = this.getTabs();
         context.layout = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-layout');
+        context.showMonsterLevel = await game.settings.get('pf2e-bestiary-tracking', 'show-monster-level');
 
         context.bestiary = foundry.utils.deepClone(this.bestiary);
         context.selected = foundry.utils.deepClone(this.selected);
@@ -809,7 +810,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             slug: slug,
             id: item.id,
             uuid: item.uuid,
-            level: item.system.details.level.value,
+            level: { revealed: false, value: item.system.details.level.value },
             inTypes: types.map(x => x.key),
             traits: traits,
             size: getCreatureSize(item.system.traits.size.value),

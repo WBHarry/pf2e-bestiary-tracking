@@ -308,6 +308,10 @@
                     border-bottom: 1px solid;
                     border-color: #7a7971;
                     margin-bottom: 4px;
+
+                    .health-icon {
+                        margin-left: 2px;
+                    }
                 }
 
                 .speeds-container {
@@ -354,6 +358,12 @@
                 }
             }
 
+            .data-icon {
+                width: 16px;
+                border: 0;
+                filter: drop-shadow(0 0 3px black);
+            }
+
             .right-monster-container {
                 flex: 1;
                 display: flex;
@@ -396,7 +406,7 @@
                     .monster-return-icon {
                         cursor: pointer;
                         position: absolute;
-                        right: 9px;
+                        left: 9px;
                         top: 40px;
                         font-size: 30px;
 
@@ -553,12 +563,6 @@
                             max-height: 500px;
                         }
                     }
-                }
-
-                .data-icon {
-                    width: 16px;
-                    border: 0;
-                    filter: drop-shadow(0 0 3px black);
                 }
 
                 .attack-container {

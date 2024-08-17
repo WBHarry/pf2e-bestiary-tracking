@@ -1,6 +1,16 @@
 <div class="monster-container flex-col">
     <div class="left-monster-container">
         <img class="monster-image {{#if this.useTokenArt}}token{{/if}}" src="{{this.img}}" data-action="imagePopout" />
+        
+        {{#if this.showMonsterLevel}}
+            <div class="monster-left-data {{PF2EBTToggleContainer this.user this.level}}" data-action="toggleRevealed" data-path="level" data-name="{{localize "PF2EBestiary.Miscellaneous.Level"}}" data-vague-property="level">
+                <div class="flex-data">
+                    <i class="fa-solid fa-dragon"></i>    
+                    <div>{{localize "PF2EBestiary.Miscellaneous.Level"}}</div>
+                </div>
+                <div class="flex-value">{{#if (or this.level.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.level}}{{else}}?{{/if}}</div>
+            </div>
+        {{/if}}
 
         <div class="monster-left-data {{PF2EBTToggleContainer this.user this.ac}}" data-action="toggleRevealed" data-path="ac" data-name="{{localize "PF2EBestiary.Miscellaneous.AC"}}" data-vague-property="ac">
             <div class="flex-data">
@@ -12,7 +22,7 @@
 
          <div class="monster-left-data {{PF2EBTToggleContainer this.user this.hp}}" data-action="toggleRevealed" data-path="hp" data-name="{{localize "PF2EBestiary.Miscellaneous.HP"}}" data-vague-property="hp">
             <div class="flex-data">
-                <i class="fa-solid fa-fw fa-shield-halved"></i>
+                <i class="fa-solid fa-heart health-icon"></i>
                 <div>{{localize "PF2EBestiary.Miscellaneous.HP"}}</div>
             </div>
             <div class="flex-value">{{#if (or this.hp.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.hp this.vagueDescriptions.properties.hp}}{{else}}?{{/if}}</div>
@@ -198,7 +208,6 @@
                         </a>
                     {{/each}}
                 </nav>
-
                 <i class="fa-solid fa-reply monster-return-icon" data-action="returnButton" title="{{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory" type=(PF2EBTCaptialize this.selected.type)}}"></i>
             </div>
             <div class="monster-traits-row">

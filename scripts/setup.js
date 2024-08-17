@@ -58,6 +58,15 @@ const configSettings = () => {
         type: Boolean,
         default: false,
     });
+
+    game.settings.register('pf2e-bestiary-tracking', 'show-monster-level', {
+        name: game.i18n.localize('PF2EBestiary.Settings.ShowMonsterLevel.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.ShowMonsterLevel.Hint'),
+        scope: 'world',
+        config: true,
+        type: Boolean,
+        default: false,
+    });
 };
 
 const generalNonConfigSettings = () => {

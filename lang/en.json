@@ -2,6 +2,7 @@
     "PF2EBestiary": {
         "Miscellaneous": {
             "Name": "Name",
+            "Level": "Level",
             "AC": "AC",
             "HP": "HP",
             "Immunities": "Immunities",
@@ -182,6 +183,10 @@
             "UseTokenArt": {
                 "Name": "Use Token Art",
                 "Hint": "Token art will be used in the Bestiary."
+            },
+            "ShowMonsterLevel": {
+                "Name": "Show Monster Level",
+                "Hint": "Display the monster's level as a field the GM can toggle"
             }
         },
         "Macros": {

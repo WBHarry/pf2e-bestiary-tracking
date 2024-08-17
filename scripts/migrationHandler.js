@@ -171,6 +171,14 @@ export const handleDataMigration = async () => {
         version = '0.8.7';
     }
 
+    if(version === '0.8.7'){
+        await migrateBestiary(async (bestiary, monster, type, monsterKey) => {
+            bestiary.monster[type][monsterKey].level = { revealed: false, value: bestiary.monster[type][monsterKey].level };
+        });
+
+        version = '0.8.7.1';
+    }
+
     await game.settings.set('pf2e-bestiary-tracking', 'version', version);
 }
 

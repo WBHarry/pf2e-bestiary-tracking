@@ -330,6 +330,9 @@
   border-color: #7a7971;
   margin-bottom: 4px;
 }
+.bestiary-tracking.bestiary .monster-container .left-monster-container .monster-left-data .health-icon {
+  margin-left: 2px;
+}
 .bestiary-tracking.bestiary .monster-container .left-monster-container .speeds-container {
   display: flex;
   align-items: center;
@@ -365,6 +368,11 @@
 }
 .bestiary-tracking.bestiary .monster-container .left-monster-container .saves-container .save-container .saves-value {
   font-size: 16px;
+}
+.bestiary-tracking.bestiary .monster-container .data-icon {
+  width: 16px;
+  border: 0;
+  filter: drop-shadow(0 0 3px black);
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container {
   flex: 1;
@@ -405,7 +413,7 @@
 .bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-return-icon {
   cursor: pointer;
   position: absolute;
-  right: 9px;
+  left: 9px;
   top: 40px;
   font-size: 30px;
 }
@@ -539,11 +547,6 @@
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container .action-description.expanded {
   max-height: 500px;
-}
-.bestiary-tracking.bestiary .monster-container .right-monster-container .data-icon {
-  width: 16px;
-  border: 0;
-  filter: drop-shadow(0 0 3px black);
 }
 .bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container {
   display: flex;
