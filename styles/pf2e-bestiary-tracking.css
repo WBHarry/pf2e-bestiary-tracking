@@ -143,6 +143,8 @@
   border-radius: 6px;
   font-size: 26px;
   height: 31px;
+  border-width: 1px;
+  border-style: solid;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-header .bestiary-toolbar .bestiary-search-container {
   position: relative;
