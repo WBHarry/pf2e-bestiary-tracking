@@ -10,6 +10,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Build Packs
+      run: npm run pullYMLtoLDB
+
     # get part of the tag after the `v`
     - name: Extract tag version number
       id: get_version
