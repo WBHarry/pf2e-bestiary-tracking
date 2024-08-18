@@ -610,6 +610,9 @@
   font-weight: bold;
   font-style: normal;
 }
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .bestiary-notes-legend .editor {
+  height: 200px;
+}
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .bestiary-notes-legend hr {
   background-image: none;
   background-color: black;
@@ -767,9 +770,6 @@
 .theme-dark .pf2e-bestiary-tracking.bestiary .bookmark:hover {
   background-color: #760000;
 }
-.theme-dark .pf2e-bestiary-tracking.bestiary .tabs > [data-tab].active {
-  text-shadow: 0 0 10px #007149;
-}
 .pf2e-bestiary-tracking.bestiary .primary-container {
   background-color: #694F8E;
   border-color: black;
@@ -808,9 +808,6 @@
 }
 .pf2e-bestiary-tracking.bestiary .main-border-container {
   border-color: #694F8E;
-}
-.pf2e-bestiary-tracking.bestiary .tabs > [data-tab].active {
-  text-shadow: 0 0 10px #c86bd0;
 }
 .pf2e-bestiary-tracking.bestiary .bookmark:hover {
   background-color: #926ec4;

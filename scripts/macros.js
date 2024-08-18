@@ -33,3 +33,39 @@ export const showMonster = async () => {
 
     new PF2EBestiary({ category, monsterUuid: monster.uuid }).render(true)
 };
+
+export const addMonster = async () => {
+    if(!game.user.isGM) {
+        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.AddMonster.GMOnly"));
+        return;
+    }
+
+    const selectedMonster = game.user.targets.size > 0 ? game.user.targets.values().next().value : 
+    canvas.tokens.controlled.length > 0 ? canvas.tokens.controlled[0]
+    : null;
+
+    if(!selectedMonster) 
+    {
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoTarget"));
+        return;
+    }
+
+    if(selectedMonster.actor.type !== 'npc'){
+        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"))
+        return;
+    }
+
+    const settings = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+
+    const category = 'monster'
+    const baseActor = selectedMonster.document ? selectedMonster.document.baseActor : selectedMonster.baseActor;
+    const monster = settings[category][baseActor.uuid];
+
+    if(monster)
+    {
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.AddMonster.TargetAlreadyInBestiary"));
+        return;
+    }
+
+    await PF2EBestiary.addMonster(selectedMonster.actor);
+};

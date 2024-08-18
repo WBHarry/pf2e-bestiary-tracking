@@ -545,5 +545,19 @@
                 {{/if}}
             </div>
         </div>
+
+        <div class="tab {{this.tabs.notes.cssClass}}" data-group="primary" data-tab="notes">
+            <div class="bestiary-notes-page">
+                <fieldset class="bestiary-notes-legend main-border-container">
+                    <legend class="data-container primary-container">
+                        {{localize "Player Notes"}}
+                    </legend>
+
+                    <prose-mirror name="{{concat 'bestiary.monster.' this.uuid '.notes.players'}}" value="{{this.notes.players}}" toggled="true">
+                        {{{enrichedDescription}}}
+                    </prose-mirror>
+                </fieldset>
+            </div>
+        </div>
     </div>
 </div>
