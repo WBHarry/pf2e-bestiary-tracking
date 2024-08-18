@@ -1,0 +1,27 @@
+{
+  "name": "Open Bestiary",
+  "type": "script",
+  "command": "game.modules.get('pf2e-bestiary-tracking').macros.openBestiary();",
+  "img": "icons/sundries/books/book-embossed-jewel-gold-purple.webp",
+  "author": "JnP42Jlnr1lOyrny",
+  "scope": "global",
+  "folder": null,
+  "ownership": {
+    "default": 0,
+    "JnP42Jlnr1lOyrny": 3
+  },
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.331",
+    "systemId": "pf2e",
+    "systemVersion": "6.2.2",
+    "createdTime": 1723993105649,
+    "modifiedTime": 1723993107253,
+    "lastModifiedBy": "JnP42Jlnr1lOyrny"
+  },
+  "_id": "0YeEkbYgikB8MklL",
+  "sort": 100000,
+  "_key": "!macros!0YeEkbYgikB8MklL"
+}

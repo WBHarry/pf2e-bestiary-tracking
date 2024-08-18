@@ -75,15 +75,3 @@ Hooks.on('getSceneControlButtons', (controls) => {
          }
     ]); }
 });
-
-// Hooks.on('createActor', async (actor, { fromCompendium }) => {
-//     if(fromCompendium){
-//         const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
-//         if(doubleClickOpenActivated) {
-//             const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-//             if(bestiary.monster[actor._source._stats.compendiumSource]){
-//                 actor.ownership.default = actor.ownership.default > 1 ? actor.ownership.default : 1;
-//             }         
-//         }
-//     }
-// });

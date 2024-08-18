@@ -1,0 +1,27 @@
+{
+  "name": "Show Monster",
+  "type": "script",
+  "command": "game.modules.get('pf2e-bestiary-tracking').macros.showMonster();",
+  "img": "icons/magic/perception/orb-crystal-ball-scrying-blue.webp",
+  "author": "JnP42Jlnr1lOyrny",
+  "scope": "global",
+  "folder": null,
+  "ownership": {
+    "default": 0,
+    "JnP42Jlnr1lOyrny": 3
+  },
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.331",
+    "systemId": "pf2e",
+    "systemVersion": "6.2.2",
+    "createdTime": 1723993106448,
+    "modifiedTime": 1723993107253,
+    "lastModifiedBy": "JnP42Jlnr1lOyrny"
+  },
+  "_id": "KL0jdrzKGcU5rr9c",
+  "sort": 300000,
+  "_key": "!macros!KL0jdrzKGcU5rr9c"
+}
