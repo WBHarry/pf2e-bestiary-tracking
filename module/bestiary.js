@@ -7,14 +7,14 @@ import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getWeakne
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
 export default class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
-    constructor({category = 'monster', type = null, monsterSlug = null} = {category: 'monster', type: null, monsterSlug: null}){
+    constructor({category = 'monster', monsterUuid = null} = {category: 'monster', monsterUuid: null}){
         super({});
 
         this.bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         this.selected = {
             category,
-            type,
-            monster: category && type && monsterSlug ? this.bestiary[category][type][monsterSlug] : null,
+            type: monsterUuid ? this.bestiary[category][monsterUuid].inTypes[0] : null,
+            monster: category && monsterUuid ? this.bestiary[category][monsterUuid] : null,
             abilities: [],
         };
 
@@ -150,27 +150,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         selected.monster.passives.values = newPassives;
     }
 
-    getWithPlayerContext(context) {
-        context.vagueDescriptions.settings.playerBased = game.user.isGM ? false : context.vagueDescriptions.settings.playerBased;
-        
-        if(!game.user.isGM && context.vagueDescriptions.settings.playerBased && context.playerLevel && context.selected.monster){
-            context.selected.monster.ac.category = getCategoryLabel(acTable, context.playerLevel, context.selected.monster.ac.value);
-            context.selected.monster.hp.category = getCategoryFromIntervals(hpTable, context.playerLevel, context.selected.monster.hp.value);
-            Object.values(context.selected.monster.saves).forEach(save => save.category = getCategoryLabel(savingThrowPerceptionTable, context.playerLevel, save.value, true));
-            Object.values(context.selected.monster.abilities.values).forEach(ability => ability.category = getCategoryLabel(attributeTable, context.playerLevel, ability.mod));
-            context.selected.monster.senses.values.perception.category = getCategoryLabel(savingThrowPerceptionTable, context.playerLevel, context.selected.monster.senses.values.perception.value);
-            Object.values(context.selected.monster.spells.entries).forEach(entry => {
-                entry.dc.category = getCategoryLabel(spellDCTable, context.playerLevel, entry.dc.value);
-                entry.attack.category = getCategoryLabel(spellAttackTable, context.playerLevel, entry.attack.value);
-            });
-        }
-
-        return context;
-    }
-
-    prepareData(monster) {
+    prepareData(monster, playerLevel) {
         if(!monster) return monster;
 
+        const contextLevel = playerLevel ?? monster.level.value;
         return {
             slug: monster.slug,
             id: monster.id,
@@ -181,26 +164,33 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             size: monster.size,
             name: monster.name,
             img: monster.img,
-            abilities: monster.abilities,
-            ac: monster.ac,
-            hp: monster.hp,
+            abilities: { ...monster.abilities, values: monster.abilities.values.map(ability => ({ ...ability, category: getCategoryLabel(attributeTable, contextLevel, ability.mod, true) })) },
+            ac: { ...monster.ac, category: getCategoryLabel(acTable, contextLevel, monster.ac.value) },
+            hp: { ...monster.hp, category: getCategoryFromIntervals(hpTable, contextLevel, monster.hp.value) },
             speeds: monster.speeds,
-            senses: monster.senses,
+            senses: { ...monster.senses, values: { ...monster.senses.values, perception: { ...monster.senses.values.perception, isPerception: true, category: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.senses.values.perception.value) } } },
             attacks: monster.attacks,
             immunities: monster.immunities,
             resistances: monster.resistances,
             weaknesses: monster.weaknesses,
             actions: monster.actions,
             passives: monster.passives,
-            saves: monster.saves,
+            saves: {
+                fortitude: { ...monster.saves.fortitude, categories: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.fortitude.value, true) },
+                reflex: { ...monster.saves.reflex, categories: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.reflex.value, true) },
+                will: { ...monster.saves.will, categories: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.will.value, true) },
+            },
             spells: {
                 ...monster.spells, 
                 entries: Object.keys(monster.spells.entries).reduce((acc, entryKey) => {
+                    const entry = monster.spells.entries[entryKey];
                     acc[entryKey] = {
-                        ...monster.spells.entries[entryKey],
+                        ...entry,
                         id: entryKey,
-                        levels: Object.keys(monster.spells.entries[entryKey].levels).reduce((acc, levelKey) => {
-                            const spells = monster.spells.entries[entryKey].levels[levelKey];
+                        dc: { ...entry.dc, category: getCategoryLabel(spellDCTable, contextLevel, entry.dc.value) },
+                        attack: { ...entry.attack, category: getCategoryLabel(spellAttackTable, contextLevel, entry.attack.value) },
+                        levels: Object.keys(entry.levels).reduce((acc, levelKey) => {
+                            const spells = entry.levels[levelKey];
                             const spellArray = Object.keys(spells).map(spellKey => ({
                                 ...spells[spellKey]
                             }));
@@ -230,20 +220,44 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         };
     }
 
+    prepareBestiary(bestiary){
+        return {
+            monster: Object.keys(bestiary.monster).reduce((acc, monsterKey) => {
+                for(var type of bestiary.monster[monsterKey].inTypes){
+                       acc[type][monsterKey] = bestiary.monster[monsterKey];
+                }
+
+                return acc;
+            }, Object.keys(CONFIG.PF2E.creatureTypes).reduce((acc, type) => {  
+                acc[type] = {};
+
+                return acc;
+            }, {})),
+            npc: {}
+        };
+    }
+
     async _prepareContext(_options) {
         var context = await super._prepareContext(_options);
 
         context.tabs = this.getTabs();
-        context.layout = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-layout');
-        context.showMonsterLevel = await game.settings.get('pf2e-bestiary-tracking', 'show-monster-level');
+        context.layout = game.settings.get('pf2e-bestiary-tracking', 'bestiary-layout');
+        context.showMonsterLevel = game.settings.get('pf2e-bestiary-tracking', 'show-monster-level');
+        context.useTokenArt = game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
+        context.vagueDescriptions = { ... (await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions')) };
 
-        context.bestiary = foundry.utils.deepClone(this.bestiary);
+        context.user = game.user;
+        context.vagueDescriptions.settings.playerBased = game.user.isGM ? false : context.vagueDescriptions.settings.playerBased;
+        context.playerLevel = game.user.character ? game.user.character.system.details.level.value : null;
+        context.search = this.search;
+
+        context.bestiary = this.prepareBestiary(foundry.utils.deepClone(this.bestiary));
         context.selected = foundry.utils.deepClone(this.selected);
         await this.enrichTexts(context.selected);
-        context.selected.monster = this.prepareData(context.selected.monster);
+        context.selected.monster = this.prepareData(context.selected.monster, context.vagueDescriptions.settings.playedBased ? context.playerLevel.value : null);
 
-        context.openType = this.selected.type ? Object.keys(this.bestiary[this.selected.category][this.selected.type]).reduce((acc, key)=> {
-            const monster = this.bestiary[this.selected.category][this.selected.type][key];
+        context.openType = this.selected.type ? Object.keys(context.bestiary[this.selected.category][this.selected.type]).reduce((acc, key)=> {
+            const monster = context.bestiary[this.selected.category][this.selected.type][key];
             const match = monster.name.value.toLowerCase().match(this.search.name.toLowerCase());
             const unrevealedMatch = game.i18n.localize('PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature').toLowerCase().match(this.search.name.toLowerCase());
             if(!this.search.name || ((monster.name.revealed || game.user.isGM) && match) || (!monster.name.revealed && !game.user.isGM && unrevealedMatch)) {
@@ -252,15 +266,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
             return acc;
         }, {}) : null;
-
-        context.user = game.user;
-        context.vagueDescriptions = { ... (await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions')) };
-        context.vagueDescriptions.settings.playerBased = game.user.isGM ? false : context.vagueDescriptions.settings.playerBased;
-        context.playerLevel = game.user.character ? game.user.character.system.details.level.value : null;
-        context.search = this.search;
-        context.useTokenArt = await game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
-
-        context = this.getWithPlayerContext(context);
 
         return context;
     }
@@ -274,7 +279,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static selectMonster(_, button){
-        this.selected.monster = this.bestiary[this.selected.category][this.selected.type][button.dataset.monster];
+        this.selected.monster = this.bestiary[this.selected.category][button.dataset.monster];
         this.tabGroups = { primary: 'statistics' };
         this.render();
     }
@@ -282,23 +287,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     static async removeMonster(_, button){
         const confirmed = await Dialog.confirm({
             title: "Delete Monster",
-            content: "Are you sure you want to remove the creature from the Bestiary??",
+            content: "Are you sure you want to remove the creature from the Bestiary?",
             yes: () => true,
             no: () => false,
         });
 
         if(!confirmed) return;
 
-        for(var type of this.bestiary[this.selected.category][this.selected.type][button.dataset.monster].inTypes){
-            this.bestiary[this.selected.category][type] = Object.keys(this.bestiary[this.selected.category][type]).reduce((acc, monster) => {
-                if(monster !== button.dataset.monster){
-                    acc[monster] = this.bestiary[this.selected.category][type][monster];
-                }
-                
-                return acc;
-            }, {});
-        }
-
+        delete this.bestiary[this.selected.category][button.dataset.monster];
         this.selected.monster = null;
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
@@ -333,17 +329,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     static async toggleRevealed(_, button){
         if(!game.user.isGM) return;
 
-        const newValue = !foundry.utils.getProperty(this.bestiary.monster[this.selected.type][this.selected.monster.slug], `${button.dataset.path}.revealed`);
-        for(var type of this.selected.monster.inTypes){
-            foundry.utils.setProperty(this.bestiary.monster[type][this.selected.monster.slug], `${button.dataset.path}.revealed`, newValue);
-        }
+        const newValue = !foundry.utils.getProperty(this.bestiary.monster[this.selected.monster.uuid], `${button.dataset.path}.revealed`);
+        foundry.utils.setProperty(this.bestiary.monster[this.selected.monster.uuid], `${button.dataset.path}.revealed`, newValue);
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         this.render();
 
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
-            data: { monsterSlug: this.selected.monster.slug },
+            data: { },
         });
     }
 
@@ -469,26 +463,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     static async refreshBestiary(){
         if(!game.user.isGM) return;
 
-        for(var typeKey in this.bestiary.monster)
-        {
-            for(var monsterKey in this.bestiary.monster[typeKey]){
-                const actor = await fromUuid(this.bestiary.monster[typeKey][monsterKey].uuid);
-                
-                if(actor){
-                    const data = await PF2EBestiary.getMonsterData(actor);
-                    const updatedData = PF2EBestiary.getUpdatedCreature(this.bestiary.monster[typeKey][monsterKey], data);
 
-                    // Optimize out this when this.bestiary removes the type subcategories and just stores monsters with inTypes
-                    const removedCreatureTypes = Object.keys(this.bestiary.monster).filter(type => !updatedData.inTypes.includes(type) && Object.keys(this.bestiary.monster[type]).find(monsterKey => this.bestiary.monster[type][monsterKey].uuid === updatedData.uuid));
-                    for(var type of removedCreatureTypes){
-                        delete this.bestiary.monster[type][monsterKey]; 
-                    }
+        for(var monsterKey in this.bestiary.monster){
+            const actor = await fromUuid(monsterKey);
 
-                    for(var type of updatedData.inTypes){
-                        this.bestiary.monster[type][monsterKey] = updatedData;
-                    }
-                } 
-            }
+            if(actor){
+                const data = await PF2EBestiary.getMonsterData(actor);
+                const updatedData = PF2EBestiary.getUpdatedCreature(this.bestiary.monster[monsterKey], data);
+                this.bestiary[monsterKey] = updatedData;
+            } 
         }
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
@@ -500,22 +483,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
 
-    async refreshCreature(typeKey, monsterKey){
-        const actor = await fromUuid(this.bestiary.monster[typeKey][monsterKey].uuid);
+    async refreshCreature(monsterUuid){
+        const actor = await fromUuid(monsterUuid);
                 
         if(!actor) return;
 
         const data = await PF2EBestiary.getMonsterData(actor);
-        const updatedData = PF2EBestiary.getUpdatedCreature(this.bestiary.monster[typeKey][monsterKey], data);
-
-        const removedCreatureTypes = Object.keys(this.bestiary.monster).filter(type => !updatedData.inTypes.includes(type) && Object.keys(this.bestiary.monster[type]).find(monsterKey => this.bestiary.monster[type][monsterKey].uuid === updatedData.uuid));
-        for(var type of removedCreatureTypes){
-            delete this.bestiary.monster[type][monsterKey]; 
-        }
-
-        for(var type of updatedData.inTypes){
-            this.bestiary.monster[type][monsterKey] = updatedData;
-        } 
+        this.bestiary.monster[monsterUuid] =  PF2EBestiary.getUpdatedCreature(this.bestiary.monster[monsterUuid], data);
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -540,13 +514,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         if(confirmed){
             this.selected = { category: 'monster', type: null, monster: null, abilities: [] };
-            this.bestiary = { 
-                monster: Object.keys(CONFIG.PF2E.creatureTypes).reduce((acc, type) => {  
-                    acc[type] = {};
-
-                    return acc;
-                }, {}), 
-                npc: {} };
+            this.bestiary = { monster: {}, npc: {} };
 
             await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
             await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -694,12 +662,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const addValue = async ({value, errors}) => {
             if(errors.length > 0) ui.notifications.error(game.i18n.format("PF2EBestiary.Bestiary.Misinformation.Dialog.Errors.RequiredFields", { fields: errors.map((x, index) => `${x}${index !== errors.length-1 ? ', ' : ''}`) }));
 
-            for(var type of this.selected.monster.inTypes){
-                const newValues = foundry.utils.getProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${button.dataset.path}.values`);
-                newValues[value.slug] = value.value;
-                foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${button.dataset.path}.values`, newValues);
-            }
-
+            const newValues = foundry.utils.getProperty(this.bestiary[this.selected.category][this.selected.monster.uuid], `${button.dataset.path}.values`);
+            newValues[value.slug] = value.value;
+            foundry.utils.setProperty(this.bestiary[this.selected.category][this.selected.monster.uuid], `${button.dataset.path}.values`, newValues);
+            
             await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
             await game.socket.emit(`module.pf2e-bestiary-tracking`, {
                 action: socketEvent.UpdateBestiary,
@@ -747,14 +713,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         const setValue = async (value) => {
             if(value){
-                for(var type of this.selected.monster.inTypes){
-                    foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${event.currentTarget.dataset.path}.custom`, value);
-                }
+                foundry.utils.setProperty(this.bestiary[this.selected.category][this.selected.monster.uuid], `${event.currentTarget.dataset.path}.custom`, value);
 
                 await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
                 await game.socket.emit(`module.pf2e-bestiary-tracking`, {
                     action: socketEvent.UpdateBestiary,
-                    data: { monsterSlug: this.selected.monster.slug },
+                    data: { },
                 });
 
                 this.render();
@@ -813,8 +777,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             if(event.currentTarget.dataset.fake){
                 const pathSplit = event.currentTarget.dataset.path.split('.');
                 const deletePath = pathSplit.slice(0, pathSplit.length-1).join('.');
-                const newValues = foundry.utils.getProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], deletePath);
-                foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], deletePath, Object.keys(newValues).reduce((acc,key) => {
+                const newValues = foundry.utils.getProperty(this.bestiary[this.selected.category][this.selected.monster.uuid], deletePath);
+                foundry.utils.setProperty(this.bestiary[this.selected.category][this.selected.monster.uuid], deletePath, Object.keys(newValues).reduce((acc,key) => {
                     if(key !== pathSplit[pathSplit.length-1]){
                         acc[key] = newValues[key];
                     }
@@ -823,14 +787,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 }, {}));
             }
             else {
-                foundry.utils.setProperty(this.bestiary[this.selected.category][type][this.selected.monster.slug], `${event.currentTarget.dataset.path}.custom`, null);
+                foundry.utils.setProperty(this.bestiary[this.selected.category][this.selected.monster.uuid], `${event.currentTarget.dataset.path}.custom`, null);
             }
         }
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
-            data: { monsterSlug: this.selected.monster.slug },
+            data: { },
         });
 
         this.render();
@@ -859,21 +823,20 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static async addMonster(item){
-        const monster = await PF2EBestiary.getMonsterData(item);
+        const monster = await PF2EBestiary.getMonsterData(item.token.document ? item.token.document.baseActor : item.token.baseActor);
         if (!monster) return;
 
         const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
 
-        if(bestiary.monster[monster.inTypes[0]][monster.slug]) return;
+        // We do not currently refresh already present creatures in the Bestiary.
+        if(bestiary.monster[monster.uuid]) return;
 
-        for(var type of monster.inTypes){
-            bestiary['monster'][type][monster.slug] = monster;
-        }
-
+        bestiary.monster[monster.uuid] = monster;
+        
         const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
         if(doubleClickOpenActivated){
             const ownership = item.ownership.default > 1 ? item.ownership.default : 1;
-            const baseItem = await fromUuid(`Actor.${item.id}`);
+            const baseItem = await fromUuid(monster.uuid);
             
             await item.update({ "ownership.default": ownership });
             await baseItem.update({ "ownership.default": ownership });
@@ -992,8 +955,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             spellcastingEntries[subItem.id] = {
                 revealed: false,
                 name: subItem.name,
-                dc: { revealed: false, value: subItem.system.spelldc.dc, category: getCategoryLabel(spellDCTable, item.system.details.level.value, subItem.system.spelldc.dc) },
-                attack: { revealed: false, value: subItem.system.spelldc.value, category: getCategoryLabel(spellAttackTable, item.system.details.level.value, subItem.system.spelldc.value) },
+                dc: { revealed: false, value: subItem.system.spelldc.dc },
+                attack: { revealed: false, value: subItem.system.spelldc.value },
                 levels: levels,
             };
         }
@@ -1001,9 +964,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(Object.keys(attacks.values).length === 0) attacks.values['None'] = { revealed: false, label: 'None' } // Is this needed anymore?
 
         const useTokenArt = await game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
-        const slug = slugify(item.name);
         const monster = {
-            slug: slug,
+            slug: slugify(item.name),
             id: item.id,
             uuid: item.uuid,
             level: { revealed: false, value: item.system.details.level.value },
@@ -1016,11 +978,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 revealed: 0, 
                 values: Object.keys(item.system.abilities).map(x => { 
                     const ability = item.system.abilities[x];
-                    return { revealed: false, label: x.capitalize(), mod: ability.mod, value: ability.mod >= 0 ? `+${ability.mod}` : `${ability.mod}`, category: getCategoryLabel(attributeTable, item.system.details.level.value, ability.mod), }; 
+                    return { revealed: false, label: x.capitalize(), mod: ability.mod, value: ability.mod >= 0 ? `+${ability.mod}` : `${ability.mod}`, }; 
                 }
             )},
-            ac: { revealed: false, value: item.system.attributes.ac.value, category: getCategoryLabel(acTable, item.system.details.level.value, item.system.attributes.ac.value) },
-            hp: { revealed: false, value: item.system.attributes.hp.max, category: getCategoryFromIntervals(hpTable, item.system.details.level.value, item.system.attributes.hp.max) },
+            ac: { revealed: false, value: item.system.attributes.ac.value },
+            hp: { revealed: false, value: item.system.attributes.hp.max },
             speeds: {
                 revealed: 0,
                 values: {
@@ -1043,7 +1005,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                         revealed: false,
                         label: 'Perception',
                         value: item.system.perception.value,
-                        category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.perception.value)
                     },
                     ...item.system.perception.senses.reduce((acc, sense) => {
                         acc[sense.type] = { revealed: false, label: sense.label };
@@ -1073,9 +1034,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             actions: actions,
             passives: passives,
             saves: {
-                fortitude: { value: `${item.system.saves.fortitude.value >= 0 ? '+' : '-'}${item.system.saves.fortitude.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.fortitude.value, true), revealed: false },
-                reflex: { value: `${item.system.saves.reflex.value >= 0 ? '+' : '-'}${item.system.saves.reflex.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.reflex.value, true), revealed: false },
-                will: { value: `${item.system.saves.will.value >= 0 ? '+' : '-'}${item.system.saves.will.value}`, category: getCategoryLabel(savingThrowPerceptionTable, item.system.details.level.value, item.system.saves.will.value, true), revealed: false },
+                fortitude: { value: `${item.system.saves.fortitude.value >= 0 ? '+' : '-'}${item.system.saves.fortitude.value}`, revealed: false },
+                reflex: { value: `${item.system.saves.reflex.value >= 0 ? '+' : '-'}${item.system.saves.reflex.value}`, revealed: false },
+                will: { value: `${item.system.saves.will.value >= 0 ? '+' : '-'}${item.system.saves.will.value}`, revealed: false },
             },
             spells: {
                 fake: Object.keys(spellcastingEntries).length > 0 ? null : { revealed: false },
@@ -1094,55 +1055,39 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(!game.user.isGM) return;
 
         const data = TextEditor.getDragEventData(event);
-        const item = await fromUuid(data.uuid);
-        const slug = slugify(item.name);
+        const baseItem = await fromUuid(data.uuid);
 
-        if(item?.type === 'character'){
+        if(baseItem?.type === 'character'){
             ui.notifications.error(game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedCharacterType"));
             return;
         }
 
-        if(!item || item.type !== 'npc'){
+        if(!baseItem || baseItem.type !== 'npc'){
             ui.notifications.error(game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedType"));
             return;
         }
 
-        const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
-        const types = item.system.traits.value.reduce((acc, x) => {
-            if(creatureTypes.includes(x)) acc.push(x);
+        const item = baseItem.pack ? await Actor.create(baseItem.toObject()) : baseItem;
 
-            return acc;
-        }, []);
-
-        const existingCreatureType = Object.keys(this.bestiary.monster).find(type => types.includes(type) && Object.keys(this.bestiary.monster[type]).find(monsterKey => this.bestiary.monster[type][monsterKey].uuid === item.uuid));
-        if(existingCreatureType){
-            await this.refreshCreature(existingCreatureType, slug);
+        // Creature already in Bestiary.
+        if(this.bestiary.monster[item.uuid]){
+            await this.refreshCreature(item.uuid);
             return;
         }
 
-
         const monster = await PF2EBestiary.getMonsterData(item);
-
         const updatedBestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+        updatedBestiary.monster[item.uuid] = monster;
+
         const autoSelect = await game.settings.get('pf2e-bestiary-tracking', 'automatically-open-monster'); 
-
-        for(var type of monster.inTypes){
-            updatedBestiary.monster[type][slug] = monster;
-
-            if(autoSelect || this.selected.monster?.slug === slug){
-                this.selected = { ...this.selected, category: 'monster', type: type, monster: updatedBestiary.monster[type][slug] };
-            }
-            else {
-                this.selected.monster = null;
-            }
-        }
-
+        this.selected = { ...this.selected, category: 'monster', type: autoSelect ? monster.inTypes[0] : this.selected.type, monster: autoSelect ? monster : this.selected.monster ? updatedBestiary.monster[this.selected.monster.uuid] : null };
+        
         const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
         if(doubleClickOpenActivated){
             const ownership = item.ownership.default > 1 ? item.ownership.default : 1;
-            const baseItem = await fromUuid(`Actor.${item.id}`);
-            
             await item.update({ "ownership.default": ownership });
+
+            const baseItem = await fromUuid(item.uuid);
             await baseItem.update({ "ownership.default": ownership });
         }
         
@@ -1151,22 +1096,17 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
-            data: { monsterSlug: slug },
+            data: { },
         });
 
         this.render();
     }
 
-    onBestiaryUpdate = async ({ monsterSlug }) => {
+    onBestiaryUpdate = async () => {
         this.bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         
-        // if(monsterSlug){ // Why not just always update this.selected.monster? Nothing else would need updating ever. Remove monsterSlug
-        //     if(this.selected.monster?.slug === monsterSlug) {
-        //         this.selected.monster = this.bestiary[this.selected.category][this.selected.type][monsterSlug];
-        //     }
-        // }
-        if(this.selected.monster?.slug){
-            this.selected.monster = this.bestiary[this.selected.category][this.selected.type][this.selected.monster.slug];
+        if(this.selected.monster?.uuid){
+            this.selected.monster = this.bestiary[this.selected.category][this.selected.monster.uuid];
         }
 
         this.render(true);

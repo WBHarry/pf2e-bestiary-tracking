@@ -277,7 +277,7 @@
                                 {{/each}}  
                             {{else}}
                                 {{#PF2EBTFilter 'revealed' '?' 10 this.senses.values}}
-                                    {{#if (eq @key 'perception')}}
+                                    {{#if this.isPerception}}
                                         <div class="flexrow secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="senses.values.perception" data-name="Perception" data-vague-property="perception">
                                             <div class="pf2e-bestiary-bold">{{this.label}}</div>
                                             {{PF2EBTMonsterValue this ../vagueDescriptions.properties.perception }}

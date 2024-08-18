@@ -30,26 +30,14 @@ Hooks.once("setup", () => {
             if(!openBestiary || game.user.isGM) return wrapped(...args);
   
             const settings = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-            const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
-            
-            const actor = args[0].currentTarget.actor;
-            const category = 'monster'
-            const type = actor.system.traits.value.find(x => creatureTypes.includes(x));
-            var monsterSlug = slugify(actor.name);
-            const monster = settings[category][type] ? settings[category][type][monsterSlug] : null;
+            const monster = settings.monster[args[0].currentTarget.actor.uuid];
         
             if(!monster)
             {
-                const slugById = settings[category][type] ? Object.keys(settings[category][type]).find(key => settings[category][type][key].id === actor.id) : null;
-                if(!slugById){
-                    ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"));
-                    return;
-                }
-        
-                monsterSlug = slugById;
+                ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"));
             }
 
-            new PF2EBestiary({ category, type, monsterSlug }).render(true);
+            new PF2EBestiary({ category, monsterUuid: monster.uuid }).render(true);
         });
     }
 });
@@ -87,3 +75,15 @@ Hooks.on('getSceneControlButtons', (controls) => {
          }
     ]); }
 });
+
+// Hooks.on('createActor', async (actor, { fromCompendium }) => {
+//     if(fromCompendium){
+//         const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
+//         if(doubleClickOpenActivated) {
+//             const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+//             if(bestiary.monster[actor._source._stats.compendiumSource]){
+//                 actor.ownership.default = actor.ownership.default > 1 ? actor.ownership.default : 1;
+//             }         
+//         }
+//     }
+// });

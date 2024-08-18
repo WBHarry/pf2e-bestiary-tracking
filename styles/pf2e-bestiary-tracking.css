@@ -790,7 +790,7 @@
   filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
 }
 .pf2e-bestiary-tracking.bestiary .tertiary-container {
-  background-color: #8523ca;
+  background-color: #c86bd0;
   border-color: black;
   color: black;
 }
@@ -810,7 +810,7 @@
   border-color: #694F8E;
 }
 .pf2e-bestiary-tracking.bestiary .tabs > [data-tab].active {
-  text-shadow: 0 0 10px #8523ca;
+  text-shadow: 0 0 10px #c86bd0;
 }
 .pf2e-bestiary-tracking.bestiary .bookmark:hover {
   background-color: #926ec4;

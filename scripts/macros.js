@@ -1,13 +1,12 @@
 import PF2EBestiary from "../module/bestiary.js";
-import { slugify } from "./helpers.js";
 
 export const openBestiary = async () => {
     new PF2EBestiary().render(true);
 };
 
 export const showMonster = async () => {
-    const selectedMonster = game.user.targets.size > 0 ? game.user.targets.values().next().value.actor : 
-        canvas.tokens.controlled.length > 0 ? canvas.tokens.controlled[0].actor
+    const selectedMonster = game.user.targets.size > 0 ? game.user.targets.values().next().value : 
+        canvas.tokens.controlled.length > 0 ? canvas.tokens.controlled[0]
          : null;
 
     if(!selectedMonster) 
@@ -16,29 +15,21 @@ export const showMonster = async () => {
         return;
     }
 
-    if(selectedMonster.type !== 'npc'){
+    if(selectedMonster.actor.type !== 'npc'){
         ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"))
         return;
     }
 
     const settings = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-    const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
 
     const category = 'monster'
-    const type = selectedMonster.system.traits.value.find(x => creatureTypes.includes(x));
-    var monsterSlug = slugify(selectedMonster.name);
-    const monster = settings[category][type] ? settings[category][type][monsterSlug] : null;
+    const monster = settings[category][selectedMonster.document ? selectedMonster.document.baseActor.uuid : selectedMonster.baseActor.uuid];
 
     if(!monster)
     {
-        const slugById = settings[category][type] ? Object.keys(settings[category][type]).find(key => settings[category][type][key].id === selectedMonster.id) : [];
-        if(!slugById){
-            ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"));
-            return;
-        }
-
-        monsterSlug = slugById;
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"));
+        return;
     }
 
-    new PF2EBestiary({ category, type, monsterSlug }).render(true)
+    new PF2EBestiary({ category, monsterUuid: monster.uuid }).render(true)
 };

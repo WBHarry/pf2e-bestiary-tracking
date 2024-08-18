@@ -222,7 +222,29 @@ export const handleDataMigration = async () => {
             });
         });
 
-        version = '0.8.7.2';
+        // Drop the Type portion of the Bestiary data. The information already exists in monster.inTypes
+        const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+        const monsterMap = Object.keys(bestiary.monster).reduce((acc, typeKey) => {
+            Object.keys(bestiary.monster[typeKey]).forEach(monsterKey => {
+                const monster = bestiary.monster[typeKey][monsterKey];
+                if(monster?.uuid){
+                    acc.set(monster.uuid, monster);   
+                } 
+
+            });
+
+            return acc;
+        }, new Map());
+
+        const newBestiary = Array.from(monsterMap.values()).reduce((acc, monster) => {
+            acc.monster[monster.uuid] = monster;
+
+            return acc;
+        }, { monster: {}, npc: {} });
+
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', newBestiary);
+
+        version = '0.8.8';
     }
 
     await game.settings.set('pf2e-bestiary-tracking', 'version', version);

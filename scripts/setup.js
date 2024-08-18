@@ -35,10 +35,10 @@ const configSettings = () => {
         default: false,
         onChange: async value => {
             await migrateBestiary(async (bestiary, monster, type, monsterKey) => {
-                const origin = monster.uuid ? await fromUuid(monster.uuid) : monster.id ? game.actors.find(x => x.id) : null;
+                const origin = await fromUuid(monster.uuid);
                 if(!origin) return;
 
-                bestiary.monster[type][monsterKey].img = value ? origin.prototypeToken.texture.src : origin.img;
+                bestiary.monster[monsterKey].img = value ? origin.prototypeToken.texture.src : origin.img;
 
                 await game.socket.emit(`module.pf2e-bestiary-tracking`, {
                     action: socketEvent.UpdateBestiary,
@@ -105,11 +105,7 @@ const generalNonConfigSettings = () => {
         config: false,
         type: Object,
         default: {
-            monster: Object.keys(CONFIG.PF2E.creatureTypes).reduce((acc, type) => {  
-                acc[type] = {};
-
-                return acc;
-            }, {}),
+            monster: {},
             npc: {}
         },
     });
