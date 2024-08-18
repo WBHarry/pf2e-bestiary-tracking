@@ -219,7 +219,7 @@
                 <div class="monster-traits flexrow">
                     {{#each this.traits.values as |trait key|}}
                         {{#if (or ../user.isGM trait.revealed)}}
-                            <div class="monster-trait secondary-container {{#if ../user.isGM }}toggle-container {{#if trait.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'traits.values.' key}}" data-parent="traits">
+                            <div class="monster-trait data-container secondary-container {{#if ../user.isGM }}toggle-container {{#if trait.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'traits.values.' key}}" data-parent="traits">
                                 {{localize trait.value}}
                             </div>
                         {{/if}}

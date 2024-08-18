@@ -347,8 +347,183 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         });
     }
 
-    static async refreshBestiary(){
+    static getUpdatedCreature(creature, data){
+            creature.slug = data.slug;
+            creature.level = { revealed: creature.level.revealed, value: data.level.value };
+            creature.inTypes = data.inTypes;
+            creature.traits = { ...data.traits, values: Object.keys(data.traits.values).reduce((acc, traitKey) => {
+                acc[traitKey] = { ...data.traits.values[traitKey], revealed: creature.traits.values[traitKey] ? creature.traits.values[traitKey].revealed : false };
+                return acc;
+            }, {}) };
+            creature.size = data.size;
+            creature.name = { revealed: creature.name.revealed, value: data.name.value };
+            creature.img = data.img;
+            creature.abilities = { ...data.abilities, values: data.abilities.values.map(ability => { 
+                const creatureAbility = creature.abilities.values.find(x => x.label === ability.label);
+                return { ...ability, revealed: creatureAbility ? creatureAbility.revealed : false };   
+            }) };
+            creature.ac = { ...data.ac, revealed: creature.ac.revealed };
+            creature.hp = { ...data.hp, revealed: creature.hp.revealed };
+            creature.speeds = { ...data.speeds, values: Object.keys(data.speeds.values).reduce((acc, speedKey) => {
+                acc[speedKey] = { ...data.speeds.values[speedKey], revealed: creature.speeds.values[speedKey] ? creature.speeds.values[speedKey].revealed : false }
+                return acc;
+            }, {}) };
+            
+            creature.senses = { ...data.senses, values: Object.keys(data.senses.values).reduce((acc, senseKey) => {
+                acc[senseKey] = { ...data.senses.values[senseKey], revealed: creature.senses.values[senseKey] ? creature.senses.values[senseKey].revealed : false }
+                return acc;
+            }, {}) }
+            creature.attacks = {  
+                ...data.attacks,
+                values: Object.keys(data.attacks.values).reduce((acc, attackKey) => {
+                    const creatureAttack = creature.attacks.values[attackKey];
+                    acc[attackKey] = { 
+                        ...data.attacks.values[attackKey], 
+                        revealed: creatureAttack ? creatureAttack.revealed : false,
+                        variants: {
+                            ...data.attacks.values[attackKey].variants,
+                            revealed: creatureAttack ? creatureAttack.variants.revealed : false,
+                        }
+                    }
 
+                    return acc;
+                }, {}),
+            };
+            creature.immunities = {
+                ...data.immunities,
+                values: Object.keys(data.immunities.values).reduce((acc, immunityKey) => {
+                    acc[immunityKey] = { ...data.immunities.values[immunityKey], revealed: creature.immunities.values[immunityKey] ? creature.immunities.values[immunityKey].revealed : false }
+                    return acc;
+                }, {})
+            };
+            creature.resistances = {
+                ...data.resistances,
+                values: Object.keys(data.resistances.values).reduce((acc, resistanceKey) => {
+                    acc[resistanceKey] = { ...data.resistances.values[resistanceKey], revealed: creature.resistances.values[resistanceKey] ? creature.resistances.values[resistanceKey].revealed : false }
+                    return acc;
+                }, {})
+            };
+            creature.weaknesses = {
+                ...data.weaknesses,
+                values: Object.keys(data.weaknesses.values).reduce((acc, weaknessKey) => {
+                    acc[weaknessKey] = { ...data.weaknesses.values[weaknessKey], revealed: creature.weaknesses.values[weaknessKey] ? creature.weaknesses.values[weaknessKey].revealed : false }
+                    return acc;
+                }, {})
+            };
+
+            creature.actions = {
+                ...data.actions,
+                values: Object.keys(data.actions.values).reduce((acc, actionKey) => {
+                    acc[actionKey] = { ...data.actions.values[actionKey], revealed: creature.actions.values[actionKey] ? creature.actions.values[actionKey].revealed : false };
+                    return acc;
+                }, {})
+            };
+            creature.passives = {
+                ...data.passive,
+                values: Object.keys(data.passives.values).reduce((acc, passiveKey) => {
+                    acc[passiveKey] = { ...data.passives.values[passiveKey], revealed: creature.passives.values[passiveKey] ? creature.passives.values[passiveKey].revealed : false };
+                    return acc;
+                }, {})
+            };
+            creature.saves = {
+                fortitude: { ...data.saves.fortitude, revealed: creature.saves.fortitude.revealed },
+                reflex: { ...data.saves.reflex, revealed: creature.saves.reflex.revealed },
+                will: { ...data.saves.will, revealed: creature.saves.will.revealed }
+            };
+            creature.spells = {
+                ...data.spells,
+                entries: Object.keys(data.spells.entries).reduce((acc, entryKey) => {
+                    const creatureEntry = creature.spells.entries[entryKey];
+                    acc[entryKey] = {
+                        ...data.spells.entries[entryKey],
+                        dc: { ...data.spells.entries[entryKey].dc, revealed: creatureEntry ? creatureEntry.dc.revealed : false },
+                        attack: { ...data.spells.entries[entryKey].attack, revealed: creatureEntry ? creatureEntry.attack.revealed : false },
+                        revealed: creatureEntry ? creatureEntry.revealed : false,
+                        levels: Object.keys(data.spells.entries[entryKey].levels).reduce((acc, levelKey) => {
+                            const creatureLevel = creatureEntry ? creatureEntry.levels[levelKey] : null;
+                            acc[levelKey] = Object.keys(data.spells.entries[entryKey].levels[levelKey]).reduce((acc, spellKey) => {
+                                acc[spellKey] = {
+                                    ...data.spells.entries[entryKey].levels[levelKey][spellKey],
+                                    revealed: creatureLevel && creatureLevel[spellKey] ? creatureLevel[spellKey].revealed : false, 
+                                };
+
+                                return acc;
+                            }, {});
+
+                            return acc;
+                        }, {})
+                    }
+
+                    return acc;
+                }, {})
+            }
+            
+            creature.notes = Object.keys(data.notes).reduce((acc, noteKey) => {
+                acc[noteKey] = { ...data.notes[noteKey], revealed: creature.notes[noteKey].revealed };
+                return acc;
+            }, {})
+
+        return creature;
+    }
+
+    static async refreshBestiary(){
+        if(!game.user.isGM) return;
+
+        for(var typeKey in this.bestiary.monster)
+        {
+            for(var monsterKey in this.bestiary.monster[typeKey]){
+                const actor = await fromUuid(this.bestiary.monster[typeKey][monsterKey].uuid);
+                
+                if(actor){
+                    const data = await PF2EBestiary.getMonsterData(actor);
+                    const updatedData = PF2EBestiary.getUpdatedCreature(this.bestiary.monster[typeKey][monsterKey], data);
+
+                    // Optimize out this when this.bestiary removes the type subcategories and just stores monsters with inTypes
+                    const removedCreatureTypes = Object.keys(this.bestiary.monster).filter(type => !updatedData.inTypes.includes(type) && Object.keys(this.bestiary.monster[type]).find(monsterKey => this.bestiary.monster[type][monsterKey].uuid === updatedData.uuid));
+                    for(var type of removedCreatureTypes){
+                        delete this.bestiary.monster[type][monsterKey]; 
+                    }
+
+                    for(var type of updatedData.inTypes){
+                        this.bestiary.monster[type][monsterKey] = updatedData;
+                    }
+                } 
+            }
+        }
+
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: { },
+        });
+
+        Hooks.callAll(socketEvent.UpdateBestiary, {});
+    }
+
+    async refreshCreature(typeKey, monsterKey){
+        const actor = await fromUuid(this.bestiary.monster[typeKey][monsterKey].uuid);
+                
+        if(!actor) return;
+
+        const data = await PF2EBestiary.getMonsterData(actor);
+        const updatedData = PF2EBestiary.getUpdatedCreature(this.bestiary.monster[typeKey][monsterKey], data);
+
+        const removedCreatureTypes = Object.keys(this.bestiary.monster).filter(type => !updatedData.inTypes.includes(type) && Object.keys(this.bestiary.monster[type]).find(monsterKey => this.bestiary.monster[type][monsterKey].uuid === updatedData.uuid));
+        for(var type of removedCreatureTypes){
+            delete this.bestiary.monster[type][monsterKey]; 
+        }
+
+        for(var type of updatedData.inTypes){
+            this.bestiary.monster[type][monsterKey] = updatedData;
+        } 
+
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: { },
+        });
+
+        Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
 
     static async resetBestiary(){
@@ -724,7 +899,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }, []);
 
         const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits);
-        const traits = item.system.traits.value.reduce((acc, x, index) => {
+        const traits = item.system.traits.value.reduce((acc, x) => {
             if(creatureTraits.includes(x)){
                 acc.values[x] = { revealed: false, value: CONFIG.PF2E.creatureTraits[x] };
             }
@@ -920,6 +1095,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         const data = TextEditor.getDragEventData(event);
         const item = await fromUuid(data.uuid);
+        const slug = slugify(item.name);
 
         if(item?.type === 'character'){
             ui.notifications.error(game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedCharacterType"));
@@ -931,7 +1107,20 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             return;
         }
 
-        const slug = slugify(item.name);
+        const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
+        const types = item.system.traits.value.reduce((acc, x) => {
+            if(creatureTypes.includes(x)) acc.push(x);
+
+            return acc;
+        }, []);
+
+        const existingCreatureType = Object.keys(this.bestiary.monster).find(type => types.includes(type) && Object.keys(this.bestiary.monster[type]).find(monsterKey => this.bestiary.monster[type][monsterKey].uuid === item.uuid));
+        if(existingCreatureType){
+            await this.refreshCreature(existingCreatureType, slug);
+            return;
+        }
+
+
         const monster = await PF2EBestiary.getMonsterData(item);
 
         const updatedBestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
@@ -971,12 +1160,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     onBestiaryUpdate = async ({ monsterSlug }) => {
         this.bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         
-        if(monsterSlug){
-            if(this.selected.monster?.slug === monsterSlug) {
-                this.selected.monster = this.bestiary[this.selected.category][this.selected.type][monsterSlug];
-            }
+        // if(monsterSlug){ // Why not just always update this.selected.monster? Nothing else would need updating ever. Remove monsterSlug
+        //     if(this.selected.monster?.slug === monsterSlug) {
+        //         this.selected.monster = this.bestiary[this.selected.category][this.selected.type][monsterSlug];
+        //     }
+        // }
+        if(this.selected.monster?.slug){
+            this.selected.monster = this.bestiary[this.selected.category][this.selected.type][this.selected.monster.slug];
         }
-        
+
         this.render(true);
     };
 

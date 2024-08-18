@@ -1,4 +1,4 @@
-export const getMisinformationLabels = () => ({
+export const getVagueDescriptionLabels = () => ({
     full: {
         extreme: game.i18n.localize('PF2EBestiary.Menus.BestiaryLabels.VagueDescriptions.FullOptions.Extreme'),
         high: game.i18n.localize('PF2EBestiary.Menus.BestiaryLabels.VagueDescriptions.FullOptions.High'),

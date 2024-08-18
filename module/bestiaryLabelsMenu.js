@@ -1,4 +1,4 @@
-import { getMisinformationLabels } from "../data/bestiaryLabels.js";
+import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -45,7 +45,7 @@ export default class BestiaryLabelsMenu extends HandlebarsApplicationMixin(Appli
     }
 
     static async resetSection (_, button){
-        await foundry.utils.setProperty(this.settings, button.dataset.path, getMisinformationLabels()[button.dataset.property]);
+        await foundry.utils.setProperty(this.settings, button.dataset.path, getVagueDescriptionLabels()[button.dataset.property]);
         this.render();
     };
 

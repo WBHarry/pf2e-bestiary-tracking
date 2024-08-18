@@ -1,4 +1,4 @@
-import { getMisinformationLabels } from "../data/bestiaryLabels.js";
+import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { migrateBestiary } from "./migrationHandler.js";
@@ -182,7 +182,7 @@ const bestiaryLabels = () => {
         type: Object,
         default: {
             vagueDescriptions: {
-                ...getMisinformationLabels()
+                ...getVagueDescriptionLabels()
             }
         },
     });
