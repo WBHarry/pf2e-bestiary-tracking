@@ -55,7 +55,8 @@
                 "ReturnToWelcome": "Return to the main page"
             },
             "CategoryView": {
-                "EmptyText": "No {category} encountered yet. Enjoy it while you can."
+                "EmptyText": "No {category} encountered yet. Enjoy it while you can.",
+                "UnknownText": "Unknown dangers are always lurking.." 
             },
             "Miscellaneous": {
                 "UnknownCreature": "Unknown Creature",

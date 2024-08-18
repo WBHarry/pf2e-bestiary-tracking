@@ -1,7 +1,7 @@
 <div>
     {{#if (and this.selected.type (not this.selected.monster))}}
         <header class="bestiary-header">
-            <div class="return-container" data-action="returnButton">
+            <div class="return-container" data-action="returnButton" data-context-type="{{this.selected.type}}">
                 <i class="fa-solid fa-reply"></i>
                 {{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome"}}
             </div>
@@ -47,7 +47,11 @@
             {{else}}
                 <div class="type-overview-container">
                     {{#if (eq (PF2EBTNrKeys this.openType) 0)}}
-                        {{localize "PF2EBestiary.Bestiary.CategoryView.EmptyText" category=this.selected.type}}
+                        {{#if (eq this.selected.type 'unknown')}}
+                            {{localize "PF2EBestiary.Bestiary.CategoryView.UnknownText" category=this.selected.type}}
+                        {{else}}
+                            {{localize "PF2EBestiary.Bestiary.CategoryView.EmptyText" category=this.selected.type}}
+                        {{/if}}
                     {{else}}
                         {{#each this.openType as |type key|}}
                             <div class="type-container primary-container {{#if (eq ../layout.categories.layout 1)}}trio{{/if}}{{#if (eq ../layout.categories.layout 2)}}quarter{{/if}}" data-action="selectMonster" data-monster="{{key}}">

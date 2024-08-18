@@ -212,14 +212,14 @@
                         </a>
                     {{/each}}
                 </nav>
-                <i class="fa-solid fa-reply monster-return-icon" data-action="returnButton" title="{{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory" type=(PF2EBTCaptialize this.selected.type)}}"></i>
+                <i class="fa-solid fa-reply monster-return-icon" data-action="returnButton" data-context-type="{{this.selected.type}}" title="{{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory" type=(PF2EBTCaptialize this.selected.type)}}"></i>
             </div>
             <div class="monster-traits-row primary-container">
                 <div class="monster-size tertiary-container">{{this.size}}</div>
                 <div class="monster-traits flexrow">
                     {{#each this.traits.values as |trait key|}}
                         {{#if (or ../user.isGM trait.revealed)}}
-                            <div class="monster-trait data-container secondary-container {{#if ../user.isGM }}toggle-container {{#if trait.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'traits.values.' key}}" data-parent="traits">
+                            <div class="monster-trait data-container secondary-container {{#if ../user.isGM }}toggle-container {{#if trait.revealed}}revealed{{/if}}{{/if}}" data-action="toggleRevealed" data-path="{{concat 'traits.values.' key}}">
                                 {{localize trait.value}}
                             </div>
                         {{/if}}
@@ -240,7 +240,7 @@
                         <div class="data-body primary-border-container">
                             <div class="abilities-container">
                                 {{#each this.abilities.values as |ability key|}}
-                                    <div class="ability-container secondary-container {{PF2EBTToggleContainer ../user ability}}" data-action="toggleRevealed" data-path="{{concat 'abilities.values.' key}}" data-parent="abilities" data-name="{{localize "PF2EBestiary.Miscellaneous.Attributes"}}" data-vague-property="attributes">
+                                    <div class="ability-container secondary-container {{PF2EBTToggleContainer ../user ability}}" data-action="toggleRevealed" data-path="{{concat 'abilities.values.' key}}" data-name="{{localize "PF2EBestiary.Miscellaneous.Attributes"}}" data-vague-property="attributes">
                                         <div class="ability-label">{{localize ability.label}}</div>
                                         {{#if (or ../user.isGM ability.revealed)}}{{PF2EBTMonsterValue ability ../vagueDescriptions.properties.attributes }}{{else}}?{{/if}}
                                     </div>

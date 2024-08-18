@@ -151,80 +151,102 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         selected.monster.passives.values = newPassives;
     }
 
-    prepareData(monster, playerLevel) {
-        if(!monster) return monster;
+    prepareData(selected, playerLevel) {
+        const { category, type, monster } = selected;
+        if(!monster) return { category, type, monster };
+
+        const revealedCreatureTraits = Object.keys(monster.traits.values).filter(traitKey => monster.inTypes.some(type => type === traitKey ) && monster.traits.values[traitKey].revealed);
+        const isUnknown = revealedCreatureTraits.length === 0;
+        var updatedType = type;
+
+        if(type){
+            if(isUnknown){
+                updatedType = 'unknown';
+            }
+            else if(!revealedCreatureTraits.includes(type)){
+                updatedType = revealedCreatureTraits[0];
+            }
+        }
 
         const contextLevel = playerLevel ?? monster.level.value;
         return {
-            slug: monster.slug,
-            id: monster.id,
-            uuid: monster.uuid,
-            level: monster.level,
-            inTypes: monster.inTypes,
-            traits: monster.traits,
-            size: monster.size,
-            name: monster.name,
-            img: monster.img,
-            abilities: { ...monster.abilities, values: monster.abilities.values.map(ability => ({ ...ability, category: getCategoryLabel(attributeTable, contextLevel, ability.mod, true) })) },
-            ac: { ...monster.ac, category: getCategoryLabel(acTable, contextLevel, monster.ac.value) },
-            hp: { ...monster.hp, category: getCategoryFromIntervals(hpTable, contextLevel, monster.hp.value) },
-            speeds: monster.speeds,
-            senses: { ...monster.senses, values: { ...monster.senses.values, perception: { ...monster.senses.values.perception, isPerception: true, category: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.senses.values.perception.value) } } },
-            attacks: monster.attacks,
-            immunities: monster.immunities,
-            resistances: monster.resistances,
-            weaknesses: monster.weaknesses,
-            actions: monster.actions,
-            passives: monster.passives,
-            saves: {
-                fortitude: { ...monster.saves.fortitude, categories: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.fortitude.value, true) },
-                reflex: { ...monster.saves.reflex, categories: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.reflex.value, true) },
-                will: { ...monster.saves.will, categories: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.will.value, true) },
-            },
-            spells: {
-                ...monster.spells, 
-                entries: Object.keys(monster.spells.entries).reduce((acc, entryKey) => {
-                    const entry = monster.spells.entries[entryKey];
-                    acc[entryKey] = {
-                        ...entry,
-                        id: entryKey,
-                        dc: { ...entry.dc, category: getCategoryLabel(spellDCTable, contextLevel, entry.dc.value) },
-                        attack: { ...entry.attack, category: getCategoryLabel(spellAttackTable, contextLevel, entry.attack.value) },
-                        levels: Object.keys(entry.levels).reduce((acc, levelKey) => {
-                            const spells = entry.levels[levelKey];
-                            const spellArray = Object.keys(spells).map(spellKey => ({
-                                ...spells[spellKey]
-                            }));
+            category: category,
+            type: updatedType,
+            monster: {
+                slug: monster.slug,
+                id: monster.id,
+                uuid: monster.uuid,
+                level: monster.level,
+                inTypes: isUnknown ? [{ key: 'unknown', name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature") }] : monster.inTypes,
+                traits: monster.traits,
+                size: monster.size,
+                name: monster.name,
+                img: monster.img,
+                abilities: { ...monster.abilities, values: monster.abilities.values.map(ability => ({ ...ability, category: getCategoryLabel(attributeTable, contextLevel, ability.mod, true) })) },
+                ac: { ...monster.ac, category: getCategoryLabel(acTable, contextLevel, monster.ac.value) },
+                hp: { ...monster.hp, category: getCategoryFromIntervals(hpTable, contextLevel, monster.hp.value) },
+                speeds: monster.speeds,
+                senses: { ...monster.senses, values: { ...monster.senses.values, perception: { ...monster.senses.values.perception, isPerception: true, category: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.senses.values.perception.value) } } },
+                attacks: monster.attacks,
+                immunities: monster.immunities,
+                resistances: monster.resistances,
+                weaknesses: monster.weaknesses,
+                actions: monster.actions,
+                passives: monster.passives,
+                saves: {
+                    fortitude: { ...monster.saves.fortitude, categories: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.fortitude.value, true) },
+                    reflex: { ...monster.saves.reflex, categories: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.reflex.value, true) },
+                    will: { ...monster.saves.will, categories: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.will.value, true) },
+                },
+                spells: {
+                    ...monster.spells, 
+                    entries: Object.keys(monster.spells.entries).reduce((acc, entryKey) => {
+                        const entry = monster.spells.entries[entryKey];
+                        acc[entryKey] = {
+                            ...entry,
+                            id: entryKey,
+                            dc: { ...entry.dc, category: getCategoryLabel(spellDCTable, contextLevel, entry.dc.value) },
+                            attack: { ...entry.attack, category: getCategoryLabel(spellAttackTable, contextLevel, entry.attack.value) },
+                            levels: Object.keys(entry.levels).reduce((acc, levelKey) => {
+                                const spells = entry.levels[levelKey];
+                                const spellArray = Object.keys(spells).map(spellKey => ({
+                                    ...spells[spellKey]
+                                }));
 
-                            acc.push({
-                                revealed: spellArray.some(spell => spell.revealed),
-                                level: levelKey,
-                                label: Number.isNaN(Number.parseInt(levelKey)) ? levelKey : `${levelKey}${levelKey === '1' ? 'st' : 'nd'} Rank`,
-                                spells: Object.keys(spells).map(spellKey => spells[spellKey])
-                            });
+                                acc.push({
+                                    revealed: spellArray.some(spell => spell.revealed),
+                                    level: levelKey,
+                                    label: Number.isNaN(Number.parseInt(levelKey)) ? levelKey : `${levelKey}${levelKey === '1' ? 'st' : 'nd'} Rank`,
+                                    spells: Object.keys(spells).map(spellKey => spells[spellKey])
+                                });
 
-                            return acc;
-                        }, []).sort((a, b) => {
-                            if(a.level === 'Cantrips' && b.level !== 'Cantrips') return -1;
-                            if(a.level !== 'Cantrips' && b.level === 'Cantrips') return 1;
-                            
-                            if(a.level === b.level) return 0;
-                            else if(a.level > b.level) return 1;
-                            else return -1;
-                        }),
-                    };
+                                return acc;
+                            }, []).sort((a, b) => {
+                                if(a.level === 'Cantrips' && b.level !== 'Cantrips') return -1;
+                                if(a.level !== 'Cantrips' && b.level === 'Cantrips') return 1;
+                                
+                                if(a.level === b.level) return 0;
+                                else if(a.level > b.level) return 1;
+                                else return -1;
+                            }),
+                        };
 
-                    return acc;
-                }, {})
-            },
-            notes: monster.notes,
+                        return acc;
+                    }, {})
+                },
+                notes: monster.notes,
+            }
         };
     }
 
     prepareBestiary(bestiary){
         return {
             monster: Object.keys(bestiary.monster).reduce((acc, monsterKey) => {
-                for(var type of bestiary.monster[monsterKey].inTypes){
+                const monster = bestiary.monster[monsterKey];
+                const activeTypes = Object.keys(monster.traits.values).filter(traitKey => monster.inTypes.some(type => type === traitKey) && monster.traits.values[traitKey].revealed);
+                const usedTypes = activeTypes.length > 0 ? activeTypes : ['unknown'];
+
+                for(var type of usedTypes){
                        acc[type][monsterKey] = bestiary.monster[monsterKey];
                 }
 
@@ -233,7 +255,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 acc[type] = {};
 
                 return acc;
-            }, {})),
+            }, { unknown: {} })),
             npc: {}
         };
     }
@@ -252,12 +274,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         context.playerLevel = game.user.character ? game.user.character.system.details.level.value : null;
         context.search = this.search;
 
-        context.bestiary = this.prepareBestiary(foundry.utils.deepClone(this.bestiary));
         context.selected = foundry.utils.deepClone(this.selected);
         await this.enrichTexts(context.selected);
-        context.selected.monster = this.prepareData(context.selected.monster, context.vagueDescriptions.settings.playedBased ? context.playerLevel.value : null);
+        context.selected = this.prepareData(context.selected, context.vagueDescriptions.settings.playedBased ? context.playerLevel.value : null);
+        context.bestiary = this.prepareBestiary(foundry.utils.deepClone(this.bestiary));
 
-        context.openType = this.selected.type ? Object.keys(context.bestiary[this.selected.category][this.selected.type]).reduce((acc, key)=> {
+        context.openType = context.selected.type ? Object.keys(context.bestiary[this.selected.category][this.selected.type]).reduce((acc, key)=> {
             const monster = context.bestiary[this.selected.category][this.selected.type][key];
             const match = monster.name.value.toLowerCase().match(this.search.name.toLowerCase());
             const unrevealedMatch = game.i18n.localize('PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature').toLowerCase().match(this.search.name.toLowerCase());
@@ -312,8 +334,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this.render();
     }
 
-    static returnButton(){
-        this.selected = this.selected.monster ? { ...this.selected, monster: null } : this.selected.type ? { category: 'monster' } : this.selected;
+    static returnButton(_, button){
+        this.selected = this.selected.monster ? { ...this.selected, type: button.dataset.contextType, monster: null } : this.selected.type ? { category: 'monster' } : this.selected;
         this.render();
     }
     
@@ -863,9 +885,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }, []);
 
         const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits);
-        const traits = item.system.traits.value.reduce((acc, x) => {
-            if(creatureTraits.includes(x)){
-                acc.values[x] = { revealed: false, value: CONFIG.PF2E.creatureTraits[x] };
+        const traits = item.system.traits.value.reduce((acc, traitKey) => {
+            if(creatureTraits.includes(traitKey)){
+                acc.values[traitKey] = { revealed: false, value: CONFIG.PF2E.creatureTraits[traitKey] };
             }
             
             return acc;
