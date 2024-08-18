@@ -18,6 +18,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             abilities: [],
         };
 
+        // Filter 0 = Alphebetic, 1 = by level
+        // Direction 0 = Ascending, 1 = Descending
         this.search = {
             name: '',
         };
@@ -46,6 +48,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             refreshBestiary: this.refreshBestiary,
             resetBestiary: this.resetBestiary,
             clearSearch: this.clearSearch,
+            toggleFilterDirection: this.toggleFilterDirection,
             createMisinformation: this.createMisinformation,
             imagePopout: this.imagePopout,
             setCategoriesLayout: this.setCategoriesLayout,
@@ -279,16 +282,30 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         context.selected = this.prepareData(context.selected, context.vagueDescriptions.settings.playedBased ? context.playerLevel.value : null);
         context.bestiary = this.prepareBestiary(foundry.utils.deepClone(this.bestiary));
 
-        context.openType = context.selected.type ? Object.keys(context.bestiary[this.selected.category][this.selected.type]).reduce((acc, key)=> {
-            const monster = context.bestiary[this.selected.category][this.selected.type][key];
+        context.openType = (context.selected.type ? Object.keys(context.bestiary[context.selected.category][context.selected.type]).reduce((acc, monsterKey) => { 
+            const monster = context.bestiary[this.selected.category][context.selected.type][monsterKey];
             const match = monster.name.value.toLowerCase().match(this.search.name.toLowerCase());
             const unrevealedMatch = game.i18n.localize('PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature').toLowerCase().match(this.search.name.toLowerCase());
             if(!this.search.name || ((monster.name.revealed || game.user.isGM) && match) || (!monster.name.revealed && !game.user.isGM && unrevealedMatch)) {
-                acc[key] = monster;
+                acc.push(monster);
             }
 
             return acc;
-        }, {}) : null;
+        }, []).sort((a, b) => {
+            if(context.layout.categories.filter.type === 0){
+                const comparison = 
+                    a.name.revealed && b.name.revealed ? (a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0) :
+                    a.name.revealed && !b.name.revealed ? 1 :
+                    !a.name.revealed && b.name.revealed ? -1 : 0;
+                return context.layout.categories.filter.direction === 0 ? comparison : (comparison * - 1);
+            } else {
+                const comparison = 
+                    a.level.revealed && b.level.revealed ?  a.level.value - b.level.value : 
+                    a.level.revealed && !b.level.revealed ? 1 :
+                    !a.level.revealed && b.level.revealed ? -1 : 0;
+                return context.layout.categories.filter.direction === 0 ? comparison : (comparison * -1); 
+            }
+        }) : null);
 
         return context;
     }
@@ -554,6 +571,18 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this.render();
     }
 
+    static async toggleFilterDirection(){
+        const settings = game.settings.get('pf2e-bestiary-tracking', 'bestiary-layout');
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-layout', { ...settings, categories: { 
+             ...settings.categories,
+             filter: {
+                ...settings.categories.filter,
+                direction: settings.categories.filter.direction === 0 ? 1 : 0,
+             }
+        }});
+        this.render();
+    }
+
     getMisinformationDialogData(name){
         switch(name){
             case 'Immunity':
@@ -727,7 +756,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static async setCategoriesLayout(_, button){
-        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-layout', { categories: { layout: Number.parseInt(button.dataset.option) } });
+        const settings = game.settings.get('pf2e-bestiary-tracking', 'bestiary-layout');
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-layout', { ...settings, categories: {
+            ...settings.categories,
+            layout: Number.parseInt(button.dataset.option) 
+        } });
         this.render();
     }
 

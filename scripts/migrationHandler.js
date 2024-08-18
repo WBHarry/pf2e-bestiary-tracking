@@ -222,6 +222,15 @@ export const handleDataMigration = async () => {
             });
         });
 
+        // Add filter to bestiary-layout setting
+        const layoutSetting = game.settings.get('pf2e-bestiary-tracking', 'bestiary-layout');
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-layout', { 
+            categories: {
+                layout: layoutSetting.categories.layout,
+                filter: { type: 0, direction: 0 },
+            },
+         });
+
         // Drop the Type portion of the Bestiary data. The information already exists in monster.inTypes
         const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         const monsterMap = Object.keys(bestiary.monster).reduce((acc, typeKey) => {

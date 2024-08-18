@@ -35,7 +35,7 @@ const configSettings = () => {
         default: false,
         onChange: async value => {
             if(!game.user.isGM) return;
-            
+
             await newMigrateBestiary(async (bestiary, monster, type, monsterKey) => {
                 const origin = await fromUuid(monster.uuid);
                 if(!origin) return;
@@ -121,6 +121,10 @@ const generalNonConfigSettings = () => {
         default: {
             categories: {
                 layout: 0,
+                filter: {
+                    type: 0,
+                    direction: 0
+                }
             }
         },
     });

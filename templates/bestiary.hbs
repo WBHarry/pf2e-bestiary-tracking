@@ -6,14 +6,17 @@
                 {{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome"}}
             </div>
             <div class="bestiary-toolbar">
-                <div class="bestiary-layout-settings">
+                <div class="bestiary-layout-settings secondary-container">
                     <i class="fa-solid fa-table-cells-large pf2e-bestiary-clickable-icon {{#if (eq this.layout.categories.layout 0)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="0"></i>
                     <i class="fa-solid fa-table-cells pf2e-bestiary-clickable-icon {{#if (eq this.layout.categories.layout 1)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="1"></i>
                     <i class="fa-solid fa-maximize pf2e-bestiary-clickable-icon {{#if (eq this.layout.categories.layout 2)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="2"></i>
                 </div>
+                <div class="bestiary-filter-container secondary-container">
+                    <i class="pf2e-bestiary-clickable-icon fa-solid {{#if (eq this.layout.categories.filter.direction 0)}}fa-arrow-up-z-a{{else}}fa-arrow-down-z-a{{/if}}" data-action="toggleFilterDirection"></i>
+                </div>
                 <div class="bestiary-search-container">
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" name="search.name" value="{{this.search.name}}" />
+                    <input class="secondary-container" type="text" name="search.name" value="{{this.search.name}}" />
                     {{#if search.name}}<i class="fa-solid fa-circle-xmark clear-icon pf2e-bestiary-clickable-icon" data-action="clearSearch"></i>{{/if}}
                 </div>
             </div>
@@ -54,7 +57,7 @@
                         {{/if}}
                     {{else}}
                         {{#each this.openType as |type key|}}
-                            <div class="type-container primary-container {{#if (eq ../layout.categories.layout 1)}}trio{{/if}}{{#if (eq ../layout.categories.layout 2)}}quarter{{/if}}" data-action="selectMonster" data-monster="{{key}}">
+                            <div class="type-container primary-container {{#if (eq ../layout.categories.layout 1)}}trio{{/if}}{{#if (eq ../layout.categories.layout 2)}}quarter{{/if}}" data-action="selectMonster" data-monster="{{type.uuid}}">
                                 <img src="{{type.img}}" />
                                 <div class="type-text-container">
                                     {{#if type.name.revealed}}

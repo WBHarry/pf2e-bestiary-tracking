@@ -137,6 +137,13 @@
 .pf2e-bestiary-tracking.bestiary .bestiary-header .bestiary-toolbar .bestiary-layout-settings i {
   font-size: 26px;
 }
+.pf2e-bestiary-tracking.bestiary .bestiary-header .bestiary-toolbar .bestiary-filter-container {
+  display: flex;
+  padding: 2px;
+  border-radius: 6px;
+  font-size: 26px;
+  height: 31px;
+}
 .pf2e-bestiary-tracking.bestiary .bestiary-header .bestiary-toolbar .bestiary-search-container {
   position: relative;
 }
