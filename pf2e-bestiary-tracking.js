@@ -27,17 +27,18 @@ Hooks.once("setup", () => {
     if(typeof libWrapper === 'function') {
         libWrapper.register('pf2e-bestiary-tracking', 'Token.prototype._onClickLeft2', function (wrapped, ...args) {
             const openBestiary = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
-            if(!openBestiary || game.user.isGM) return wrapped(...args);
+            if(!openBestiary || (game.user.isGM && !args[0].altKey)) return wrapped(...args);
   
             const settings = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-            const monster = settings.monster[args[0].currentTarget.actor.uuid];
+            const monster = settings.monster[args[0].currentTarget.document.baseActor.uuid];
         
             if(!monster)
             {
                 ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"));
+                return;
             }
 
-            new PF2EBestiary({ category, monsterUuid: monster.uuid }).render(true);
+            new PF2EBestiary({ category: 'monster', monsterUuid: monster.uuid }).render(true);
         });
     }
 });

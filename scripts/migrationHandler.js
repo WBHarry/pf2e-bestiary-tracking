@@ -268,3 +268,15 @@ export const migrateBestiary = async (update) => {
     
     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
 };
+
+export const newMigrateBestiary = async (update) => {
+    const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+    for(var monsterKey in bestiary.monster){
+        const monster = bestiary.monster[monsterKey];
+
+        await update(bestiary, monster, monsterKey);
+        bestiary.monster[monsterKey] = foundry.utils.deepClone(bestiary.monster[monsterKey]);
+    }
+    
+    await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
+};

@@ -1,7 +1,7 @@
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
-import { migrateBestiary } from "./migrationHandler.js";
+import { newMigrateBestiary } from "./migrationHandler.js";
 import { socketEvent } from "./socket.js";
 
 export const registerGameSettings = () => {
@@ -34,7 +34,9 @@ const configSettings = () => {
         type: Boolean,
         default: false,
         onChange: async value => {
-            await migrateBestiary(async (bestiary, monster, type, monsterKey) => {
+            if(!game.user.isGM) return;
+            
+            await newMigrateBestiary(async (bestiary, monster, type, monsterKey) => {
                 const origin = await fromUuid(monster.uuid);
                 if(!origin) return;
 
@@ -76,9 +78,9 @@ const configSettings = () => {
         type: Boolean,
         default: false,
         onChange: async value => {
-            if(!value) return;
+            if(!value || !game.user.isGM) return;
 
-            await migrateBestiary(async (_, monster) => {
+            await newMigrateBestiary(async (_, monster) => {
                 const origin = await fromUuid(monster.uuid);
                 if(!origin) return;
 
