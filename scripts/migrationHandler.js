@@ -1,3 +1,4 @@
+import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import { acTable, attributeTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "./statisticsData.js";
 import { getCategoryLabel } from "./statisticsHelper.js";
 
@@ -202,10 +203,9 @@ export const handleDataMigration = async () => {
         }
 
         // Bestiary Labels had poorly labeled settings that actually have more to do with Vague Descriptions.
-        const bestiaryLabels = game.settings.get('pf2e-bestiary-tracking', 'bestiary-labels');
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-labels', {
             vagueDescriptions: {
-                ...bestiaryLabels.misinformation
+                ...getVagueDescriptionLabels()
             }
         });
 
