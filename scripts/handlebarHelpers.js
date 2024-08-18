@@ -37,18 +37,18 @@ export default class RegisterHandlebarsHelpers {
     }
 
     static toggleContainer(user, property){
-        var containerClass = '';
-        if(user.isGM) {
-            containerClass = containerClass.concat(' toggle-container');
-            if(property.revealed) containerClass = containerClass.concat(' revealed');
-        }
+        var containerClass = ' data-container';
 
-        if(property.custom || property.fake) containerClass = containerClass.concat(' misinformation');
+        if(property.revealed || !user.isGM) containerClass = containerClass.concat(' revealed ');
+        if(user.isGM){
+            containerClass = containerClass.concat(' toggle-container');
+            if(property.custom || property.fake) containerClass = containerClass.concat(' misinformation');
+        }
 
         return containerClass;
     }
 
-    static filter(prop, fallback, context, options) {
+    static filter(prop, fallback, leftMargin, context, options) {
         var ret = "";
       
         var keys = Object.keys(context);
@@ -60,7 +60,7 @@ export default class RegisterHandlebarsHelpers {
         }
 
         keys = Object.keys(filteredContext);
-        if(keys.length === 0) return fallback;
+        if(keys.length === 0) return `<div style="margin-left: ${leftMargin}px;">${fallback}</div>`;
 
         for(var i = 0; i < keys.length; i++){
             ret = ret + options.fn({ ...context[keys[i]], last: i === keys.length-1 });

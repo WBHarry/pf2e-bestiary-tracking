@@ -3,7 +3,7 @@
 @import "./bestiarySpells.less";
 
 .theme-dark {
-    .bestiary-tracking {
+    .pf2e-bestiary-tracking {
         &.bestiary {
             .right-bookmark-container {
                 top: 0;
@@ -18,12 +18,16 @@
                         }
                     }
                 }
+
+                .toggle-container {
+                    border-color: @darkBorder;
+                }
             }
         }
     }
 }
 
-.bestiary-tracking {
+.pf2e-bestiary-tracking {
     overflow-y: visible;
     overflow-x: visible;
 
@@ -128,16 +132,10 @@
             align-self: end;
 
             .bestiary-tab {
-                background: @bookmark;
                 border-style: solid;
-                border-color: @bookmark-border;
                 border-width: 2px 0 2px 2px;
                 padding: 6px;
                 font-weight: 600;
-
-                &.empty {
-                    opacity: 0.5;
-                }
             }
 
             .bestiary-tab:last-of-type {
@@ -150,6 +148,12 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
+        }
+
+        .bestiary-left-list {
+            padding: 4px 8px 4px 4px;
+            border-width: 1px;
+            border-style: solid;
         }
 
         .type-overview-container {
@@ -166,9 +170,9 @@
                 padding: 4px 8px 0;
                 font-size: 36px;
                 width: calc(50% - 4px);
-                border: 3px solid @secondaryBorder;
+                border-width: 3px;
+                border-style: solid;
                 border-radius: 6px;
-                background: @main;
                 cursor: pointer;
 
                 &.trio {
@@ -195,10 +199,6 @@
                     .delete-button {
                         font-size: 24px;
                     }
-                }
-
-                &:hover :not(.delete-button:hover) {
-                    background: @mainDark;
                 }
 
                 img {
@@ -234,6 +234,13 @@
             height: 100%;
             gap: 16px;
 
+            .data-container {
+                border-radius: 6px;
+                padding: 4px;
+                border-width: 3px;
+                border-style: solid;
+            }
+
             .flex-data {
                 display: flex;
                 align-items: center;
@@ -245,20 +252,13 @@
             }
 
             .toggle-container {
-                // background: @hiddenColor;
-                border: dotted;
-                border-radius: 6px;
-                padding: 4px;
                 cursor: pointer;
-                border: 2px solid @mainBorder;
 
-                &.revealed {
-                    // background: @revealedColor;
-                    border: solid;
+                &:not(.revealed) {
+                    border-style: dashed;
                 }
 
                 &.misinformation {
-                    color: @misinformationColor;
                     text-decoration-line: grammar-error;
                 }
             }
@@ -272,18 +272,6 @@
                 &.no-gap {
                     gap: 0;
                     font-weight: 500;
-                }
-
-                .category-high {
-                    color: @categoryHigh;
-                }
-    
-                .category-medium {
-                    color: @categoryMedium;
-                }
-    
-                .category-low {
-                    color: @categoryLow;
                 }
             }
 
@@ -308,9 +296,10 @@
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    border-bottom: 1px solid;
-                    border-color: #7a7971;
-                    margin-bottom: 4px;
+
+                    &.list-container {
+                        margin-bottom: 4px;
+                    }
 
                     .health-icon {
                         margin-left: 2px;
@@ -325,17 +314,11 @@
 
                     .speed-container {
                         padding: 2px;
-                        border: 1px solid @mainBorder;
                         border-radius: 6px;
                         width: calc(50% - 2px);
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                    }
-
-                    .base-colour {
-                        background: @tertiary;
-                        color: @secondaryText;
                     }
                 }
 
@@ -364,7 +347,6 @@
             .data-icon {
                 width: 16px;
                 border: 0;
-                filter: drop-shadow(0 0 3px @secondaryHover);
             }
 
             .right-monster-container {
@@ -392,11 +374,8 @@
                         overflow: hidden;
                         max-height: 100%;
                         text-overflow: ellipsis;
-    
-                        &.toggle-container {
-                            width: fit-content;
-                            padding: 4px 18px;
-                        }
+                        width: fit-content;
+                        padding: 4px 18px;
     
                         .ban-icon {
                             position: absolute;
@@ -424,14 +403,14 @@
                     align-items: center;
                     gap: 16px;
                     padding: 2px;
-                    border: 3px solid black;
+                    border-width: 1px;
+                    border-style: solid;
 
                     .monster-size {
                         flex: 1;
                         padding: 4px;
-                        border: 1px solid @mainBorder;
-                        background: var(--color-bg-size); // Hm
-                        color: white;
+                        border-width: 1px;
+                        border-style: solid;
                         text-transform: uppercase;
                         display: flex;
                         align-items: center;
@@ -446,7 +425,6 @@
     
                         .monster-trait {
                             padding: 4px;
-                            border: 1px solid @mainBorder;
                             border-radius: 0;
                             text-transform: uppercase;
                             display: -webkit-box;
@@ -456,11 +434,6 @@
                             text-overflow: ellipsis;
                             text-align: center;
                             min-width: 20%;
-
-                            &.base-colour {
-                                background: var(--color-bg-trait); // Hm
-                                color: white;
-                            }
                         }
                     }
                 }
@@ -470,7 +443,7 @@
                     display: flex;
                     flex-direction: column;
                     overflow-y: auto;
-                    gap: 4px;
+                    gap: 8px;
                 }
 
                 .data-sections {
@@ -480,12 +453,14 @@
 
                     .data-section {
                         flex: 1;
+                        border-radius: 6px;
                     }
                 }
 
                 .data-section {
                     display: flex;
                     flex-direction: column;
+                    border-radius: 6px;
                 }
 
                 .data-header {
@@ -493,10 +468,9 @@
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    background: var(--color-bg-trait); // Hm
                     border-radius: 4px 4px 0 0;
-                    border: 1px solid @mainBorder;
-                    color: white;
+                    border-width: 1px;
+                    border-style: solid;
                 }
 
                 .data-header-label {
@@ -509,9 +483,9 @@
                 .data-body {
                     display: flex;
                     flex-direction: column;
+                    flex: 1;
                     padding: 4px;
                     border-width: 0 1px 1px 1px;
-                    border-color: @mainBorder;
                     border-style: solid;
                     border-radius: 0 0 4px 4px;
 
@@ -612,27 +586,25 @@
                         gap: 4px;
                         
                         .attack-variant {
-                            border: 1px solid @mainBorder;
-                            background-color: var(--color-pf-secondary); // Hm
+                            border-width: 1px;
+                            border-style: solid;
                             padding: 2px 6px;
                             display: flex;
                             align-items: center;
                             justify-content: center;
                             text-transform: uppercase;
-                            color: white;
                             font-size: 10px;
                             margin-bottom: 4px;
                         }
 
                         .attack-damage {
-                            border: 1px solid @mainBorder;
-                            background-color: var(--color-pf-primary); // Hm
+                            border-width: 1px;
+                            border-style: solid;
                             padding: 2px 6px;
                             display: flex;
                             align-items: center;
                             justify-content: center;
                             text-transform: uppercase;
-                            color: white;
                             font-size: 10px;
                             margin-bottom: 4px;
                         }
@@ -685,30 +657,23 @@
             width: 80px;
             font-size: 12px;
             font-weight: bold;
-            border: 2px solid;
-            border-color: @bookmark-border;
+            border-width: 2px;
+            border-style: solid;
             margin-bottom: 4px;
             text-shadow: 0 0 black;
             padding: 4px;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: @bookmark;
-            color: @bookmark-colour;
             cursor: pointer;
             text-transform: uppercase;
             transition: width 0.5s ease-in-out;
             transition: right 0.5s ease-in-out;
 
-            &:hover, &.selected {
-                background: @selectedBookmark;
+            &:hover, &.active {
                 width: 100px;
                 position: relative;
                 right: 20px;
-            }
-
-            &.empty {
-                opacity: 0.5;
             }
         }
     }

@@ -22,7 +22,7 @@ export default class VagueDescriptionsMenu extends HandlebarsApplicationMixin(Ap
     static DEFAULT_OPTIONS = {
         tag: 'form',
         id: 'pf2e-bestiary-tracking-vague-descriptions-menu',
-        classes: ["bestiary-tracking", "bestiary-settings-menu"],
+        classes: ["pf2e-bestiary-tracking", "bestiary-settings-menu"],
         position: { width: 'auto', height: 'auto' },
         actions: {
             toggleSection: this.toggleSection,

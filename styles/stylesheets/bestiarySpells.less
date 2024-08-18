@@ -1,7 +1,7 @@
 @import "../variables.less";
 @import "../colors.less";
 
-.bestiary-tracking {
+.pf2e-bestiary-tracking {
     &.bestiary {
         .monster-container {
             .right-monster-container {
@@ -38,15 +38,16 @@
 
                     .spell-header-row {
                         line-height: 10px;
-                        background: @spellRowHeader;
+                        border-width: 2px;
+                        border-style: solid;
+
+                        &:first-of-type {
+                            border-top-width: 0;
+                        }
                     }
 
                     .spell-body-row {
                         line-height: 10px;
-
-                        &.even {
-                            background-color: @spellRowEven;
-                        }
 
                         &.description {
                             display: none;

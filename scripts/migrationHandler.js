@@ -96,25 +96,6 @@ export const handleDataMigration = async () => {
                 return;
             }
 
-            //VagueDescriptions Module Settings now has 'Properties' and 'Settings' subobjects
-            const vagueDescriptions = await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
-            await game.settings.set('pf2e-bestiary-tracking', 'vague-descriptions', {
-                properties: {
-                    ac: vagueDescriptions.ac,
-                    hp: vagueDescriptions.hp,
-                    resistances: vagueDescriptions.resistances,
-                    weaknesses: vagueDescriptions.weaknesses,
-                    saves: vagueDescriptions.saves,
-                    perception: vagueDescriptions.perception,
-                    speed: vagueDescriptions.speed,
-                    attributes: vagueDescriptions.attributes,
-                },
-                settings: {
-                    playerBased: vagueDescriptions.playerBased,
-                    misinformationOptions: vagueDescriptions.misinformationOptions,
-                }
-            });
-
             // All categories now use module settings values ranging from Extreme to Terrible
             bestiary.monster[type][monsterKey].ac.category = getCategoryLabel(acTable, origin.system.details.level.value, bestiary.monster[type][monsterKey].ac.value);
             bestiary.monster[type][monsterKey].hp.category = getCategoryLabel(acTable, origin.system.details.level.value, bestiary.monster[type][monsterKey].hp.value);
@@ -167,6 +148,25 @@ export const handleDataMigration = async () => {
                 entries: spellcastingEntries,
             };
         });
+
+        //VagueDescriptions Module Settings now has 'Properties' and 'Settings' subobjects
+        const vagueDescriptions = await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
+        await game.settings.set('pf2e-bestiary-tracking', 'vague-descriptions', {
+            properties: {
+                ac: vagueDescriptions.ac,
+                hp: vagueDescriptions.hp,
+                resistances: vagueDescriptions.resistances,
+                weaknesses: vagueDescriptions.weaknesses,
+                saves: vagueDescriptions.saves,
+                perception: vagueDescriptions.perception,
+                speed: vagueDescriptions.speed,
+                attributes: vagueDescriptions.attributes,
+            },
+            settings: {
+                playerBased: vagueDescriptions.playerBased,
+                misinformationOptions: vagueDescriptions.misinformationOptions,
+            }
+        });
         
         version = '0.8.7';
     }
@@ -177,6 +177,44 @@ export const handleDataMigration = async () => {
         });
 
         version = '0.8.7.1';
+    }
+
+    if(version === '0.8.7.1'){
+        //VagueDescriptions was poorly migrated last version. If the setting is now faulty --> set it to standard values.
+        const vagueDescriptions = game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
+        if(!vagueDescriptions.settings){
+            await game.settings.set('pf2e-bestiary-tracking', 'vague-descriptions', {
+                properties: {
+                    ac: false,
+                    hp: false,
+                    resistances: false,
+                    weaknesses: false,
+                    saves: false,
+                    perception: false,
+                    speed: false,
+                    attributes: false,
+                },
+                settings: {
+                    playerBased: false,
+                    misinformationOptions: false,
+                }
+            });
+        }
+
+        await migrateBestiary(async (bestiary, monster, type, monsterKey) => {
+            const origin = await fromUuid(monster.uuid);
+            if(!origin){
+                delete bestiary.monster[type][monsterKey];
+                return;
+            }
+
+            // Attributes need to have shortform category names
+            bestiary.monster[type][monsterKey].abilities.values.forEach(ability => {
+                ability.category = getCategoryLabel(attributeTable, origin.system.details.level.value, ability.mod, true);
+            });
+        });
+
+        version = '0.8.7.2';
     }
 
     await game.settings.set('pf2e-bestiary-tracking', 'version', version);

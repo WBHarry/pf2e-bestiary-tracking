@@ -50,7 +50,7 @@
                         {{localize "PF2EBestiary.Bestiary.CategoryView.EmptyText" category=this.selected.type}}
                     {{else}}
                         {{#each this.openType as |type key|}}
-                            <div class="type-container {{#if (eq ../layout.categories.layout 1)}}trio{{/if}}{{#if (eq ../layout.categories.layout 2)}}quarter{{/if}}" data-action="selectMonster" data-monster="{{key}}">
+                            <div class="type-container primary-container {{#if (eq ../layout.categories.layout 1)}}trio{{/if}}{{#if (eq ../layout.categories.layout 2)}}quarter{{/if}}" data-action="selectMonster" data-monster="{{key}}">
                                 <img src="{{type.img}}" />
                                 <div class="type-text-container">
                                     {{#if type.name.revealed}}
@@ -74,7 +74,7 @@
     </body>
     <div class="right-bookmark-container">
         {{#each bestiary.monster as |type key|}}
-            <div class="bookmark{{#if (eq ../selected.type key)}} selected{{/if}}{{#if (eq (PF2EBTNrKeys type) 0)}} empty{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
+            <div class="bookmark primary-container {{#if (eq ../selected.type key)}} active{{/if}}{{#if (eq (PF2EBTNrKeys type) 0)}} empty{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
                 {{key}}
             </div>
         {{/each}}
