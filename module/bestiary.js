@@ -158,18 +158,22 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const { category, type, monster } = selected;
         if(!monster) return { category, type, monster };
 
-        const revealedCreatureTraits = Object.keys(monster.traits.values).filter(traitKey => monster.inTypes.some(type => type === traitKey ) && monster.traits.values[traitKey].revealed);
-        const isUnknown = revealedCreatureTraits.length === 0;
         var updatedType = type;
-
-        if(type){
-            if(isUnknown){
-                updatedType = 'unknown';
-            }
-            else if(!revealedCreatureTraits.includes(type)){
-                updatedType = revealedCreatureTraits[0];
+        var isUnknown = false;
+        if(!game.user.isGM)
+        {
+            const revealedCreatureTraits = Object.keys(monster.traits.values).filter(traitKey => monster.inTypes.some(type => type === traitKey ) && monster.traits.values[traitKey].revealed);
+            isUnknown = revealedCreatureTraits.length === 0;
+            if(type){
+                if(isUnknown){
+                    updatedType = 'unknown';
+                }
+                else if(!revealedCreatureTraits.includes(type)){
+                    updatedType = revealedCreatureTraits[0];
+                }
             }
         }
+
 
         const contextLevel = playerLevel ?? monster.level.value;
         return {
@@ -243,14 +247,19 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     prepareBestiary(bestiary){
+        const initialCategories = game.user.isGM ? { } : { unknown: {} };
         return {
             monster: Object.keys(bestiary.monster).reduce((acc, monsterKey) => {
                 const monster = bestiary.monster[monsterKey];
-                const activeTypes = Object.keys(monster.traits.values).filter(traitKey => monster.inTypes.some(type => type === traitKey) && monster.traits.values[traitKey].revealed);
-                const usedTypes = activeTypes.length > 0 ? activeTypes : ['unknown'];
+                var usedTypes = monster.inTypes;
+                
+                if(!game.user.isGM){
+                    const activeTypes = Object.keys(monster.traits.values).filter(traitKey => monster.inTypes.some(type => type === traitKey) && monster.traits.values[traitKey].revealed);
+                    usedTypes = activeTypes.length > 0 ? activeTypes : ['unknown'];
+                }
 
                 for(var type of usedTypes){
-                       acc[type][monsterKey] = bestiary.monster[monsterKey];
+                    acc[type][monsterKey] = bestiary.monster[monsterKey];
                 }
 
                 return acc;
@@ -258,7 +267,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 acc[type] = {};
 
                 return acc;
-            }, { unknown: {} })),
+            }, {  ...initialCategories })),
             npc: {}
         };
     }
