@@ -144,8 +144,8 @@
                     "Label": "Bestiary Label Settings",
                     "Hint": "Customize labels used in the Bestiary"
                 },
-                "Misinformation": {
-                    "Name": "Misinformation",
+                "VagueDescriptions": {
+                    "Name": "Vague Descriptions",
                     "FullOptions": {
                         "Extreme": "Extreme",
                         "High": "High",

@@ -65,18 +65,18 @@ const getCategoryLabelValue = (range, category, short) => {
         else category = rangeOptions[currentIndex+1];
     }
 
-    const { misinformation } = game.settings.get('pf2e-bestiary-tracking', 'bestiary-labels');
+    const { vagueDescriptions } = game.settings.get('pf2e-bestiary-tracking', 'bestiary-labels');
     switch(category){
         case 'extreme':
-            return short ? misinformation.short.extreme : misinformation.full.extreme;
+            return short ? vagueDescriptions.short.extreme : vagueDescriptions.full.extreme;
         case 'high':
-            return short ? misinformation.short.high : misinformation.full.high;
+            return short ? vagueDescriptions.short.high : vagueDescriptions.full.high;
         case 'moderate':
-            return short ? misinformation.short.moderate : misinformation.full.moderate;
+            return short ? vagueDescriptions.short.moderate : vagueDescriptions.full.moderate;
         case 'low':
-            return short ? misinformation.short.low : misinformation.full.low;
+            return short ? vagueDescriptions.short.low : vagueDescriptions.full.low;
         case 'terrible':
-            return short ? misinformation.short.terrible : misinformation.full.terrible;
+            return short ? vagueDescriptions.short.terrible : vagueDescriptions.full.terrible;
     }
 };
 
@@ -94,17 +94,17 @@ const getCategoryClass = (category) => {
 }
 
 export const getCategoryRange = async (name) => {
-    const { misinformation } = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-labels');
+    const { vagueDescriptions } = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-labels');
     switch(name){
         case 'ac':
-            return acTable.range.map(category => misinformation.full[category]);
+            return acTable.range.map(category => vagueDescriptions.full[category]);
         case 'hp':
-            return hpTable.range.map(category => misinformation.full[category]);
+            return hpTable.range.map(category => vagueDescriptions.full[category]);
         case 'attributes':
-            return attributeTable.range.map(category => misinformation.full[category]);
+            return attributeTable.range.map(category => vagueDescriptions.full[category]);
         case 'saves':
-            return savingThrowPerceptionTable.range.map(category => misinformation.short[category]);
+            return savingThrowPerceptionTable.range.map(category => vagueDescriptions.short[category]);
         case 'perception':
-            return savingThrowPerceptionTable.range.map(category => misinformation.full[category]);
+            return savingThrowPerceptionTable.range.map(category => vagueDescriptions.full[category]);
     }
 }

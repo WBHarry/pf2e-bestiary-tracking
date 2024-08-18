@@ -1,6 +1,58 @@
 @import "../colors.less";
 @import "../variables.less";
 
+.theme-dark {
+    .pf2e-bestiary-tracking {
+        &.bestiary-settings-menu{
+            .menu-category {
+                margin-bottom: 8px;
+                display: flex;
+                flex-direction: column;
+                border-style: double;
+                border-width: 4px;
+                border-color: @darkBorder;
+    
+                legend {
+                    font-weight: bold;
+                    text-align: center;
+    
+                    h4 {
+                        margin: 0;
+                        color: @darkBorder;
+                        text-shadow: 0 0 @darkBorder;
+                    }
+                }
+    
+                .section-header {
+                    position: relative;
+                    align-self: center;
+    
+                    div {
+                        font-weight: bold;
+                        font-size: 18px;
+                        margin: 4px 0 4px 0;
+                    }
+    
+                    i {
+                        position: absolute;
+                        top: 8px;
+                        right: -22px;
+                        font-size: 14px;
+                    }
+                }
+    
+                .form-group {
+                    text-wrap: nowrap;
+    
+                    &.underlined {
+                        border-bottom: 1px solid @darkBorder;
+                    }
+                }
+            }
+        }
+    }
+}
+
 .pf2e-bestiary-tracking {
     &.bestiary-settings-menu{
         .menu-category {
@@ -9,7 +61,7 @@
             flex-direction: column;
             border-style: double;
             border-width: 4px;
-            border-color: @mainBorder;
+            border-color: @lightBorder;
 
             legend {
                 font-weight: bold;
@@ -17,8 +69,8 @@
 
                 h4 {
                     margin: 0;
-                    color: @mainBorder;
-                    text-shadow: 0 0 @mainBorder;
+                    color: @lightBorder;
+                    text-shadow: 0 0 @lightBorder;
                 }
             }
 
@@ -44,7 +96,7 @@
                 text-wrap: nowrap;
 
                 &.underlined {
-                    border-bottom: 1px solid @mainBorder;
+                    border-bottom: 1px solid @lightBorder;
                 }
             }
         }

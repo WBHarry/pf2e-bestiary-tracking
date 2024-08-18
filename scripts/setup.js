@@ -181,7 +181,7 @@ const bestiaryLabels = () => {
         config: false,
         type: Object,
         default: {
-            misinformation: {
+            vagueDescriptions: {
                 ...getMisinformationLabels()
             }
         },

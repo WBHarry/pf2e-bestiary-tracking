@@ -645,6 +645,44 @@
   position: relative;
   right: 20px;
 }
+.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category {
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  border-style: double;
+  border-width: 4px;
+  border-color: #ababab;
+}
+.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category legend {
+  font-weight: bold;
+  text-align: center;
+}
+.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category legend h4 {
+  margin: 0;
+  color: #ababab;
+  text-shadow: 0 0 #ababab;
+}
+.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .section-header {
+  position: relative;
+  align-self: center;
+}
+.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .section-header div {
+  font-weight: bold;
+  font-size: 18px;
+  margin: 4px 0 4px 0;
+}
+.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .section-header i {
+  position: absolute;
+  top: 8px;
+  right: -22px;
+  font-size: 14px;
+}
+.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .form-group {
+  text-wrap: nowrap;
+}
+.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .form-group.underlined {
+  border-bottom: 1px solid #ababab;
+}
 .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category {
   margin-bottom: 8px;
   display: flex;
