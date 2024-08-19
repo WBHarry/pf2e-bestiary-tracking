@@ -279,7 +279,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         context.layout = game.settings.get('pf2e-bestiary-tracking', 'bestiary-layout');
         context.showMonsterLevel = game.settings.get('pf2e-bestiary-tracking', 'show-monster-level');
         context.useTokenArt = game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
-        context.vagueDescriptions = { ... (await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions')) };
+        context.vagueDescriptions = foundry.utils.deepClone(await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions'));
 
         context.user = game.user;
         context.vagueDescriptions.settings.playerBased = game.user.isGM ? false : context.vagueDescriptions.settings.playerBased;
@@ -302,16 +302,24 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             return acc;
         }, []).sort((a, b) => {
             if(context.layout.categories.filter.type === 0){
-                const comparison = 
+                var comparison = a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0;
+                if(!game.user.isGM){
+                    comparison = 
                     a.name.revealed && b.name.revealed ? (a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0) :
                     a.name.revealed && !b.name.revealed ? 1 :
                     !a.name.revealed && b.name.revealed ? -1 : 0;
+                }
+
                 return context.layout.categories.filter.direction === 0 ? comparison : (comparison * - 1);
             } else {
-                const comparison = 
+                var comparison = a.level.value - b.level.value;
+                if(!game.user.isGM){
+                    comparison = 
                     a.level.revealed && b.level.revealed ?  a.level.value - b.level.value : 
                     a.level.revealed && !b.level.revealed ? 1 :
                     !a.level.revealed && b.level.revealed ? -1 : 0;
+                }
+
                 return context.layout.categories.filter.direction === 0 ? comparison : (comparison * -1); 
             }
         }) : null);

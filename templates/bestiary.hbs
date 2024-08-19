@@ -81,7 +81,7 @@
     </body>
     <div class="right-bookmark-container">
         {{#each bestiary.monster as |type key|}}
-            <div class="bookmark primary-container {{#if (eq ../selected.type key)}} active{{/if}}{{#if (eq (PF2EBTNrKeys type) 0)}} empty{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
+            <div class="bookmark primary-container active {{#if (eq ../selected.type key)}} expanded{{/if}}{{#if (eq (PF2EBTNrKeys type) 0)}} empty{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
                 {{key}}
             </div>
         {{/each}}

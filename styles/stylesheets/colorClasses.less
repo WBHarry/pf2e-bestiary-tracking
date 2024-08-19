@@ -38,6 +38,10 @@
                     background-color: @darkPrimaryAccent;
                 }
 
+                &.empty {
+                    background-color: @darkPrimary;
+                }
+
                 .data-icon {
                     filter: none;
                 }
@@ -113,6 +117,10 @@
                 background-color: @lightPrimaryAccent;
             }
 
+            &.empty {
+                background-color: @lightPrimary
+            }
+
             .data-icon {
                 filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
             }
@@ -166,10 +174,6 @@
             &:hover {
                 background-color: @lightPrimaryAccent;
             }
-        }
-
-        .empty {
-            opacity: 0.8;
         }
     }
 }

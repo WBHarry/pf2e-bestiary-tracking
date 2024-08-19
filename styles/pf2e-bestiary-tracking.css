@@ -653,7 +653,7 @@
   transition: right 0.5s ease-in-out;
 }
 .pf2e-bestiary-tracking.bestiary .bookmark:hover,
-.pf2e-bestiary-tracking.bestiary .bookmark.active {
+.pf2e-bestiary-tracking.bestiary .bookmark.expanded {
   width: 100px;
   position: relative;
   right: 20px;
@@ -750,6 +750,9 @@
 .theme-dark .pf2e-bestiary-tracking.bestiary .primary-container.active {
   background-color: #760000;
 }
+.theme-dark .pf2e-bestiary-tracking.bestiary .primary-container.empty {
+  background-color: #5e0000;
+}
 .theme-dark .pf2e-bestiary-tracking.bestiary .primary-container .data-icon {
   filter: none;
 }
@@ -792,6 +795,9 @@
 .pf2e-bestiary-tracking.bestiary .primary-container.active {
   background-color: #926ec4;
 }
+.pf2e-bestiary-tracking.bestiary .primary-container.empty {
+  background-color: #694F8E;
+}
 .pf2e-bestiary-tracking.bestiary .primary-container .data-icon {
   filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
 }
@@ -825,9 +831,6 @@
 }
 .pf2e-bestiary-tracking.bestiary .bookmark:hover {
   background-color: #926ec4;
-}
-.pf2e-bestiary-tracking.bestiary .empty {
-  opacity: 0.8;
 }
 .pf2e-bestiary-bold {
   font-weight: bold;
