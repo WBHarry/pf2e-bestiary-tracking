@@ -15,6 +15,8 @@ export const handleDataMigration = async () => {
             if(!monster.name.value){
                 bestiary.monster[type][monsterKey].name = { revealed: false, value: monster.name };
             }
+
+            return null;
         });
 
         version = '0.8.2';
@@ -22,10 +24,9 @@ export const handleDataMigration = async () => {
 
     if(version === '0.8.2'){
         await migrateBestiary((bestiary, monster, type, monsterKey) => {
-            const origin = game.actors.find(x => x.id === monster.id);
+            const origin = game.actors.find(x => x.id === monster?.id);
             if(!origin){
-                delete bestiary.monster[type][monsterKey];
-                return;
+                return { type, monsterKey };
             }
 
             // Attributes should now have Mod aswell as Category attributes. Can't cleanly update this but make best attempt, otherwise remove failing creatures.
@@ -66,6 +67,8 @@ export const handleDataMigration = async () => {
                     bestiary.monster[type][monsterKey].resistances.values[resistanceKey].category = originResistance.applicationLabel;
                 }
             });
+
+            return null;
         });
 
         version = '0.8.4';
@@ -73,10 +76,9 @@ export const handleDataMigration = async () => {
 
     if(version === '0.8.4'){
         await migrateBestiary((bestiary, monster, type, monsterKey) => {
-            const origin = game.actors.find(x => x.id === monster.id);
+            const origin = game.actors.find(x => x.id === monster?.id);
             if(!origin){
-                delete bestiary.monster[type][monsterKey];
-                return;
+                return { type, monsterKey };
             }
 
             // Creatures should have notes available to be revealed.
@@ -84,6 +86,8 @@ export const handleDataMigration = async () => {
                 public: { revealed: false, text: origin.system.details.publicNotes },
                 private: { revealed: false, text: origin.system.details.privateNotes },
             };
+
+            return null;
         });
 
         version = '0.8.6';
@@ -91,10 +95,9 @@ export const handleDataMigration = async () => {
 
     if(version === '0.8.6'){
         await migrateBestiary(async (bestiary, monster, type, monsterKey) => {
-            const origin = monster.uuid ? await fromUuid(monster.uuid) : game.actors.find(x => x.id === monster.id);
+            const origin = monster?.uuid ? await fromUuid(monster.uuid) : game.actors.find(x => x.id === monster?.id);
             if(!origin){
-                delete bestiary.monster[type][monsterKey];
-                return;
+                return { type, monsterKey };
             }
 
             // All categories now use module settings values ranging from Extreme to Terrible
@@ -148,6 +151,8 @@ export const handleDataMigration = async () => {
                 fake: Object.keys(spellcastingEntries).length > 0 ? null : { revealed: false },
                 entries: spellcastingEntries,
             };
+
+            return null;
         });
 
         //VagueDescriptions Module Settings now has 'Properties' and 'Settings' subobjects
@@ -174,7 +179,23 @@ export const handleDataMigration = async () => {
 
     if(version === '0.8.7'){
         await migrateBestiary(async (bestiary, monster, type, monsterKey) => {
-            bestiary.monster[type][monsterKey].level = { revealed: false, value: bestiary.monster[type][monsterKey].level };
+            if(type && monsterKey && bestiary.monster[type][monsterKey]){
+                //Yes, this is very silly, but it's an attempt to save some data after a bad previous migration tactic.
+                const value = bestiary.monster[type][monsterKey].level?.value?.value?.value?.value?.value ?? 
+                   bestiary.monster[type][monsterKey].level?.value?.value?.value?.value ?? 
+                   bestiary.monster[type][monsterKey].level?.value?.value?.value ?? 
+                   bestiary.monster[type][monsterKey].level?.value?.value ??
+                   bestiary.monster[type][monsterKey].level;
+
+                if(!value || value.value){
+                    return { type, monsterKey };
+                }
+
+                bestiary.monster[type][monsterKey].level = { revealed: false, value: value };
+                return null;
+            } else {
+                return { type, monsterKey };
+            }
         });
 
         version = '0.8.7.1';
@@ -210,16 +231,17 @@ export const handleDataMigration = async () => {
         });
 
         await migrateBestiary(async (bestiary, monster, type, monsterKey) => {
-            const origin = await fromUuid(monster.uuid);
+            const origin = monster?.uuid ? await fromUuid(monster.uuid) : null;
             if(!origin){
-                delete bestiary.monster[type][monsterKey];
-                return;
+                return { type, monsterKey };
             }
 
             // Attributes need to have shortform category names
             bestiary.monster[type][monsterKey].abilities.values.forEach(ability => {
                 ability.category = getCategoryLabel(attributeTable, origin.system.details.level.value, ability.mod, true);
             });
+
+            return null;
         });
 
         // Add filter to bestiary-layout setting
@@ -252,7 +274,6 @@ export const handleDataMigration = async () => {
         }, { monster: {}, npc: {} });
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', newBestiary);
-
         version = '0.8.8';
     }
 
@@ -261,18 +282,27 @@ export const handleDataMigration = async () => {
 
 export const migrateBestiary = async (update) => {
     const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+    
+    var toRemove = [];
     for(var typeKey in bestiary.monster){
         for(var monsterKey in bestiary.monster[typeKey]){
             const monster = bestiary.monster[typeKey][monsterKey];
 
-            await update(bestiary, monster, typeKey, monsterKey);
-
-            for(var inType of monster.inTypes){
-                if(typeKey !== inType){
-                    bestiary.monster[inType][monsterKey] = foundry.utils.deepClone(bestiary.monster[typeKey][monsterKey]);
+            const result = await update(bestiary, monster, typeKey, monsterKey);
+            if(result) {
+                toRemove.push(result);
+            } else {
+                for(var inType of monster.inTypes){
+                    if(typeKey !== inType){
+                        bestiary.monster[inType][monsterKey] = foundry.utils.deepClone(bestiary.monster[typeKey][monsterKey]);
+                    }
                 }
             }
         }
+    }
+
+    for(var remove of toRemove){
+        delete bestiary.monster[remove.type][remove.monsterKey];
     }
     
     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);

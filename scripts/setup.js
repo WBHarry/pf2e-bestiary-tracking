@@ -59,7 +59,6 @@ const configSettings = () => {
 
             await newMigrateBestiary(async (_, monster) => {
                 const origin = await fromUuid(monster.uuid);
-                if(!origin) return;
 
                 await origin.update({ "ownership.default": origin.ownership.default > 1 ? origin.ownership.default : 1 });
             });
@@ -180,8 +179,7 @@ const bestiaryAppearance = () => {
 
             await newMigrateBestiary(async (bestiary, monster, monsterKey) => {
                 const origin = await fromUuid(monster.uuid);
-                if(!origin) return;
-
+                
                 bestiary.monster[monsterKey].img = value ? origin.prototypeToken.texture.src : origin.img;
 
                 await game.socket.emit(`module.pf2e-bestiary-tracking`, {
