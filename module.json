@@ -14,7 +14,6 @@
         "verified": "12.331",
         "maximum": 12
     },
-    
     "systems": [{
         "id": "pf2e",
         "type": "system",
@@ -48,7 +47,7 @@
         }
     ],
     "esmodules": [
-        "main.js"
+        "pf2e-bestiary-tracking.js"
     ],
      "styles": [
          "styles/pf2e-bestiary-tracking.css"

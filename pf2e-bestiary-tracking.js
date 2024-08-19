@@ -26,12 +26,21 @@ Hooks.once("ready", () => {
 Hooks.once("setup", () => {
     if(typeof libWrapper === 'function') {
         libWrapper.register('pf2e-bestiary-tracking', 'Token.prototype._onClickLeft2', function (wrapped, ...args) {
+            const baseActor = args[0].currentTarget.document.baseActor;
+            if(baseActor.type !== 'npc'){
+                return wrapped(...args);
+            }
+
+            if(!game.user.isGM && (baseActor.ownership.default > 1 || (baseActor.ownership[game.user.id] && baseActor.ownership[game.user.id] > 1))){
+                return wrapped(...args);
+            }
+
             const openBestiary = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
             if(!openBestiary || (game.user.isGM && !args[0].altKey)) return wrapped(...args);
   
             const settings = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-            const monster = settings.monster[args[0].currentTarget.document.baseActor.uuid];
-        
+            const monster = settings.monster[baseActor.uuid];
+
             if(!monster)
             {
                 ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"));
