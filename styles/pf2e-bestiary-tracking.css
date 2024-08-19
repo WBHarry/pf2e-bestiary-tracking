@@ -670,6 +670,11 @@
   font-weight: bold;
   text-align: center;
 }
+.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category legend.flexed {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 .theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category legend h4 {
   margin: 0;
   color: #ababab;
@@ -751,7 +756,7 @@
   background-color: #760000;
 }
 .theme-dark .pf2e-bestiary-tracking.bestiary .primary-container.empty {
-  background-color: #5e0000;
+  opacity: 0.6;
 }
 .theme-dark .pf2e-bestiary-tracking.bestiary .primary-container .data-icon {
   filter: none;

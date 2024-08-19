@@ -163,6 +163,22 @@
                         "Terrible": "Ter"
                     }
                 }
+            },
+            "BestiaryAppearance": {
+                "Name": "Bestiary Appearance",
+                "Hint": "Customize the appearance of the Bestiary",
+                "Menu": {
+                    "Name": "Bestiary Appearance",
+                    "Label": "Bestiary Appearance Settings",
+                    "Hint": "Customize the appearance of the Bestiary"
+                },
+                "UseTokenArt": "Use Token Art",
+                "ContrastRevealedState": {
+                    "Name": "Contrast Revealed State",
+                    "Enabled": "Enabled",
+                    "Revealed": "Revealed",
+                    "Hidden": "Hidden"
+                }
             }
         },
         "Settings": {
@@ -194,6 +210,10 @@
             "DoubleClickOpen": {
                 "Name": "Double Click Open",
                 "Hint": "Opens a creature's Bestiary entry when doubleclicked(+ ALT for GM) it. With this setting active, all creatures in the Bestiary get their Ownership level set to 'Limited' for the players. (Requires the LibWrapper module)"
+            },
+            "ContrastRevealState": {
+                "Name": "Contrast Reveal State",
+                "Hint": "Option for GMs to see hidden/revealed fields in contrast colors"
             }
         },
         "Macros": {

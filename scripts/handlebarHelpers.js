@@ -5,6 +5,7 @@ export default class RegisterHandlebarsHelpers {
             PF2EBTMonsterValue: this.monsterValue,
             PF2EBTCategoryClassTitle: this.categoryClassTitle,
             PF2EBTToggleContainer: this.toggleContainer,
+            PF2EBTToggleContainerOverride: this.toggleContainerOverride,
             PF2EBTFilter: this.filter,
             PF2EBTTertiary: this.tertiary,
             PF2EBTCaptialize: this.capitalize,
@@ -46,6 +47,13 @@ export default class RegisterHandlebarsHelpers {
         }
 
         return containerClass;
+    }
+
+    static toggleContainerOverride(contrastRevealedState, property){
+        if(!game.user.isGM || !contrastRevealedState.enabled) return '';
+
+        if(property.revealed) return `background: ${contrastRevealedState.revealed}`;
+        else return `background: ${contrastRevealedState.hidden}`;
     }
 
     static filter(prop, fallback, leftMargin, context, options) {
