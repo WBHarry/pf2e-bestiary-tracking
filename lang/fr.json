@@ -1,0 +1,231 @@
+{
+    "PF2EBestiary": {
+        "Miscellaneous": {
+            "Name": "Nom",
+            "Level": "Niveau",
+            "AC": "CA",
+            "HP": "PV",
+            "Immunities": "Immunités",
+            "None": "Aucun",
+            "Weaknesses": "Faiblesses",
+            "Resistances": "Résistances",
+            "Saves": {
+                "Title": "Sauvegardes",
+                "Fortitude": {
+                    "Short": "Vig"
+                },
+                "Reflex": {
+                    "Short": "Réf"
+                },
+                "Will": {
+                    "Short": "Vol"
+                }
+            },
+            "Speeds": "Vitesses",
+            "Attributes": "Modificateurs d'Attributs",
+            "Senses": "Sens",
+            "Attacks": "Attaques",
+            "Abilities": "Capacités",
+            "Passives": "Passifs",
+            "Save": "Sauvegarder"
+        },
+        "Bestiary": {
+            "Title": "Bestiaire",
+            "WindowControls": {
+                "RefreshBestiary": "Rafraîchir le Bestiaire",
+                "ResetBestiary": "Réinitialiser le Bestiaire"
+            },
+            "Welcome": {
+                "Greeting": "Bienvenue dans le Bestiaire !",
+                "PlayersSection": {
+                    "Title": "Pour les Joueurs",
+                    "NavigationTip": "Naviguez entre les différents types de créatures en utilisant les signets à gauche.",
+                    "MacroTip": "Consultez le compendium du module et ajoutez des macros utiles à votre barre de raccourcis."
+                },
+                "GMsSection": {
+                    "Title": "Pour les MJ",
+                    "AddCreaturesTip": "Ajoutez de nouvelles créatures rencontrées par les joueurs en les faisant glisser dans le bestiaire.",
+                    "ModuleSettingsTip": "Personnalisez le comportement du module et la façon dont les informations sur les monstres sont affichées dans les paramètres du module.",
+                    "ToggleInformationTip": "Permet d'afficher les informations connues sur les monstres individuels au fur et à mesure que les joueurs apprennent des informations.",
+                    "ToggleMisinformationTip": "Permet d'afficher les informations erronées sur un champ. Saisissez de fausses informations et supprimez-les de la même manière."
+                }
+            },
+            "ReturnMessages": {
+                "ReturnToCategory": "Retour à la page de la catégorie {type}",
+                "ReturnToWelcome": "Retour à la page principale"
+            },
+            "CategoryView": {
+                "EmptyText": "Aucune {catégorie} rencontrée pour le moment. Profitez-en tant que vous le pouvez.",
+                "UnknownText": "Les dangers inconnus sont toujours à l'affût.." 
+            },
+            "Miscellaneous": {
+                "UnknownCreature": "Créature Inconnue",
+                "Unknown": "Inconnu..",
+                "LeftClick": "Clic Gauche",
+                "RightClick": "Clic Droit"
+            },
+            "Tabs": {
+                "Statistics": "Stats",
+                "Spells": "Sorts",
+                "Lore": "Connaissances",
+                "Notes": "Notes"
+            },
+            "Lore": {
+                "Public": "Description",
+                "Private": "Notes Privées"
+            },
+            "Misinformation": {
+                "AddMisinformation": "Ajouter des informations erronées",
+                "Dialog": {
+                    "Title": "Sélection des informations erronées",
+                    "SelectLabel": "Fausse {propriété}",
+                    "Attack": {
+                        "Range": "Portée",
+                        "Actions": "Actions",
+                        "Damage": "Dégâts"
+                    },
+                    "Ability": {
+                        "Description": "Description"
+                    },
+                    "Errors": {
+                        "RequiredFields": "Champs requis non remplis: {champs}"
+                    }
+                }
+            },
+            "Errors": {
+                "UnsupportedType": "Type de PNJ non pris en charge !",
+                "UnsupportedCharacterType": "Les PJs ne sont pas pris en charge dans le bestiaire.",
+                "DataMissing": "Certaines données sont manquantes. Vous devrez réimporter la créature. Désolé pour cela !"
+            },
+            "Info": {
+                "GMOnly": "Cette fonction est réservée au MJ."
+            }
+        },
+        "Menus": {
+            "Title": "Suivi du Bestiaire",
+            "Data": {
+                "Name": "Données du Bestiaire",
+                "Hint": "Données des monstres pour le Bestiaire."
+            },
+            "VagueDescriptions": {
+                "Name": "Descriptions imprécises",
+                "Hint": "Permet d'afficher les qualités des monstres en utilisant des valeurs élevées/moyennes/faibles plutôt que des valeurs exactes.",
+                "Menu": {
+                    "Name": "Descriptions imprécises",
+                    "Label": "Configuration des Descriptions imprécises",
+                    "Hint": "Permet d'afficher les propriétés des monstres où les valeurs doivent être imprécises",
+                    "Options": {
+                        "AC": "CA",
+                        "HP": "PV",
+                        "Immunities": "Immunités",
+                        "Resistances": "Résistances",
+                        "Weaknesses": "Faiblesses",
+                        "Saves": "Sauvegardes",
+                        "Perception": "Perception",
+                        "Speed": "Vitesse",
+                        "Attributes": "Attributs",
+                        "Spells": "Sorts",
+                        "PlayerBased": "Descriptions Basées sur le Niveau du Joueur",
+                        "MisinformationOptions": "Catégories d'informations erronées"
+                    },
+                    "Sections": {
+                        "Properties": {
+                            "Title": "Propriétés imprécises"
+                        },
+                        "Settings": {
+                            "Title": "Paramètres"
+                        }
+                    }
+                }
+            },
+            "BestiaryLabels": {
+                "Name": "Libellés du bestiaire",
+                "Hint": "Remplacer les libellés utilisés dans le bestiaire par des libellés personnalisés",
+                "Menu": {
+                    "Name": "Libellés du bestiaire",
+                    "Label": "Configuration des libellés du bestiaire",
+                    "Hint": "Personnaliser les libellés utilisés dans le Bestiaire"
+                },
+                "VagueDescriptions": {
+                    "Name": "Descriptions imprécises",
+                    "FullOptions": {
+                        "Extreme": "Extrême",
+                        "High": "Élevée",
+                        "Moderate": "Modérée",
+                        "Low": "Basses",
+                        "Terrible": "Effroyable"
+                    },
+                    "ShortOptions": {
+                        "Extreme": "Ex",
+                        "High": "Haut",
+                        "Moderate": "Mod",
+                        "Low": "Bas",
+                        "Terrible": "Eff"
+                    }
+                }
+            }
+        },
+        "BestiaryAppearance": {
+            "Name": "Apparence du bestiaire",
+            "Hint": "Personnalise l'apparence du Bestiaire",
+            "Menu": {
+                "Name": "Apparence du bestiaire",
+                "Label": "Configuration de l'apparence du bestiaire",
+                "Hint": "Customize the appearance of the Bestiary"
+            },
+            "UseTokenArt": "Utiliser l'image du token",
+            "ContrastRevealedState": {
+                "Name": "Contraste révélant l'État",
+                "Enabled": "activé",
+                "Revealed": "Revélé",
+                "Hidden": "caché"
+            }
+        },
+        "Settings": {
+            "Version": {
+                "Name": "Version",
+                "Hint": "La Version du Module"
+            },
+            "AutomaticCombatRegistration": {
+                "Name": "Enregistrement des Combats",
+                "Hint": "Ajout automatique de nouveaux ennemis au bestiaire pendant une phase de combat donnée.",
+                "Choices": {
+                    "Never": "Jamais",
+                    "StartOfCombat": "Début du Combat",
+                    "CreatureDefeated": "À la Défaite de la Créature"
+                }
+            },
+            "AutomaticallyOpenMonster": {
+                "Name": "Inscription automatique d'une entrée dans le bestiaire",
+                "Hint": "Inscrit automatiquement une entrée dans le bestiaire pour les monstres que vous y déposez."   
+            }, 
+            "UseTokenArt": {
+                "Name": "Utiliser l'image du token",
+                "Hint": "L'image du token sera utilisé dans le bestiaire."
+            },
+            "ShowMonsterLevel": {
+                "Name": "Afficher le Niveau du Monstre",
+                "Hint": "Permet d'afficher le niveau du monstre comme un champ que le MJ basculer"
+            },
+            "DoubleClickOpen": {
+                "Name": "Double Clic pour Ouvrir",
+                "Hint": "Ouvre l'entrée Bestiaire d'une créature en double-cliquant (+ ALT pour le MJ) dessus. Lorsque ce paramètre est activé, toutes les créatures du Bestiaire voient leur Droit défini sur 'Limité' pour les joueurs. (Nécessite le module LibWrapper)"
+            },
+            "ContrastRevealState": {
+                "Name": "Contraste Révélant l'État",
+                "Hint": "Possibilité pour les GM de voir les champs cachés/révélés dans des couleurs contrastées"
+            }
+        },
+        "Macros": {
+            "ShowMonster": {
+                "NoTarget": "Aucun monstre sélectionné ou ciblé.",
+                "InvalidTarget": "La cible doit être une créature (PNJ) !",
+                "TargetNotInBestiary": "Ce monstre n'a pas encore été ajouté au bestiaire !"
+            },
+            "AddMonster": {
+                "GMOnly": "Cette macro ne peut être utilisée que par le MJ.",
+                "TargetAlreadyInBestiary": "Cette créature est déjà dans le bestiaire !"
+            }
+        }
+    }
+}
