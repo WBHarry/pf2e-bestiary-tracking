@@ -285,7 +285,7 @@ export const handleDataMigration = async () => {
             // Add Total Modifier to attacks.
             monster.attacks.values = Object.keys(monster.attacks.values).reduce((acc, attackKey) => {
                 const originAttack = origin.system.actions.find(x => x.slug === attackKey);
-                const base = origin.items.get(originAttack.sourceId);
+                const base = originAttack.item;
                 if(base){
                     const damageInstances = [];
                     var damageLabel = '';
@@ -299,6 +299,7 @@ export const handleDataMigration = async () => {
 
                     acc[base.id] = { 
                         ...monster.attacks.values[attackKey], 
+                        range: base.isMelee ? 'Melee' : 'Ranged',
                         value: base.system.bonus.value,
                         damage: {
                             instances: damageInstances,

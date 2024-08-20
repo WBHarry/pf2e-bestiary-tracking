@@ -993,11 +993,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 damageInstances.push({ label: damage.damage, average: getRollAverage(damageRollHelper.terms), type: damage.damageType, quality: damage.category  });
             }
 
-            acc.values[action.slug] = {
+            acc.values[action.item.id] = {
                 revealed: false,
                 slug: action.slug,
                 totalModifier: action.totalModifier,
-                range: action.item.type === 'melee' ? 'Melee' : 'Ranged', 
+                range: action.item.isMelee ? 'Melee' : 'Ranged', 
                 label: action.label,
                 variants: action.variants.reduce((acc, variant) => {
                     acc.values[slugify(variant.label)] = variant.label;
