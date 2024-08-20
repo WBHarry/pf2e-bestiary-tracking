@@ -73,7 +73,7 @@ const generalNonConfigSettings = () => {
         scope: 'world',
         config: false,
         type: String,
-        default: '0.8.8',
+        default: '0.8.8.4',
     });
 
     game.settings.register('pf2e-bestiary-tracking', 'bestiary-tracking', {
@@ -132,6 +132,8 @@ const vagueDescriptions = () => {
                 perception: false,
                 speed: false,
                 attributes: false,
+                attacks: false,
+                damage: false,
                 spells: false,
             },
             settings: {

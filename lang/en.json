@@ -125,6 +125,8 @@
                         "Speed": "Speed",
                         "Attributes": "Attributes",
                         "Spells": "Spells",
+                        "Attacks": "Attacks",
+                        "Damage": "Damage",
                         "PlayerBased": "Base Descriptions On Player Level",
                         "MisinformationOptions": "Vague Misinformation Categories"
                     },

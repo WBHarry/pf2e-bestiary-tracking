@@ -1,8 +1,8 @@
 
 import { getCreatureSize, slugify } from "../scripts/helpers.js";
 import { socketEvent } from "../scripts/socket.js";
-import { acTable, attributeTable, hpTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "../scripts/statisticsData.js";
-import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
+import { acTable, attackTable, attributeTable, damageTable, hpTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "../scripts/statisticsData.js";
+import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getRollAverage, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -154,7 +154,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         selected.monster.passives.values = newPassives;
     }
 
-    prepareData(selected, playerLevel) {
+    prepareData(selected, playerLevel, vagueDescriptions) {
         const { category, type, monster } = selected;
         if(!monster) return { category, type, monster };
 
@@ -194,16 +194,26 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 hp: { ...monster.hp, category: getCategoryFromIntervals(hpTable, contextLevel, monster.hp.value) },
                 speeds: monster.speeds,
                 senses: { ...monster.senses, values: { ...monster.senses.values, perception: { ...monster.senses.values.perception, isPerception: true, category: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.senses.values.perception.value) } } },
-                attacks: monster.attacks,
+                attacks: { ...monster.attacks, values: { ...Object.keys(monster.attacks.values).reduce((acc, attackKey) => {
+                    const attackParts = vagueDescriptions.properties.attacks ? { category: getCategoryLabel(attackTable, contextLevel, monster.attacks.values[attackKey].totalModifier) } : {  };
+                    const damageParts = vagueDescriptions.properties.damage ? { 
+                        damage: { ...monster.attacks.values[attackKey].damage, 
+                            instances: monster.attacks.values[attackKey].damage.instances.map(instance => ({ ...instance, category: getCategoryLabel(damageTable, contextLevel, instance.average), value: instance.average }))
+                        } 
+                    } : { damage: { instances: monster.attacks.values[attackKey].damage.instances.map(instance => ({ ...instance, value: instance.label })) } };
+                    acc[attackKey] = { ...monster.attacks.values[attackKey], value: `${monster.attacks.values[attackKey].totalModifier >= 0 ? '+' : '-'} ${monster.attacks.values[attackKey].totalModifier}`, ...attackParts, ...damageParts };
+
+                    return acc;
+                }, {})}},
                 immunities: monster.immunities,
                 resistances: monster.resistances,
                 weaknesses: monster.weaknesses,
                 actions: monster.actions,
                 passives: monster.passives,
                 saves: {
-                    fortitude: { ...monster.saves.fortitude, categories: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.fortitude.value, true) },
-                    reflex: { ...monster.saves.reflex, categories: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.reflex.value, true) },
-                    will: { ...monster.saves.will, categories: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.will.value, true) },
+                    fortitude: { ...monster.saves.fortitude, category: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.fortitude.value, true) },
+                    reflex: { ...monster.saves.reflex, category: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.reflex.value, true) },
+                    will: { ...monster.saves.will, category: getCategoryLabel(savingThrowPerceptionTable, contextLevel, monster.saves.will.value, true) },
                 },
                 spells: {
                     ...monster.spells, 
@@ -289,7 +299,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         context.selected = foundry.utils.deepClone(this.selected);
         await this.enrichTexts(context.selected);
-        context.selected = this.prepareData(context.selected, context.vagueDescriptions.settings.playedBased ? context.playerLevel.value : null);
+        context.selected = this.prepareData(context.selected, context.vagueDescriptions.settings.playerBased ? context.playerLevel : null, context.vagueDescriptions);
         context.bestiary = this.prepareBestiary(foundry.utils.deepClone(this.bestiary));
 
         context.openType = (context.selected.type ? Object.keys(context.bestiary[context.selected.category][context.selected.type]).reduce((acc, monsterKey) => { 
@@ -973,9 +983,20 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(Object.keys(passives.values).length === 0) passives.values['None'] = { revealed: false, name: 'None' }
 
         const attacks = item.system.actions.reduce((acc, action) => {
+            const damageInstances = [];
+            var damageLabel = '';
+            for(var damageKey of Object.keys(action.item.system.damageRolls)){
+                const damage = action.item.system.damageRolls[damageKey];
+                damageLabel = damageLabel.concat(`${damageLabel ? ' + ' : ''}${damage.damage} ${damage.damageType}`);
+                const damageRollHelper = new Roll(damage.damage);
+                
+                damageInstances.push({ label: damage.damage, average: getRollAverage(damageRollHelper.terms), type: damage.damageType, quality: damage.category  });
+            }
+
             acc.values[action.slug] = {
                 revealed: false,
                 slug: action.slug,
+                totalModifier: action.totalModifier,
                 range: action.item.type === 'melee' ? 'Melee' : 'Ranged', 
                 label: action.label,
                 variants: action.variants.reduce((acc, variant) => {
@@ -983,11 +1004,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
                     return acc;
                 }, { revealed: false, values: {} }),
-                damage: Object.values(action.item.system.damageRolls).reduce((acc, x) => {
-                    acc = acc.concat(`${acc ? ' + ' : ''}${x.damage} ${x.damageType}`);
-
-                    return acc;
-                }, ''),
+                
+                damage: {
+                    instances: damageInstances,
+                    label: damageLabel,
+                    average: damageInstances.reduce((acc, instance) => acc+instance.average, 0),
+                },
                 traits: action.traits.map(trait => ({
                     label: trait.label,
                     description: trait.description,

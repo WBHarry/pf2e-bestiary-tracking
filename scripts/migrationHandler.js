@@ -1,6 +1,6 @@
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import { acTable, attributeTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "./statisticsData.js";
-import { getCategoryLabel } from "./statisticsHelper.js";
+import { getCategoryLabel, getRollAverage } from "./statisticsHelper.js";
 
 export const handleDataMigration = async () => {
     if(!game.user.isGM) return;
@@ -277,6 +277,44 @@ export const handleDataMigration = async () => {
         version = '0.8.8';
     }
 
+    if(version === '0.8.8'){
+        await newMigrateBestiary(async (_, monster) => {
+            const origin = await fromUuid(monster.uuid);
+            if(!origin) return true;
+            
+            // Add Total Modifier to attacks.
+            monster.attacks.values = Object.keys(monster.attacks.values).reduce((acc, attackKey) => {
+                const originAttack = origin.system.actions.find(x => x.slug === attackKey);
+                const base = origin.items.get(originAttack.sourceId);
+                if(base){
+                    const damageInstances = [];
+                    var damageLabel = '';
+                    for(var damageKey of Object.keys(base.system.damageRolls)){
+                        const damage = base.system.damageRolls[damageKey];
+                        damageLabel = damageLabel.concat(`${damageLabel ? ' + ' : ''}${damage.damage} ${damage.damageType}`);
+                        const damageRollHelper = new Roll(damage.damage);
+                        
+                        damageInstances.push({ label: damage.damage, average: getRollAverage(damageRollHelper.terms), type: damage.damageType, quality: damage.category  });
+                    }
+
+                    acc[base.id] = { 
+                        ...monster.attacks.values[attackKey], 
+                        value: base.system.bonus.value,
+                        damage: {
+                            instances: damageInstances,
+                            label: damageLabel,
+                            average: damageInstances.reduce((acc, instance) => acc+instance.average, 0),
+                        }
+                    };
+                }
+
+                return acc;
+            }, {});
+        });
+        
+        version = '0.8.8.4';
+    }
+
     await game.settings.set('pf2e-bestiary-tracking', 'version', version);
 }
 
@@ -310,11 +348,22 @@ export const migrateBestiary = async (update) => {
 
 export const newMigrateBestiary = async (update) => {
     const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+    const toRemoveSadly = [];
     for(var monsterKey in bestiary.monster){
         const monster = bestiary.monster[monsterKey];
 
-        await update(bestiary, monster, monsterKey);
+        const failure = await update(bestiary, monster, monsterKey);
+        
+        // Only send back a value from update when it's a critical update. Otherwise allow unlinked actors to stay.
+        if(failure){
+            toRemoveSadly.push(monsterKey);
+        }
+
         bestiary.monster[monsterKey] = foundry.utils.deepClone(bestiary.monster[monsterKey]);
+    }
+
+    for(var toRemove of toRemoveSadly){
+        delete bestiary.monster[toRemove];
     }
     
     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);

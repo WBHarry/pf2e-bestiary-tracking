@@ -332,7 +332,15 @@
                                                 {{#each attack.variants.values}}
                                                     <div class="attack-variant tertiary-container">{{this}}</div>
                                                 {{/each}}
-                                                {{#if this.damage}}<div class="attack-damage tertiary-container active">{{attack.damage}}</div>{{/if}}
+                                                {{#if this.damage}}
+                                                    {{#each this.damage.instances}}
+                                                        <div class="attack-damage tertiary-container active">
+                                                            {{this.label}}
+
+                                                            {{this.type}}
+                                                        </div>
+                                                    {{/each}}
+                                                {{/if}}
                                                 {{#if attack.revealed}}<i class="pf2e-bestiary-clickable-icon {{#if attack.variants.revealed}}fa-solid fa-eye{{else}}fa-solid fa-eye-slash{{/if}}" data-action="toggleRevealed" data-path="{{concat 'attacks.values.' key '.variants'}}"></i>{{/if}}
                                             </div>
                                         {{/if}}
@@ -361,10 +369,22 @@
                                         {{#if (gt (PF2EBTNrKeys this.variants.values) 0)}}
                                             <div class="attack-body">
                                                 {{#if this.variants.revealed}}
-                                                    {{#each this.variants.values}}
-                                                        <div class="attack-variant tertiary-container">{{this}}</div>
-                                                    {{/each}}
-                                                    {{#if this.damage}}<div class="attack-damage tertiary-container active">{{this.damage}}</div>{{/if}}
+                                                    {{#if (or this.category this.missinformation)}}
+                                                        <div class="attack-variant tertiary-container">{{PF2EBTMonsterValue this ../vagueDescriptions.properties.attacks }}</div>
+                                                    {{else}}
+                                                        {{#each this.variants.values}}
+                                                            <div class="attack-variant tertiary-container">{{this}}</div>
+                                                        {{/each}}
+                                                    {{/if}}
+                                                    {{#if this.damage}}
+                                                        {{#each this.damage.instances}}
+                                                            <div class="attack-damage tertiary-container active">
+                                                                {{PF2EBTMonsterValue this ../../vagueDescriptions.properties.damage }}
+                                                            
+                                                                {{this.type}}
+                                                            </div>
+                                                        {{/each}}
+                                                    {{/if}}
                                                 {{/if}}
                                             </div>
                                         {{/if}}

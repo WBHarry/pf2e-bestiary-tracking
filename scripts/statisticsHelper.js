@@ -108,3 +108,57 @@ export const getCategoryRange = async (name) => {
             return savingThrowPerceptionTable.range.map(category => vagueDescriptions.full[category]);
     }
 }
+
+export const getRollAverage = (terms) => {
+        var total = 0;
+        var currentOperator = null;
+        for(var i = 0; i < terms.length; i++){
+            var term = terms[i];
+
+            //Pool, string and function terms should not be applicable to damage rolls in pf2e
+            if(term.operator){
+                currentOperator = term.operator;
+            }
+            else if(term.faces){
+                total = applyRollOperator(total, currentOperator, getDiceAverage(term.faces, term.number));
+            }
+            else if(term.number){
+                total = applyRollOperator(total, currentOperator, term.number);
+            }
+            else if(term.terms){
+                total = applyRollOperator(total, currentOperator, getRollAverage(term.terms));
+            }
+        }
+
+        return total;
+};
+
+const applyRollOperator = (total, operator, value) => {
+    switch(operator){
+        case '+':
+            return total+value;
+        case '-':
+            return total-value;
+        case '/': 
+            return total/value;
+        case '*':
+            return total*value;
+        default: 
+            return value;
+    }
+};
+
+const getDiceAverage = (faces, number) => {
+    var oddDice = 0, pairs = 0;
+    switch(faces){
+        case 10:
+            if(number === 1) return 6;
+        case 12:
+            if(number === 1) return 7;
+        default:
+            oddDice = number % 2;
+            pairs = (number - oddDice)/2;
+            return pairs*(faces/2 + (faces/2+1)) + (oddDice ? faces/2 : 0);
+
+    }
+}

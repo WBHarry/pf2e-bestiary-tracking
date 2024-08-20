@@ -14,25 +14,28 @@
         "verified": "12.331",
         "maximum": 12
     },
-    "systems": [{
-        "id": "pf2e",
-        "type": "system",
-        "manifest": "https://raw.githubusercontent.com/foundryvtt/pf2e/master/system.json",
-        "compatibility": {
-            "minimum": "6.2.0",
-            "verified": "6.2.2",
-            "maximum": "6"
-        }
-    }],
     "relationships": {
-        "optional": [{
-            "id": "lib-wrapper",
-            "type": "module",
-            "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/download/v1.12.15.0/module.json",
-            "compatibility": {
-              "verified": "1.12.15.0"
+        "systems": [
+            {
+                "id": "pf2e",
+                "type": "system",
+                "manifest": "https://raw.githubusercontent.com/foundryvtt/pf2e/master/system.json",
+                "compatibility": {
+                    "minimum": "6.2.0",
+                    "verified": "6.2.2"
+                }
             }
-        }]
+        ],
+        "recommends": [
+            {
+                "id": "lib-wrapper",
+                "type": "module",
+                "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/download/v1.12.15.0/module.json",
+                "compatibility": {
+                  "verified": "1.12.15.0"
+                }
+            }
+        ]
     },
     "packs": [
         {
