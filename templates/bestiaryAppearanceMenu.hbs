@@ -9,6 +9,30 @@
     </div>
 
     <fieldset class="menu-category">
+        <legend class="pf2e-bestiary-clickable-icon" data-action="toggleOptionalFields">
+            <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Name"}}</h4>
+        </legend>
+
+        <div class="form-group">
+            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Level"}}</label>
+            <div class="form-fields">
+                <div class="form-fields">
+                    <input type="checkbox" name="optionalFields.level" {{checked settings.optionalFields.level}} />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Languages"}}</label>
+            <div class="form-fields">
+                <div class="form-fields">
+                    <input type="checkbox" name="optionalFields.languages" {{checked settings.optionalFields.languages}} />
+                </div>
+            </div>
+        </div>
+    </fieldset> 
+
+    <fieldset class="menu-category">
         <legend class="flexed">
             <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ContrastRevealedState.Name"}}</h4>
             <i class="fa-solid fa-arrow-rotate-left pf2e-bestiary-clickable-icon" data-action="resetContrastRevealedState"></i>

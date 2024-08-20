@@ -25,6 +25,7 @@
             "Attributes": "Modificateurs d'Attributs",
             "Senses": "Sens",
             "Attacks": "Attaques",
+            "Languages": "Languages",
             "Abilities": "Capacités",
             "Passives": "Passifs",
             "Save": "Sauvegarder"
@@ -125,6 +126,8 @@
                         "Speed": "Vitesse",
                         "Attributes": "Attributs",
                         "Spells": "Sorts",
+                        "Attacks": "Attacks",
+                        "Damage": "Damage",
                         "PlayerBased": "Descriptions Basées sur le Niveau du Joueur",
                         "MisinformationOptions": "Catégories d'informations erronées"
                     },
@@ -179,6 +182,11 @@
                 "Enabled": "activé",
                 "Revealed": "Revélé",
                 "Hidden": "caché"
+            },
+            "OptionalFields": {
+                "Name": "Optional Fields",
+                "Level": "Afficher le Niveau du Monstre",
+                "Languages": "Languages Known"
             }
         },
         "Settings": {
@@ -199,14 +207,6 @@
                 "Name": "Inscription automatique d'une entrée dans le bestiaire",
                 "Hint": "Inscrit automatiquement une entrée dans le bestiaire pour les monstres que vous y déposez."   
             }, 
-            "UseTokenArt": {
-                "Name": "Utiliser l'image du token",
-                "Hint": "L'image du token sera utilisé dans le bestiaire."
-            },
-            "ShowMonsterLevel": {
-                "Name": "Afficher le Niveau du Monstre",
-                "Hint": "Permet d'afficher le niveau du monstre comme un champ que le MJ basculer"
-            },
             "DoubleClickOpen": {
                 "Name": "Double Clic pour Ouvrir",
                 "Hint": "Ouvre l'entrée Bestiaire d'une créature en double-cliquant (+ ALT pour le MJ) dessus. Lorsque ce paramètre est activé, toutes les créatures du Bestiaire voient leur Droit défini sur 'Limité' pour les joueurs. (Nécessite le module LibWrapper)"

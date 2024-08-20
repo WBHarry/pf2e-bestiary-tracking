@@ -1,4 +1,4 @@
-import { revealedState } from "../data/bestiaryAppearance.js";
+import { optionalFields, revealedState } from "../data/bestiaryAppearance.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -9,6 +9,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
         this.settings = {
             useTokenArt: game.settings.get('pf2e-bestiary-tracking', 'use-token-art'),
             contrastRevealedState: game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state'),
+            optionalFields: game.settings.get('pf2e-bestiary-tracking', 'optional-fields'),
         }
     }
 
@@ -23,6 +24,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
         position: { width: 'auto', height: 'auto' },
         actions: {
             resetContrastRevealedState: this.resetContrastRevealedState,
+            toggleOptionalFields: this.toggleOptionalFields,
             save: this.save,
         },
         form: { handler: this.updateData, submitOnChange: true },
@@ -47,19 +49,31 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
         this.settings = {
             useTokenArt: data.useTokenArt,
             contrastRevealedState: data.contrastRevealedState,
+            optionalFields: data.optionalFields,
         };
         this.render();
     }
 
     static async resetContrastRevealedState (){
-        const current = game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state');
-        this.settings.contrastRevealedState = { ...current, ...revealedState };
+        this.settings.contrastRevealedState = { ...revealedState };
+        this.render();
+    };
+
+    static async toggleOptionalFields (){
+        const keys = Object.keys(optionalFields);
+        const enable = Object.values(this.settings.optionalFields).some(x => !x);
+        this.settings.optionalFields = keys.reduce((acc, key) => {
+            acc[key] = enable;
+            return acc;
+        }, {});
+        
         this.render();
     };
 
     static async save(options){
         await game.settings.set('pf2e-bestiary-tracking', 'contrast-revealed-state', this.settings.contrastRevealedState);
         await game.settings.set('pf2e-bestiary-tracking', 'use-token-art', this.settings.useTokenArt);
+        await game.settings.set('pf2e-bestiary-tracking', 'optional-fields', this.settings.optionalFields);
         this.close();
     };
 }

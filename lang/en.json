@@ -25,6 +25,7 @@
             "Attributes": "Attribute Modifiers",
             "Senses": "Senses",
             "Attacks": "Attacks",
+            "Languages": "Languages",
             "Abilities": "Abilities",
             "Passives": "Passives",
             "Save": "Save"
@@ -180,6 +181,11 @@
                     "Enabled": "Enabled",
                     "Revealed": "Revealed",
                     "Hidden": "Hidden"
+                },
+                "OptionalFields": {
+                    "Name": "Optional Fields",
+                    "Level": "Creature Level",
+                    "Languages": "Languages Known"
                 }
             }
         },
@@ -201,14 +207,6 @@
                 "Name": "Auto Open Bestiary Entry",
                 "Hint": "Automatically open the bestiary entry for monsters you drop into it."   
             }, 
-            "UseTokenArt": {
-                "Name": "Use Token Art",
-                "Hint": "Token art will be used in the Bestiary."
-            },
-            "ShowMonsterLevel": {
-                "Name": "Show Monster Level",
-                "Hint": "Display the monster's level as a field the GM can toggle"
-            },
             "DoubleClickOpen": {
                 "Name": "Double Click Open",
                 "Hint": "Opens a creature's Bestiary entry when doubleclicked(+ ALT for GM) it. With this setting active, all creatures in the Bestiary get their Ownership level set to 'Limited' for the players. (Requires the LibWrapper module)"

@@ -1,4 +1,4 @@
-import { revealedState } from "../data/bestiaryAppearance.js";
+import { optionalFields, revealedState } from "../data/bestiaryAppearance.js";
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import BestiaryAppearanceMenu from "../module/bestiaryAppearanceMenu.js";
 import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
@@ -32,15 +32,6 @@ const configSettings = () => {
     game.settings.register('pf2e-bestiary-tracking', 'automatically-open-monster', {
         name: game.i18n.localize('PF2EBestiary.Settings.AutomaticallyOpenMonster.Name'),
         hint: game.i18n.localize('PF2EBestiary.Settings.AutomaticallyOpenMonster.Hint'),
-        scope: 'world',
-        config: true,
-        type: Boolean,
-        default: false,
-    });
-
-    game.settings.register('pf2e-bestiary-tracking', 'show-monster-level', {
-        name: game.i18n.localize('PF2EBestiary.Settings.ShowMonsterLevel.Name'),
-        hint: game.i18n.localize('PF2EBestiary.Settings.ShowMonsterLevel.Hint'),
         scope: 'world',
         config: true,
         type: Boolean,
@@ -211,6 +202,17 @@ const bestiaryAppearance = () => {
         type: Object,
         default: {
             ...revealedState
+        },
+    });
+
+    game.settings.register('pf2e-bestiary-tracking', 'optional-fields', {
+        name: game.i18n.localize('PF2EBestiary.Settings.OptionalFields.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.OptionalFields.Hint'),
+        scope: 'world',
+        config: false,
+        type: Object,
+        default: {
+            ...optionalFields
         },
     });
 };

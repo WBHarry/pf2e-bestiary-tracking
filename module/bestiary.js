@@ -184,6 +184,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 id: monster.id,
                 uuid: monster.uuid,
                 level: monster.level,
+                languages: monster.languages,
                 inTypes: isUnknown ? [{ key: 'unknown', name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature") }] : monster.inTypes,
                 traits: monster.traits,
                 size: monster.size,
@@ -287,7 +288,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         context.tabs = this.getTabs();
         context.layout = game.settings.get('pf2e-bestiary-tracking', 'bestiary-layout');
-        context.showMonsterLevel = game.settings.get('pf2e-bestiary-tracking', 'show-monster-level');
+        context.optionalFields = game.settings.get('pf2e-bestiary-tracking', 'optional-fields');
         context.useTokenArt = game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
         context.contrastRevealedState = game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state');
         context.vagueDescriptions = foundry.utils.deepClone(await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions'));
@@ -616,6 +617,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             case 'Immunity':
             case 'Weakness':
             case 'Resistance':
+            case 'Languages':
                 return {
                     width: 400,
                     content: new foundry.data.fields.StringField({

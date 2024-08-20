@@ -45,7 +45,15 @@
         {{else}}
             {{#if this.selected.monster}}
                 {{#with this.selected.monster}}
-                    {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" selected=../selected user=../user vagueDescriptions=../vagueDescriptions tabs=../tabs useTokenArt=../useTokenArt showMonsterLevel=../showMonsterLevel contrastRevealedState =../contrastRevealedState }}
+                    {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" 
+                        selected=../selected 
+                        user=../user 
+                        vagueDescriptions=../vagueDescriptions 
+                        tabs=../tabs 
+                        useTokenArt=../useTokenArt 
+                        optionalFields=../optionalFields 
+                        contrastRevealedState =../contrastRevealedState 
+                    }}
                 {{/with}}
             {{else}}
                 <div class="type-overview-container">

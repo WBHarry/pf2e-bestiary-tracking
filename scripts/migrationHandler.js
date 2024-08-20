@@ -1,4 +1,5 @@
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
+import { slugify } from "./helpers.js";
 import { acTable, attributeTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "./statisticsData.js";
 import { getCategoryLabel, getRollAverage } from "./statisticsHelper.js";
 
@@ -312,8 +313,29 @@ export const handleDataMigration = async () => {
                 return acc;
             }, {});
         });
-        
+
         version = '0.8.8.4';
+    }
+
+    if(version === '0.8.8.4'){
+        await newMigrateBestiary(async (_, monster) => {
+            const origin = await fromUuid(monster.uuid);
+            if(!origin) return true;
+        
+            // Add Languages
+            monster.languages = {
+                values: origin.system.details.languages.value.reduce((acc, language) => {
+                    acc[slugify(language)] = { revealed: false, value: language };
+    
+                    return acc;
+                }, {})
+            };
+            if(origin.system.details.languages.details){
+                monster.languages.values['details'] = { revealed: false, value: origin.system.details.languages.details };
+            }
+        });
+
+        version = '0.8.8.5';
     }
 
     await game.settings.set('pf2e-bestiary-tracking', 'version', version);

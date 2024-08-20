@@ -2,7 +2,7 @@
     <div class="left-monster-container">
         <img class="monster-image {{#if this.useTokenArt}}token{{/if}}" src="{{this.img}}" data-action="imagePopout" />
         
-        {{#if this.showMonsterLevel}}
+        {{#if this.optionalFields.level}}
             <div class="monster-left-data primary-container {{PF2EBTToggleContainer this.user this.level}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.level}}" data-action="toggleRevealed" data-path="level" data-name="{{localize "PF2EBestiary.Miscellaneous.Level"}}" data-vague-property="level">
                 <div class="flex-data">
                     <i class="fa-solid fa-dragon"></i>    
@@ -295,6 +295,37 @@
                         </div>
                     </div>
                 </div>
+                {{#if this.optionalFields.languages}}
+                    <div class="data-section primary-container active">
+                        <div class="data-header primary-container">
+                            <div class="bestiary-fakable-container">
+                                <div class="data-header-label">
+                                    <i class="fa-solid fa-book"></i>
+                                    <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Languages"}}</div>
+                                </div>
+
+                                {{#if this.user.isGM}}<i class="fa-solid fa-user-secret pf2e-bestiary-clickable-icon" data-action="createMisinformation" data-path="languages" data-name="Languages" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
+                            </div>
+                        </div>
+                        <div class="data-body primary-border-container pf2e-bestiary-standard-gap">
+                            <div class="languages-container flexrow">
+                                {{#if this.user.isGM}}
+                                    {{#each this.languages.values as |language key|}}
+                                        <div class="language-container data-container secondary-container {{PF2EBTToggleContainer ../user language}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState language}}" data-action="toggleRevealed" data-path="{{concat 'languages.values.' key}}" data-fake="{{language.fake}}">
+                                            {{language.value}}
+                                        </div>
+                                    {{/each}}
+                                {{else}}
+                                    {{#PF2EBTFilter 'revealed' '?' 9 this.languages.values}}
+                                        <div class="language-container data-container secondary-container" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat 'languages.values.' @key}}">
+                                            {{this.value}}
+                                        </div>
+                                    {{/PF2EBTFilter}}
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>
+                {{/if}}
 
                 <div class="data-section primary-container active">
                     <div class="data-header primary-container">
