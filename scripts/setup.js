@@ -64,7 +64,7 @@ const generalNonConfigSettings = () => {
         scope: 'world',
         config: false,
         type: String,
-        default: '0.8.8.4',
+        default: '0.8.9',
     });
 
     game.settings.register('pf2e-bestiary-tracking', 'bestiary-tracking', {
@@ -167,22 +167,6 @@ const bestiaryAppearance = () => {
         config: false,
         type: Boolean,
         default: false,
-        onChange: async value => {
-            if(!game.user.isGM) return;
-
-            await newMigrateBestiary(async (bestiary, monster, monsterKey) => {
-                const origin = await fromUuid(monster.uuid);
-                
-                bestiary.monster[monsterKey].img = value ? origin.prototypeToken.texture.src : origin.img;
-
-                await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-                    action: socketEvent.UpdateBestiary,
-                    data: { },
-                });
-        
-                Hooks.callAll(socketEvent.UpdateBestiary, {});
-            });
-        }
     });
 
     game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-appearance", {

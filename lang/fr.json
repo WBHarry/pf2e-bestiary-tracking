@@ -8,7 +8,9 @@
             "Immunities": "Immunités",
             "None": "Aucun",
             "Weaknesses": "Faiblesses",
+            "Weakness": "Weakness",
             "Resistances": "Résistances",
+            "Resistance": "Resistance",
             "Saves": {
                 "Title": "Sauvegardes",
                 "Fortitude": {
@@ -23,12 +25,15 @@
             },
             "Speeds": "Vitesses",
             "Attributes": "Modificateurs d'Attributs",
+            "Perception": "Perception",
             "Senses": "Sens",
             "Attacks": "Attaques",
             "Languages": "Languages",
             "Abilities": "Capacités",
             "Passives": "Passifs",
-            "Save": "Sauvegarder"
+            "Save": "Sauvegarder",
+            "Except": "Except",
+            "Double": "Double"
         },
         "Bestiary": {
             "Title": "Bestiaire",
