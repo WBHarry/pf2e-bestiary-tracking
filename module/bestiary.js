@@ -563,39 +563,54 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static getUpdatedCreature(creature, data){
-        
-        data.name.revealed = creature.name.revealed;
-        data.system.details.level.revealed = creature.system.details.level.revealed;
-        data.system.attributes.ac.revealed = creature.system.attributes.ac.revealed;
-        data.system.attributes.hp.revealed = creature.system.attributes.hp.revealed;  
+        data.name = { ...data.name, revealed: creature.name.revealed, custom: creature.name.custom };
+        data.system.details.level = { ...data.system.details.level, revealed: creature.system.details.level.revealed, custom: creature.system.details.level.custom };
+        data.system.attributes.ac = { ...data.system.attributes.ac, revealed: creature.system.attributes.ac.revealed, custom: creature.system.attributes.ac.custom};
+        data.system.attributes.hp = { ...data.system.attributes.hp, revealed: creature.system.attributes.hp.revealed, custom: creature.system.attributes.hp.custom};
 
         Object.keys(data.system.attributes.immunities).forEach(immunityKey => {
             const oldImmunityKey = Object.keys(creature.system.attributes.immunities).find(x => x === immunityKey);
             if(oldImmunityKey) data.system.attributes.immunities[immunityKey].revealed = creature.system.attributes.immunities[oldImmunityKey].revealed;
+        });
+        Object.keys(creature.system.attributes.immunities).forEach(immunityKey => {
+            const immunity = creature.system.attributes.immunities[immunityKey];
+            if(immunity.fake) data.system.attributes.immunities[immunityKey] = immunity;
         });
 
         Object.keys(data.system.attributes.weaknesses).forEach(weaknessKey => {
             const oldWeaknessKey = Object.keys(creature.system.attributes.weaknesses).find(x => x === weaknessKey);
             if(oldWeaknessKey) data.system.attributes.weaknesses[weaknessKey].revealed = creature.system.attributes.weaknesses[oldWeaknessKey].revealed;
         });
+        Object.keys(creature.system.attributes.weaknesses).forEach(weaknessKey => {
+            const weakness = creature.system.attributes.weaknesses[weaknessKey];
+            if(weakness.fake) data.system.attributes.weaknesses[weaknessKey] = weakness;
+        });
 
         Object.keys(data.system.attributes.resistances).forEach(resistanceKey => {
             const oldResistanceKey = Object.keys(creature.system.attributes.resistances).find(x => x === resistanceKey);
             if(oldResistanceKey) data.system.attributes.resistances[resistanceKey].revealed = creature.system.attributes.resistances[oldResistanceKey].revealed;
         });
+        Object.keys(creature.system.attributes.resistances).forEach(resistanceKey => {
+            const resistance = creature.system.attributes.resistances[resistanceKey];
+            if(resistance.fake) data.system.attributes.resistances[resistanceKey] = resistance;
+        });
 
-        data.system.saves.fortitude.revealed = creature.system.saves.fortitude.revealed;
-        data.system.saves.reflex.revealed = creature.system.saves.reflex.revealed;
-        data.system.saves.will.revealed = creature.system.saves.will.revealed;
+        data.system.saves.fortitude = { ...data.system.saves.fortitude, revealed: creature.system.saves.fortitude.revealed, custom: creature.system.saves.fortitude.custom };
+        data.system.saves.reflex = { ...data.system.saves.reflex, revealed: creature.system.saves.reflex.revealed, custom: creature.system.saves.reflex.custom };
+        data.system.saves.will = { ...data.system.saves.will, revealed: creature.system.saves.will.revealed, custom: creature.system.saves.will.custom };
         
-        data.system.attributes.speed.revealed = creature.system.attributes.speed.revealed;
+        data.system.attributes.speed = { ...data.system.attributes.speed, revealed: creature.system.attributes.speed.revealed };
         data.system.attributes.speed.otherSpeeds.forEach(speed => speed.revealed = creature.system.attributes.speed.otherSpeeds.find(x => speed.label === x.label)?.revealed);
         
         Object.keys(data.system.traits.value).forEach(traitKey => data.system.traits.value[traitKey].revealed = creature.system.traits.value[traitKey]?.revealed);
-        Object.keys(data.system.abilities).forEach(abilityKey => data.system.abilities[abilityKey].revealed = creature.system.abilities[abilityKey]?.revealed);
+        Object.keys(data.system.abilities).forEach(abilityKey => {
+            const oldAbility = creature.system.abilities[abilityKey];
+            data.system.abilities[abilityKey] = { ...data.system.abilities[abilityKey], revealed: oldAbility.revealed, custom: oldAbility.custom };
+        });
         
-        data.system.perception.revealed = creature.system.perception.revealed;
+        data.system.perception = { ...data.system.perception, revealed: creature.system.perception.revealed, custom: creature.system.perception.custom };
         data.system.perception.senses.forEach(sense => sense.revealed = creature.system.perception.senses.find(x => x.value === sense.value)?.revealed);
+        data.system.perception.senses.push(...creature.system.perception.senses.filter(x => x.fake));
         data.system.perception.details.revealed = creature.system.perception.details.revealed;
         
         data.system.details.languages.details.revealed = creature.system.details.languages.details.revealed;
@@ -609,6 +624,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 action.damageStatsRevealed = creatureAction.damageStatsRevealed;
             }
         });
+        Object.keys(creature.system.actions).forEach(actionKey => {
+            const action = creature.system.actions[actionKey];
+            if(action.fake) data.system.actions[action.weapon._id] = action;
+        });
         
         Object.keys(data.items).forEach(itemKey => {
             const creatureItem = Object.values(creature.items).find(x => x._id === itemKey);
@@ -620,6 +639,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     item.system.spelldc.dc.revealed = creatureItem.system.spelldc.dc.revealed;
                     item.system.spelldc.value.revealed = creatureItem.system.spelldc.value.revealed;
                 }
+            }
+        });
+        Object.keys(creature.items).forEach(itemKey => {
+            const item = creature.items[itemKey];
+            if(item.fake){
+                data.items[itemKey] = item;
             }
         });
 
