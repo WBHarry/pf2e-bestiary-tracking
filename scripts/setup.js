@@ -123,6 +123,7 @@ const vagueDescriptions = () => {
                 perception: false,
                 speed: false,
                 attributes: false,
+                skills: false,
                 attacks: false,
                 damage: false,
                 spells: false,

@@ -1,4 +1,4 @@
-import { acTable, attributeTable, hpTable, rangeOptions, savingThrowPerceptionTable, weaknessTable } from "./statisticsData.js";
+import { acTable, attributeTable, hpTable, rangeOptions, savingThrowPerceptionTable, skillTable, weaknessTable } from "./statisticsData.js";
 
 export const getCategoryLabel = (statisticsTable, level, save, short) => {
     const { range, values } = statisticsTable;
@@ -14,6 +14,29 @@ export const getCategoryLabel = (statisticsTable, level, save, short) => {
             value = {  
                 category: category,
                 diff: Math.abs(rowValue - save),
+            };
+        }
+    }
+
+    return getCategoryLabelValue(range, value.category, short);
+};
+
+export const getMixedCategoryLabel = (statisticsTable, level, save, short) => {
+    const { range, values } = statisticsTable;
+    const tableRow = values[level];
+
+    const maxCategory = tableRow[range[0]];
+    const minCategory = tableRow[range[range.length-1]];
+    if(value > (maxCategory.high??maxCategory)) return getCategoryLabelValue(range, 'extreme');
+    if(value < (minCategory.low??minCategory)) return getCategoryLabelValue(range, 'terrible');
+
+    var value = null;
+    for(var category in tableRow) {
+        const rowValue = tableRow[category]?.high ? Math.min(Math.abs(tableRow[category].high - save), Math.abs(tableRow[category].low - save)) : Math.abs(tableRow[category] - save);
+        if(!value || rowValue < value.diff){
+            value = {  
+                category: category,
+                diff: rowValue,
             };
         }
     }
@@ -106,6 +129,8 @@ export const getCategoryRange = async (name) => {
             return savingThrowPerceptionTable.range.map(category => vagueDescriptions.short[category]);
         case 'perception':
             return savingThrowPerceptionTable.range.map(category => vagueDescriptions.full[category]);
+        case 'skills':
+            return skillTable.range.map(category => vagueDescriptions.short[category]);
     }
 }
 

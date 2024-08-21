@@ -1,8 +1,8 @@
 
 import { getCreatureSize, getCreaturesTypes, getIWRString, getMultiplesString, slugify } from "../scripts/helpers.js";
 import { socketEvent } from "../scripts/socket.js";
-import { acTable, attackTable, attributeTable, damageTable, hpTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "../scripts/statisticsData.js";
-import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getRollAverage, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
+import { acTable, attackTable, attributeTable, damageTable, hpTable, savingThrowPerceptionTable, skillTable, spellAttackTable, spellDCTable } from "../scripts/statisticsData.js";
+import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getMixedCategoryLabel, getRollAverage, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -276,6 +276,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 level: monster.system.details.level,
                 ac: { ...monster.system.attributes.ac, category: getCategoryLabel(acTable, contextLevel, monster.system.attributes.ac.value) },
                 hp: { ...monster.system.attributes.hp, category: getCategoryFromIntervals(hpTable, contextLevel, monster.system.attributes.hp.value) },
+                skills: Object.keys(monster.system.skills).reduce((acc, skillKey) => {
+                    const skill = monster.system.skills[skillKey];
+                    if(skill.base > 0){
+                        acc[skillKey] = { ...skill, value: `+${skill.base}`, category: getMixedCategoryLabel(skillTable, contextLevel, skill.totalModifier) };
+                    }
+                    
+                    return acc;
+                }, {}),
                 immunities: Object.keys(monster.system.attributes.immunities).length > 0  ? Object.keys(monster.system.attributes.immunities).reduce((acc, immunityKey) => {
                     const immunity = monster.system.attributes.immunities[immunityKey];
                     acc.values[immunityKey] = { ...immunity, value: immunity.fake || immunity.empty ? immunity.type : game.i18n.localize(immunity.typeLabels[immunity.type]) };
@@ -626,7 +634,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         });
         Object.keys(creature.system.actions).forEach(actionKey => {
             const action = creature.system.actions[actionKey];
-            if(action.fake) data.system.actions[action.weapon._id] = action;
+            if(action.fake) data.system.actions[action.item._id] = action;
         });
         
         Object.keys(data.items).forEach(itemKey => {
