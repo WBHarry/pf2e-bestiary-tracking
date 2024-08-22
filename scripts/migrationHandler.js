@@ -330,7 +330,11 @@ export const handleDataMigration = async () => {
     if(version === '0.8.8.4'){
        // Change to storing all of actor.toObject. Lots of improvement in data retention, shouldn't be too much data.
        const currentBestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-       const uuids = Object.keys(currentBestiary.monster);
+       const uuids = Object.values(currentBestiary.monster).reduce((acc, monster) => {
+            if(monster.uuid) acc.push(monster.uuid);
+        
+            return acc;
+        }, []);
        const bestiary = { monster: {}, npc: {} };
        for(var uuid of uuids){
            const orig = await fromUuid(uuid);

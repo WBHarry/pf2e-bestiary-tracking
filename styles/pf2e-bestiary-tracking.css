@@ -841,6 +841,8 @@
   top: 7px;
   left: 7px;
   font-size: 20px;
+  display: flex;
+  gap: 4px;
 }
 .pf2e-bestiary-tracking.saves-handler .save-dialog-container .folder-disabled {
   opacity: 0.5;

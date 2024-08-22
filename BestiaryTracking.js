@@ -1866,6 +1866,8 @@ class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin$4(ApplicationV
             name: '',
             img: '',
         };
+
+        Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
     }
 
     get title(){
@@ -1909,6 +1911,8 @@ class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin$4(ApplicationV
             }
         }
 
+        const activeFile = context.files.find(x => x.metadata.save.id === bestiary.metadata?.save?.id);
+        context.saveFileOutOfDate = activeFile ? !foundry.utils.objectsEqual(bestiary, activeFile) : false;
 
         return context;
     }
@@ -1923,7 +1927,7 @@ class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin$4(ApplicationV
 
     static async createSaveSlot() {
         if(!this.saveSlotDialog.name){
-            ui.notifications.error(game.i18n.localize("New save slot requires a name."));
+            ui.notifications.error(game.i18n.localize("PF2EBestiary.SavesHandler.Errors.NeedName"));
             return;
         }
 
@@ -1941,8 +1945,8 @@ class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin$4(ApplicationV
 
     static async loadSave(_, button){
         const confirmed = await Dialog.confirm({
-            title: game.i18n.localize("Load Save Slot"),
-            content: game.i18n.localize("Are you sure you want to load this save slot? Any unsaved information in the current Bestiary will be lost!"),
+            title: game.i18n.localize("PF2EBestiary.SavesHandler.LoadTitle"),
+            content: game.i18n.localize("PF2EBestiary.SavesHandler.LoadText"),
             yes: () => true,
             no: () => false,
         });
@@ -1978,6 +1982,16 @@ class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin$4(ApplicationV
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
 
         this.render();
+    }
+
+    onBestiaryUpdate = async () => {
+        this.render(true);
+    };
+
+    close = async (options) => {
+        Hooks.off(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
+
+        return super.close(options);
     }
 }
 
@@ -3432,11 +3446,14 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$2(ApplicationV2$
     _attachPartListeners(partId, htmlElement, options) {
         super._attachPartListeners(partId, htmlElement, options);
   
+        const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
+        const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits).filter(x => !creatureTypes.includes(x));
+
         const traitsInput = $(htmlElement).find('.traits-input')[0];
         const traitsTagify = new Y(traitsInput, {
           tagTextProp: "name",
           enforceWhitelist: true,
-          whitelist : Object.keys(CONFIG.PF2E.creatureTraits).map(key => { 
+          whitelist : creatureTraits.map(key => { 
             const label = CONFIG.PF2E.creatureTraits[key];
             return { value: key, name: game.i18n.localize(label) };
           }),
@@ -3496,7 +3513,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$2(ApplicationV2$
         this.render();
     };
 
-    static async save(options){
+    static async save(_){
         await game.settings.set('pf2e-bestiary-tracking', 'additional-creature-types', this.settings.additionalCreatureTypes.map(x => ({ value: x.value, name: CONFIG.PF2E.creatureTraits[x.value] })));
         await game.settings.set('pf2e-bestiary-tracking', 'contrast-revealed-state', this.settings.contrastRevealedState);
         await game.settings.set('pf2e-bestiary-tracking', 'use-token-art', this.settings.useTokenArt);
@@ -3966,7 +3983,11 @@ const handleDataMigration = async () => {
     if(version === '0.8.8.4'){
        // Change to storing all of actor.toObject. Lots of improvement in data retention, shouldn't be too much data.
        const currentBestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-       const uuids = Object.keys(currentBestiary.monster);
+       const uuids = Object.values(currentBestiary.monster).reduce((acc, monster) => {
+            if(monster.uuid) acc.push(monster.uuid);
+        
+            return acc;
+        }, []);
        const bestiary = { monster: {}, npc: {} };
        for(var uuid of uuids){
            const orig = await fromUuid(uuid);

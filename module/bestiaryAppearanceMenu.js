@@ -42,11 +42,14 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
     _attachPartListeners(partId, htmlElement, options) {
         super._attachPartListeners(partId, htmlElement, options);
   
+        const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
+        const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits).filter(x => !creatureTypes.includes(x));
+
         const traitsInput = $(htmlElement).find('.traits-input')[0];
         const traitsTagify = new Tagify(traitsInput, {
           tagTextProp: "name",
           enforceWhitelist: true,
-          whitelist : Object.keys(CONFIG.PF2E.creatureTraits).map(key => { 
+          whitelist : creatureTraits.map(key => { 
             const label = CONFIG.PF2E.creatureTraits[key];
             return { value: key, name: game.i18n.localize(label) };
           }),
@@ -106,7 +109,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
         this.render();
     };
 
-    static async save(options){
+    static async save(_){
         await game.settings.set('pf2e-bestiary-tracking', 'additional-creature-types', this.settings.additionalCreatureTypes.map(x => ({ value: x.value, name: CONFIG.PF2E.creatureTraits[x.value] })));
         await game.settings.set('pf2e-bestiary-tracking', 'contrast-revealed-state', this.settings.contrastRevealedState);
         await game.settings.set('pf2e-bestiary-tracking', 'use-token-art', this.settings.useTokenArt);

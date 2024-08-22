@@ -12,6 +12,8 @@ export default class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin
             name: '',
             img: '',
         }
+
+        Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
     }
 
     get title(){
@@ -55,6 +57,8 @@ export default class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin
             }
         }
 
+        const activeFile = context.files.find(x => x.metadata.save.id === bestiary.metadata?.save?.id);
+        context.saveFileOutOfDate = activeFile ? !foundry.utils.objectsEqual(bestiary, activeFile) : false;
 
         return context;
     }
@@ -69,7 +73,7 @@ export default class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin
 
     static async createSaveSlot() {
         if(!this.saveSlotDialog.name){
-            ui.notifications.error(game.i18n.localize("New save slot requires a name."));
+            ui.notifications.error(game.i18n.localize("PF2EBestiary.SavesHandler.Errors.NeedName"));
             return;
         }
 
@@ -87,8 +91,8 @@ export default class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin
 
     static async loadSave(_, button){
         const confirmed = await Dialog.confirm({
-            title: game.i18n.localize("Load Save Slot"),
-            content: game.i18n.localize("Are you sure you want to load this save slot? Any unsaved information in the current Bestiary will be lost!"),
+            title: game.i18n.localize("PF2EBestiary.SavesHandler.LoadTitle"),
+            content: game.i18n.localize("PF2EBestiary.SavesHandler.LoadText"),
             yes: () => true,
             no: () => false,
         });
@@ -124,5 +128,15 @@ export default class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
 
         this.render();
+    }
+
+    onBestiaryUpdate = async () => {
+        this.render(true);
+    };
+
+    close = async (options) => {
+        Hooks.off(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
+
+        return super.close(options);
     }
 }

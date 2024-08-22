@@ -1,17 +1,17 @@
 <div class="save-dialog-container">
     <div class="form-group">
-        <label>{{localize "Save Director"}}</label>
+        <label>{{localize "PF2EBestiary.SavesHandler.SaveDirectory"}}</label>
         <div class="form-fields">
             <div class="form-fields">
-                <file-picker name="saveSlotDialog.folder" type="folder" value="{{this.saveSlotDialog.folder}}" placeholder="Please pick one"></file-picker>
+                <file-picker name="saveSlotDialog.folder" type="folder" value="{{this.saveSlotDialog.folder}}" placeholder="PF2EBestiary.SavesHandler.FilePickerPlaceholder"></file-picker>
             </div>
         </div>
     </div>
     <div class="new-save-container {{#if (not this.saveSlotDialog.folder)}}folder-disabled{{/if}}">
-        <button class="save-dialog-open-button" data-action="createSaveSlot" {{#if (or (eq this.saveSlotDialog.name.length 0) (not this.saveSlotDialog.folder))}}disabled{{/if}}>Create New Save Slot <i class="fa-solid fa-plus"></i></button>
+        <button class="save-dialog-open-button" data-action="createSaveSlot" {{#if (or (eq this.saveSlotDialog.name.length 0) (not this.saveSlotDialog.folder))}}disabled{{/if}}>{{localize "PF2EBestiary.SavesHandler.CreateNewSave"}} <i class="fa-solid fa-plus"></i></button>
         <div class="save-dialog">
             <div class="form-group">
-                <label>{{localize "Save Slot Name"}}</label>
+                <label>{{localize "PF2EBestiary.SavesHandler.SaveSlotName"}}</label>
                 <div class="form-fields">
                     <div class="form-fields">
                         <input type="text" name="saveSlotDialog.name" value="{{this.saveSlotDialog.name}}" />
@@ -20,7 +20,7 @@
             </div>
 
             <div class="form-group">
-                <label>{{localize "Save Slot Image"}}</label>
+                <label>{{localize "PF2EBestiary.SavesHandler.SaveSlotImage"}}</label>
                 <div class="form-fields">
                     <div class="form-fields">
                         <file-picker name="saveSlotDialog.img" type="image" value="{{this.saveSlotDialog.img}}"></file-picker>
@@ -30,7 +30,7 @@
         </div>
     </div>
     <fieldset class="save-slot-container {{#if (not this.saveSlotDialog.folder)}}folder-disabled{{/if}}">
-        <legend><h4>{{localize "Save Slots"}}</h4></legend>
+        <legend><h4>{{localize "PF2EBestiary.SavesHandler.SaveSlotsTitle"}}</h4></legend>
 
         <div class="save-slots-container">
             {{#each this.files}}
@@ -38,7 +38,11 @@
                     <img src="{{#if this.metadata.save.img}}{{this.metadata.save.img}}{{else}}systems/pf2e/assets/sheet/nav-item.webp{{/if}}" />
                     <div class="save-name">{{this.metadata.save.name}}</div>
 
-                    {{#if (eq this.metadata.save.id ../metadata.id)}}<i class="fa-fw fa-solid fa-floppy-disk pf2e-bestiary-clickable-icon save-icon primary-accent-icon" title="{{localize "Save"}}" data-action="saveActive" id="{{this.metadata.save.id}}"></i>{{/if}}
+                    {{#if (eq this.metadata.save.id ../metadata.id)}}
+                        <i class="fa-fw fa-solid fa-floppy-disk pf2e-bestiary-clickable-icon save-icon primary-accent-icon" title="{{#if ../saveFileOutOfDate}}{{localize "PF2EBestiary.SavesHandler.SaveOutOfDate"}}{{else}}{{localize "PF2EBestiary.SavesHandler.SaveText"}}{{/if}}" data-action="saveActive" id="{{this.metadata.save.id}}">
+                        {{#if ../saveFileOutOfDate}}!{{/if}}
+                        </i>
+                    {{/if}}
                 </div>
             {{/each}}
         </div>
