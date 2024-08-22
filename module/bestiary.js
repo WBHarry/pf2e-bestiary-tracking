@@ -263,6 +263,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 levels: levels.map(x => ({ ...x, revealed: x.spells.some(spell => spell.revealed) })),
             };
         }
+        const spellsFake = Object.keys(spellcastingEntries).find(x => x === 'Spell-None');
 
         return {
             category: category,
@@ -398,7 +399,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 actions,
                 passives,
                 spells: {
-                    fake: Object.keys(spellcastingEntries).length > 0 ? null : { revealed: false },
+                    fake: spellsFake ? { revealed: spellcastingEntries[spellsFake].revealed } : null,
                     entries: spellcastingEntries,
                 },
                 notes: {
@@ -847,7 +848,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                                         _id: slugify(elements.misinformation.value),
                                     },
                                     weapon: {
-                                        isMelee: range === 'Melee',
+                                        system: {
+                                            traits: {
+                                                value: []
+                                            }
+                                        },
                                     },
                                     variants: [],
                                     traits: [],
@@ -1150,7 +1155,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }, {}) : { none: { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") } };
 
         const resistanceKeys = Object.keys(dataObject.system.attributes.resistances);
-        dataObject.system.attributes.resistances = resistanceKeys ? resistanceKeys.reduce((acc, key) => {
+        dataObject.system.attributes.resistances = resistanceKeys.length > 0 ? resistanceKeys.reduce((acc, key) => {
             const resistance = dataObject.system.attributes.resistances[key];
             acc[getIWRString(resistance, true)] = { ...resistance, exceptions: resistance.exceptions.map(x => ({ revealed: false, value: x })), doubleVs: resistance.doubleVs?.map(x => ({ revealed: false, value: x })) ?? {} } ;
 
@@ -1187,6 +1192,49 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             return acc;
         }, {});
 
+        const noSpells = !Object.keys(dataObject.items).find(x => {
+            const item = dataObject.items[x];
+            return item.type === 'spellcastingEntry'
+        });
+        if(noSpells) {
+            dataObject.items['Spells-None'] = {
+                type: 'spellcastingEntry',
+                _id: 'Spell-None',
+                revealed: false,
+                system: {
+                    spelldc: {
+                        dc: { value: 0 },
+                        value: { value: 0 },
+                    }
+                }
+            }
+        }
+
+
+        if(Object.keys(dataObject.system.actions).length === 0){
+            dataObject.system.actions['Attack-None'] = {
+                revealed: false, 
+                label: 'None', 
+                empty: true,
+                item: {
+                    system: {
+                        damageRolls: {}
+                    },
+                    _id: 'Attack-None',
+                },
+                weapon: {
+                    system: {
+                        traits: {
+                            value: []
+                        }
+                    },
+                },
+                variants: [],
+                traits: [],
+                totalModifier: 0,
+            };
+        }
+
         var hasActions = false;
         var hasPassives = false;
         for(var item of Object.values(dataObject.items)){
@@ -1197,8 +1245,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }
 
         if(!hasActions) {
-            dataObject.items['None'] = {
-                _id: 'None',
+            dataObject.items['Action-None'] = {
+                _id: 'Action-None',
                 empty: true,
                 type: 'action',
                 name: 'None',
@@ -1212,8 +1260,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             };
         }
         if(!hasPassives) {
-            dataObject.items['None'] = {
-                _id: 'None',
+            dataObject.items['Passive-None'] = {
+                _id: 'Passive-None',
                 empty: true,
                 type: 'action',
                 name: 'None',

@@ -542,77 +542,79 @@
                 {{/if}}
             {{/if}}
             {{#if (and this.user.isGM this.spells.fake)}}
-                <div class="secondary-container {{PF2EBTToggleContainer this.user this.spells.fake}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.spells.fake}}" data-action="toggleRevealed" data-path="spells.fake">{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
+                <div class="secondary-container {{PF2EBTToggleContainer this.user this.spells.fake}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.spells.fake}}" data-action="toggleRevealed" data-path="items.Spells-None">{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
             {{/if}}
             
             {{#if (and (not this.user.isGM) (and (not this.spells.fake) (eq (PF2EBTNrKeys this.spells.entries 'revealed') 0)))}}<div class="spells-unknown">{{localize "PF2EBestiary.Bestiary.Miscellaneous.Unknown"}}</div>{{/if}}
 
-            {{#each this.spells.entries as |entry entryKey|}}
-                {{#if (or ../user.isGM entry.revealed)}}
-                    <div class="data-section spell-section">
-                        <div class="data-header primary-container">
-                            <div class="bestiary-fakable-container">
-                                <div class="data-header-label">
-                                    <div class="flex-value secondary-container {{PF2EBTToggleContainer ../user entry}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState entry}}" data-action="toggleRevealed" data-path="{{concat "items." entryKey}}">{{entry.name}}</div>
-                                    {{#if (or ../user.isGM entry.dc.revealed)}}
-                                        <div 
-                                            class="secondary-container {{PF2EBTToggleContainer ../user entry.dc}}" 
-                                            style="{{PF2EBTToggleContainerOverride ../contrastRevealedState entry.dc}}" 
-                                            data-action="toggleRevealed" 
-                                            data-path="{{concat "items." entryKey ".system.spelldc.dc"}}">
-                                                DC:&nbsp;{{PF2EBTMonsterValue entry.dc ../vagueDescriptions.properties.spells}}
-                                        </div>
-                                    {{/if}}
-                                    {{#if (or ../user.isGM entry.attack.revealed)}}
-                                        <div 
-                                            class="secondary-container {{PF2EBTToggleContainer ../user entry.attack}}" 
-                                            style="{{PF2EBTToggleContainerOverride ../contrastRevealedState entry.attack}}" 
-                                            data-action="toggleRevealed"
-                                            data-path="{{concat "items." entryKey ".system.spelldc.value"}}">
-                                            Attack:&nbsp;{{PF2EBTMonsterValue entry.attack ../vagueDescriptions.properties.spells}}
-                                        </div>
-                                    {{/if}}
+            {{#if (not this.spells.fake)}}
+                {{#each this.spells.entries as |entry entryKey|}}
+                    {{#if (or ../user.isGM entry.revealed)}}
+                        <div class="data-section spell-section">
+                            <div class="data-header primary-container">
+                                <div class="bestiary-fakable-container">
+                                    <div class="data-header-label">
+                                        <div class="flex-value secondary-container {{PF2EBTToggleContainer ../user entry}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState entry}}" data-action="toggleRevealed" data-path="{{concat "items." entryKey}}">{{entry.name}}</div>
+                                        {{#if (or ../user.isGM entry.dc.revealed)}}
+                                            <div 
+                                                class="secondary-container {{PF2EBTToggleContainer ../user entry.dc}}" 
+                                                style="{{PF2EBTToggleContainerOverride ../contrastRevealedState entry.dc}}" 
+                                                data-action="toggleRevealed" 
+                                                data-path="{{concat "items." entryKey ".system.spelldc.dc"}}">
+                                                    DC:&nbsp;{{PF2EBTMonsterValue entry.dc ../vagueDescriptions.properties.spells}}
+                                            </div>
+                                        {{/if}}
+                                        {{#if (or ../user.isGM entry.attack.revealed)}}
+                                            <div 
+                                                class="secondary-container {{PF2EBTToggleContainer ../user entry.attack}}" 
+                                                style="{{PF2EBTToggleContainerOverride ../contrastRevealedState entry.attack}}" 
+                                                data-action="toggleRevealed"
+                                                data-path="{{concat "items." entryKey ".system.spelldc.value"}}">
+                                                Attack:&nbsp;{{PF2EBTMonsterValue entry.attack ../vagueDescriptions.properties.spells}}
+                                            </div>
+                                        {{/if}}
+                                    </div>
                                 </div>
                             </div>
+                            <div class="spell-list-container">   
+                                <table>
+                                    {{#each entry.levels}}
+                                        {{#if (or ../../user.isGM this.revealed)}}
+                                            <tr class="spell-header-row tertiary-container">
+                                                <th class="spell-name-cell">{{this.label}}</th>
+                                                <th class="spell-cell defense">{{localize "Defense"}}</th>
+                                                <th class="spell-cell range">{{localize "Range"}}</th>
+                                            </tr>
+                                            {{#each this.spells}}
+                                                {{#if (or ../../../user.isGM this.revealed)}}
+                                                    <tr class="spell-body-row spell-container {{PF2EBTToggleContainer ../../../user this}} {{#if (eq (PF2EBTEven @key) 0)}}even{{/if}}" style="{{PF2EBTToggleContainerOverride ../../../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "items." this.id}}">
+                                                        <td class="spell-name-cell body actions-container">
+                                                            <div class="spell-data-container">
+                                                                <img src="{{this.img}}" />
+                                                                <div class="cell-name pf2e-bestiary-clickable-icon" data-action="toggleSpell" data-spell="{{this._id}}">{{this.name}}</div>
+                                                                <div class="action-glyph">{{{this.actions}}}</div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="spell-cell defense">{{this.defense}}</td>
+                                                        <td class="spell-cell range">{{this.range}}</td>
+                                                    </tr>
+                                                    <tr class="spell-body-row description" data-spell="{{this._id}}">
+                                                        <td colspan="3">
+                                                            <div class="spell-description">
+                                                                {{{this.description.value}}}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {{/if}}
+                                            {{/each}}
+                                        {{/if}}
+                                    {{/each}}
+                                </table>
+                            </div>
                         </div>
-                        <div class="spell-list-container">   
-                            <table>
-                                {{#each entry.levels}}
-                                    {{#if (or ../../user.isGM this.revealed)}}
-                                        <tr class="spell-header-row tertiary-container">
-                                            <th class="spell-name-cell">{{this.label}}</th>
-                                            <th class="spell-cell defense">{{localize "Defense"}}</th>
-                                            <th class="spell-cell range">{{localize "Range"}}</th>
-                                        </tr>
-                                        {{#each this.spells}}
-                                            {{#if (or ../../../user.isGM this.revealed)}}
-                                                <tr class="spell-body-row spell-container {{PF2EBTToggleContainer ../../../user this}} {{#if (eq (PF2EBTEven @key) 0)}}even{{/if}}" style="{{PF2EBTToggleContainerOverride ../../../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "items." this.id}}">
-                                                    <td class="spell-name-cell body actions-container">
-                                                        <div class="spell-data-container">
-                                                            <img src="{{this.img}}" />
-                                                            <div class="cell-name pf2e-bestiary-clickable-icon" data-action="toggleSpell" data-spell="{{this._id}}">{{this.name}}</div>
-                                                            <div class="action-glyph">{{{this.actions}}}</div>
-                                                        </div>
-                                                    </td>
-                                                    <td class="spell-cell defense">{{this.defense}}</td>
-                                                    <td class="spell-cell range">{{this.range}}</td>
-                                                </tr>
-                                                <tr class="spell-body-row description" data-spell="{{this._id}}">
-                                                    <td colspan="3">
-                                                        <div class="spell-description">
-                                                            {{{this.description.value}}}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            {{/if}}
-                                        {{/each}}
-                                    {{/if}}
-                                {{/each}}
-                            </table>
-                        </div>
-                    </div>
-                {{/if}}
-            {{/each}}
+                    {{/if}}
+                {{/each}}
+            {{/if}}
         </div>
 
         <div class="tab {{this.tabs.lore.cssClass}}" data-group="primary" data-tab="lore">

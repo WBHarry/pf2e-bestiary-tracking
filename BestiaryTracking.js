@@ -2252,6 +2252,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
                 levels: levels.map(x => ({ ...x, revealed: x.spells.some(spell => spell.revealed) })),
             };
         }
+        const spellsFake = Object.keys(spellcastingEntries).find(x => x === 'Spell-None');
 
         return {
             category: category,
@@ -2387,7 +2388,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
                 actions,
                 passives,
                 spells: {
-                    fake: Object.keys(spellcastingEntries).length > 0 ? null : { revealed: false },
+                    fake: spellsFake ? { revealed: spellcastingEntries[spellsFake].revealed } : null,
                     entries: spellcastingEntries,
                 },
                 notes: {
@@ -2821,7 +2822,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
 
                         if(errors.length > 0) return { value: null, errors };
 
-                        const range = rangeOptions[Number.parseInt(elements.range.value)];
+                        rangeOptions[Number.parseInt(elements.range.value)];
                         return {
                             value: {
                                 slug: slugify(elements.misinformation.value),
@@ -2836,7 +2837,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
                                         _id: slugify(elements.misinformation.value),
                                     },
                                     weapon: {
-                                        isMelee: range === 'Melee',
+                                        system: {
+                                            traits: {
+                                                value: []
+                                            }
+                                        },
                                     },
                                     variants: [],
                                     traits: [],
@@ -3139,7 +3144,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
         }, {}) : { none: { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") } };
 
         const resistanceKeys = Object.keys(dataObject.system.attributes.resistances);
-        dataObject.system.attributes.resistances = resistanceKeys ? resistanceKeys.reduce((acc, key) => {
+        dataObject.system.attributes.resistances = resistanceKeys.length > 0 ? resistanceKeys.reduce((acc, key) => {
             const resistance = dataObject.system.attributes.resistances[key];
             acc[getIWRString(resistance, true)] = { ...resistance, exceptions: resistance.exceptions.map(x => ({ revealed: false, value: x })), doubleVs: resistance.doubleVs?.map(x => ({ revealed: false, value: x })) ?? {} } ;
 
@@ -3176,6 +3181,49 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
             return acc;
         }, {});
 
+        const noSpells = !Object.keys(dataObject.items).find(x => {
+            const item = dataObject.items[x];
+            return item.type === 'spellcastingEntry'
+        });
+        if(noSpells) {
+            dataObject.items['Spells-None'] = {
+                type: 'spellcastingEntry',
+                _id: 'Spell-None',
+                revealed: false,
+                system: {
+                    spelldc: {
+                        dc: { value: 0 },
+                        value: { value: 0 },
+                    }
+                }
+            };
+        }
+
+
+        if(Object.keys(dataObject.system.actions).length === 0){
+            dataObject.system.actions['Attack-None'] = {
+                revealed: false, 
+                label: 'None', 
+                empty: true,
+                item: {
+                    system: {
+                        damageRolls: {}
+                    },
+                    _id: 'Attack-None',
+                },
+                weapon: {
+                    system: {
+                        traits: {
+                            value: []
+                        }
+                    },
+                },
+                variants: [],
+                traits: [],
+                totalModifier: 0,
+            };
+        }
+
         var hasActions = false;
         var hasPassives = false;
         for(var item of Object.values(dataObject.items)){
@@ -3186,8 +3234,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
         }
 
         if(!hasActions) {
-            dataObject.items['None'] = {
-                _id: 'None',
+            dataObject.items['Action-None'] = {
+                _id: 'Action-None',
                 empty: true,
                 type: 'action',
                 name: 'None',
@@ -3201,8 +3249,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
             };
         }
         if(!hasPassives) {
-            dataObject.items['None'] = {
-                _id: 'None',
+            dataObject.items['Passive-None'] = {
+                _id: 'Passive-None',
                 empty: true,
                 type: 'action',
                 name: 'None',
@@ -4037,7 +4085,7 @@ const handleDataMigration = async () => {
            }
 
            /* Big Migration Block Oh-hoy */
-           data.name = { ...data.name, reavealed: oldCreature.name.revealed, custom: oldCreature.name.custom };
+           data.name = { ...data.name, revealed: oldCreature.name.revealed, custom: oldCreature.name.custom };
            data.system.details.level = { ...data.system.details.level, revealed: oldCreature.level.revealed, custom: oldCreature.level.custom };
            data.system.attributes.ac = { ...data.system.attributes.ac, revealed: oldCreature.ac.revealed, custom: oldCreature.ac.custom };
            data.system.attributes.hp = { ...data.system.attributes.hp, revealed: oldCreature.hp.revealed, custom: oldCreature.hp.custom };  
@@ -4142,7 +4190,7 @@ const handleDataMigration = async () => {
     }
 
     if(version = '0.8.9'){
-        // Some creatures are missing None options for IWR
+        // Some creatures are missing None options for IWR and Actions/Passives/Attacks/Spells
         await newMigrateBestiary((_, monster) => {
             const immunitiesKeys = Object.keys(monster.system.attributes.immunities);
             const weaknessesKeys = Object.keys(monster.system.attributes.weaknesses);
@@ -4157,6 +4205,89 @@ const handleDataMigration = async () => {
             if(resistancesKeys.length === 0){
                 monster.system.attributes.resistances['none'] = { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") };
             }
+
+            if(Object.keys(monster.system.actions).length === 0){
+                monster.system.actions['Attack-None'] = {
+                    revealed: false, 
+                    label: 'None', 
+                    empty: true,
+                    item: {
+                        system: {
+                            damageRolls: {}
+                        },
+                        _id: 'Attack-None',
+                    },
+                    weapon: {
+                        system: {
+                            traits: {
+                                value: []
+                            }
+                        },
+                    },
+                    variants: [],
+                    traits: [],
+                    totalModifier: 0,
+                };
+            }
+
+            var hasActions = false;
+            var hasPassives = false;
+            for(var item of Object.values(monster.items)){
+                if(item.type === 'action'){
+                    if(item.system.actionType.value === 'action' || item.system.actionType.value === 'reaction') hasActions = true;
+                    if(item.system.actionType.value === 'passive') hasPassives = true;
+                }
+            }
+    
+            if(!hasActions) {
+                monster.items['Action-None'] = {
+                    _id: 'Action-None',
+                    empty: true,
+                    type: 'action',
+                    name: 'None',
+                    value: 'PF2E.Miscellaneous.None',
+                    system: {
+                        actionType: { value: 'action' },
+                        description: {
+                            value: null,
+                        }
+                    }
+                };
+            }
+            if(!hasPassives) {
+                monster.items['Passive-None'] = {
+                    _id: 'Passive-None',
+                    empty: true,
+                    type: 'action',
+                    name: 'None',
+                    value: 'PF2E.Miscellaneous.None',
+                    system: {
+                        actionType: { value: 'passive' },
+                        description: {
+                            value: null,
+                        }
+                    }
+                };
+            }     
+
+            const noSpells = !Object.keys(monster.items).find(x => {
+                const item = monster.items[x];
+                return item.type === 'spellcastingEntry'
+            });
+            if(noSpells) {
+                monster.items['Spells-None'] = {
+                    type: 'spellcastingEntry',
+                    _id: 'Spell-None',
+                    revealed: false,
+                    system: {
+                        spelldc: {
+                            dc: { value: 0 },
+                            value: { value: 0 },
+                        }
+                    }
+                };
+            }
+
         });
 
         version = '0.8.9.2';
