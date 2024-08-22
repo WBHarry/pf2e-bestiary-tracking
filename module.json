@@ -50,7 +50,7 @@
         }
     ],
     "esmodules": [
-        "BestiaryTracker.js"
+        "BestiaryTracking.js"
     ],
      "styles": [
          "styles/pf2e-bestiary-tracking.css"
