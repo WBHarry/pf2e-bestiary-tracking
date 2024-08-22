@@ -35,6 +35,10 @@ Hooks.once("setup", () => {
                 return wrapped(...args);
             }
 
+            if(args[0].currentTarget.actor.isDead && !args[0].altKey){
+                return wrapped(...args);
+            }
+
             const openBestiary = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
             if(!openBestiary || (game.user.isGM && !args[0].altKey)) return wrapped(...args);
   
