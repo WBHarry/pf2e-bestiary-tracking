@@ -4032,6 +4032,10 @@ const handleDataMigration = async () => {
            const data = await PF2EBestiary.getMonsterData(orig);
            const oldCreature = currentBestiary.monster[uuid];
 
+           if(!data){
+             continue;
+           }
+
            /* Big Migration Block Oh-hoy */
            data.name = { ...data.name, reavealed: oldCreature.name.revealed, custom: oldCreature.name.custom };
            data.system.details.level = { ...data.system.details.level, revealed: oldCreature.level.revealed, custom: oldCreature.level.custom };
@@ -4102,12 +4106,17 @@ const handleDataMigration = async () => {
                }
 
                if(item.type === 'spell') {
-                   const level = item.system.traits.value.includes("cantrip") ? 'Cantrips' : item.system.location.heightenedLevel ?? item.system.level.value;
-                   if(oldCreature.spells.entries[item.system.location.value]){
-                       const oldSpell = oldCreature.spells.entries[item.system.location.value].levels[level][item._id];
+                    const entry = oldCreature.spells.entries[item.system.location.value];
+                    if(entry){
+                        const levels = oldCreature.spells.entries[item.system.location.value].levels;
+                        const levelKeys = Object.keys(levels);
+                        const level = item.system.traits.value.includes("cantrip") ? 'Cantrips' : item.system.location.heightenedLevel ?? (levelKeys.length === 1 ? levelKeys[0] : item.system.level.value);
+                        if(oldCreature.spells.entries[item.system.location.value]){
+                            const oldSpell = levels[level][item._id];
 
-                       item.revealed = oldSpell.revealed;
-                   }
+                            item.revealed = oldSpell.revealed;
+                        }
+                    }
                } else if(item.type === 'spellcastingEntry'){
                    const oldEntryKey = Object.keys(oldCreature.spells.entries).find(key => key === item._id);
                    const entry = oldEntryKey ? oldCreature.spells.entries[oldEntryKey] : null;
