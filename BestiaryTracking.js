@@ -3522,6 +3522,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$2(ApplicationV2$
     static async updateData(event, element, formData){
         const data = foundry.utils.expandObject(formData.object);
         this.settings = {
+            additionalCreatureTypes: this.settings.additionalCreatureTypes,
             useTokenArt: data.useTokenArt,
             contrastRevealedState: data.contrastRevealedState,
             optionalFields: data.optionalFields,

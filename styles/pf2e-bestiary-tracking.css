@@ -642,7 +642,8 @@
   height: calc(100% - 36px);
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   width: 100px;
   align-items: end;
 }
@@ -660,7 +661,6 @@
   align-items: center;
   cursor: pointer;
   text-transform: uppercase;
-  flex: 1;
   padding: 0 4px;
   text-align: center;
   transition: width 0.1s ease-in-out;
