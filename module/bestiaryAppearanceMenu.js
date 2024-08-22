@@ -23,7 +23,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
         tag: 'form',
         id: 'pf2e-bestiary-tracking-appearance-menu',
         classes: ["pf2e-bestiary-tracking", "bestiary-settings-menu"],
-        position: { width: 'auto', height: 'auto' },
+        position: { width: 680, height: 'auto' },
         actions: {
             resetContrastRevealedState: this.resetContrastRevealedState,
             toggleOptionalFields: this.toggleOptionalFields,
@@ -53,7 +53,6 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
             const label = CONFIG.PF2E.creatureTraits[key];
             return { value: key, name: game.i18n.localize(label) };
           }),
-          maxTags: 2,
           callbacks : { invalid: this.onAddTag }, 
           dropdown : {
             mapValueTo: 'name',

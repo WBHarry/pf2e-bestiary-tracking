@@ -294,8 +294,8 @@ export const handleDataMigration = async () => {
             
             // Add Total Modifier to attacks.
             monster.attacks.values = Object.keys(monster.attacks.values).reduce((acc, attackKey) => {
-                const originAttack = origin.system.actions.find(x => x.slug === attackKey);
-                const base = originAttack.item;
+                const originAttack = origin.system.actions.find(x => x.weapon._id === attackKey);
+                const base = originAttack?.item;
                 if(base){
                     const damageInstances = [];
                     var damageLabel = '';
@@ -367,7 +367,10 @@ export const handleDataMigration = async () => {
            data.system.saves.will = { ...data.system.saves.will, revealed: oldCreature.saves.will.revealed, custom: oldCreature.saves.will.custom };
            
            data.system.attributes.speed.revealed = oldCreature.speeds.values.land.revealed;
-           data.system.attributes.speed.otherSpeeds.forEach(speed => speed.revealed = oldCreature.speeds.values.find(x => speed.label === x)?.revealed);
+           data.system.attributes.speed.otherSpeeds.forEach(speed => {
+            const oldSpeedKey = Object.keys(oldCreature.speeds.values).find(x => speed.label === x);
+                speed.revealed = oldSpeedKey ? oldCreature.speeds.values[oldSpeedKey].revealed : false;
+           });
            
            Object.keys(data.system.traits.value).forEach(traitKey => data.system.traits.value[traitKey].revealed = oldCreature.traits.values[traitKey]?.revealed);
            Object.keys(data.system.abilities).forEach(abilityKey => {

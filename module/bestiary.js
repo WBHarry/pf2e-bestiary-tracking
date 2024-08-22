@@ -209,8 +209,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 }
             }
         };
-        if(Object.keys(actions).length === 0) actions['None'] = { revealed: false, name: 'None' }
-        if(Object.keys(passives).length === 0) passives['None'] = { revealed: false, name: 'None' }
 
         //  Join all iterations over item.items in a method?
         const spellcastingEntries = {};
@@ -1188,6 +1186,46 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
             return acc;
         }, {});
+
+        var hasActions = false;
+        var hasPassives = false;
+        for(var item of Object.values(dataObject.items)){
+            if(item.type === 'action'){
+                if(item.system.actionType.value === 'action' || item.system.actionType.value === 'reaction') hasActions = true;
+                if(item.system.actionType.value === 'passive') hasPassives = true;
+            }
+        }
+
+        if(!hasActions) {
+            dataObject.items['None'] = {
+                _id: 'None',
+                empty: true,
+                type: 'action',
+                name: 'None',
+                value: 'PF2E.Miscellaneous.None',
+                system: {
+                    actionType: { value: 'action' },
+                    description: {
+                        value: null,
+                    }
+                }
+            };
+        }
+        if(!hasPassives) {
+            dataObject.items['None'] = {
+                _id: 'None',
+                empty: true,
+                type: 'action',
+                name: 'None',
+                value: 'PF2E.Miscellaneous.None',
+                system: {
+                    actionType: { value: 'passive' },
+                    description: {
+                        value: null,
+                    }
+                }
+            };
+        }     
 
         dataObject.system.details.publicNotes =  { revealed: false, text: dataObject.system.details.publicNotes };
         dataObject.system.details.privateNotes = { revealed: false, text: dataObject.system.details.privateNotes }; 

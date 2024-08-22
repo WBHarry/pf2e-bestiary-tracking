@@ -2198,9 +2198,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
                     };
                 }
             }
-        }        if(Object.keys(actions).length === 0) actions['None'] = { revealed: false, name: 'None' };
-        if(Object.keys(passives).length === 0) passives['None'] = { revealed: false, name: 'None' };
-
+        }
         //  Join all iterations over item.items in a method?
         const spellcastingEntries = {};
         const spellKeys = Object.keys(monster.items);
@@ -3178,6 +3176,46 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
             return acc;
         }, {});
 
+        var hasActions = false;
+        var hasPassives = false;
+        for(var item of Object.values(dataObject.items)){
+            if(item.type === 'action'){
+                if(item.system.actionType.value === 'action' || item.system.actionType.value === 'reaction') hasActions = true;
+                if(item.system.actionType.value === 'passive') hasPassives = true;
+            }
+        }
+
+        if(!hasActions) {
+            dataObject.items['None'] = {
+                _id: 'None',
+                empty: true,
+                type: 'action',
+                name: 'None',
+                value: 'PF2E.Miscellaneous.None',
+                system: {
+                    actionType: { value: 'action' },
+                    description: {
+                        value: null,
+                    }
+                }
+            };
+        }
+        if(!hasPassives) {
+            dataObject.items['None'] = {
+                _id: 'None',
+                empty: true,
+                type: 'action',
+                name: 'None',
+                value: 'PF2E.Miscellaneous.None',
+                system: {
+                    actionType: { value: 'passive' },
+                    description: {
+                        value: null,
+                    }
+                }
+            };
+        }     
+
         dataObject.system.details.publicNotes =  { revealed: false, text: dataObject.system.details.publicNotes };
         dataObject.system.details.privateNotes = { revealed: false, text: dataObject.system.details.privateNotes }; 
 
@@ -3427,7 +3465,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$2(ApplicationV2$
         tag: 'form',
         id: 'pf2e-bestiary-tracking-appearance-menu',
         classes: ["pf2e-bestiary-tracking", "bestiary-settings-menu"],
-        position: { width: 'auto', height: 'auto' },
+        position: { width: 680, height: 'auto' },
         actions: {
             resetContrastRevealedState: this.resetContrastRevealedState,
             toggleOptionalFields: this.toggleOptionalFields,
@@ -3457,7 +3495,6 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$2(ApplicationV2$
             const label = CONFIG.PF2E.creatureTraits[key];
             return { value: key, name: game.i18n.localize(label) };
           }),
-          maxTags: 2,
           callbacks : { invalid: this.onAddTag }, 
           dropdown : {
             mapValueTo: 'name',
@@ -3947,8 +3984,8 @@ const handleDataMigration = async () => {
             
             // Add Total Modifier to attacks.
             monster.attacks.values = Object.keys(monster.attacks.values).reduce((acc, attackKey) => {
-                const originAttack = origin.system.actions.find(x => x.slug === attackKey);
-                const base = originAttack.item;
+                const originAttack = origin.system.actions.find(x => x.weapon._id === attackKey);
+                const base = originAttack?.item;
                 if(base){
                     const damageInstances = [];
                     var damageLabel = '';
@@ -4020,7 +4057,10 @@ const handleDataMigration = async () => {
            data.system.saves.will = { ...data.system.saves.will, revealed: oldCreature.saves.will.revealed, custom: oldCreature.saves.will.custom };
            
            data.system.attributes.speed.revealed = oldCreature.speeds.values.land.revealed;
-           data.system.attributes.speed.otherSpeeds.forEach(speed => speed.revealed = oldCreature.speeds.values.find(x => speed.label === x)?.revealed);
+           data.system.attributes.speed.otherSpeeds.forEach(speed => {
+            const oldSpeedKey = Object.keys(oldCreature.speeds.values).find(x => speed.label === x);
+                speed.revealed = oldSpeedKey ? oldCreature.speeds.values[oldSpeedKey].revealed : false;
+           });
            
            Object.keys(data.system.traits.value).forEach(traitKey => data.system.traits.value[traitKey].revealed = oldCreature.traits.values[traitKey]?.revealed);
            Object.keys(data.system.abilities).forEach(abilityKey => {

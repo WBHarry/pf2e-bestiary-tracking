@@ -330,7 +330,7 @@
                 <div class="data-section primary-container active">
                     <div class="data-header primary-container">
                         <div class="data-header-label">
-                            <i class="fa-solid fa-book"></i>
+                            <i class="fa-solid fa-medal"></i>
                             <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Skills"}}</div>
                         </div>
                     </div>
@@ -470,7 +470,7 @@
                                 <div class="actions-container secondary-container {{PF2EBTToggleContainer ../user action}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState action}}" data-action="toggleRevealed" data-path="{{concat 'items.' key}}" data-fake="{{action.fake}}">
                                     <div class="action-container">
                                         <div class="{{#if (and (not (eq action.name 'None')) (gt action.description.length 0))}}action-name{{/if}}" data-action="toggleAbility" data-ability="{{action._id}}">{{action.name}}</div>
-                                        <span class="action-glyph">{{#if action.actions}}{{action.actions}}{{else}}{{#if (not (eq action.name 'None'))}}R{{/if}}{{/if}}</span>
+                                        <span class="action-glyph">{{#if action.system.actions.value}}{{action.system.actions.value}}{{else}}{{#if (not (eq action.name 'None'))}}R{{/if}}{{/if}}</span>
                                     </div>
                                     <div class="action-description {{#if (includes ../selected.abilities action._id)}}expanded{{/if}}">
                                         {{{action.description}}}
@@ -482,7 +482,7 @@
                                 <div class="actions-container secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat 'items.' @key}}" data-fake="{{this.fake}}">
                                     <div class="action-container">
                                         <div class="{{#if (and (not (eq this.name 'None')) (gt this.description.length 0))}}action-name{{/if}}" data-action="toggleAbility" data-ability="{{this._id}}">{{this.name}}</div>
-                                        <span class="action-glyph">{{#if this.actions}}{{this.actions}}{{else}}{{#if (not (eq this.name 'None'))}}R{{/if}}{{/if}}</span>
+                                        <span class="action-glyph">{{#if this.system.actions.value}}{{this.system.actions.value}}{{else}}{{#if (not (eq this.name 'None'))}}R{{/if}}{{/if}}</span>
                                     </div>
                                     <div class="action-description {{#if (includes ../selected.abilities this._id)}}expanded{{/if}}">
                                         {{{this.description}}}

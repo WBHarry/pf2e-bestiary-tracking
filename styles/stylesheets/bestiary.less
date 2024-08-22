@@ -671,35 +671,37 @@
         
         .right-bookmark-container {
             position: absolute;
-            left: -80px;
+            left: -100px;
             top: 36px;
             height: calc(100% - 36px);
             display: flex;
             flex-direction: column;
+            overflow: auto;
+            width: 100px;
+            align-items: end;
         }
 
         .bookmark {
-            height: 16px;
             width: 80px;
             font-size: 12px;
             font-weight: bold;
             border-width: 2px;
             border-style: solid;
             margin-bottom: 4px;
+            height: fit-content;
             text-shadow: 0 0 black;
-            padding: 4px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             text-transform: uppercase;
-            transition: width 0.5s ease-in-out;
-            transition: right 0.5s ease-in-out;
+            flex: 1;
+            padding: 0 4px;
+            text-align: center;
+            transition: width 0.1s ease-in-out;
 
             &:hover, &.expanded {
-                width: 100px;
-                position: relative;
-                right: 20px;
+                width: 100%;
             }
         }
     }
