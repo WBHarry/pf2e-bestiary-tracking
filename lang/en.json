@@ -1,5 +1,8 @@
 {
     "PF2EBestiary": {
+        "SavesHandler": {
+            "Name": "Bestiary Save Slots"
+        },
         "Miscellaneous": {
             "Name": "Name",
             "Level": "Level",
@@ -40,6 +43,7 @@
             "Title": "Bestiary",
             "WindowControls": {
                 "RefreshBestiary": "Refresh Bestiary",
+                "SaveSlots": "Data Save Slots",
                 "ResetBestiary": "Reset Bestiary"
             },
             "Welcome": {
@@ -154,7 +158,7 @@
                 "Menu": {
                     "Name": "Bestiary Labels",
                     "Label": "Bestiary Label Settings",
-                    "Hint": "Customize labels used in the Bestiary"
+                    "Hint": "Customize labels and used in the Bestiary"
                 },
                 "VagueDescriptions": {
                     "Name": "Vague Descriptions",
@@ -180,7 +184,7 @@
                 "Menu": {
                     "Name": "Bestiary Appearance",
                     "Label": "Bestiary Appearance Settings",
-                    "Hint": "Customize the appearance of the Bestiary"
+                    "Hint": "Customize the appearance and used fields of the Bestiary"
                 },
                 "UseTokenArt": "Use Token Art",
                 "ContrastRevealedState": {

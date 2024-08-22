@@ -174,7 +174,7 @@ const bestiaryAppearance = () => {
         name: game.i18n.localize('PF2EBestiary.Menus.BestiaryAppearance.Menu.Name'),
         label: game.i18n.localize('PF2EBestiary.Menus.BestiaryAppearance.Menu.Label'),
         hint: game.i18n.localize('PF2EBestiary.Menus.BestiaryAppearance.Menu.Hint'),
-        icon: "fa-solid fa-tags",
+        icon: "fa-solid fa-sitemap",
         type: BestiaryAppearanceMenu,
         restricted: true
     });

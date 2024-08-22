@@ -3,6 +3,7 @@ import { getCreatureSize, getCreaturesTypes, getExpandedCreatureTypes, getIWRStr
 import { socketEvent } from "../scripts/socket.js";
 import { acTable, attackTable, attributeTable, damageTable, hpTable, savingThrowPerceptionTable, skillTable, spellAttackTable, spellDCTable } from "../scripts/statisticsData.js";
 import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getMixedCategoryLabel, getRollAverage, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
+import PF2EBestiarySavesHandler from "./savesHandler.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -48,6 +49,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             toggleSpell: this.toggleSpell,
             toggleRevealed: this.toggleRevealed,
             refreshBestiary: this.refreshBestiary,
+            handleSaveSlots: this.handleSaveSlots,
             resetBestiary: this.resetBestiary,
             clearSearch: this.clearSearch,
             toggleFilterDirection: this.toggleFilterDirection,
@@ -62,6 +64,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     icon: 'fa-solid fa-arrow-rotate-left',
                     label: 'PF2EBestiary.Bestiary.WindowControls.RefreshBestiary',
                     action: 'refreshBestiary'
+                },
+                {
+                    icon: 'fa-solid fa-floppy-disk', //saveDataToFile(JSON.stringify(data, null, 2), "text/json", `${filename}.json`);
+                    label: 'PF2EBestiary.Bestiary.WindowControls.SaveSlots',
+                    action: 'handleSaveSlots',
                 },
                 {
                     icon: 'fa-solid fa-link-slash',
@@ -97,9 +104,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     _getHeaderControls() {
         return this.options.window.controls?.filter(control => {
             switch(control.action){
-                case 'refreshBestiary':
-                    return game.user.isGM;
-                case 'resetBestiary':
+                default:
                     return game.user.isGM;
             }
         }) || [];
@@ -673,6 +678,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
 
+    static async handleSaveSlots(){
+        if(!game.user.isGM) return;
+
+        await new PF2EBestiarySavesHandler().render(true);
+    }
+
     async refreshCreature(monsterUuid){
         const actor = await fromUuid(monsterUuid);
                 
@@ -704,7 +715,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         if(confirmed){
             this.selected = { category: 'monster', type: null, monster: null, abilities: [] };
-            this.bestiary = { monster: {}, npc: {} };
+            this.bestiary = { ...this.bestiary, monster: {}, npc: {} };
 
             await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
             await game.socket.emit(`module.pf2e-bestiary-tracking`, {

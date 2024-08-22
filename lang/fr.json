@@ -1,5 +1,8 @@
 {
     "PF2EBestiary": {
+        "SavesHandler": {
+            "Name": "Bestiary Save Slots"
+        },
         "Miscellaneous": {
             "Name": "Nom",
             "Level": "Niveau",

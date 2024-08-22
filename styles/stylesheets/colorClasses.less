@@ -21,159 +21,171 @@
 
 .theme-dark {
     .pf2e-bestiary-tracking {
-        &.bestiary {
-            // Background
-            &.application {
-                background: @darkApplication;
-            }
-            
-
-            // Containers
-            .primary-container {
-                background-color: @darkPrimary;
-                border-color: @darkBorder;
-                color: @darkPrimaryColor;
-
-                &.active {
-                    background-color: @darkPrimaryAccent;
-                }
-
-                &.empty {
-                    opacity: 0.6;
-                }
-
-                .data-icon {
-                    filter: none;
-                }
-            }
-
-            .secondary-container {
-                background-color: @darkSecondary;
-                border-color: @darkBorder;
-                color: @darkPrimaryColor;
-
-                .data-icon {
-                    filter: none;
-                }
-            }
-
-            .tertiary-container {
-                background-color: @darkTertiary;
-                border-color: @darkBorder;
-                color: @darkPrimaryColor;
-
-                &.active {
-                    background-color: @darkTertiaryAccent;
-                }
-
-                .data-icon {
-                    filter: none;
-                }
-            }
-
-            .spell-container {
-                &.even {
-                    background: rgba(255, 255, 255, 0.1);
-                }
-            }
-
-            // Border Containers
-            .primary-border-container {
-                border-color: @darkBorder;
-            }
-
-            .main-border-container {
-                border-color: @darkPrimary;
-            }
-    
-            .bookmark {
-                &:hover {
-                    background-color: @darkPrimaryAccent;
-                }
-            }
-
-            // Misc
-            // .tabs > [data-tab].active {
-            //     text-shadow: 0 0 10px @darkTertiary;
-            // }
-        }
-    }
-}
-
-.pf2e-bestiary-tracking {
-    &.bestiary {
         // Background
         &.application {
-
+            background: @darkApplication;
         }
+        
 
         // Containers
         .primary-container {
-            background-color: @lightPrimary;
-            border-color: @lightBorder;
-            color: @lightPrimaryColor;
+            background-color: @darkPrimary;
+            border-color: @darkBorder;
+            color: @darkPrimaryColor;
 
             &.active {
-                background-color: @lightPrimaryAccent;
+                background-color: @darkPrimaryAccent;
             }
 
             &.empty {
-                background-color: @lightPrimary
+                opacity: 0.6;
             }
 
             .data-icon {
-                filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+                filter: none;
             }
         }
 
         .secondary-container {
-            background-color: @lightSecondary;
-            border-color: @lightBorder;
-            color: @lightPrimaryColor;
+            background-color: @darkSecondary;
+            border-color: @darkBorder;
+            color: @darkPrimaryColor;
 
             .data-icon {
-                filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+                filter: none;
             }
         }
 
         .tertiary-container {
-            background-color: @lightTertiary;
-            border-color: @lightBorder;
-            color: @lightPrimaryColor;
+            background-color: @darkTertiary;
+            border-color: @darkBorder;
+            color: @darkPrimaryColor;
 
             &.active {
-                background-color: @lightTertiaryAccent;
+                background-color: @darkTertiaryAccent;
             }
 
             .data-icon {
-                filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+                filter: none;
             }
         }
 
         .spell-container {
             &.even {
-                background: rgba(0, 0, 0, 0.1);
+                background: rgba(255, 255, 255, 0.1);
             }
         }
 
         // Border Containers
         .primary-border-container {
-            border-color: @lightBorder;
+            border-color: @darkBorder;
         }
 
         .main-border-container {
-            border-color: @lightPrimary;
+            border-color: @darkPrimary;
         }
-
-        // Misc
-        // .tabs > [data-tab].active {
-        //     text-shadow: 0 0 10px @lightTertiary;
-        // }
 
         .bookmark {
             &:hover {
-                background-color: @lightPrimaryAccent;
+                background-color: @darkPrimaryAccent;
             }
+        }
+
+        // Hover Containers
+        .primary-hover-container {
+            &:hover {
+                border-color: @darkPrimary;
+            }
+        }
+
+        // Icons
+        .primary-accent-icon {
+            color: @darkAccentIcon;
+        }
+    }
+}
+
+.pf2e-bestiary-tracking {
+    // Background
+    &.application {
+
+    }
+
+    // Containers
+    .primary-container {
+        background-color: @lightPrimary;
+        border-color: @lightBorder;
+        color: @lightPrimaryColor;
+
+        &.active {
+            background-color: @lightPrimaryAccent;
+        }
+
+        &.empty {
+            background-color: @lightPrimary
+        }
+
+        .data-icon {
+            filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+        }
+    }
+
+    .secondary-container {
+        background-color: @lightSecondary;
+        border-color: @lightBorder;
+        color: @lightPrimaryColor;
+
+        .data-icon {
+            filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+        }
+    }
+
+    .tertiary-container {
+        background-color: @lightTertiary;
+        border-color: @lightBorder;
+        color: @lightPrimaryColor;
+
+        &.active {
+            background-color: @lightTertiaryAccent;
+        }
+
+        .data-icon {
+            filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
+        }
+    }
+
+    .spell-container {
+        &.even {
+            background: rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    // Border Containers
+    .primary-border-container {
+        border-color: @lightBorder;
+    }
+
+    .main-border-container {
+        border-color: @lightPrimary;
+    }
+
+    // Hover Containers
+    .primary-hover-container {
+        &:hover {
+            border-color: @lightPrimary;
+        }
+    }
+
+    // Icons
+    .primary-accent-icon {
+        color: @lightAccentIcon;
+    }
+
+    // Misc
+
+    .bookmark {
+        &:hover {
+            background-color: @lightPrimaryAccent;
         }
     }
 }

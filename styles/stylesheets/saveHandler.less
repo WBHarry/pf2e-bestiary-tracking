@@ -1,0 +1,101 @@
+.pf2e-bestiary-tracking {
+    overflow-y: visible;
+    overflow-x: visible;
+
+    &.saves-handler {
+        min-height: 355px;
+
+        .save-dialog-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        
+            .new-save-container {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+
+                .save-dialog-open-button {
+                    flex: 0;
+                    text-wrap: nowrap;
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                }
+
+                .save-dialog {
+                    overflow: hidden;
+                    transition: max-width 0.5s ease-in-out;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    justify-content: space-between;
+                    flex: 1;
+                }
+            }
+
+            .save-slot-container {
+                display: flex;
+                flex-wrap: wrap;
+
+                legend {
+                    align-self: center;
+                    margin-left: auto;
+                    margin-right: auto;
+                    padding: 0 16px;
+
+                    h4 {
+                        margin-bottom: 0;
+                    }
+                }
+                
+                .save-slots-container {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 4px;
+                    flex: 1;
+
+                    .save-slot {
+                        position: relative;
+                        height: 200px;
+                        display: flex;
+                        padding: 0;
+                        border-width: 3px;
+                        border-style: solid;
+                        border-radius: 6px;
+                        flex-basis: calc(50% - 2px);
+                        cursor: pointer;
+
+                        &:hover {
+                            filter: drop-shadow(0 0 3px @mainHover);
+                        }
+
+                        img {
+                            flex: 1;
+                        }
+
+                        .save-name {
+                            position: absolute;
+                            font-size: 32px;
+                            width: 100%;
+                            text-align: center;
+                            word-wrap: break-word;
+                            padding: 0 31px;
+                        }
+
+                        .save-icon {
+                            position: absolute;
+                            top: 7px;
+                            left: 7px;
+                            font-size: 20px;
+                        }
+                    }
+                }
+            }
+
+            .folder-disabled {
+                opacity: 0.5;
+            }
+        }
+    }
+}
