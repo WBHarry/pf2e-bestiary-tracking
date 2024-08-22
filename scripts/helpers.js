@@ -32,11 +32,31 @@ export const getIWRString = (base, isResistance) => { // Mangled. Wtf.
 }
 
 export const getCreaturesTypes = (traits, onlyActive) => {
+    const creatureTypes = getExpandedCreatureTypes();
     const types = Object.keys(traits).reduce((acc, traitKey) => {
-        if(Object.keys(CONFIG.PF2E.creatureTypes).includes(traitKey)) acc.push({key: traitKey, revealed: traits[traitKey].revealed, name: CONFIG.PF2E.creatureTypes[traitKey]});
+        if(Object.keys(creatureTypes).includes(traitKey)) acc.push({key: traitKey, revealed: traits[traitKey].revealed, name: creatureTypes[traitKey]});
 
         return acc;
     }, []);
 
     return onlyActive ? types.filter(x => x.revealed) : types; 
+};
+
+export const getExpandedCreatureTypes = () => {
+    const allTypes = [
+        ...Object.keys(CONFIG.PF2E.creatureTypes).map(type => ({ value: type, name: game.i18n.localize(CONFIG.PF2E.creatureTypes[type]) })),
+        ...game.settings.get('pf2e-bestiary-tracking', 'additional-creature-types').map(type => ({ value: type.value, name: game.i18n.localize(type.name) })),
+    ].sort((a, b) => {
+        if(a.name < b.name) return -1;
+        else if(a.name > b.name) return 1;
+        else return 0;
+    });
+    
+    const types = { unknown: { name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"), values: {} } };
+    allTypes.forEach(type => {
+        types[type.value] = { name: type.name, values: {} }
+    });
+
+
+    return types;
 };

@@ -1,12 +1,17 @@
 {
   "dependencies": {
+    "@yaireo/tagify": "^4.17.9",
     "gulp": "^5.0.0",
     "gulp-less": "^5.0.0"
   },
   "devDependencies": {
-    "@foundryvtt/foundryvtt-cli": "^1.0.3"
+    "@foundryvtt/foundryvtt-cli": "^1.0.3",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "postcss": "^8.4.32",
+    "rollup-plugin-postcss": "^4.0.2"
   },
   "scripts": {
+    "start": "rollup -c --watch",
     "pushLDBtoYML": "node ./tools/pushLDBtoYML.mjs",
     "pullYMLtoLDB": "node ./tools/pullYMLtoLDB.mjs"
   }

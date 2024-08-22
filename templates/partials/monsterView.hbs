@@ -538,7 +538,7 @@
                 {{#if this.spells.fake.revealed}}
                     <div class="spells-unknown">{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
                 {{else}}
-                    <div class="spells-unknown">{{localize "PF2EBestiary.Bestiary.Miscellaneous.Unknown"}}</div>
+                    <div class="spells-unknown">{{localize "PF2EBestiary.Bestiary.Miscellaneous.Unknown"}}...</div>
                 {{/if}}
             {{/if}}
             {{#if (and this.user.isGM this.spells.fake)}}
@@ -625,7 +625,7 @@
                     {{#if (or this.user.isGM this.notes.public.revealed)}}
                         {{{this.notes.public.text}}}
                     {{else}}
-                        {{localize "PF2EBestiary.Bestiary.Miscellaneous.Unknown"}}
+                        {{localize "PF2EBestiary.Bestiary.Miscellaneous.Unknown"}}...
                     {{/if}}
                 </fieldset>
                 {{#if (or this.user.isGM this.notes.private.revealed)}}

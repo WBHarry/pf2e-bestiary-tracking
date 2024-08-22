@@ -1,12 +1,16 @@
-<div class="flexcol">
-    <div class="form-group">
-        <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.UseTokenArt"}}</label>
-        <div class="form-fields">
-            <div class="form-fields">
-                <input type="checkbox" name="useTokenArt" {{checked settings.useTokenArt}} />
-            </div>
+<div class="menu-container">
+    <fieldset class="menu-category">
+        <legend>
+            <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.AdditionalCreatureTypes.Name"}}</h4>
+        </legend>
+
+        <div class="flexcol">
+            <input class="traits-input" value="{{settings.additionalCreatureTypes}}" />
+            <div>{{localize "PF2EBestiary.Menus.BestiaryAppearance.AdditionalCreatureTypes.SubText"}}</div>
         </div>
-    </div>
+    </fieldset>
+   
+
 
     <fieldset class="menu-category">
         <legend class="pf2e-bestiary-clickable-icon" data-action="toggleOptionalFields">
@@ -65,6 +69,15 @@
             </div>
         </div>
     </fieldset>
+
+    <div class="form-group">
+        <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.UseTokenArt"}}</label>
+        <div class="form-fields">
+            <div class="form-fields">
+                <input type="checkbox" name="useTokenArt" {{checked settings.useTokenArt}} />
+            </div>
+        </div>
+    </div>
   
     <footer>
         <button data-action="save">{{localize "PF2EBestiary.Miscellaneous.Save"}}</button>

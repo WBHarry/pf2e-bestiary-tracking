@@ -200,4 +200,13 @@ const bestiaryAppearance = () => {
             ...optionalFields
         },
     });
+
+    game.settings.register('pf2e-bestiary-tracking', 'additional-creature-types', {
+        name: game.i18n.localize('PF2EBestiary.Settings.AdditionalCreatureTypes.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.AdditionalCreatureTypes.Hint'),
+        scope: 'world',
+        config: false,
+        type: Object,
+        default: [],
+    });
 };

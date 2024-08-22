@@ -1,5 +1,5 @@
 
-import { getCreatureSize, getCreaturesTypes, getIWRString, getMultiplesString, slugify } from "../scripts/helpers.js";
+import { getCreatureSize, getCreaturesTypes, getExpandedCreatureTypes, getIWRString, getMultiplesString, slugify } from "../scripts/helpers.js";
 import { socketEvent } from "../scripts/socket.js";
 import { acTable, attackTable, attributeTable, damageTable, hpTable, savingThrowPerceptionTable, skillTable, spellAttackTable, spellDCTable } from "../scripts/statisticsData.js";
 import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getMixedCategoryLabel, getRollAverage, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
@@ -169,11 +169,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(!game.user.isGM)
         {
             // Improve this.
-            const types = Object.keys(monster.system.traits.value).reduce((acc, traitKey) => {
-                if(Object.keys(CONFIG.PF2E.creatureTypes).includes(traitKey)) acc.push({key: traitKey, revealed: monster.system.traits.value[traitKey].revealed, name: CONFIG.PF2E.creatureTypes[traitKey]});
-    
-                return acc;
-            }, []);
+            const types = getCreaturesTypes(monster.system.traits.value);
 
             const revealedCreatureTraits = types.filter(x => x.revealed);
             isUnknown = revealedCreatureTraits.length === 0;
@@ -411,33 +407,25 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     prepareBestiary(bestiary){
-        const initialCategories = game.user.isGM ? { } : { unknown: {} };
         return {
             monster: Object.keys(bestiary.monster).reduce((acc, monsterKey) => {
                 const monster = bestiary.monster[monsterKey];
 
-                const types = Object.keys(monster.system.traits.value).reduce((acc, traitKey) => {
-                    if(Object.keys(CONFIG.PF2E.creatureTypes).includes(traitKey)) acc.push({key: traitKey, revealed: monster.system.traits.value[traitKey].revealed, name: CONFIG.PF2E.creatureTypes[traitKey]});
-        
-                    return acc;
-                }, []);
+                const types = getCreaturesTypes(monster.system.traits.value);
 
                 var usedTypes = types.map(x => x.key);
                 if(!game.user.isGM){
                     usedTypes = types.filter(x => x.revealed).map(x => x.key);
-                    if(usedTypes.length === 0) usedTypes = ['unknown'];
                 }
+                
+                if(usedTypes.length === 0) usedTypes = ['unknown'];
 
                 for(var type of usedTypes){
-                    acc[type][monsterKey] = bestiary.monster[monsterKey];
+                    acc[type].values[monsterKey] = bestiary.monster[monsterKey];
                 }
 
                 return acc;
-            }, Object.keys(CONFIG.PF2E.creatureTypes).reduce((acc, type) => {  
-                acc[type] = {};
-
-                return acc;
-            }, {  ...initialCategories })),
+            }, getExpandedCreatureTypes()),
             npc: {}
         };
     }
@@ -462,8 +450,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         await this.enrichTexts(context.selected);
         context.bestiary = this.prepareBestiary(foundry.utils.deepClone(this.bestiary));
 
-        context.openType = (context.selected.type ? Object.keys(context.bestiary[context.selected.category][context.selected.type]).reduce((acc, monsterKey) => { 
-            const monster = context.bestiary[this.selected.category][context.selected.type][monsterKey];
+        context.openType = (context.selected.type ? Object.keys(context.bestiary[context.selected.category][context.selected.type].values).reduce((acc, monsterKey) => { 
+            const monster = context.bestiary[this.selected.category][context.selected.type].values[monsterKey];
             monster.img = context.useTokenArt ? monster.prototypeToken.texture.src : monster.img;
             const match = monster.name.value.toLowerCase().match(this.search.name.toLowerCase());
             const unrevealedMatch = game.i18n.localize('PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature').toLowerCase().match(this.search.name.toLowerCase());

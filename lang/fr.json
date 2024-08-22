@@ -67,7 +67,7 @@
             },
             "Miscellaneous": {
                 "UnknownCreature": "Créature Inconnue",
-                "Unknown": "Inconnu..",
+                "Unknown": "Inconnu",
                 "LeftClick": "Clic Gauche",
                 "RightClick": "Clic Droit"
             },
@@ -194,6 +194,10 @@
                 "Name": "Optional Fields",
                 "Level": "Afficher le Niveau du Monstre",
                 "Languages": "Languages Known"
+            },
+            "AdditionalCreatureTypes": {
+                "Name": "Additional Creature Types",
+                "SubText": "You can add more available creature traits to choose from in the PF2E System Settings for Homebrew."
             }
         },
         "Settings": {

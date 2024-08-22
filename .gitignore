@@ -7,3 +7,4 @@ packs/**/CURRENT
 packs/**/LOG
 packs/**/MANIFEST-*
 node_modules
+BestiaryTracking.js.map

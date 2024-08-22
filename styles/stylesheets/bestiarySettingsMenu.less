@@ -4,8 +4,24 @@
 .theme-dark {
     .pf2e-bestiary-tracking {
         &.bestiary-settings-menu{
+            
+            .menu-container {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .tagify-header{
+                align-self: center;
+                margin-bottom: 0;
+                color: @darkBorder;
+            }
+
+            tags {
+                border-width: 2px;
+            }
+            
             .menu-category {
-                margin-bottom: 8px;
                 display: flex;
                 flex-direction: column;
                 border-style: double;
@@ -56,7 +72,6 @@
 .pf2e-bestiary-tracking {
     &.bestiary-settings-menu{
         .menu-category {
-            margin-bottom: 8px;
             display: flex;
             flex-direction: column;
             border-style: double;
