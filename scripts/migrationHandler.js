@@ -449,6 +449,30 @@ export const handleDataMigration = async () => {
        version = '0.8.9';
        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
+
+    if(version = '0.8.9'){
+        // Some creatures are missing None options for IWR
+        await newMigrateBestiary((_, monster) => {
+            const immunitiesKeys = Object.keys(monster.system.attributes.immunities);
+            const weaknessesKeys = Object.keys(monster.system.attributes.weaknesses);
+            const resistancesKeys = Object.keys(monster.system.attributes.resistances);
+
+            if(immunitiesKeys.length === 0){
+                monster.system.attributes.immunities['none'] = { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") };
+            }
+            if(weaknessesKeys.length === 0){
+                monster.system.attributes.weaknesses['none'] = { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") };
+            }
+            if(resistancesKeys.length === 0){
+                monster.system.attributes.resistances['none'] = { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") };
+            }
+        });
+
+        version = '0.8.9.2';
+        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
+    }
+
+        
 }
 
 export const migrateBestiary = async (update) => {

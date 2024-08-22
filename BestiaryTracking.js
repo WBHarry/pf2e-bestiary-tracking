@@ -2367,7 +2367,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
                     } : { damage: { instances: damage.instances.map(instance => ({ ...instance, value: instance.label })) } };
                     acc[action.item._id] = { 
                         ...action,
-                        range: action.weapon.isMelee ? 'Melee' : 'Ranged', 
+                        range: action.weapon.system.traits.value.find(x => x.startsWith('range-increment') || x.startsWith('range')) ? 'Ranged' : 'Melee', 
                         variants: action.variants.reduce((acc, variant) => {
                             acc.values[slugify(variant.label)] = variant.label;
         
@@ -4140,6 +4140,30 @@ const handleDataMigration = async () => {
        version = '0.8.9';
        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
+
+    if(version = '0.8.9'){
+        // Some creatures are missing None options for IWR
+        await newMigrateBestiary((_, monster) => {
+            const immunitiesKeys = Object.keys(monster.system.attributes.immunities);
+            const weaknessesKeys = Object.keys(monster.system.attributes.weaknesses);
+            const resistancesKeys = Object.keys(monster.system.attributes.resistances);
+
+            if(immunitiesKeys.length === 0){
+                monster.system.attributes.immunities['none'] = { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") };
+            }
+            if(weaknessesKeys.length === 0){
+                monster.system.attributes.weaknesses['none'] = { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") };
+            }
+            if(resistancesKeys.length === 0){
+                monster.system.attributes.resistances['none'] = { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") };
+            }
+        });
+
+        version = '0.8.9.2';
+        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
+    }
+
+        
 };
 
 const migrateBestiary = async (update) => {
@@ -4251,7 +4275,7 @@ const generalNonConfigSettings = () => {
         scope: 'world',
         config: false,
         type: String,
-        default: '0.8.9',
+        default: '0.8.9.2',
     });
 
     game.settings.register('pf2e-bestiary-tracking', 'bestiary-tracking', {

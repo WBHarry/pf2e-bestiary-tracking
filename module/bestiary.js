@@ -378,7 +378,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     } : { damage: { instances: damage.instances.map(instance => ({ ...instance, value: instance.label })) } };
                     acc[action.item._id] = { 
                         ...action,
-                        range: action.weapon.isMelee ? 'Melee' : 'Ranged', 
+                        range: action.weapon.system.traits.value.find(x => x.startsWith('range-increment') || x.startsWith('range')) ? 'Ranged' : 'Melee', 
                         variants: action.variants.reduce((acc, variant) => {
                             acc.values[slugify(variant.label)] = variant.label;
         
