@@ -605,6 +605,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             case 'speed':
                 allRevealed = values.every(x => x.revealed) && this.bestiary.monster[this.selected.monster.uuid].system.attributes.speed.revealed;
                 this.bestiary.monster[this.selected.monster.uuid].system.attributes.speed.revealed = !allRevealed;
+            case 'spell-level':
+                values = values.filter(spell => {
+                    const isSpellOfEntry = spell.type === 'spell' && spell.system.location.value === button.dataset.entryValue;
+                    if(isSpellOfEntry){
+                        const isCantrip = spell.system.traits.value.includes("cantrip");
+                        return button.dataset.spellLevel === 'Cantrips' ? isCantrip : !isCantrip && Number.parseInt(button.dataset.spellLevel) === spell.system.level.value;
+                    }
+
+                    return false;
+                }); 
             default:
                 allRevealed = values.every(x => x.revealed);
                 break;

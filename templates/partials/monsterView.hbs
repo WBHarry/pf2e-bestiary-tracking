@@ -692,7 +692,7 @@
                                 <table>
                                     {{#each entry.levels}}
                                         {{#if (or ../../user.isGM this.revealed)}}
-                                            <tr class="spell-header-row tertiary-container">
+                                            <tr class="spell-header-row tertiary-container {{#if ../../user.isGM}}pf2e-bestiary-clickable-icon{{/if}}" {{#if ../../user.isGM}}data-action="toggleAllRevealed"{{/if}} data-path="items" data-type="spell-level" data-entry-value="{{@../key}}" data-spell-level="{{this.level}}">
                                                 <th class="spell-name-cell">{{this.label}}</th>
                                                 <th class="spell-cell defense">{{localize "Defense"}}</th>
                                                 <th class="spell-cell range">{{localize "Range"}}</th>
