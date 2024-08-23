@@ -288,7 +288,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 }, {}),
                 immunities: Object.keys(monster.system.attributes.immunities).length > 0  ? Object.keys(monster.system.attributes.immunities).reduce((acc, immunityKey) => {
                     const immunity = monster.system.attributes.immunities[immunityKey];
-                    acc.values[immunityKey] = { ...immunity, value: immunity.fake || immunity.empty ? immunity.type : game.i18n.localize(immunity.typeLabels[immunity.type]) };
+                    acc.values[immunityKey] = { 
+                        ...immunity, 
+                        value: immunity.fake || immunity.empty ? immunity.type : game.i18n.localize(immunity.typeLabels[immunity.type]),
+                        exceptions: immunity.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(immunity.typeLabels[x.value] )})) ?? [],
+                    };
 
                     return acc;
                 }, { values: {} }) : { values: { none: { revealed: false, value: game.i18n.localize("PF2EBestiary.Miscellaneous.None") } } },

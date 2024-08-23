@@ -40,15 +40,49 @@
                 </div>
             </div>
             <div class="monster-data-list">
-                    {{#if this.user.isGM}}
-                        {{#each this.immunities.values as |immunity key|}}
-                            <div class="secondary-container {{PF2EBTToggleContainer ../user immunity}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState immunity}}" data-action="toggleRevealed" data-path="{{concat 'system.attributes.immunities.' key}}" data-fake="{{immunity.fake}}">{{immunity.value}}</div>
-                        {{/each}}
-                    {{else}}
-                        {{#PF2EBTFilter 'revealed' '?' 10 this.immunities.values }}
-                            <div class="secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat 'immunities.values.' @key}}" data-fake="{{this.fake}}">{{this.value}}</div>
-                        {{/PF2EBTFilter}}
-                    {{/if}}
+                {{#if this.user.isGM}}
+                    {{#each this.immunities.values as |immunity key|}}
+                        <div 
+                            class="secondary-container {{PF2EBTToggleContainer ../user immunity}}" 
+                            style="{{PF2EBTToggleContainerOverride ../contrastRevealedState immunity}}" 
+                            data-action="toggleRevealed" 
+                            data-path="{{concat 'system.attributes.immunities.' key}}" 
+                            data-fake="{{immunity.fake}}">
+                            {{immunity.value}}
+                            {{#if (gt immunity.exceptions.length 0)}}
+                                <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
+                                {{#each immunity.exceptions as |exception index|}}
+                                    <span 
+                                        class="toggle-container inner {{#if exception.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
+                                        {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
+                                        data-path="{{concat 'system.attributes.immunities.' @../key '.exceptions.' index}}"
+                                    >
+                                        {{exception.value}}{{#if (eq index (PF2EBTSub ../exceptions.length 1))}}){{/if}}
+                                    </span>
+                                    {{#if (eq index (PF2EBTSub ../exceptions.length 2))}}
+                                        {{localize "PF2EBestiary.Miscellaneous.Or"}}
+                                    {{else}}
+                                        {{#if (lt index (PF2EBTSub ../exceptions.length 1))}},{{/if}}
+                                    {{/if}}
+                                {{/each}}
+                            {{/if}}
+                        </div>
+                    {{/each}}
+                {{else}}
+                    {{#PF2EBTFilter 'revealed' '?' 10 this.immunities.values }}
+                        <div class="secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat 'immunities.values.' @key}}" data-fake="{{this.fake}}">
+                            {{this.value}}
+                            {{#if (gt (PF2EBTNrKeys this.exceptions 'revealed') 0)}}
+                                <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
+                                {{#PF2EBTFilter 'revealed' '' 0 this.exceptions}}
+                                    <span>
+                                        {{this.value}}{{#if this.last}}){{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
+                                    </span>
+                                {{/PF2EBTFilter}}
+                            {{/if}}
+                        </div>
+                    {{/PF2EBTFilter}}
+                {{/if}}
             </div>
         </div>
 
