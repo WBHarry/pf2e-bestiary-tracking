@@ -2214,7 +2214,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
             spellKeys.forEach(key => {
                 const spell = monster.items[key];
                 if(spell.type === 'spell' && spell.system.location.value === subItem._id){
-                    const levelValue = spell.system.traits.value.includes("cantrip") ? 'Cantrips' : spell.system.level.value;
+                    const levelValue = spell.system.traits.value.includes("cantrip") ? 'Cantrips' : spell.system.location.heightenedLevel ?? spell.system.cast.focusPoints ? Math.ceil(monster.system.details.level.value / 2) : spell.system.level.value;
                     const label = levelValue === 'Cantrips' ? levelValue : levelValue === 1 ? '1st Rank' : levelValue === 2 ? '2nd Rank' : levelValue === 3 ? '3rd Rank' : `${levelValue}th Rank`;
                     
                     var level = levels.find(x => x.level === levelValue);
