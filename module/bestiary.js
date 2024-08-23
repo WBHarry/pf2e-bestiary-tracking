@@ -567,6 +567,23 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         html.classList.toggle('expanded');
     }
 
+    static async handleTokenNames(monster){
+        if(game.settings.get('pf2e-bestiary-tracking', 'hide-token-names')){
+            // Make workbench mystify if active and newValue = hidden
+            // var workBenchMystifierUsed = game.modules.get("xdy-pf2e-workbench")?.active && game.settings.get('xdy-pf2e-workbench', 'npcMystifier');   
+            const name = 
+                monster.name.revealed && monster.name.custom ? monster.name.custom : 
+                monster.name.revealed && !monster.name.custom ? monster.name.value :
+                !monster.name.revealed ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown") : null;
+
+            if(name) {
+                for(var token of canvas.tokens.placeables.filter(x => x.document.baseActor.uuid === monster.uuid)){
+                    await token.document.update({ name });
+                }
+            }
+        }
+    }
+
     static async toggleRevealed(event, button){
         if(!game.user.isGM) return;
 
@@ -574,6 +591,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         const newValue = !foundry.utils.getProperty(this.bestiary.monster[this.selected.monster.uuid], `${button.dataset.path}.${button.dataset.key ?? 'revealed'}`);
         foundry.utils.setProperty(this.bestiary.monster[this.selected.monster.uuid], `${button.dataset.path}.${button.dataset.key ?? 'revealed'}`, newValue);
+
+        if(button.dataset.path === 'name'){
+            await PF2EBestiary.handleTokenNames(this.selected.monster);
+        }
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         this.render();
@@ -1062,6 +1083,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             if(value){
                 foundry.utils.setProperty(this.bestiary[this.selected.category][this.selected.monster.uuid], `${event.currentTarget.dataset.path}.custom`, value);
 
+                if(event.currentTarget.dataset.path === 'name'){
+                    await PF2EBestiary.handleTokenNames(this.selected.monster);
+                }
+
                 await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
                 await game.socket.emit(`module.pf2e-bestiary-tracking`, {
                     action: socketEvent.UpdateBestiary,
@@ -1145,6 +1170,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }
         else {
             foundry.utils.setProperty(this.bestiary[this.selected.category][this.selected.monster.uuid], `${event.currentTarget.dataset.path}.custom`, null);
+            
+            if(event.currentTarget.dataset.path === 'name'){
+                await PF2EBestiary.handleTokenNames(this.selected.monster);
+            }
         }
     
 
@@ -1385,9 +1414,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const monster = await PF2EBestiary.getMonsterData(item);
         const updatedBestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         updatedBestiary.monster[item.uuid] = monster;
-
-        const autoSelect = await game.settings.get('pf2e-bestiary-tracking', 'automatically-open-monster'); 
-        this.selected = { ...this.selected, category: 'monster', type: autoSelect ? getCreaturesTypes(monster.system.traits.value)[0].key : this.selected.type, monster: autoSelect ? monster : this.selected.monster ? updatedBestiary.monster[this.selected.monster.uuid] : null };
         
         const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
         if(doubleClickOpenActivated){

@@ -1,0 +1,23 @@
+<div class="menu-container">
+    <div class="form-group">
+        <label>{{localize "PF2EBestiary.Settings.AutomaticCombatRegistration.Name"}}</label>
+        <div class="form-fields">
+             <select name="settings.automaticCombatRegistration">
+                {{selectOptions this.combatRegistrationOptions selected=this.settings.automaticCombatRegistration valueAttr="value" labelAttr="name" localize=true}}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>{{localize "PF2EBestiary.Settings.DoubleClickOpen.Name"}}</label>
+        <div class="form-fields">
+            <div class="form-fields">
+                <input type="checkbox" name="settings.doubleClickOpen" {{checked this.settings.doubleClickOpen}} />
+            </div>
+        </div>
+    </div>
+  
+    <footer>
+        <button data-action="save">{{localize "PF2EBestiary.Miscellaneous.Save"}}</button>
+    </footer>
+</div>

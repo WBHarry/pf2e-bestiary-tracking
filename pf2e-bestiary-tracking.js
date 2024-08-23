@@ -89,3 +89,38 @@ Hooks.on('getSceneControlButtons', (controls) => {
          }
     ]); }
 });
+
+Hooks.on("xdy-pf2e-workbench.tokenCreateMystification", token => { 
+    if(!game.user.isGM) return true;
+
+    if(game.settings.get('pf2e-bestiary-tracking', 'hide-token-names')){
+        const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+    
+        const uuid = token.baseActor?.uuid ?? token.actor.uuid;
+        if(uuid){
+            const monster = bestiary.monster[uuid];
+            if(monster && (monster.name.revealed)){
+                return false;
+            }
+        }
+    }
+
+    return true;
+});
+
+Hooks.on("preCreateToken", async token => {
+    if(!game.user.isGM) return;
+
+    if(game.settings.get('pf2e-bestiary-tracking', 'hide-token-names')){
+        const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+        const monster = bestiary.monster[token.baseActor.uuid];
+        if(monster){
+            if(monster.name.custom && monster.name.revealed) await token.updateSource({ name: monster.name.custom });
+            else {
+                var workBenchMystifierUsed = game.modules.get("xdy-pf2e-workbench")?.active && game.settings.get('xdy-pf2e-workbench', 'npcMystifier'); 
+
+                if(!workBenchMystifierUsed && !monster.name.revealed) await token.updateSource({ name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown") });
+            }
+        }
+    }
+});

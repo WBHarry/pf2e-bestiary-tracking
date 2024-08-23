@@ -1,6 +1,7 @@
 import { optionalFields, revealedState } from "../data/bestiaryAppearance.js";
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import BestiaryAppearanceMenu from "../module/bestiaryAppearanceMenu.js";
+import BestiaryIntegrationMenu from "../module/bestiaryIntegrationMenu.js";
 import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
@@ -12,48 +13,33 @@ export const registerGameSettings = () => {
     vagueDescriptions();
     bestiaryLabels();
     bestiaryAppearance();
+    bestiaryIntegration();
 };
 
 const configSettings = () => {
-    game.settings.register('pf2e-bestiary-tracking', 'automatic-combat-registration', {
-        name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Name'),
-        hint: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Hint'),
-        scope: 'world',
-        config: true,
-        type: Number,
-        choices: {
-            0: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.Never'),
-            1: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.StartOfCombat'),
-            2: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.CreatureDefeated'),
-        },
-        default: 0,
-    });
-
-    game.settings.register('pf2e-bestiary-tracking', 'automatically-open-monster', {
-        name: game.i18n.localize('PF2EBestiary.Settings.AutomaticallyOpenMonster.Name'),
-        hint: game.i18n.localize('PF2EBestiary.Settings.AutomaticallyOpenMonster.Hint'),
-        scope: 'world',
-        config: true,
-        type: Boolean,
-        default: false,
-    });
-
-    game.settings.register('pf2e-bestiary-tracking', 'doubleClickOpen', {
-        name: game.i18n.localize('PF2EBestiary.Settings.DoubleClickOpen.Name'),
-        hint: game.i18n.localize('PF2EBestiary.Settings.DoubleClickOpen.Hint'),
+    game.settings.register('pf2e-bestiary-tracking', 'hide-token-names', {
+        name: game.i18n.localize('PF2EBestiary.Settings.HideTokenNames.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.HideTokenNames.Hint'),
         scope: 'world',
         config: true,
         type: Boolean,
         default: false,
         onChange: async value => {
-            if(!value || !game.user.isGM) return;
+            for(var token of canvas.tokens.placeables){
+                var name = token.document.baseActor.name;
+                if(value){
+                    const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+                    const monster = bestiary.monster[token.document.baseActor.uuid];
+                    if(monster){
+                        name = monster.name.revealed && monster.name.custom ? monster.name.custom : 
+                            monster.name.revealed && !monster.name.custom ? monster.name.value :
+                            !monster.name.revealed ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown") : x.document.baseActor.name;
+                    }
+                }
 
-            await newMigrateBestiary(async (_, monster) => {
-                const origin = await fromUuid(monster.uuid);
-
-                await origin.update({ "ownership.default": origin.ownership.default > 1 ? origin.ownership.default : 1 });
-            });
-        }
+                await token.document.update({ name });
+            }
+        },
     });
 };
 
@@ -221,6 +207,47 @@ const bestiaryAppearance = () => {
         type: Object,
         default: [],
     });
+};
 
+const bestiaryIntegration = () => {
+    game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-integration", {
+        name: game.i18n.localize('PF2EBestiary.Menus.BestiaryIntegration.Menu.Name'),
+        label: game.i18n.localize('PF2EBestiary.Menus.BestiaryIntegration.Menu.Label'),
+        hint: game.i18n.localize('PF2EBestiary.Menus.BestiaryIntegration.Menu.Hint'),
+        icon: "fa-solid fa-feather",
+        type: BestiaryIntegrationMenu,
+        restricted: true
+    });
 
+    game.settings.register('pf2e-bestiary-tracking', 'automatic-combat-registration', {
+        name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Hint'),
+        scope: 'world',
+        config: false,
+        type: Number,
+        choices: {
+            0: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.Never'),
+            1: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.StartOfCombat'),
+            2: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.CreatureDefeated'),
+        },
+        default: 0,
+    });
+
+    game.settings.register('pf2e-bestiary-tracking', 'doubleClickOpen', {
+        name: game.i18n.localize('PF2EBestiary.Settings.DoubleClickOpen.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.DoubleClickOpen.Hint'),
+        scope: 'world',
+        config: false,
+        type: Boolean,
+        default: false,
+        onChange: async value => {
+            if(!value || !game.user.isGM) return;
+
+            await newMigrateBestiary(async (_, monster) => {
+                const origin = await fromUuid(monster.uuid);
+
+                await origin.update({ "ownership.default": origin.ownership.default > 1 ? origin.ownership.default : 1 });
+            });
+        }
+    });
 };

@@ -217,6 +217,13 @@
                 "SubText": "You can add more available creature traits to choose from in the PF2E System Settings for Homebrew."
             }
         },
+        "BestiaryIntegration": {
+            "Menu": {
+                "Name": "Bestiary Integration",
+                "Label": "Bestiary Integration Settings",
+                "Hint": "Customize the way you can interact with the Bestiary"
+            }
+        },
         "Settings": {
             "Version": {
                 "Name": "Version",
@@ -230,6 +237,10 @@
                     "StartOfCombat": "Début du Combat",
                     "CreatureDefeated": "À la Défaite de la Créature"
                 }
+            },
+            "HideTokenNames": {
+                "Name": "Handle Token Names",
+                "Hint": "Set token names based on their bestiary status so as to not reveal information."
             },
             "AutomaticallyOpenMonster": {
                 "Name": "Inscription automatique d'une entrée dans le bestiaire",
