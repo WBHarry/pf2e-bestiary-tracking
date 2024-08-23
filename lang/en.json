@@ -212,6 +212,10 @@
                     "Level": "Creature Level",
                     "Languages": "Languages Known"
                 },
+                "DetailedInformation": {
+                    "Name": "Detailed Information Toggles",
+                    "ExceptionsDoubleVs": "(IWR) Exceptions And Double"  
+                },
                 "AdditionalCreatureTypes": {
                     "Name": "Additional Creature Types",
                     "SubText": "You can add more available creature traits to choose from in the PF2E System Settings for Homebrew."

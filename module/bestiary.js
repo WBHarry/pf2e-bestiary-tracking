@@ -163,7 +163,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         selected.monster.passives = newPassives;
     }
 
-    async prepareData(selected, playerLevel, vagueDescriptions) {
+    async prepareData(selected, playerLevel, vagueDescriptions, detailedInformation) {
 
         const { category, type, monster } = selected;
         if(!monster) return { category, type, monster };
@@ -300,8 +300,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                         value: resistance.fake || resistance.empty ? resistance.type : `${label} ${resistance.value}`, 
                         class: getWeaknessCategoryClass(contextLevel, resistance.value), 
                         category: label,
-                        exceptions: resistance.exceptions?.map(x => ({ ...x, key: x.value, value: game.i18n.localize(resistance.typeLabels[x.value] )})) ?? [],
-                        doubleVs: resistance.doubleVs?.map(x => ({ ...x, key: x.value, value: game.i18n.localize(resistance.typeLabels[x.value] )})) ?? [],
+                        exceptions: resistance.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(resistance.typeLabels[x.value] )})) ?? [],
+                        doubleVs: resistance.doubleVs?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(resistance.typeLabels[x.value] )})) ?? [],
                     };
 
                     return acc;
@@ -309,7 +309,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 weaknesses: Object.keys(monster.system.attributes.weaknesses).length > 0  ? Object.keys(monster.system.attributes.weaknesses).reduce((acc, weaknessKey) => {
                     const weakness = monster.system.attributes.weaknesses[weaknessKey];
                     const label = !weakness.empty && !weakness.fake ? game.i18n.localize(weakness.typeLabels[weakness.type]): null;
-                    acc.values[weaknessKey] = { ...weakness, value: weakness.fake || weakness.empty ? weakness.type : `${label} ${weakness.value}`, class: getWeaknessCategoryClass(contextLevel, weakness.value), category: label };
+                    acc.values[weaknessKey] = { 
+                        ...weakness, 
+                        value: weakness.fake || weakness.empty ? weakness.type : `${label} ${weakness.value}`, 
+                        class: getWeaknessCategoryClass(contextLevel, weakness.value), 
+                        category: label,
+                        exceptions: weakness.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(weakness.typeLabels[x.value] )})) ?? [],
+                    };
 
                     return acc;
                 }, { values: {} }) : { values: { none: { revealed: false, value: game.i18n.localize("PF2EBestiary.Miscellaneous.None") } } },
@@ -449,6 +455,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         context.tabs = this.getTabs();
         context.layout = game.settings.get('pf2e-bestiary-tracking', 'bestiary-layout');
         context.optionalFields = game.settings.get('pf2e-bestiary-tracking', 'optional-fields');
+        context.detailedInformation = game.settings.get('pf2e-bestiary-tracking', 'detailed-information-toggles');
         context.useTokenArt = game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
         context.contrastRevealedState = game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state');
         context.vagueDescriptions = foundry.utils.deepClone(await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions'));
@@ -459,7 +466,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         context.search = this.search;
 
         context.selected = foundry.utils.deepClone(this.selected);
-        context.selected = await this.prepareData(context.selected, context.vagueDescriptions.settings.playerBased ? context.playerLevel : null, context.vagueDescriptions);
+        context.selected = await this.prepareData(context.selected, context.vagueDescriptions.settings.playerBased ? context.playerLevel : null, context.vagueDescriptions, context.detailedInformation);
         await this.enrichTexts(context.selected);
         context.bestiary = this.prepareBestiary(foundry.utils.deepClone(this.bestiary));
 
@@ -1205,7 +1212,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const weaknessKeys = Object.keys(dataObject.system.attributes.weaknesses);
         dataObject.system.attributes.weaknesses = weaknessKeys.length > 0 ? weaknessKeys.reduce((acc, key) => {
             const weakness = dataObject.system.attributes.weaknesses[key];
-            acc[getIWRString(weakness, false)] = { ...weakness, exceptions: weakness.exceptions.map(x => ({ revealed: false, value: x })), doubleVs: weakness.doubleVs?.map(x => ({ revealed: false, value: x })) ?? {} } ;
+            acc[getIWRString(weakness, false)] = { ...weakness, exceptions: weakness.exceptions.map(x => ({ revealed: false, value: x }))} ;
 
             return acc;
         }, {}) : { none: { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") } };
@@ -1213,7 +1220,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const resistanceKeys = Object.keys(dataObject.system.attributes.resistances);
         dataObject.system.attributes.resistances = resistanceKeys.length > 0 ? resistanceKeys.reduce((acc, key) => {
             const resistance = dataObject.system.attributes.resistances[key];
-            acc[getIWRString(resistance, true)] = { ...resistance, exceptions: resistance.exceptions.map(x => ({ revealed: false, value: x })), doubleVs: resistance.doubleVs?.map(x => ({ revealed: false, value: x })) ?? {} } ;
+            acc[getIWRString(resistance, true)] = { ...resistance, exceptions: resistance.exceptions.map(x => ({ revealed: false, value: x })), doubleVs: resistance.doubleVs.map(x => ({ revealed: false, value: x }))  } ;
 
             return acc;
         }, {}) : { none: { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") } };

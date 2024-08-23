@@ -66,16 +66,33 @@
             <div class="monster-data-list">
                 {{#if this.user.isGM}}
                     {{#each this.weaknesses.values as |weakness key|}}
-                        <div 
-                            class="secondary-container {{PF2EBTToggleContainer ../user weakness}}"
-                            style="{{PF2EBTToggleContainerOverride ../contrastRevealedState weakness}}" 
-                            data-action="toggleRevealed" 
-                            data-path="{{concat 'system.attributes.weaknesses.' key}}" 
-                            data-fake="{{weakness.fake}}"
-                            title="{{PF2EBTCategoryClassTitle weakness.class 'Weakness' ../vagueDescriptions.properties.weaknesses}}"
-                        >
-                            {{PF2EBTMonsterValue weakness ../vagueDescriptions.properties.weaknesses}}
-                        </div>
+                            <div 
+                                class="secondary-container {{PF2EBTToggleContainer ../user weakness}}" 
+                                style="{{PF2EBTToggleContainerOverride ../contrastRevealedState weakness}}"
+                                data-action="toggleRevealed" 
+                                data-path="{{concat 'system.attributes.weaknesses.' key}}" 
+                                data-fake="{{weakness.fake}}"
+                                title="{{PF2EBTCategoryClassTitle weakness.class 'Weakness' ../vagueDescriptions.properties.weaknesses}}"
+                            >
+                                {{PF2EBTMonsterValue weakness ../vagueDescriptions.properties.weaknesses}}
+                                {{#if (gt weakness.exceptions.length 0)}}
+                                    <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
+                                    {{#each weakness.exceptions as |exception index|}}
+                                        <span 
+                                            class="toggle-container inner {{#if exception.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
+                                            {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
+                                            data-path="{{concat 'system.attributes.weaknesses.' @../key '.exceptions.' index}}"
+                                        >
+                                            {{exception.value}}{{#if (eq index (PF2EBTSub ../exceptions.length 1))}}){{/if}}
+                                        </span>
+                                        {{#if (eq index (PF2EBTSub ../exceptions.length 2))}}
+                                            {{localize "PF2EBestiary.Miscellaneous.Or"}}
+                                        {{else}}
+                                            {{#if (lt index (PF2EBTSub ../exceptions.length 1))}},{{/if}}
+                                        {{/if}}
+                                    {{/each}}
+                                {{/if}}
+                            </div>
                     {{/each}}
                 {{else}}
                     {{#PF2EBTFilter 'revealed' '?' 10 this.weaknesses.values}}
@@ -87,6 +104,14 @@
                             title="{{PF2EBTCategoryClassTitle this.class 'Weakness' ../vagueDescriptions.properties.weaknesses}}"
                         >
                             {{PF2EBTMonsterValue this ../vagueDescriptions.properties.weaknesses}}
+                            {{#if (gt (PF2EBTNrKeys this.exceptions 'revealed') 0)}}
+                                <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
+                                {{#PF2EBTFilter 'revealed' '' 0 this.exceptions}}
+                                    <span>
+                                        {{this.value}}{{#if this.last}}){{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
+                                    </span>
+                                {{/PF2EBTFilter}}
+                            {{/if}}
                         </div>
                     {{/PF2EBTFilter}}
                 {{/if}}
@@ -119,7 +144,11 @@
                                 {{#if (gt resistance.exceptions.length 0)}}
                                     <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                     {{#each resistance.exceptions as |exception index|}}
-                                        <span class="toggle-container inner {{#if exception.revealed}}revealed{{/if}} primary-hover-container" data-action="toggleRevealed" data-path="{{concat 'system.attributes.resistances.' @../key '.exceptions.' index}}">
+                                        <span 
+                                            class="toggle-container inner {{#if exception.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
+                                            {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
+                                            data-path="{{concat 'system.attributes.resistances.' @../key '.exceptions.' index}}"
+                                        >
                                             {{exception.value}}{{#if (and (eq index (PF2EBTSub ../exceptions.length 1)) (eq ../doubleVs.length 0))}}){{/if}}
                                         </span>
                                         {{#if (eq index (PF2EBTSub ../exceptions.length 2))}}
@@ -133,7 +162,11 @@
                                 {{#if (gt resistance.doubleVs.length 0)}}
                                     <span>{{#if (eq resistance.exceptions.length 0)}}({{/if}}{{localize "PF2EBestiary.Miscellaneous.Double"}}</span>
                                     {{#each resistance.doubleVs as |double index|}}
-                                        <span class="toggle-container inner {{#if double.revealed}}revealed{{/if}} primary-hover-container" data-action="toggleRevealed" data-path="{{concat 'system.attributes.resistances.' @../key '.doubleVs.' index}}">
+                                        <span 
+                                            class="toggle-container inner {{#if double.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
+                                            {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
+                                            data-path="{{concat 'system.attributes.resistances.' @../key '.doubleVs.' index}}"
+                                        >
                                             {{double.value}}{{#if (eq index (PF2EBTSub ../doubleVs.length 1))}}){{/if}}
                                         </span>
                                         
@@ -173,19 +206,6 @@
                                     </span>
                                 {{/PF2EBTFilter}}
                             {{/if}}
-                            {{!-- {{#if (gt resistance.doubleVs.length 0)}}
-                                <span>{{#if (eq resistance.exceptions.length 0)}}({{/if}}{{localize "PF2EBestiary.Miscellaneous.Double"}}</span>
-                                {{#each resistance.doubleVs as |double index|}}
-                                    <span class="toggle-container inner {{#if double.revealed}}revealed{{/if}}" data-action="toggleRevealed" data-path="{{concat 'system.attributes.resistances.' @../key '.doubleVs.' index}}">
-                                        {{double.value}}{{#if (eq index (PF2EBTSub ../doubleVs.length 1))}}){{/if}}
-                                    </span>
-                                    {{#if (eq index (PF2EBTSub ../doubleVs.length 2))}}
-                                        {{localize "PF2EBestiary.Miscellaneous.Or"}}
-                                    {{else}}
-                                        {{#if (lt index (PF2EBTSub ../doubleVs.length 1))}},&nbsp;{{/if}}
-                                    {{/if}}
-                                {{/each}}
-                            {{/if}} --}}
                         </div>
                     {{/PF2EBTFilter}}
                 {{/if}}

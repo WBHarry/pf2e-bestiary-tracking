@@ -170,6 +170,18 @@ const bestiaryAppearance = () => {
         default: false,
     });
 
+    game.settings.register('pf2e-bestiary-tracking', 'detailed-information-toggles', {
+        name: game.i18n.localize('PF2EBestiary.Settings.DetailedInformation.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.DetailedInformation.Hint'),
+        scope: 'world',
+        config: false,
+        type: Object,
+        default: {
+            exceptionsDouble: false,
+            attackTraits: false,
+        },
+    });
+
     game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-appearance", {
         name: game.i18n.localize('PF2EBestiary.Menus.BestiaryAppearance.Menu.Name'),
         label: game.i18n.localize('PF2EBestiary.Menus.BestiaryAppearance.Menu.Label'),
@@ -209,4 +221,6 @@ const bestiaryAppearance = () => {
         type: Object,
         default: [],
     });
+
+
 };

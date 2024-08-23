@@ -35,6 +35,21 @@
     </fieldset> 
 
     <fieldset class="menu-category">
+        <legend class="pf2e-bestiary-clickable-icon" data-action="toggleDetailedInformation">
+            <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.DetailedInformation.Name"}}</h4>
+        </legend>
+
+        <div class="form-group">
+            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.DetailedInformation.ExceptionsDoubleVs"}}</label>
+            <div class="form-fields">
+                <div class="form-fields">
+                    <input type="checkbox" name="detailedInformation.exceptionsDouble" {{checked settings.detailedInformation.exceptionsDouble}} />
+                </div>
+            </div>
+        </div>
+    </fieldset> 
+
+    <fieldset class="menu-category">
         <legend class="flexed">
             <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ContrastRevealedState.Name"}}</h4>
             <i class="fa-solid fa-arrow-rotate-left pf2e-bestiary-clickable-icon" data-action="resetContrastRevealedState"></i>

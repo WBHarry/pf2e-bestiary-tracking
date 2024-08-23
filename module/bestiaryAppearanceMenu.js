@@ -12,6 +12,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
             additionalCreatureTypes: game.settings.get('pf2e-bestiary-tracking', 'additional-creature-types').map(x => ({ value: x.value, name: game.i18n.localize(x.name) })),
             contrastRevealedState: game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state'),
             optionalFields: game.settings.get('pf2e-bestiary-tracking', 'optional-fields'),
+            detailedInformation: game.settings.get('pf2e-bestiary-tracking', 'detailed-information-toggles'),
         }
     }
 
@@ -27,6 +28,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
         actions: {
             resetContrastRevealedState: this.resetContrastRevealedState,
             toggleOptionalFields: this.toggleOptionalFields,
+            toggleDetailedInformation: this.toggleDetailedInformation,
             save: this.save,
         },
         form: { handler: this.updateData, submitOnChange: true },
@@ -84,6 +86,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
             useTokenArt: data.useTokenArt,
             contrastRevealedState: data.contrastRevealedState,
             optionalFields: data.optionalFields,
+            detailedInformation: { ...data.detailedInformation, attackTraits: false }
         };
         this.render();
     }
@@ -99,9 +102,20 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
     };
 
     static async toggleOptionalFields (){
-        const keys = Object.keys(optionalFields);
+        const keys = Object.keys(this.settings.optionalFields);
         const enable = Object.values(this.settings.optionalFields).some(x => !x);
         this.settings.optionalFields = keys.reduce((acc, key) => {
+            acc[key] = enable;
+            return acc;
+        }, {});
+        
+        this.render();
+    };
+
+    static async toggleDetailedInformation (){
+        const keys = Object.keys(this.settings.detailedInformation);
+        const enable = Object.values(this.settings.detailedInformation).some(x => !x);
+        this.settings.detailedInformation = keys.reduce((acc, key) => {
             acc[key] = enable;
             return acc;
         }, {});
@@ -114,6 +128,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
         await game.settings.set('pf2e-bestiary-tracking', 'contrast-revealed-state', this.settings.contrastRevealedState);
         await game.settings.set('pf2e-bestiary-tracking', 'use-token-art', this.settings.useTokenArt);
         await game.settings.set('pf2e-bestiary-tracking', 'optional-fields', this.settings.optionalFields);
+        await game.settings.set('pf2e-bestiary-tracking', 'detailed-information-toggles', this.settings.detailedInformation);
         this.close();
     };
 }

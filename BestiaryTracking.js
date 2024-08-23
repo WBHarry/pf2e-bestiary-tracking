@@ -2153,7 +2153,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
         selected.monster.passives = newPassives;
     }
 
-    async prepareData(selected, playerLevel, vagueDescriptions) {
+    async prepareData(selected, playerLevel, vagueDescriptions, detailedInformation) {
 
         const { category, type, monster } = selected;
         if(!monster) return { category, type, monster };
@@ -2289,8 +2289,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
                         value: resistance.fake || resistance.empty ? resistance.type : `${label} ${resistance.value}`, 
                         class: getWeaknessCategoryClass(contextLevel, resistance.value), 
                         category: label,
-                        exceptions: resistance.exceptions?.map(x => ({ ...x, key: x.value, value: game.i18n.localize(resistance.typeLabels[x.value] )})) ?? [],
-                        doubleVs: resistance.doubleVs?.map(x => ({ ...x, key: x.value, value: game.i18n.localize(resistance.typeLabels[x.value] )})) ?? [],
+                        exceptions: resistance.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(resistance.typeLabels[x.value] )})) ?? [],
+                        doubleVs: resistance.doubleVs?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(resistance.typeLabels[x.value] )})) ?? [],
                     };
 
                     return acc;
@@ -2298,7 +2298,13 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
                 weaknesses: Object.keys(monster.system.attributes.weaknesses).length > 0  ? Object.keys(monster.system.attributes.weaknesses).reduce((acc, weaknessKey) => {
                     const weakness = monster.system.attributes.weaknesses[weaknessKey];
                     const label = !weakness.empty && !weakness.fake ? game.i18n.localize(weakness.typeLabels[weakness.type]): null;
-                    acc.values[weaknessKey] = { ...weakness, value: weakness.fake || weakness.empty ? weakness.type : `${label} ${weakness.value}`, class: getWeaknessCategoryClass(contextLevel, weakness.value), category: label };
+                    acc.values[weaknessKey] = { 
+                        ...weakness, 
+                        value: weakness.fake || weakness.empty ? weakness.type : `${label} ${weakness.value}`, 
+                        class: getWeaknessCategoryClass(contextLevel, weakness.value), 
+                        category: label,
+                        exceptions: weakness.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(weakness.typeLabels[x.value] )})) ?? [],
+                    };
 
                     return acc;
                 }, { values: {} }) : { values: { none: { revealed: false, value: game.i18n.localize("PF2EBestiary.Miscellaneous.None") } } },
@@ -2438,6 +2444,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
         context.tabs = this.getTabs();
         context.layout = game.settings.get('pf2e-bestiary-tracking', 'bestiary-layout');
         context.optionalFields = game.settings.get('pf2e-bestiary-tracking', 'optional-fields');
+        context.detailedInformation = game.settings.get('pf2e-bestiary-tracking', 'detailed-information-toggles');
         context.useTokenArt = game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
         context.contrastRevealedState = game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state');
         context.vagueDescriptions = foundry.utils.deepClone(await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions'));
@@ -2448,7 +2455,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
         context.search = this.search;
 
         context.selected = foundry.utils.deepClone(this.selected);
-        context.selected = await this.prepareData(context.selected, context.vagueDescriptions.settings.playerBased ? context.playerLevel : null, context.vagueDescriptions);
+        context.selected = await this.prepareData(context.selected, context.vagueDescriptions.settings.playerBased ? context.playerLevel : null, context.vagueDescriptions, context.detailedInformation);
         await this.enrichTexts(context.selected);
         context.bestiary = this.prepareBestiary(foundry.utils.deepClone(this.bestiary));
 
@@ -3193,7 +3200,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
         const weaknessKeys = Object.keys(dataObject.system.attributes.weaknesses);
         dataObject.system.attributes.weaknesses = weaknessKeys.length > 0 ? weaknessKeys.reduce((acc, key) => {
             const weakness = dataObject.system.attributes.weaknesses[key];
-            acc[getIWRString(weakness, false)] = { ...weakness, exceptions: weakness.exceptions.map(x => ({ revealed: false, value: x })), doubleVs: weakness.doubleVs?.map(x => ({ revealed: false, value: x })) ?? {} } ;
+            acc[getIWRString(weakness, false)] = { ...weakness, exceptions: weakness.exceptions.map(x => ({ revealed: false, value: x }))} ;
 
             return acc;
         }, {}) : { none: { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") } };
@@ -3201,7 +3208,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
         const resistanceKeys = Object.keys(dataObject.system.attributes.resistances);
         dataObject.system.attributes.resistances = resistanceKeys.length > 0 ? resistanceKeys.reduce((acc, key) => {
             const resistance = dataObject.system.attributes.resistances[key];
-            acc[getIWRString(resistance, true)] = { ...resistance, exceptions: resistance.exceptions.map(x => ({ revealed: false, value: x })), doubleVs: resistance.doubleVs?.map(x => ({ revealed: false, value: x })) ?? {} } ;
+            acc[getIWRString(resistance, true)] = { ...resistance, exceptions: resistance.exceptions.map(x => ({ revealed: false, value: x })), doubleVs: resistance.doubleVs.map(x => ({ revealed: false, value: x }))  } ;
 
             return acc;
         }, {}) : { none: { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") } };
@@ -3557,6 +3564,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$2(ApplicationV2$
             additionalCreatureTypes: game.settings.get('pf2e-bestiary-tracking', 'additional-creature-types').map(x => ({ value: x.value, name: game.i18n.localize(x.name) })),
             contrastRevealedState: game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state'),
             optionalFields: game.settings.get('pf2e-bestiary-tracking', 'optional-fields'),
+            detailedInformation: game.settings.get('pf2e-bestiary-tracking', 'detailed-information-toggles'),
         };
     }
 
@@ -3572,6 +3580,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$2(ApplicationV2$
         actions: {
             resetContrastRevealedState: this.resetContrastRevealedState,
             toggleOptionalFields: this.toggleOptionalFields,
+            toggleDetailedInformation: this.toggleDetailedInformation,
             save: this.save,
         },
         form: { handler: this.updateData, submitOnChange: true },
@@ -3629,6 +3638,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$2(ApplicationV2$
             useTokenArt: data.useTokenArt,
             contrastRevealedState: data.contrastRevealedState,
             optionalFields: data.optionalFields,
+            detailedInformation: { ...data.detailedInformation, attackTraits: false }
         };
         this.render();
     }
@@ -3644,9 +3654,20 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$2(ApplicationV2$
     };
 
     static async toggleOptionalFields (){
-        const keys = Object.keys(optionalFields);
+        const keys = Object.keys(this.settings.optionalFields);
         const enable = Object.values(this.settings.optionalFields).some(x => !x);
         this.settings.optionalFields = keys.reduce((acc, key) => {
+            acc[key] = enable;
+            return acc;
+        }, {});
+        
+        this.render();
+    };
+
+    static async toggleDetailedInformation (){
+        const keys = Object.keys(this.settings.detailedInformation);
+        const enable = Object.values(this.settings.detailedInformation).some(x => !x);
+        this.settings.detailedInformation = keys.reduce((acc, key) => {
             acc[key] = enable;
             return acc;
         }, {});
@@ -3659,6 +3680,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$2(ApplicationV2$
         await game.settings.set('pf2e-bestiary-tracking', 'contrast-revealed-state', this.settings.contrastRevealedState);
         await game.settings.set('pf2e-bestiary-tracking', 'use-token-art', this.settings.useTokenArt);
         await game.settings.set('pf2e-bestiary-tracking', 'optional-fields', this.settings.optionalFields);
+        await game.settings.set('pf2e-bestiary-tracking', 'detailed-information-toggles', this.settings.detailedInformation);
         this.close();
     };
 }
@@ -4348,8 +4370,6 @@ const handleDataMigration = async () => {
         version = '0.8.9.2';
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
-
-        
 };
 
 const migrateBestiary = async (update) => {
@@ -4567,6 +4587,18 @@ const bestiaryAppearance = () => {
         default: false,
     });
 
+    game.settings.register('pf2e-bestiary-tracking', 'detailed-information-toggles', {
+        name: game.i18n.localize('PF2EBestiary.Settings.DetailedInformation.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.DetailedInformation.Hint'),
+        scope: 'world',
+        config: false,
+        type: Object,
+        default: {
+            exceptionsDouble: false,
+            attackTraits: false,
+        },
+    });
+
     game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-appearance", {
         name: game.i18n.localize('PF2EBestiary.Menus.BestiaryAppearance.Menu.Name'),
         label: game.i18n.localize('PF2EBestiary.Menus.BestiaryAppearance.Menu.Label'),
@@ -4606,6 +4638,8 @@ const bestiaryAppearance = () => {
         type: Object,
         default: [],
     });
+
+
 };
 
 const openBestiary = async () => {
