@@ -3732,8 +3732,11 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$2(ApplicationV2
         super({});
 
         this.settings = {
-            automaticCombatRegistration: game.settings.get('pf2e-bestiary-tracking', 'automatic-combat-registration'),
-            doubleClickOpen: game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen'),
+            creatureRegistration: {
+                automaticCombatRegistration: game.settings.get('pf2e-bestiary-tracking', 'automatic-combat-registration'),
+                doubleClickOpen: game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen'),
+            },
+            chatMessageHandling: game.settings.get('pf2e-bestiary-tracking', 'chat-message-handling'),
         };
 
         this.combatRegistrationOptions = [
@@ -3753,7 +3756,7 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$2(ApplicationV2
         classes: ["pf2e-bestiary-tracking", "bestiary-settings-menu"],
         position: { width: 680, height: 'auto' },
         actions: {
-            toggleFields: this.toggleFields,
+            toggleChatMessageHandlingFields: this.toggleChatMessageHandlingFields,
             save: this.save,
         },
         form: { handler: this.updateData, submitOnChange: true },
@@ -3768,7 +3771,7 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$2(ApplicationV2
 
     async _prepareContext(_options) {
         const context = await super._prepareContext(_options);
-        
+
         context.settings = this.settings;
         context.combatRegistrationOptions = this.combatRegistrationOptions;
 
@@ -3781,10 +3784,10 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$2(ApplicationV2
         this.render();
     }
 
-    static async toggleFields (){
-        const keys = Object.keys(this.settings);
-        const enable = Object.values(this.settings).some(x => !x);
-        this.settings = keys.reduce((acc, key) => {
+    static async toggleChatMessageHandlingFields(){
+        const keys = Object.keys(this.settings.chatMessageHandling.automaticReveal);
+        const enable = Object.values(this.settings.chatMessageHandling.automaticReveal).some(x => !x);
+        this.settings.chatMessageHandling.automaticReveal = keys.reduce((acc, key) => {
             acc[key] = enable;
             return acc;
         }, {});
@@ -3793,8 +3796,9 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$2(ApplicationV2
     };
 
     static async save(_){
-        await game.settings.set('pf2e-bestiary-tracking', 'automatic-combat-registration', this.settings.automaticCombatRegistration);
-        await game.settings.set('pf2e-bestiary-tracking', 'doubleClickOpen', this.settings.doubleClickOpen);
+        await game.settings.set('pf2e-bestiary-tracking', 'automatic-combat-registration', this.settings.creatureRegistration.automaticCombatRegistration);
+        await game.settings.set('pf2e-bestiary-tracking', 'doubleClickOpen', this.settings.creatureRegistration.doubleClickOpen);
+        await game.settings.set('pf2e-bestiary-tracking', 'chat-message-handling', this.settings.chatMessageHandling);
         this.close();
     };
 }
@@ -4776,9 +4780,27 @@ const bestiaryIntegration = () => {
             await newMigrateBestiary(async (_, monster) => {
                 const origin = await fromUuid(monster.uuid);
 
-                await origin.update({ "ownership.default": origin.ownership.default > 1 ? origin.ownership.default : 1 });
+                await origin?.update({ "ownership.default": origin.ownership.default > 1 ? origin.ownership.default : 1 });
             });
         }
+    });
+
+    game.settings.register('pf2e-bestiary-tracking', 'chat-message-handling', {
+        name: game.i18n.localize('PF2EBestiary.Settings.ChatMessageHandling.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.ChatMessageHandling.Hint'),
+        scope: 'world',
+        config: false,
+        type: Object,
+        default: {
+            revealRightClick: false,
+            automaticReveal: {
+                saves: false,
+                skills: false,
+                attacks: false,
+                actions: false,
+                spells: false,
+            }
+        },
     });
 };
 
@@ -4929,20 +4951,6 @@ Hooks.on("updateCombatant", async (combatant, changes) => {
     }
 });
 
-Hooks.on('getSceneControlButtons', (controls) => {
-    const notes = controls.find((c) => c.name === 'notes');
-    if (notes) { notes.tools.push(...[
-        {
-            name: 'bestiary-tracking',
-            title: game.i18n.localize("PF2EBestiary.Menus.Title"),
-            icon: 'fa-solid fa-spaghetti-monster-flying',
-            visible: true,
-            onClick: () => new PF2EBestiary().render(true),
-            button: true
-         }
-    ]); }
-});
-
 Hooks.on("xdy-pf2e-workbench.tokenCreateMystification", token => { 
     if(!game.user.isGM) return true;
 
@@ -4968,12 +4976,95 @@ Hooks.on("preCreateToken", async token => {
         const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         const monster = bestiary.monster[token.baseActor.uuid];
         if(monster){
-            if(monster.name.custom && monster.name.revealed) await token.updateSource({ name: monster.name.custom });
-            else {
-                var workBenchMystifierUsed = game.modules.get("xdy-pf2e-workbench")?.active && game.settings.get('xdy-pf2e-workbench', 'npcMystifier'); 
-
-                if(!workBenchMystifierUsed && !monster.name.revealed) await token.updateSource({ name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown") });
+            if(monster.name.custom && monster.name.revealed) {
+                await token.updateSource({ name: monster.name.custom });
+                return;
             }
+        }
+
+        var workBenchMystifierUsed = game.modules.get("xdy-pf2e-workbench")?.active && game.settings.get('xdy-pf2e-workbench', 'npcMystifier'); 
+
+        if(!workBenchMystifierUsed) await token.updateSource({ name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown") });
+    }
+});
+
+Hooks.on("renderActorDirectory", async tab => {
+    if(tab.id === 'actors'){
+        const buttons = $(tab.element).find('.directory-footer.action-buttons');
+        buttons[0].style = "display: flex; align-items: center; padding: 0.5rem 0;";
+        buttons.prepend(`
+            <button id="pf2e-bestiary-tracker">
+                <i class="fa-solid fa-spaghetti-monster-flying" />
+                <span style="font-size: var(--font-size-14); font-family: var(--font-primary); font-weight: 400;">${game.i18n.localize("PF2EBestiary.Name")}</span>
+            </button>`
+        );
+
+        $(buttons).find('#pf2e-bestiary-tracker')[0].onclick = () => {
+            new PF2EBestiary().render(true);
+        };
+    }
+});
+
+Hooks.on("createChatMessage", async (message) => {
+    if(game.user.isGM && message.flags.pf2e && Object.keys(message.flags.pf2e).length > 0){
+        const { automaticReveal } = game.settings.get('pf2e-bestiary-tracking', 'chat-message-handling');
+        if(automaticReveal){
+            const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+            const { automaticReveal } = game.settings.get('pf2e-bestiary-tracking', 'chat-message-handling');
+
+            if(message.flags.pf2e.origin){
+                // Attacks | Actions | Spells
+                const actorUuid = message.flags.pf2e.origin.actor;
+                const monster = bestiary.monster[actorUuid];
+                const item = await fromUuid(message.flags.pf2e.origin.uuid);
+
+                if(monster && item){
+                    if(message.flags.pf2e.modifierName && automaticReveal.attacks){
+                        const monsterItem = monster.system.actions[item.id];
+                        if(monsterItem){
+                            monsterItem.revealed = true;
+                        }
+                    }
+
+                    if(message.flags.pf2e.origin.type === 'action' && automaticReveal.actions){
+                        monster.items[item.id].revealed = true;
+                    }
+
+                    if(['spell', 'spell-cast'].includes(message.flags.pf2e.origin.type) && automaticReveal.spells){
+                        monster.items[item.id].revealed = true;
+                        monster.items[message.flags.pf2e.casting.id].revealed = true;
+                    }
+                }
+            }
+            else {
+                 // Skills | Saving Throws
+                 const monster = bestiary.monster[`Actor.${message.flags.pf2e.context.actor}`];
+                 if(monster){
+                     if(message.flags.pf2e.context.type === 'skill-check' && automaticReveal.skills)
+                     {
+                         const skill = monster.system.skills[message.flags.pf2e.modifierName];
+                         if(skill){
+                             skill.revealed = true;
+                         }
+                         
+                     }
+                     if(message.flags.pf2e.context.type ==='saving-throw' && automaticReveal.saves){
+                         const savingThrow = monster.system.saves[message.flags.pf2e.modifierName];
+                         if(savingThrow){
+                             savingThrow.revealed = true;
+                         }
+                     }
+                 }
+            }
+            
+            await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
+            await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+                action: socketEvent.UpdateBestiary,
+                data: { },
+            });
+    
+            Hooks.callAll(socketEvent.UpdateBestiary, {});
+            
         }
     }
 });

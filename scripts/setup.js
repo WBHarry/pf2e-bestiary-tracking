@@ -246,8 +246,26 @@ const bestiaryIntegration = () => {
             await newMigrateBestiary(async (_, monster) => {
                 const origin = await fromUuid(monster.uuid);
 
-                await origin.update({ "ownership.default": origin.ownership.default > 1 ? origin.ownership.default : 1 });
+                await origin?.update({ "ownership.default": origin.ownership.default > 1 ? origin.ownership.default : 1 });
             });
         }
+    });
+
+    game.settings.register('pf2e-bestiary-tracking', 'chat-message-handling', {
+        name: game.i18n.localize('PF2EBestiary.Settings.ChatMessageHandling.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.ChatMessageHandling.Hint'),
+        scope: 'world',
+        config: false,
+        type: Object,
+        default: {
+            revealRightClick: false,
+            automaticReveal: {
+                saves: false,
+                skills: false,
+                attacks: false,
+                actions: false,
+                spells: false,
+            }
+        },
     });
 };

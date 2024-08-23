@@ -1,22 +1,79 @@
 <div class="menu-container">
-    <div class="form-group">
-        <label>{{localize "PF2EBestiary.Settings.AutomaticCombatRegistration.Name"}}</label>
-        <div class="form-fields">
-             <select name="settings.automaticCombatRegistration">
-                {{selectOptions this.combatRegistrationOptions selected=this.settings.automaticCombatRegistration valueAttr="value" labelAttr="name" localize=true}}
-            </select>
-        </div>
-    </div>
+    <fieldset class="menu-category">
+        <legend>
+            <h4>{{localize "PF2EBestiary.Menus.BestiaryIntegration.CreatureRegistration.Name"}}</h4>
+        </legend>
 
-    <div class="form-group">
-        <label>{{localize "PF2EBestiary.Settings.DoubleClickOpen.Name"}}</label>
-        <div class="form-fields">
+        <div class="form-group">
+            <label>{{localize "PF2EBestiary.Settings.AutomaticCombatRegistration.Name"}}</label>
             <div class="form-fields">
-                <input type="checkbox" name="settings.doubleClickOpen" {{checked this.settings.doubleClickOpen}} />
+                <select name="settings.creatureRegistration.automaticCombatRegistration">
+                    {{selectOptions this.combatRegistrationOptions selected=this.settings.creatureRegistration.automaticCombatRegistration valueAttr="value" labelAttr="name" localize=true}}
+                </select>
             </div>
         </div>
-    </div>
-  
+
+        <div class="form-group">
+            <label>{{localize "PF2EBestiary.Settings.DoubleClickOpen.Name"}}</label>
+            <div class="form-fields">
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.creatureRegistration.doubleClickOpen" {{checked this.settings.creatureRegistration.doubleClickOpen}} />
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="menu-category">
+        <legend class="pf2e-bestiary-clickable-icon" data-action="toggleChatMessageHandlingFields">
+            <h4>{{localize "PF2EBestiary.Menus.BestiaryIntegration.AutomaticRevealing.Name"}}</h4>
+        </legend>
+
+        <div class="form-group">
+            <label>{{localize "PF2EBestiary.Menus.BestiaryIntegration.AutomaticRevealing.Saves"}}</label>
+            <div class="form-fields">
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.chatMessageHandling.automaticReveal.saves" {{checked this.settings.chatMessageHandling.automaticReveal.saves}} />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "PF2EBestiary.Menus.BestiaryIntegration.AutomaticRevealing.Skills"}}</label>
+            <div class="form-fields">
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.chatMessageHandling.automaticReveal.skills" {{checked this.settings.chatMessageHandling.automaticReveal.skills}} />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "PF2EBestiary.Menus.BestiaryIntegration.AutomaticRevealing.Attacks"}}</label>
+            <div class="form-fields">
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.chatMessageHandling.automaticReveal.attacks" {{checked this.settings.chatMessageHandling.automaticReveal.attacks}} />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "PF2EBestiary.Menus.BestiaryIntegration.AutomaticRevealing.Actions"}}</label>
+            <div class="form-fields">
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.chatMessageHandling.automaticReveal.actions" {{checked this.settings.chatMessageHandling.automaticReveal.actions}} />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "PF2EBestiary.Menus.BestiaryIntegration.AutomaticRevealing.Spells"}}</label>
+            <div class="form-fields">
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.chatMessageHandling.automaticReveal.spells" {{checked this.settings.chatMessageHandling.automaticReveal.spells}} />
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
     <footer>
         <button data-action="save">{{localize "PF2EBestiary.Miscellaneous.Save"}}</button>
     </footer>

@@ -1,10 +1,9 @@
 import PF2EBestiary from "./module/bestiary.js";
 import RegisterHandlebarsHelpers from "./scripts/handlebarHelpers.js";
 import { registerGameSettings } from "./scripts/setup.js";
-import { handleSocketEvent } from "./scripts/socket.js";
+import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
 import { handleDataMigration } from "./scripts/migrationHandler.js";
-import { slugify } from "./scripts/helpers.js";
 
 Hooks.once('init', () => {
     registerGameSettings();
@@ -76,20 +75,6 @@ Hooks.on("updateCombatant", async (combatant, changes) => {
     }
 });
 
-Hooks.on('getSceneControlButtons', (controls) => {
-    const notes = controls.find((c) => c.name === 'notes');
-    if (notes) { notes.tools.push(...[
-        {
-            name: 'bestiary-tracking',
-            title: game.i18n.localize("PF2EBestiary.Menus.Title"),
-            icon: 'fa-solid fa-spaghetti-monster-flying',
-            visible: true,
-            onClick: () => new PF2EBestiary().render(true),
-            button: true
-         }
-    ]); }
-});
-
 Hooks.on("xdy-pf2e-workbench.tokenCreateMystification", token => { 
     if(!game.user.isGM) return true;
 
@@ -115,12 +100,95 @@ Hooks.on("preCreateToken", async token => {
         const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         const monster = bestiary.monster[token.baseActor.uuid];
         if(monster){
-            if(monster.name.custom && monster.name.revealed) await token.updateSource({ name: monster.name.custom });
-            else {
-                var workBenchMystifierUsed = game.modules.get("xdy-pf2e-workbench")?.active && game.settings.get('xdy-pf2e-workbench', 'npcMystifier'); 
-
-                if(!workBenchMystifierUsed && !monster.name.revealed) await token.updateSource({ name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown") });
+            if(monster.name.custom && monster.name.revealed) {
+                await token.updateSource({ name: monster.name.custom });
+                return;
             }
+        }
+
+        var workBenchMystifierUsed = game.modules.get("xdy-pf2e-workbench")?.active && game.settings.get('xdy-pf2e-workbench', 'npcMystifier'); 
+
+        if(!workBenchMystifierUsed) await token.updateSource({ name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown") });
+    }
+});
+
+Hooks.on("renderActorDirectory", async tab => {
+    if(tab.id === 'actors'){
+        const buttons = $(tab.element).find('.directory-footer.action-buttons');
+        buttons[0].style = "display: flex; align-items: center; padding: 0.5rem 0;";
+        buttons.prepend(`
+            <button id="pf2e-bestiary-tracker">
+                <i class="fa-solid fa-spaghetti-monster-flying" />
+                <span style="font-size: var(--font-size-14); font-family: var(--font-primary); font-weight: 400;">${game.i18n.localize("PF2EBestiary.Name")}</span>
+            </button>`
+        );
+
+        $(buttons).find('#pf2e-bestiary-tracker')[0].onclick = () => {
+            new PF2EBestiary().render(true);
+        };
+    }
+});
+
+Hooks.on("createChatMessage", async (message) => {
+    if(game.user.isGM && message.flags.pf2e && Object.keys(message.flags.pf2e).length > 0){
+        const { automaticReveal } = game.settings.get('pf2e-bestiary-tracking', 'chat-message-handling');
+        if(automaticReveal){
+            const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+            const { automaticReveal } = game.settings.get('pf2e-bestiary-tracking', 'chat-message-handling');
+
+            if(message.flags.pf2e.origin){
+                // Attacks | Actions | Spells
+                const actorUuid = message.flags.pf2e.origin.actor;
+                const monster = bestiary.monster[actorUuid];
+                const item = await fromUuid(message.flags.pf2e.origin.uuid);
+
+                if(monster && item){
+                    if(message.flags.pf2e.modifierName && automaticReveal.attacks){
+                        const monsterItem = monster.system.actions[item.id];
+                        if(monsterItem){
+                            monsterItem.revealed = true;
+                        }
+                    }
+
+                    if(message.flags.pf2e.origin.type === 'action' && automaticReveal.actions){
+                        monster.items[item.id].revealed = true;
+                    }
+
+                    if(['spell', 'spell-cast'].includes(message.flags.pf2e.origin.type) && automaticReveal.spells){
+                        monster.items[item.id].revealed = true;
+                        monster.items[message.flags.pf2e.casting.id].revealed = true;
+                    }
+                }
+            }
+            else {
+                 // Skills | Saving Throws
+                 const monster = bestiary.monster[`Actor.${message.flags.pf2e.context.actor}`];
+                 if(monster){
+                     if(message.flags.pf2e.context.type === 'skill-check' && automaticReveal.skills)
+                     {
+                         const skill = monster.system.skills[message.flags.pf2e.modifierName];
+                         if(skill){
+                             skill.revealed = true;
+                         }
+                         
+                     }
+                     if(message.flags.pf2e.context.type ==='saving-throw' && automaticReveal.saves){
+                         const savingThrow = monster.system.saves[message.flags.pf2e.modifierName];
+                         if(savingThrow){
+                             savingThrow.revealed = true;
+                         }
+                     }
+                 }
+            }
+            
+            await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
+            await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+                action: socketEvent.UpdateBestiary,
+                data: { },
+            });
+    
+            Hooks.callAll(socketEvent.UpdateBestiary, {});
+            
         }
     }
 });

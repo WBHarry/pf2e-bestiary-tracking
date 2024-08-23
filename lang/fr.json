@@ -1,5 +1,6 @@
 {
     "PF2EBestiary": {
+        "Name": "Bestiary Tracker",
         "SavesHandler": {
             "Name": "Bestiary Save Slots",
             "SaveDirectory": "Save Directory",
@@ -218,10 +219,19 @@
             }
         },
         "BestiaryIntegration": {
+            "Name": "Bestiary Integration",
             "Menu": {
                 "Name": "Bestiary Integration",
                 "Label": "Bestiary Integration Settings",
                 "Hint": "Customize the way you can interact with the Bestiary"
+            },
+            "AutomaticRevealing": {
+                "Name": "Automatic Revealing",
+                "Saves": "Saving Throws",
+                "Skills": "Skills",
+                "Attacks": "Attacks",
+                "Actions": "Actions",
+                "Spells": "Spells"
             }
         },
         "Settings": {
