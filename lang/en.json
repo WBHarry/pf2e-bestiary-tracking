@@ -49,8 +49,9 @@
             "Abilities": "Abilities",
             "Passives": "Passives",
             "Save": "Save",
-            "Except": "Except",
-            "Double": "Double"
+            "Except": "except",
+            "Double": "double",
+            "Or": "or"
         },
         "Bestiary": {
             "Title": "Bestiary",

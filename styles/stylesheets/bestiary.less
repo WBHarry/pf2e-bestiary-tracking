@@ -112,30 +112,99 @@
             }
         }
 
-        .bestiary-welcome {
+        .bestiary-main-page {
             display: flex;
             flex-direction: column;
-            font-size: 16px;
+            justify-content: space-between;
+            height: 100%;
 
-            .title {
-                align-self: center;
-                font-size: 28px;
-            }
-
-            .sub-title {
-                font-size: 20px;
+            .main-page-category-container {
                 display: flex;
-                align-items: center;
+                flex-direction: column;
+                gap: 32px;
 
-                div {
-                    margin-right: 8px;
+                img {
+                    height: 200px;
+                }
+
+                .main-page-top-row {
+                    display: flex;
+                }
+
+                .main-page-bottom-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .main-page-category-card {
+                    position: relative;
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    .main-page-category-image-container {
+                        position: relative;
+                        justify-content: center;
+                        display: flex;
+                        border-width: 2px;
+                        border-style: solid;
+
+                        &.inactive {
+                            opacity: 0.2;
+                        }
+
+                        .main-page-category-label {
+                            position: absolute;
+                            top: 8px;
+                            width: 80%;
+                            text-align: center;
+                            border-width: 2px;
+                            border-style: solid;
+                            border-radius: 6px;
+                            margin: 0;
+                        }
+                    }
+
+                    .under-development {
+                        position: absolute;
+                        top: calc(50% - 70px);
+                        left: calc(50% - 48px);
+                        font-size: 96px;
+                        z-index: 5000;
+                    }
                 }
             }
 
-            ul {
-                margin-top: 4px;
+            .bestiary-welcome {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-size: 16px;
+    
+                .title {
+                    align-self: center;
+                    font-size: 28px;
+                }
+    
+                .sub-title {
+                    font-size: 20px;
+                    display: flex;
+                    align-items: center;
+    
+                    div {
+                        margin-right: 8px;
+                    }
+                }
+    
+                ul {
+                    margin-top: 4px;
+                }
             }
         }
+
+
 
         .bestiary-tabs {
             gap: 0;
@@ -264,7 +333,13 @@
             .toggle-container {
                 cursor: pointer;
 
-                &:not(.revealed) {
+
+                &.inner:not(.revealed){
+                    text-decoration: line-through;
+                    text-decoration-thickness: 2px;
+                }
+
+                &:not(.inner):not(.revealed) {
                     border-style: dashed;
                 }
 

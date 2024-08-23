@@ -7,11 +7,11 @@
   "devDependencies": {
     "@foundryvtt/foundryvtt-cli": "^1.0.3",
     "@rollup/plugin-node-resolve": "^15.2.3",
-    "postcss": "^8.4.32",
+    "concurrently": "^8.2.2",
     "rollup-plugin-postcss": "^4.0.2"
   },
   "scripts": {
-    "start": "rollup -c --watch",
+    "start": "concurrently \"rollup -c --watch\" \"node C:/FoundryDev/resources/app/main.js --dataPath=C:/FoundryDevFiles\" \"gulp\"",
     "pushLDBtoYML": "node ./tools/pushLDBtoYML.mjs",
     "pullYMLtoLDB": "node ./tools/pullYMLtoLDB.mjs"
   }

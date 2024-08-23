@@ -2038,6 +2038,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
             toggleAbility: this.toggleAbility,
             toggleSpell: this.toggleSpell,
             toggleRevealed: this.toggleRevealed,
+            toggleAllRevealed: this.toggleAllRevealed,
+            toggleEverythingRevealed: this.toggleEverythingRevealed,
             refreshBestiary: this.refreshBestiary,
             handleSaveSlots: this.handleSaveSlots,
             resetBestiary: this.resetBestiary,
@@ -2184,7 +2186,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
         for(var actionKey of actionKeys) {
             const action = monster.items[actionKey];
             if(action.type === 'action'){
-                if( ['action', 'reaction'].includes(action.system.actionType.value)){
+                if(action.system.actionType.value !== 'passive'){
                     actions[action._id] = {
                         ...action,
                         // actions: action.system.actions.value,
@@ -2282,7 +2284,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
                 resistances: Object.keys(monster.system.attributes.resistances).length > 0  ? Object.keys(monster.system.attributes.resistances).reduce((acc, resistanceKey) => {
                     const resistance = monster.system.attributes.resistances[resistanceKey];
                     const label = !resistance.empty && !resistance.fake ? game.i18n.localize(resistance.typeLabels[resistance.type]) : null;
-                    acc.values[resistanceKey] = { ...resistance, value: resistance.fake || resistance.empty ? resistance.type : `${label} ${resistance.value}`, class: getWeaknessCategoryClass(contextLevel, resistance.value), category: label };
+                    acc.values[resistanceKey] = { 
+                        ...resistance, 
+                        value: resistance.fake || resistance.empty ? resistance.type : `${label} ${resistance.value}`, 
+                        class: getWeaknessCategoryClass(contextLevel, resistance.value), 
+                        category: label,
+                        exceptions: resistance.exceptions?.map(x => ({ ...x, key: x.value, value: game.i18n.localize(resistance.typeLabels[x.value] )})) ?? [],
+                        doubleVs: resistance.doubleVs?.map(x => ({ ...x, key: x.value, value: game.i18n.localize(resistance.typeLabels[x.value] )})) ?? [],
+                    };
 
                     return acc;
                 }, { values: {} }) : { },
@@ -2536,8 +2545,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
         html.classList.toggle('expanded');
     }
 
-    static async toggleRevealed(_, button){
+    static async toggleRevealed(event, button){
         if(!game.user.isGM) return;
+
+        event.stopPropagation();
 
         const newValue = !foundry.utils.getProperty(this.bestiary.monster[this.selected.monster.uuid], `${button.dataset.path}.${button.dataset.key ?? 'revealed'}`);
         foundry.utils.setProperty(this.bestiary.monster[this.selected.monster.uuid], `${button.dataset.path}.${button.dataset.key ?? 'revealed'}`, newValue);
@@ -2549,6 +2560,50 @@ class PF2EBestiary extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
             action: socketEvent.UpdateBestiary,
             data: { },
         });
+    }
+
+    static async toggleAllRevealed(_, button){
+        if(!game.user.isGM) return;
+
+        var values = Object.values(foundry.utils.getProperty(this.bestiary.monster[this.selected.monster.uuid], button.dataset.path));        var allRevealed = false;
+        switch(button.dataset.type){
+            case 'actions':
+                values = values.filter(x => x.type === 'action' && x.system.actionType.value !== 'passive');
+                allRevealed = values.every(x => x.revealed);
+                break;
+            case 'passives':
+                values = values.filter(x => x.type === 'action' && x.system.actionType.value === 'passive');
+                allRevealed = values.every(x => x.revealed);
+                break;
+            case 'perception':
+                allRevealed = values.every(x => x.revealed) && this.bestiary.monster[this.selected.monster.uuid].system.perception.revealed;
+                this.bestiary.monster[this.selected.monster.uuid].system.perception.revealed = !allRevealed;
+                break;
+            case 'speed':
+                allRevealed = values.every(x => x.revealed) && this.bestiary.monster[this.selected.monster.uuid].system.attributes.speed.revealed;
+                this.bestiary.monster[this.selected.monster.uuid].system.attributes.speed.revealed = !allRevealed;
+            default:
+                allRevealed = values.every(x => x.revealed);
+                break;
+        }
+
+        for(var key in values){
+            values[key].revealed = !allRevealed;
+        }
+
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+        this.render();
+
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: { },
+        });
+    }
+
+    static async toggleEverythingRevealed(_, button){
+        if(!game.user.isGM) return;
+
+
     }
 
     static getUpdatedCreature(creature, data){
@@ -3411,7 +3466,7 @@ class RegisterHandlebarsHelpers {
         if(keys.length === 0) return `<div style="margin-left: ${leftMargin}px;">${fallback}</div>`;
 
         for(var i = 0; i < keys.length; i++){
-            ret = ret + options.fn({ ...context[keys[i]], last: i === keys.length-1 });
+            ret = ret + options.fn({ ...context[keys[i]], last: i === keys.length-1, index: i, length: keys.length });
         }
       
         return ret;

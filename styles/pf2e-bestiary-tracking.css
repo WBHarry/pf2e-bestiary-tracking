@@ -166,24 +166,81 @@
   top: calc(50% - 9px);
   font-size: 18px;
 }
-.pf2e-bestiary-tracking.bestiary .bestiary-welcome {
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container img {
+  height: 200px;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container .main-page-top-row {
+  display: flex;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container .main-page-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container .main-page-category-card {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container .main-page-category-card .main-page-category-image-container {
+  position: relative;
+  justify-content: center;
+  display: flex;
+  border-width: 2px;
+  border-style: solid;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container .main-page-category-card .main-page-category-image-container.inactive {
+  opacity: 0.2;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container .main-page-category-card .main-page-category-image-container .main-page-category-label {
+  position: absolute;
+  top: 8px;
+  width: 80%;
+  text-align: center;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 6px;
+  margin: 0;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container .main-page-category-card .under-development {
+  position: absolute;
+  top: calc(50% - 70px);
+  left: calc(50% - 48px);
+  font-size: 96px;
+  z-index: 5000;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-size: 16px;
 }
-.pf2e-bestiary-tracking.bestiary .bestiary-welcome .title {
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-welcome .title {
   align-self: center;
   font-size: 28px;
 }
-.pf2e-bestiary-tracking.bestiary .bestiary-welcome .sub-title {
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-welcome .sub-title {
   font-size: 20px;
   display: flex;
   align-items: center;
 }
-.pf2e-bestiary-tracking.bestiary .bestiary-welcome .sub-title div {
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-welcome .sub-title div {
   margin-right: 8px;
 }
-.pf2e-bestiary-tracking.bestiary .bestiary-welcome ul {
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-welcome ul {
   margin-top: 4px;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-tabs {
@@ -293,7 +350,11 @@
 .pf2e-bestiary-tracking.bestiary .monster-container .toggle-container {
   cursor: pointer;
 }
-.pf2e-bestiary-tracking.bestiary .monster-container .toggle-container:not(.revealed) {
+.pf2e-bestiary-tracking.bestiary .monster-container .toggle-container.inner:not(.revealed) {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .toggle-container:not(.inner):not(.revealed) {
   border-style: dashed;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .toggle-container.misinformation {
@@ -896,6 +957,9 @@
 .theme-dark .pf2e-bestiary-tracking .primary-border-container {
   border-color: #ababab;
 }
+.theme-dark .pf2e-bestiary-tracking .secondary-border-container {
+  border-color: gold;
+}
 .theme-dark .pf2e-bestiary-tracking .main-border-container {
   border-color: #5e0000;
 }
@@ -904,6 +968,10 @@
 }
 .theme-dark .pf2e-bestiary-tracking .primary-hover-container:hover {
   border-color: #5e0000;
+  filter: drop-shadow(0 0 3px #5e0000);
+}
+.theme-dark .pf2e-bestiary-tracking .primary-icon {
+  color: #f7f3e8;
 }
 .theme-dark .pf2e-bestiary-tracking .primary-accent-icon {
   color: gold;
@@ -947,11 +1015,18 @@
 .pf2e-bestiary-tracking .primary-border-container {
   border-color: black;
 }
+.pf2e-bestiary-tracking .secondary-border-container {
+  border-color: #e96b07;
+}
 .pf2e-bestiary-tracking .main-border-container {
   border-color: #694F8E;
 }
 .pf2e-bestiary-tracking .primary-hover-container:hover {
   border-color: #694F8E;
+  filter: drop-shadow(0 0 3px #694F8E);
+}
+.pf2e-bestiary-tracking .primary-icon {
+  color: black;
 }
 .pf2e-bestiary-tracking .primary-accent-icon {
   color: gold;

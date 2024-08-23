@@ -81,6 +81,10 @@
             border-color: @darkBorder;
         }
 
+        .secondary-border-container {
+            border-color: @darkSecondaryBorder;
+        }
+
         .main-border-container {
             border-color: @darkPrimary;
         }
@@ -95,10 +99,15 @@
         .primary-hover-container {
             &:hover {
                 border-color: @darkPrimary;
+                filter: drop-shadow(0 0 3px @darkPrimary);
             }
         }
 
         // Icons
+        .primary-icon {
+            color: @darkIcon;
+        }
+
         .primary-accent-icon {
             color: @darkAccentIcon;
         }
@@ -165,6 +174,10 @@
         border-color: @lightBorder;
     }
 
+    .secondary-border-container {
+        border-color: @lightSecondaryBorder;
+    }
+
     .main-border-container {
         border-color: @lightPrimary;
     }
@@ -173,10 +186,15 @@
     .primary-hover-container {
         &:hover {
             border-color: @lightPrimary;
+            filter: drop-shadow(0 0 3px @lightPrimary);
         }
     }
 
     // Icons
+    .primary-icon {
+        color: @lightIcon;
+    }
+
     .primary-accent-icon {
         color: @lightAccentIcon;
     }

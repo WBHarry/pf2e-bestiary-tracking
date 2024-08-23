@@ -24,23 +24,52 @@
     {{/if}}
     <body>
         {{#if (not this.selected.type)}}
-            <div class="bestiary-welcome">
-                <h3 class="title">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h3> 
-                <div class="sub-title">{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.Title"}}</div>
-                <ul>
-                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.NavigationTip"}}</li>
-                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.MacroTip"}}</li>
-                </ul>
-
-                <div class="sub-title">
-                    <div>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.Title"}}</div>
+            <div class="bestiary-main-page">
+                <div class="main-page-category-container">
+                    <div class="main-page-top-row">
+                        <div class="main-page-category-card">
+                            <div class="main-page-category-image-container secondary-border-container">
+                                <img src="icons/creatures/magical/humanoid-silhouette-green.webp" />
+                                <h4 class="main-page-category-label primary-container">{{localize "Creatures"}}</h4>
+                            </div>
+                        </div>
+                        <div class="main-page-category-card">
+                            <div class="main-page-category-image-container secondary-border-container inactive">
+                                <img src="icons/environment/people/group.webp" class="inactive" />
+                                <h4 class="main-page-category-label primary-container inactive">{{localize "NPC Gallery"}}</h4>
+                            </div>
+                            <i class="fa-solid fa-lock under-development primary-icon"></i>
+                        </div>
+                    </div>
+                    <div class="main-page-bottom-row">
+                        <div class="main-page-category-card">
+                            <div class="main-page-category-image-container secondary-border-container inactive">
+                                <img src="icons/environment/traps/trap-jaw-steel.webp" class="inactive" />
+                                <h4 class="main-page-category-label primary-container inactive">{{localize "Hazards"}}</h4>
+                            </div>
+                            <i class="fa-solid fa-lock under-development primary-icon"></i>
+                        </div>
+                    </div>
                 </div>
-                <ul>
-                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.AddCreaturesTip"}}</li>
-                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ModuleSettingsTip"}}</li>
-                    <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.LeftClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleInformationTip"}}</li>
-                    <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RightClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleMisinformationTip"}}</li>
-                </ul>
+
+                <div class="bestiary-welcome">
+                    <h3 class="title">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h3> 
+                    <div class="sub-title">{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.Title"}}</div>
+                    <ul>
+                        <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.NavigationTip"}}</li>
+                        <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.MacroTip"}}</li>
+                    </ul>
+
+                    <div class="sub-title">
+                        <div>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.Title"}}</div>
+                    </div>
+                    <ul>
+                        <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.AddCreaturesTip"}}</li>
+                        <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ModuleSettingsTip"}}</li>
+                        <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.LeftClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleInformationTip"}}</li>
+                        <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RightClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleMisinformationTip"}}</li>
+                    </ul>
+                </div>
             </div>
         {{else}}
             {{#if this.selected.monster}}

@@ -31,7 +31,7 @@
         <div class="flexcol">
             <div class="monster-left-data bestiary-left-list primary-container list-container">
                 <div class="bestiary-fakable-container">
-                    <div class="flex-data">
+                    <div class="flex-data pf2e-bestiary-clickable-icon" data-action="toggleAllRevealed" data-path="system.attributes.immunities">
                         <i class="fa-solid fa-fw fa-ankh"></i>
                         <div>{{localize "PF2EBestiary.Miscellaneous.Immunities"}}</div>
                     </div>
@@ -55,7 +55,7 @@
         <div class="flexcol">
             <div class="monster-left-data primary-container list-container">
                 <div class="bestiary-fakable-container bestiary-left-list">
-                    <div class="flex-data">
+                    <div class="flex-data pf2e-bestiary-clickable-icon" data-action="toggleAllRevealed" data-path="system.attributes.weaknesses">
                         <i class="fa-solid fa-fw fa-heart-broken"></i>
                         <div>{{localize "PF2EBestiary.Miscellaneous.Weaknesses"}}</div>
                     </div>
@@ -96,7 +96,7 @@
         <div class="flexcol">
             <div class="monster-left-data primary-container list-container">
                 <div class="bestiary-fakable-container bestiary-left-list">
-                    <div class="flex-data">
+                    <div class="flex-data pf2e-bestiary-clickable-icon" data-action="toggleAllRevealed" data-path="system.attributes.resistances">
                         <i class="fa-solid fa-fw fa-shield-virus"></i>
                         <div>{{localize "PF2EBestiary.Miscellaneous.Resistances"}}</div>
                     </div>
@@ -116,6 +116,34 @@
                                 title="{{PF2EBTCategoryClassTitle resistance.class 'Resistance' ../vagueDescriptions.properties.resistances}}"
                             >
                                 {{PF2EBTMonsterValue resistance ../vagueDescriptions.properties.resistances}}
+                                {{#if (gt resistance.exceptions.length 0)}}
+                                    <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
+                                    {{#each resistance.exceptions as |exception index|}}
+                                        <span class="toggle-container inner {{#if exception.revealed}}revealed{{/if}} primary-hover-container" data-action="toggleRevealed" data-path="{{concat 'system.attributes.resistances.' @../key '.exceptions.' index}}">
+                                            {{exception.value}}{{#if (and (eq index (PF2EBTSub ../exceptions.length 1)) (eq ../doubleVs.length 0))}}){{/if}}
+                                        </span>
+                                        {{#if (eq index (PF2EBTSub ../exceptions.length 2))}}
+                                            {{localize "PF2EBestiary.Miscellaneous.Or"}}
+                                        {{else}}
+                                            {{#if (lt index (PF2EBTSub ../exceptions.length 1))}},{{/if}}
+                                        {{/if}}
+                                    {{/each}}
+                                {{/if}}
+                                {{#if (and (gt resistance.exceptions.length 0) (gt resistance.doubleVs.length 0))}};{{/if}}
+                                {{#if (gt resistance.doubleVs.length 0)}}
+                                    <span>{{#if (eq resistance.exceptions.length 0)}}({{/if}}{{localize "PF2EBestiary.Miscellaneous.Double"}}</span>
+                                    {{#each resistance.doubleVs as |double index|}}
+                                        <span class="toggle-container inner {{#if double.revealed}}revealed{{/if}} primary-hover-container" data-action="toggleRevealed" data-path="{{concat 'system.attributes.resistances.' @../key '.doubleVs.' index}}">
+                                            {{double.value}}{{#if (eq index (PF2EBTSub ../doubleVs.length 1))}}){{/if}}
+                                        </span>
+                                        
+                                        {{#if (eq index (PF2EBTSub ../doubleVs.length 2))}}
+                                            {{localize "PF2EBestiary.Miscellaneous.Or"}}
+                                        {{else}}
+                                            {{#if (lt index (PF2EBTSub ../doubleVs.length 1))}},{{/if}}
+                                        {{/if}}
+                                    {{/each}}
+                                {{/if}}
                             </div>
                     {{/each}}
                 {{else}}
@@ -128,6 +156,36 @@
                             title="{{PF2EBTCategoryClassTitle this.class 'Resistance' ../vagueDescriptions.properties.resistances}}"
                         >
                             {{PF2EBTMonsterValue this ../vagueDescriptions.properties.resistances}}
+                            {{#if (gt (PF2EBTNrKeys this.exceptions 'revealed') 0)}}
+                                <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
+                                {{#PF2EBTFilter 'revealed' '' 0 this.exceptions}}
+                                    <span>
+                                        {{this.value}}{{#if (and this.last (eq (PF2EBTNrKeys ../doubleVs 'revealed') 0))}}){{/if}}{{#if (and this.last (gt (PF2EBTNrKeys ../doubleVs 'revealed') 0))}};{{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
+                                    </span>
+                                {{/PF2EBTFilter}}
+                            {{/if}}
+                            
+                            {{#if (gt (PF2EBTNrKeys this.doubleVs 'revealed') 0)}}
+                                <span>{{#if (eq (PF2EBTNrKeys this.exceptions 'revealed') 0)}}({{/if}}{{localize "PF2EBestiary.Miscellaneous.Double"}}</span>
+                                {{#PF2EBTFilter 'revealed' '' 0 this.doubleVs}}
+                                    <span>
+                                        {{this.value}}{{#if this.last}}){{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
+                                    </span>
+                                {{/PF2EBTFilter}}
+                            {{/if}}
+                            {{!-- {{#if (gt resistance.doubleVs.length 0)}}
+                                <span>{{#if (eq resistance.exceptions.length 0)}}({{/if}}{{localize "PF2EBestiary.Miscellaneous.Double"}}</span>
+                                {{#each resistance.doubleVs as |double index|}}
+                                    <span class="toggle-container inner {{#if double.revealed}}revealed{{/if}}" data-action="toggleRevealed" data-path="{{concat 'system.attributes.resistances.' @../key '.doubleVs.' index}}">
+                                        {{double.value}}{{#if (eq index (PF2EBTSub ../doubleVs.length 1))}}){{/if}}
+                                    </span>
+                                    {{#if (eq index (PF2EBTSub ../doubleVs.length 2))}}
+                                        {{localize "PF2EBestiary.Miscellaneous.Or"}}
+                                    {{else}}
+                                        {{#if (lt index (PF2EBTSub ../doubleVs.length 1))}},&nbsp;{{/if}}
+                                    {{/if}}
+                                {{/each}}
+                            {{/if}} --}}
                         </div>
                     {{/PF2EBTFilter}}
                 {{/if}}
@@ -136,7 +194,7 @@
 
         <div class="flexcol">
             <div class="monster-left-data bestiary-left-list primary-container list-container">
-                <div class="flex-data">
+                <div class="flex-data pf2e-bestiary-clickable-icon" data-action="toggleAllRevealed" data-path="system.saves">
                     <i class="fa-solid fa-fw fa-heart-pulse"></i>
                     <div>{{localize "PF2EBestiary.Miscellaneous.Saves.Title"}}</div>
                 </div>
@@ -158,7 +216,7 @@
         </div>
         <div class="flexcol">
             <div class="monster-left-data bestiary-left-list primary-container list-container">
-                <div class="flex-data">
+                <div class="flex-data pf2e-bestiary-clickable-icon" data-action="toggleAllRevealed" data-path="system.attributes.speed.otherSpeeds" data-type="speed">
                     <i class="fa-solid fa-fw fa-shoe-prints"></i>
                     <div>{{localize "PF2EBestiary.Miscellaneous.Speeds"}}</div>
                 </div>
@@ -234,7 +292,7 @@
                 <div class="data-sections">
                     <div class="data-section primary-container active">
                         <div class="data-header primary-container">
-                            <div class="data-header-label">
+                            <div class="data-header-label pf2e-bestiary-clickable-icon" data-action="toggleAllRevealed" data-path="system.abilities">
                                 <img class="data-icon" src="systems/pf2e/icons/default-icons/feat.svg" />
                                 <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attributes"}}</div>
                             </div>
@@ -254,7 +312,7 @@
                     <div class="data-section primary-container active">
                         <div class="data-header primary-container">
                             <div class="bestiary-fakable-container">
-                                <div class="data-header-label">
+                                <div class="data-header-label pf2e-bestiary-clickable-icon" data-action="toggleAllRevealed" data-path="system.perception.senses" data-type="perception">
                                     <img class="data-icon" src="icons/svg/eye.svg" />
                                     <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Senses"}}</div>
                                 </div>
@@ -299,7 +357,7 @@
                     <div class="data-section primary-container active">
                         <div class="data-header primary-container">
                             <div class="bestiary-fakable-container">
-                                <div class="data-header-label">
+                                <div class="data-header-label pf2e-bestiary-clickable-icon" data-action="toggleAllRevealed" data-path="system.details.languages.value">
                                     <i class="fa-solid fa-book"></i>
                                     <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Languages"}}</div>
                                 </div>
@@ -329,7 +387,7 @@
 
                 <div class="data-section primary-container active">
                     <div class="data-header primary-container">
-                        <div class="data-header-label">
+                        <div class="data-header-label pf2e-bestiary-clickable-icon" data-action="toggleAllRevealed" data-path="system.skills">
                             <i class="fa-solid fa-medal"></i>
                             <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Skills"}}</div>
                         </div>
@@ -357,7 +415,7 @@
                 <div class="data-section primary-container active">
                     <div class="data-header primary-container">
                         <div class="bestiary-fakable-container">
-                            <div class="data-header-label">
+                            <div class="data-header-label pf2e-bestiary-clickable-icon" data-action="toggleAllRevealed" data-path="system.actions">
                                 <img class="data-icon" src="icons/svg/combat.svg" />
                                 <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attacks"}}</div>
                             </div>
@@ -456,7 +514,7 @@
                 <div class="data-section primary-container active">
                     <div class="data-header primary-container">
                         <div class="bestiary-fakable-container">
-                            <div class="data-header-label">
+                            <div class="data-header-label pf2e-bestiary-clickable-icon" data-action="toggleAllRevealed" data-path="items" data-type="actions">
                                 <img class="data-icon" src="icons/svg/explosion.svg" />
                                 <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Abilities"}}</div>
                             </div>
@@ -470,7 +528,7 @@
                                 <div class="actions-container secondary-container {{PF2EBTToggleContainer ../user action}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState action}}" data-action="toggleRevealed" data-path="{{concat 'items.' key}}" data-fake="{{action.fake}}">
                                     <div class="action-container">
                                         <div class="{{#if (and (not (eq action.name 'None')) (gt action.description.length 0))}}action-name{{/if}}" data-action="toggleAbility" data-ability="{{action._id}}">{{action.name}}</div>
-                                        <span class="action-glyph">{{#if action.system.actions.value}}{{action.system.actions.value}}{{else}}{{#if (not (eq action.name 'None'))}}R{{/if}}{{/if}}</span>
+                                        <span class="action-glyph">{{#if (eq action.system.actionType.value 'free')}}F{{else}}{{#if (eq action.system.actionType.value 'reaction')}}R{{else}}{{action.system.actions.value}}{{/if}}{{/if}}</span>
                                     </div>
                                     <div class="action-description {{#if (includes ../selected.abilities action._id)}}expanded{{/if}}">
                                         {{{action.description}}}
@@ -496,7 +554,7 @@
                 <div class="data-section primary-container active">
                     <div class="data-header primary-container">
                         <div class="bestiary-fakable-container">
-                            <div class="data-header-label">
+                            <div class="data-header-label pf2e-bestiary-clickable-icon" data-action="toggleAllRevealed" data-path="items" data-type="passives">
                                 <img class="data-icon" src="icons/svg/paralysis.svg" />
                                 <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Passives"}}</div>
                             </div>
