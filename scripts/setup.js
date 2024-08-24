@@ -5,7 +5,6 @@ import BestiaryIntegrationMenu from "../module/bestiaryIntegrationMenu.js";
 import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
-import { socketEvent } from "./socket.js";
 
 export const registerGameSettings = () => {
     configSettings();

@@ -97,11 +97,27 @@
 
         // Hover Containers
         .primary-hover-container {
+            cursor: pointer;
+
             &:hover {
-                border-color: @darkPrimary;
-                filter: drop-shadow(0 0 3px @darkPrimary);
+                filter: drop-shadow(0 0 3px @darkMainHover);
+            }
+
+            &.border {
+                border-color: @darkMainHover;
             }
         }
+
+    // Tabs
+    .primary-tab {
+        &:hover {
+            text-shadow: 0 0 5px @mainHover;
+        }
+
+        &.active {
+            text-shadow: 0 0 5px @mainHover;
+        }
+    }
 
         // Icons
         .primary-icon {
@@ -184,9 +200,25 @@
 
     // Hover Containers
     .primary-hover-container {
+        cursor: pointer;
+
         &:hover {
+            filter: drop-shadow(0 0 3px @lightMainHover);
+        }
+
+        &.border {
             border-color: @lightPrimary;
-            filter: drop-shadow(0 0 3px @lightPrimary);
+        }
+    }
+
+    // Tabs
+    .primary-tab {
+        &:hover {
+            text-shadow: 0 0 5px @lightMainHover;
+        }
+
+        &.active {
+            text-shadow: 0 0 5px @lightMainHover;
         }
     }
 

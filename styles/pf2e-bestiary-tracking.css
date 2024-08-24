@@ -217,8 +217,8 @@
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container .main-page-category-card .under-development {
   position: absolute;
-  top: calc(50% - 70px);
-  left: calc(50% - 48px);
+  top: calc(50% - 60px);
+  left: calc(50% - 42px);
   font-size: 96px;
   z-index: 5000;
 }
@@ -965,9 +965,20 @@
 .theme-dark .pf2e-bestiary-tracking .bookmark:hover {
   background-color: #760000;
 }
+.theme-dark .pf2e-bestiary-tracking .primary-hover-container {
+  cursor: pointer;
+}
 .theme-dark .pf2e-bestiary-tracking .primary-hover-container:hover {
-  border-color: #5e0000;
-  filter: drop-shadow(0 0 3px #5e0000);
+  filter: drop-shadow(0 0 3px white);
+}
+.theme-dark .pf2e-bestiary-tracking .primary-hover-container.border {
+  border-color: white;
+}
+.theme-dark .pf2e-bestiary-tracking .primary-tab:hover {
+  text-shadow: 0 0 5px red;
+}
+.theme-dark .pf2e-bestiary-tracking .primary-tab.active {
+  text-shadow: 0 0 5px red;
 }
 .theme-dark .pf2e-bestiary-tracking .primary-icon {
   color: #f7f3e8;
@@ -976,21 +987,21 @@
   color: gold;
 }
 .pf2e-bestiary-tracking .primary-container {
-  background-color: #694F8E;
+  background-color: #D4BDAC;
   border-color: black;
   color: black;
 }
 .pf2e-bestiary-tracking .primary-container.active {
-  background-color: #926ec4;
+  background-color: #FFF1DB;
 }
 .pf2e-bestiary-tracking .primary-container.empty {
-  background-color: #694F8E;
+  background-color: #D4BDAC;
 }
 .pf2e-bestiary-tracking .primary-container .data-icon {
   filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
 }
 .pf2e-bestiary-tracking .secondary-container {
-  background-color: #B692C2;
+  background-color: #62b356;
   border-color: black;
   color: black;
 }
@@ -998,12 +1009,12 @@
   filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
 }
 .pf2e-bestiary-tracking .tertiary-container {
-  background-color: #c86bd0;
+  background-color: #62acce;
   border-color: black;
   color: black;
 }
 .pf2e-bestiary-tracking .tertiary-container.active {
-  background-color: #8b14e0;
+  background-color: #9de0ff;
 }
 .pf2e-bestiary-tracking .tertiary-container .data-icon {
   filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
@@ -1015,14 +1026,25 @@
   border-color: black;
 }
 .pf2e-bestiary-tracking .secondary-border-container {
-  border-color: #e96b07;
+  border-color: #82acff;
 }
 .pf2e-bestiary-tracking .main-border-container {
-  border-color: #694F8E;
+  border-color: #D4BDAC;
+}
+.pf2e-bestiary-tracking .primary-hover-container {
+  cursor: pointer;
 }
 .pf2e-bestiary-tracking .primary-hover-container:hover {
-  border-color: #694F8E;
-  filter: drop-shadow(0 0 3px #694F8E);
+  filter: drop-shadow(0 0 3px #1c8efe);
+}
+.pf2e-bestiary-tracking .primary-hover-container.border {
+  border-color: #D4BDAC;
+}
+.pf2e-bestiary-tracking .primary-tab:hover {
+  text-shadow: 0 0 5px #1c8efe;
+}
+.pf2e-bestiary-tracking .primary-tab.active {
+  text-shadow: 0 0 5px #1c8efe;
 }
 .pf2e-bestiary-tracking .primary-icon {
   color: black;
@@ -1031,7 +1053,7 @@
   color: gold;
 }
 .pf2e-bestiary-tracking .bookmark:hover {
-  background-color: #926ec4;
+  background-color: #FFF1DB;
 }
 .pf2e-bestiary-bold {
   font-weight: bold;

@@ -4902,7 +4902,6 @@ Hooks.once('init', () => {
     ]);
 });
 
-
 Hooks.once("ready", () => {
     game.modules.get('pf2e-bestiary-tracking').macros = macros;
 
