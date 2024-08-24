@@ -112,7 +112,12 @@ export const handleDataMigration = async () => {
             bestiary.monster[type][monsterKey].saves.fortitude.category = getCategoryLabel(savingThrowPerceptionTable, origin.system.details.level.value, bestiary.monster[type][monsterKey].saves.fortitude.value);
             bestiary.monster[type][monsterKey].saves.reflex.category = getCategoryLabel(savingThrowPerceptionTable, origin.system.details.level.value, bestiary.monster[type][monsterKey].saves.reflex.value);
             bestiary.monster[type][monsterKey].saves.will.category = getCategoryLabel(savingThrowPerceptionTable, origin.system.details.level.value, bestiary.monster[type][monsterKey].saves.will.value);
-            bestiary.monster[type][monsterKey].abilities.values.forEach(ability => ability.category = getCategoryLabel(attributeTable, origin.system.details.level.value, ability.mod));
+            bestiary.monster[type][monsterKey].abilities.values.forEach(ability => {
+                // Weird error that occured here. Safety addition.
+                if(typeof x === 'object'){
+                    ability.category = getCategoryLabel(attributeTable, origin.system.details.level.value, ability.mod)}
+                }
+            );
             bestiary.monster[type][monsterKey].senses.values.perception.category = getCategoryLabel(savingThrowPerceptionTable, origin.system.details.level.value, bestiary.monster[type][monsterKey].senses.values.perception.value);
 
             // All spellcasting creatures should have spell data

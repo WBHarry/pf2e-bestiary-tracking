@@ -1,5 +1,5 @@
 
-import { getCreatureSize, getCreaturesTypes, getExpandedCreatureTypes, getIWRString, getMultiplesString, slugify } from "../scripts/helpers.js";
+import { getBaseActor, getCreatureSize, getCreaturesTypes, getExpandedCreatureTypes, getIWRString, getMultiplesString, slugify } from "../scripts/helpers.js";
 import { socketEvent } from "../scripts/socket.js";
 import { acTable, attackTable, attributeTable, damageTable, hpTable, savingThrowPerceptionTable, skillTable, spellAttackTable, spellDCTable } from "../scripts/statisticsData.js";
 import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getMixedCategoryLabel, getRollAverage, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
@@ -405,8 +405,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                             return acc;
                         }, { revealed: false, values: {} }),
                         traits: action.traits.map(trait => ({
-                            label: trait.label,
-                            description: trait.description,
+                            ...trait,
+                            revealed: detailedInformation.attackTraits ? trait.revealed : true,
                         })),
                         value: `${action.totalModifier >= 0 ? '+' : '-'} ${action.totalModifier}`, 
                         ...attackParts, 
@@ -1209,13 +1209,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static async addMonster(item){
-        const monster = await PF2EBestiary.getMonsterData(item.token.document ? item.token.document.baseActor : item.token.baseActor);
-        if (!monster) return;
+        const monster = await PF2EBestiary.getMonsterData(getBaseActor(item));
+        if (!monster) return null;
 
         const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
 
         // We do not currently refresh already present creatures in the Bestiary.
-        if(bestiary.monster[monster.uuid]) return;
+        if(bestiary.monster[monster.uuid]) return false;
 
         bestiary.monster[monster.uuid] = monster;
         
@@ -1235,10 +1235,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         });
 
         Hooks.callAll(socketEvent.UpdateBestiary, {});
+
+        return true;
     }
 
     static async getMonsterData(item){
-        if(!item || item.type !== 'npc') return null;
+        if(!item || item.hasPlayerOwner || item.type !== 'npc') return null;
 
         const dataObject = item.toObject(false);
         dataObject.uuid = item.uuid;
@@ -1393,7 +1395,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const data = TextEditor.getDragEventData(event);
         const baseItem = await fromUuid(data.uuid);
 
-        if(baseItem?.type === 'character'){
+        if(baseItem?.type === 'character' || baseItem.hasPlayerOwner){
             ui.notifications.error(game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedCharacterType"));
             return;
         }

@@ -123,7 +123,9 @@
                 "DataMissing": "Certaines données sont manquantes. Vous devrez réimporter la créature. Désolé pour cela !"
             },
             "Info": {
-                "GMOnly": "Cette fonction est réservée au MJ."
+                "GMOnly": "Cette fonction est réservée au MJ.",
+                "AddedToBestiary": "Added [{creatures}] to Bestiary",
+                "AlreadyExistsInBestiary": "[{creatures}] already exists in the Bestiary."
             }
         },
         "Menus": {

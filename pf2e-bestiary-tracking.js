@@ -4,6 +4,7 @@ import { registerGameSettings } from "./scripts/setup.js";
 import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
 import { handleDataMigration } from "./scripts/migrationHandler.js";
+import { getBaseActor } from "./scripts/helpers.js";
 
 Hooks.once('init', () => {
     registerGameSettings();
@@ -56,14 +57,27 @@ Hooks.once("setup", () => {
 });
 
 Hooks.on("combatStart", async (encounter) => {
-    if(game.user.isGM){
+    if (game.user.isGM) {
+        const added = [];
+        const exists = [];
         const automaticCombatSetting = await game.settings.get('pf2e-bestiary-tracking', 'automatic-combat-registration');
-        if(automaticCombatSetting === 1){
-            for(var combatant of encounter.combatants){
-                await PF2EBestiary.addMonster(combatant.actor);
-            } 
+
+        if (automaticCombatSetting === 1) {
+            for (var combatant of encounter.combatants.filter(combatant => combatant?.actor?.type === 'npc')) {
+                const successful = await PF2EBestiary.addMonster(combatant.actor);
+                if (successful && combatant?.actor?.name) {
+                    added.push(combatant.actor.name);
+                } 
+                else if (successful === false && combatant?.actor?.name){
+                    exists.push(combatant.actor.name);
+                }
+            }
+
+            exists?.length && ui.notifications.info(game.i18n.format('PF2EBestiary.Bestiary.Info.AlreadyExistsInBestiary', { creatures: exists.join(', ') }));
+            added?.length && ui.notifications.info(game.i18n.format('PF2EBestiary.Bestiary.Info.AddedToBestiary', { creatures: added.join(', ') }));
         }
     }
+
 });
 
 Hooks.on("updateCombatant", async (combatant, changes) => {
@@ -94,14 +108,14 @@ Hooks.on("xdy-pf2e-workbench.tokenCreateMystification", token => {
 });
 
 Hooks.on("preCreateToken", async token => {
-    if(!game.user.isGM) return;
+    if(!game.user.isGM || token.actor.type !== 'npc' || token.hasPlayerOwner) return;
 
     if(game.settings.get('pf2e-bestiary-tracking', 'hide-token-names')){
         const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
         const monster = bestiary.monster[token.baseActor.uuid];
         if(monster){
-            if(monster.name.custom && monster.name.revealed) {
-                await token.updateSource({ name: monster.name.custom });
+            if(monster.name.revealed) {
+                await token.updateSource({ name: monster.name.custom ? monster.name.custom : monster.name.value });
                 return;
             }
         }
@@ -134,14 +148,16 @@ Hooks.on("createChatMessage", async (message) => {
         const { automaticReveal } = game.settings.get('pf2e-bestiary-tracking', 'chat-message-handling');
         if(automaticReveal){
             const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-            const { automaticReveal } = game.settings.get('pf2e-bestiary-tracking', 'chat-message-handling');
 
             if(message.flags.pf2e.origin){
                 // Attacks | Actions | Spells
-                const actorUuid = message.flags.pf2e.origin.actor;
-                const monster = bestiary.monster[actorUuid];
-                const item = await fromUuid(message.flags.pf2e.origin.uuid);
+                const actor = await fromUuid(message.flags.pf2e.origin.actor);
+                if(actor.type !== 'npc' || actor.hasPlayerOwner) return;
 
+                const actorUuid = getBaseActor(actor).uuid;
+                const monster = bestiary.monster[actorUuid];
+
+                const item = await fromUuid(message.flags.pf2e.origin.uuid);
                 if(monster && item){
                     if(message.flags.pf2e.modifierName && automaticReveal.attacks){
                         const monsterItem = monster.system.actions[item.id];
@@ -162,7 +178,12 @@ Hooks.on("createChatMessage", async (message) => {
             }
             else {
                  // Skills | Saving Throws
-                 const monster = bestiary.monster[`Actor.${message.flags.pf2e.context.actor}`];
+                 const actor = await fromUuid(`Actor.${message.flags.pf2e.context.actor}`);
+                 if(actor.type !== 'npc' || actor.hasPlayerOwner) return;
+
+                 const actorUuid = getBaseActor(actor).uuid;
+                 const monster = bestiary.monster[actorUuid];
+
                  if(monster){
                      if(message.flags.pf2e.context.type === 'skill-check' && automaticReveal.skills)
                      {

@@ -638,7 +638,6 @@
   flex: 0;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-header .attack-traits-container .attack-trait-label {
-  text-decoration: underline;
   white-space: nowrap;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-body {

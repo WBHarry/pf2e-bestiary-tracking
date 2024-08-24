@@ -5,17 +5,17 @@ export const slugify = (name) => {
 export const getCreatureSize = (size) => {
     switch(size){
         case 'grg':
-            return 'Gargantuan';
+            return game.i18n.localize("PF2E.ActorSizeGargantuan");
         case 'huge':
-            return 'Huge';
+            return game.i18n.localize("PF2E.ActorSizeHuge");
         case 'lg':
-            return 'Large';
+            return game.i18n.localize("PF2E.ActorSizeLarge");
         case 'med':
-            return 'Medium';
+            return game.i18n.localize("PF2E.ActorSizeMedium");
         case 'sm':
-            return 'Small';
+            return game.i18n.localize("PF2E.ActorSizeSmall");
         case 'tiny':
-            return 'Tiny';
+            return game.i18n.localize("PF2E.ActorSizeTiny");
     }
 };
 
@@ -59,4 +59,8 @@ export const getExpandedCreatureTypes = () => {
 
 
     return types;
+};
+
+export const getBaseActor = (actor) => {
+    return actor.token ? actor.token.document ? actor.token.document.baseActor :  actor.token.baseActor : actor;
 };

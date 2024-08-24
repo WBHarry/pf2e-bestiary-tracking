@@ -120,11 +120,13 @@
             },
             "Errors": {
                 "UnsupportedType": "Not a supported NPC type!",
-                "UnsupportedCharacterType": "Player Character are not supported in the bestiary.",
+                "UnsupportedCharacterType": "Player Characters are not supported in the bestiary.",
                 "DataMissing": "Some data is missing. You'll have to reimport the creature. Sorry about that!"
             },
             "Info": {
-                "GMOnly": "This is a GM only function."
+                "GMOnly": "This is a GM only function.",
+                "AddedToBestiary": "[{creatures}] were added to the Bestiary",
+                "AlreadyExistsInBestiary": "[{creatures}] already exists in the Bestiary."
             }
         },
         "Menus": {

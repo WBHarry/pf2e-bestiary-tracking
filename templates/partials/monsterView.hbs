@@ -491,7 +491,14 @@
                                             {{#if (gt (PF2EBTNrKeys attack.traits) 0)}}
                                                 <div class="attack-traits-container">(
                                                     {{#each attack.traits as |trait index|}}
-                                                        <div class="attack-trait-label" title="{{localize trait.description}}">{{trait.label}}</div>
+                                                        <div 
+                                                            class="attack-trait-label toggle-container inner {{#if trait.revealed}}revealed{{/if}} {{#if ../../detailedInformation.attackTraits}}primary-hover-container{{/if}}"
+                                                            {{#if ../../detailedInformation.attackTraits}}data-action="toggleRevealed"{{/if}}
+                                                            data-path="{{concat 'system.actions.' @../key '.traits.' index}}"
+                                                            title="{{localize trait.description}}"
+                                                        >
+                                                            {{trait.label}}
+                                                        </div>
                                                         {{#if (not (eq (add index 1) ../traits.length))}},&nbsp;{{/if}} 
                                                     {{/each}}    
                                                 )</div>
@@ -528,12 +535,13 @@
                                             {{/if}}
                                             <div>{{this.label}}</div>
                                             {{#if (gt (PF2EBTNrKeys this.traits) 0)}}
-                                                <div class="attack-traits-container">(
-                                                    {{#each this.traits as |trait index|}}
-                                                        <div class="attack-trait-label" title="{{localize trait.description}}">{{trait.label}}</div>
-                                                        {{#unless this.last}}&nbsp;{{/unless}}
-                                                    {{/each}}    
-                                                )</div>
+                                                <div class="attack-traits-container">
+                                                    {{#PF2EBTFilter 'revealed' '' 0 this.traits}}
+                                                        <div class="attack-trait-label" title="{{localize this.description}}">
+                                                            {{#if (eq this.index 0)}}({{/if}}{{this.label}}{{#unless this.last}},&nbsp;{{/unless}}{{#if this.last}}){{/if}}
+                                                        </div>
+                                                    {{/PF2EBTFilter}}    
+                                                </div>
                                             {{/if}}
                                         </div>
                                         {{#if (gt (PF2EBTNrKeys this.variants.values) 0)}}

@@ -86,7 +86,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
             useTokenArt: data.useTokenArt,
             contrastRevealedState: data.contrastRevealedState,
             optionalFields: data.optionalFields,
-            detailedInformation: { ...data.detailedInformation, attackTraits: false }
+            detailedInformation: { ...data.detailedInformation }
         };
         this.render();
     }
