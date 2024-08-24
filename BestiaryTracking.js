@@ -4991,7 +4991,7 @@ Hooks.on("preCreateToken", async token => {
 Hooks.on("renderActorDirectory", async tab => {
     if(tab.id === 'actors'){
         const buttons = $(tab.element).find('.directory-footer.action-buttons');
-        buttons[0].style = "display: flex; align-items: center; padding: 0.5rem 0;";
+
         buttons.prepend(`
             <button id="pf2e-bestiary-tracker">
                 <i class="fa-solid fa-spaghetti-monster-flying" />

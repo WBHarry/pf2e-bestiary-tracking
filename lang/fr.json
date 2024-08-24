@@ -213,6 +213,11 @@
                 "Level": "Afficher le Niveau du Monstre",
                 "Languages": "Languages Known"
             },
+            "DetailedInformation": {
+                "Name": "Detailed Information Toggles",
+                "ExceptionsDoubleVs": "(IWR) Exceptions And Double",
+                "AttackTraits": "Attack Traits"
+            },
             "AdditionalCreatureTypes": {
                 "Name": "Additional Creature Types",
                 "SubText": "You can add more available creature traits to choose from in the PF2E System Settings for Homebrew."
@@ -224,6 +229,9 @@
                 "Name": "Bestiary Integration",
                 "Label": "Bestiary Integration Settings",
                 "Hint": "Customize the way you can interact with the Bestiary"
+            },
+            "CreatureRegistration": {
+                "Name": "Creature Registration"
             },
             "AutomaticRevealing": {
                 "Name": "Automatic Revealing",
