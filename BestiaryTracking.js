@@ -2667,8 +2667,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
         data.system.attributes.hp = { ...data.system.attributes.hp, revealed: creature.system.attributes.hp.revealed, custom: creature.system.attributes.hp.custom};
 
         Object.keys(data.system.attributes.immunities).forEach(immunityKey => {
+            const newImmunity = data.system.attributes.immunities[immunityKey];
             const oldImmunityKey = Object.keys(creature.system.attributes.immunities).find(x => x === immunityKey);
-            if(oldImmunityKey) data.system.attributes.immunities[immunityKey].revealed = creature.system.attributes.immunities[oldImmunityKey].revealed;
+            if(oldImmunityKey) {
+                const oldImmunity = creature.system.attributes.immunities[oldImmunityKey];
+                newImmunity.revealed = oldImmunity.revealed;
+                newImmunity.exceptions?.forEach(exception => {
+                    const oldException = oldImmunity.exceptions.find(x => x.value === exception.value);
+                    if(oldException) exception.revealed = oldException.revealed;
+                });
+            }
         });
         Object.keys(creature.system.attributes.immunities).forEach(immunityKey => {
             const immunity = creature.system.attributes.immunities[immunityKey];
@@ -2676,8 +2684,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
         });
 
         Object.keys(data.system.attributes.weaknesses).forEach(weaknessKey => {
+            const newWeakness = data.system.attributes.weaknesses[weaknessKey];
             const oldWeaknessKey = Object.keys(creature.system.attributes.weaknesses).find(x => x === weaknessKey);
-            if(oldWeaknessKey) data.system.attributes.weaknesses[weaknessKey].revealed = creature.system.attributes.weaknesses[oldWeaknessKey].revealed;
+            if(oldWeaknessKey) {
+                const oldWeakness = creature.system.attributes.weaknesses[oldWeaknessKey];
+                newWeakness.revealed = oldWeakness.revealed;
+                newWeakness.exceptions?.forEach(exception => {
+                    const oldException = oldWeakness.exceptions.find(x => x.value === exception.value);
+                    if(oldException) exception.revealed = oldException.revealed;
+                });
+            }
         });
         Object.keys(creature.system.attributes.weaknesses).forEach(weaknessKey => {
             const weakness = creature.system.attributes.weaknesses[weaknessKey];
@@ -2685,8 +2701,20 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
         });
 
         Object.keys(data.system.attributes.resistances).forEach(resistanceKey => {
+            const newResistance = data.system.attributes.resistances[resistanceKey];
             const oldResistanceKey = Object.keys(creature.system.attributes.resistances).find(x => x === resistanceKey);
-            if(oldResistanceKey) data.system.attributes.resistances[resistanceKey].revealed = creature.system.attributes.resistances[oldResistanceKey].revealed;
+            if(oldResistanceKey) {
+                const oldResistance = creature.system.attributes.resistances[oldResistanceKey];
+                newResistance.revealed = oldResistance.revealed;
+                newResistance.exceptions?.forEach(exception => {
+                    const oldException = oldResistance.exceptions.find(x => x.value === exception.value);
+                    if(oldException) exception.revealed = oldException.revealed;
+                });
+                newResistance.doubleVs?.forEach(double => {
+                    const oldDouble = oldResistance.doubleVs.find(x => x.value === double.value);
+                    if(oldDouble) double.revealed = oldDouble.revealed;
+                });
+            }
         });
         Object.keys(creature.system.attributes.resistances).forEach(resistanceKey => {
             const resistance = creature.system.attributes.resistances[resistanceKey];
@@ -2750,6 +2778,13 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
                         if(creatureItem.system.damageRolls[damageKey]){
                             item.system.damageRolls[damageKey].damageType = { ...item.system.damageRolls[damageKey].damageType, revealed: creatureItem.system.damageRolls[damageKey].damageType.revealed };
                         }
+                    });
+                }
+
+                if(item.type === 'action'){
+                    Object.values(item.system.traits.value).forEach(trait => {
+                        const oldTrait = creatureItem.system.traits.value.find(x => x.value === trait.value);
+                        if(oldTrait) trait.revealed = oldTrait.revealed;
                     });
                 }
             }
