@@ -590,14 +590,39 @@ export const handleDataMigration = async () => {
             for(var actionKey of Object.keys(monster.items)) {
                 const action = monster.items[actionKey]
                 if(action.type === 'action'){
-                    action.system.traits.value = action.system.traits.value.map(trait => ({ revealed: false, value: trait }));
+                    // None-Actions
+                    if(!action.system.traits){
+                        action.system.traits = { value: [] };
+                    }
+                    else {
+                        action.system.traits.value = action.system.traits.value.map(trait => ({ revealed: false, value: trait }));
+                    }
                 }
             };
 
             Object.keys(monster.system.actions).forEach(attackKey => {
-                Object.values(monster.items[attackKey].system.damageRolls).forEach(damageRoll => {
-                    damageRoll.damageType = { revealed: false, value: damageRoll.damageType };
-                });
+                // Missing Attack-None item
+                if(attackKey === 'Attack-None'){
+                    monster.items['Attack-None'] = {
+                        _id: 'Attack-None',
+                        empty: true,
+                        type: 'melee',
+                        Name: 'None',
+                        value: 'PF2E.Miscellaneous.None',
+                        system: {
+                            damageRolls: [],
+                            traits: {
+                                value: []
+                            }
+                        }
+                    }
+                }
+                else {
+                    Object.values(monster.items[attackKey].system.damageRolls).forEach(damageRoll => {
+                        damageRoll.damageType = { revealed: false, value: damageRoll.damageType };
+                    });
+                }
+
                 monster.items[attackKey].system.traits.value = Object.keys(monster.items[attackKey].system.traits.value).map(traitKey => { 
                     const traitsWithoutAttack = Object.keys(monster.system.actions[attackKey].traits).reduce((acc, traitKey) => {
                         if(monster.system.actions[attackKey].traits[traitKey].name !== 'attack'){

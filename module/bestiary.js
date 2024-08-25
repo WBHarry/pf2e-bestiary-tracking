@@ -1411,6 +1411,20 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 traits: [],
                 totalModifier: 0,
             };
+
+            dataObject.items['Attack-None'] = {
+                _id: 'Attack-None',
+                empty: true,
+                type: 'melee',
+                Name: 'None',
+                value: 'PF2E.Miscellaneous.None',
+                system: {
+                    damageRolls: [],
+                    traits: {
+                        value: []
+                    }
+                }
+            };
         }
 
         var hasActions = false;
@@ -1435,6 +1449,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     actionType: { value: 'action' },
                     description: {
                         value: null,
+                    },
+                    traits: {
+                        value: [],
                     }
                 }
             };
@@ -1450,6 +1467,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     actionType: { value: 'passive' },
                     description: {
                         value: null,
+                    },
+                    traits: {
+                        value: [],
                     }
                 }
             };
