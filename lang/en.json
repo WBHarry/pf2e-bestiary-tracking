@@ -309,6 +309,9 @@
                 "GMOnly": "This macro can only be used by the GM.",
                 "TargetAlreadyInBestiary": "That creature is already in the bestiary!"
             }
+        },
+        "ChatMessage": {
+            "RevealAbility": "Reveal Ability In Bestiary"
         }
     }
 }

@@ -213,3 +213,97 @@ Hooks.on("createChatMessage", async (message) => {
         }
     }
 });
+
+Hooks.on("getChatLogEntryContext", (_, options) => {
+    options.push({
+        name: game.i18n.localize("PF2EBestiary.ChatMessage.RevealAbility"),
+        icon: '<i class="fa-solid fa-eye"></i>',
+        condition: li => {
+            if(!game.user.isGM) return false;
+
+            const message = game.messages.get(li.data().messageId);
+            const actorUuid = message.flags.pf2e?.origin?.actor ?? null;
+            const actorId = message.flags.pf2e?.context?.actor ?? null;
+            if(actorUuid || actorId){
+                const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+                const actor = game.actors.find(x => x.uuid === actorUuid || x.id === actorId);
+
+                if(actor.type !== 'npc' || actor.hasPlayerOwner) return false;
+
+                return Boolean(bestiary.monster[actor.uuid]);
+            }
+
+            return false;
+        },
+        callback: async li => {
+            const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+            const message = game.messages.get(li.data().messageId);
+            const actorUuid = message.flags.pf2e?.origin?.actor ?? null;
+            const actorId = message.flags.pf2e?.context?.actor ?? null;
+            if(actorUuid){
+                const actor = game.actors.find(x => x.uuid === message.flags.pf2e.origin.actor);
+                if(actor.type !== 'npc' || actor.hasPlayerOwner) return;
+
+                const rollOptions = message.flags.pf2e.origin.rollOptions;
+                const itemIdSplit = rollOptions.find(option => option.includes('item:id'))?.split(':') ?? null;
+                if(actor && itemIdSplit){
+                    const bestiaryEntry = bestiary.monster[message.flags.pf2e.origin.actor];
+
+                    const item = actor.items.get(itemIdSplit[itemIdSplit.length-1]);
+
+                    if(message.flags.pf2e.modifierName){
+                        const monsterItem = bestiaryEntry.system.actions[item.id];
+                        if(monsterItem){
+                            monsterItem.revealed = true;
+                        }
+                    } else {
+                        switch(item.type){
+                            case 'action':
+                                bestiaryEntry.items[item.id].revealed = true;
+                                break;
+                            case 'spell':
+                            case 'spell-cast':
+                                bestiaryEntry.items[item.id].revealed = true;
+                                bestiaryEntry.items[item.system.location.value].revealed = true;
+                                break;
+                        }
+                    }
+                }
+            }
+            else if (actorId){
+                // Skills | Saving Throws
+                const actor = game.actors.find(x => x.id === actorId);
+                if(actor.type !== 'npc' || actor.hasPlayerOwner) return;
+
+                const actorUuid = getBaseActor(actor).uuid;
+                const monster = bestiary.monster[actorUuid];
+                if(monster){
+                    if(message.flags.pf2e.context.type === 'skill-check')
+                    {
+                        const skill = monster.system.skills[message.flags.pf2e.modifierName];
+                        if(skill){
+                            skill.revealed = true;
+                        }
+                        
+                    }
+                    if(message.flags.pf2e.context.type ==='saving-throw'){
+                        const savingThrow = monster.system.saves[message.flags.pf2e.modifierName];
+                        if(savingThrow){
+                            savingThrow.revealed = true;
+                        }
+                    }
+                }
+            }
+
+            if(actorUuid || actorId){
+                await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
+                await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+                    action: socketEvent.UpdateBestiary,
+                    data: { },
+                });
+        
+                Hooks.callAll(socketEvent.UpdateBestiary, {});    
+            }
+        }
+    })
+});

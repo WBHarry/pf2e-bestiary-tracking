@@ -690,10 +690,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
     static async revealEverything(){
         await this.toggleEverythingRevealed(true);
+        this.toggleControls(false);
     }
 
     static async hideEverything(){
         await this.toggleEverythingRevealed(false);
+        this.toggleControls(false);
     }
 
     async toggleEverythingRevealed(revealed){
@@ -909,7 +911,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
     static async refreshBestiary(){
         if(!game.user.isGM) return;
-
+        this.toggleControls(false);
 
         for(var monsterKey in this.bestiary.monster){
             const actor = await fromUuid(monsterKey);
@@ -932,6 +934,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
     static async handleSaveSlots(){
         if(!game.user.isGM) return;
+        this.toggleControls(false);
 
         await new PF2EBestiarySavesHandler().render(true);
     }
@@ -966,6 +969,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         });
 
         if(confirmed){
+            this.toggleControls(false);
+
             this.selected = { category: 'monster', type: null, monster: null, abilities: [] };
             this.bestiary = { ...this.bestiary, monster: {}, npc: {} };
 
