@@ -196,18 +196,21 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         for(var actionKey of actionKeys) {
             const action = monster.items[actionKey]
             if(action.type === 'action'){
+                const item = {
+                    ...action,
+                    traits: action.system.traits.value.map(trait => ({ 
+                        ...trait, 
+                        value: game.i18n.localize(CONFIG.PF2E.actionTraits[trait.value]), 
+                        description: game.i18n.localize(CONFIG.PF2E.traitsDescriptions[trait.value]),
+                        revealed: detailedInformation.abilityTraits ? trait.revealed : true 
+                    })),
+                    description: action.system.description.value,
+                };
                 if(action.system.actionType.value !== 'passive'){
-                    actions[action._id] = {
-                        ...action,
-                        // actions: action.system.actions.value,
-                        description: action.system.description.value,
-                    };
+                    actions[action._id] = item;
                 }
                 else {
-                    passives[action._id] = {
-                        ...action,
-                        description: action.system.description.value,
-                    };
+                    passives[action._id] = item;
                 }
             }
         };
@@ -407,7 +410,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                         traits: action.traits.map(trait => ({
                             ...trait,
                             revealed: detailedInformation.attackTraits ? trait.revealed : true,
-                        })),
+                        })).filter(trait => trait.name !== 'attack'),
                         value: `${action.totalModifier >= 0 ? '+' : '-'} ${action.totalModifier}`, 
                         ...attackParts, 
                         ...damageParts 
@@ -1347,6 +1350,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         var hasPassives = false;
         for(var item of Object.values(dataObject.items)){
             if(item.type === 'action'){
+                item.system.traits.value = item.system.traits.value.map(trait => ({ revealed: false, value: trait }));
+            
                 if(item.system.actionType.value === 'action' || item.system.actionType.value === 'reaction') hasActions = true;
                 if(item.system.actionType.value === 'passive') hasPassives = true;
             }

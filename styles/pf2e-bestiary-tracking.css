@@ -589,7 +589,6 @@
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container .action-container {
   display: flex;
   align-items: center;
-  font-weight: bold;
   gap: 4px;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container .action-container .action-name {
@@ -608,6 +607,18 @@
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container .action-description.expanded {
   max-height: 500px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .attack-traits-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-weight: 200;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .attack-traits-container > * {
+  flex: 0;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .attack-traits-container .attack-trait-label {
+  white-space: nowrap;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container {
   display: flex;
@@ -628,17 +639,7 @@
   flex-wrap: wrap;
   width: 100%;
   gap: 8px;
-}
-.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-header .attack-traits-container {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-header .attack-traits-container > * {
-  flex: 0;
-}
-.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-header .attack-traits-container .attack-trait-label {
-  white-space: nowrap;
+  font-weight: bold;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .attack-container .attack-body {
   display: flex;

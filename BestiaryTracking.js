@@ -2190,18 +2190,21 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
         for(var actionKey of actionKeys) {
             const action = monster.items[actionKey];
             if(action.type === 'action'){
+                const item = {
+                    ...action,
+                    traits: action.system.traits.value.map(trait => ({ 
+                        ...trait, 
+                        value: game.i18n.localize(CONFIG.PF2E.actionTraits[trait.value]), 
+                        description: game.i18n.localize(CONFIG.PF2E.traitsDescriptions[trait.value]),
+                        revealed: detailedInformation.abilityTraits ? trait.revealed : true 
+                    })),
+                    description: action.system.description.value,
+                };
                 if(action.system.actionType.value !== 'passive'){
-                    actions[action._id] = {
-                        ...action,
-                        // actions: action.system.actions.value,
-                        description: action.system.description.value,
-                    };
+                    actions[action._id] = item;
                 }
                 else {
-                    passives[action._id] = {
-                        ...action,
-                        description: action.system.description.value,
-                    };
+                    passives[action._id] = item;
                 }
             }
         }
@@ -2400,7 +2403,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
                         traits: action.traits.map(trait => ({
                             ...trait,
                             revealed: detailedInformation.attackTraits ? trait.revealed : true,
-                        })),
+                        })).filter(trait => trait.name !== 'attack'),
                         value: `${action.totalModifier >= 0 ? '+' : '-'} ${action.totalModifier}`, 
                         ...attackParts, 
                         ...damageParts 
@@ -3339,6 +3342,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
         var hasPassives = false;
         for(var item of Object.values(dataObject.items)){
             if(item.type === 'action'){
+                item.system.traits.value = item.system.traits.value.map(trait => ({ revealed: false, value: trait }));
+            
                 if(item.system.actionType.value === 'action' || item.system.actionType.value === 'reaction') hasActions = true;
                 if(item.system.actionType.value === 'passive') hasPassives = true;
             }
@@ -4395,7 +4400,7 @@ const handleDataMigration = async () => {
        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 
-    if(version = '0.8.9'){
+    if(version === '0.8.9'){
         // Some creatures are missing None options for IWR and Actions/Passives/Attacks/Spells
         await newMigrateBestiary((_, monster) => {
             const immunitiesKeys = Object.keys(monster.system.attributes.immunities);
@@ -4497,6 +4502,43 @@ const handleDataMigration = async () => {
         });
 
         version = '0.8.9.2';
+        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
+    }
+
+    if(version === '0.8.9.2'){
+        const vagueDescriptions = game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
+        if(!vagueDescriptions.properties){
+            game.settings.set('pf2e-bestiary-tracking', 'vague-descriptions', {
+                properties: {
+                    ac: false,
+                    hp: false,
+                    resistances: false,
+                    weaknesses: false,
+                    saves: false,
+                    perception: false,
+                    speed: false,
+                    attributes: false,
+                    skills: false,
+                    attacks: false,
+                    damage: false,
+                    spells: false,
+                },
+                settings: {
+                    playerBased: false,
+                    misinformationOptions: false,
+                }
+            });
+        }
+
+        await newMigrateBestiary((_, monster) => {
+            for(var actionKey of Object.keys(monster.items)) {
+                const action = monster.items[actionKey];
+                if(action.type === 'action'){
+                    action.system.traits.value = action.system.traits.value.map(trait => ({ revealed: false, value: trait }));
+                }
+            }        });
+
+        version = '0.8.9.7';
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 };
@@ -4710,6 +4752,7 @@ const bestiaryAppearance = () => {
         default: {
             exceptionsDouble: false,
             attackTraits: false,
+            abilityTraits: false,
         },
     });
 

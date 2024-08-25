@@ -613,7 +613,6 @@
                     .action-container {
                         display: flex;
                         align-items: center;
-                        font-weight: bold;
                         gap: 4px;
 
                         .action-name {
@@ -639,6 +638,21 @@
                     }
                 }
 
+                .attack-traits-container {
+                    display: flex;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    font-weight: 200;
+
+                    > * {
+                        flex: 0;
+                    }
+
+                    .attack-trait-label {
+                        white-space: nowrap;
+                    }
+                }
+
                 .attack-container {
                     display: flex;
                     align-items: center;
@@ -660,20 +674,7 @@
                         flex-wrap: wrap;
                         width: 100%;
                         gap: 8px;
-
-                        .attack-traits-container {
-                            display: flex;
-                            align-items: center;
-                            flex-wrap: wrap;
-
-                            > * {
-                                flex: 0;
-                            }
-
-                            .attack-trait-label {
-                                white-space: nowrap;
-                            }
-                        }
+                        font-weight: bold;
                     }
 
                     .attack-body {

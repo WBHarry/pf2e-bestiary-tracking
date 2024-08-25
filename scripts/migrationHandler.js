@@ -1,6 +1,5 @@
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import PF2EBestiary from "../module/bestiary.js";
-import { getCreaturesTypes, slugify } from "./helpers.js";
 import { acTable, attributeTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "./statisticsData.js";
 import { getCategoryLabel, getRollAverage } from "./statisticsHelper.js";
 
@@ -455,7 +454,7 @@ export const handleDataMigration = async () => {
        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 
-    if(version = '0.8.9'){
+    if(version === '0.8.9'){
         // Some creatures are missing None options for IWR and Actions/Passives/Attacks/Spells
         await newMigrateBestiary((_, monster) => {
             const immunitiesKeys = Object.keys(monster.system.attributes.immunities);
@@ -557,6 +556,44 @@ export const handleDataMigration = async () => {
         });
 
         version = '0.8.9.2';
+        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
+    }
+
+    if(version === '0.8.9.2'){
+        const vagueDescriptions = game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
+        if(!vagueDescriptions.properties){
+            game.settings.set('pf2e-bestiary-tracking', 'vague-descriptions', {
+                properties: {
+                    ac: false,
+                    hp: false,
+                    resistances: false,
+                    weaknesses: false,
+                    saves: false,
+                    perception: false,
+                    speed: false,
+                    attributes: false,
+                    skills: false,
+                    attacks: false,
+                    damage: false,
+                    spells: false,
+                },
+                settings: {
+                    playerBased: false,
+                    misinformationOptions: false,
+                }
+            });
+        }
+
+        await newMigrateBestiary((_, monster) => {
+            for(var actionKey of Object.keys(monster.items)) {
+                const action = monster.items[actionKey]
+                if(action.type === 'action'){
+                    action.system.traits.value = action.system.traits.value.map(trait => ({ revealed: false, value: trait }));
+                }
+            };
+        });
+
+        version = '0.8.9.7';
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 }

@@ -164,6 +164,7 @@ const bestiaryAppearance = () => {
         default: {
             exceptionsDouble: false,
             attackTraits: false,
+            abilityTraits: false,
         },
     });
 
