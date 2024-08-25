@@ -2373,12 +2373,12 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
                     const action = monster.system.actions[actionKey];
                     const damageInstances = [];
                     var damageLabel = '';
-                    for(var damageKey of Object.keys(action.item.system.damageRolls)){
-                        const damage = action.item.system.damageRolls[damageKey];
-                        damageLabel = damageLabel.concat(`${damageLabel ? ' + ' : ''}${damage.damage} ${damage.damageType}`);
+                    for(var damageKey of Object.keys(monster.items[actionKey].system.damageRolls)){
+                        const damage = monster.items[actionKey].system.damageRolls[damageKey];
+                        damageLabel = damageLabel.concat(`${damageLabel ? ' + ' : ''}${damage.damage} ${damage.damageType.value}`);
                         const damageRollHelper = new Roll(damage.damage);
                         
-                        damageInstances.push({ label: damage.damage, average: getRollAverage(damageRollHelper.terms), type: damage.damageType, quality: damage.category  });
+                        damageInstances.push({ label: damage.damage, average: getRollAverage(damageRollHelper.terms), type: { ...damage.damageType, revealed: detailedInformation.damageTypes ? damage.damageType.revealed : true }, quality: damage.category, _id: damageKey  });
                     }
 
                     const damage = {
@@ -2389,10 +2389,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
                     const attackParts = vagueDescriptions.properties.attacks ? { category: getCategoryLabel(attackTable, contextLevel, action.totalModifier) } : {  };
                     const damageParts = vagueDescriptions.properties.damage ? { 
                         damage: { ...damage, 
-                            instances: damage.instances.map(instance => ({ ...instance, category: getCategoryLabel(damageTable, contextLevel, instance.average), value: instance.average }))
+                            instances: damage.instances.map(instance => ({ 
+                                ...instance, 
+                                category: getCategoryLabel(damageTable, contextLevel, instance.average), 
+                                value: instance.average,
+                            }))
                         } 
                     } : { damage: { instances: damage.instances.map(instance => ({ ...instance, value: instance.label })) } };
-                    acc[action.item._id] = { 
+                    acc[actionKey] = { 
                         ...action,
                         range: action.weapon.system.traits.value.find(x => x.startsWith('range-increment') || x.startsWith('range')) ? 'Ranged' : 'Melee', 
                         variants: action.variants.reduce((acc, variant) => {
@@ -2400,8 +2404,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
         
                             return acc;
                         }, { revealed: false, values: {} }),
-                        traits: action.traits.map(trait => ({
-                            ...trait,
+                        traits: monster.items[actionKey].system.traits.value.map(trait => ({
+                            label: game.i18n.localize(CONFIG.PF2E.npcAttackTraits[trait.value]),
+                            description: CONFIG.PF2E.traitsDescriptions[trait.value],
                             revealed: detailedInformation.attackTraits ? trait.revealed : true,
                         })).filter(trait => trait.name !== 'attack'),
                         value: `${action.totalModifier >= 0 ? '+' : '-'} ${action.totalModifier}`, 
@@ -2731,6 +2736,21 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
                 if(item.type === 'spellcastingEntry'){
                     item.system.spelldc.dc.revealed = creatureItem.system.spelldc.dc.revealed;
                     item.system.spelldc.value.revealed = creatureItem.system.spelldc.value.revealed;
+                }
+
+                if(item.type === 'melee'){
+                    item.system.traits.value = item.system.traits.value.map(trait => {
+                        const oldTrait = creatureItem.system.traits.value.find(x => x.value === trait.value);
+                        if(oldTrait) trait.revealed = oldTrait.revealed;
+
+                        return trait;
+                    });
+
+                    Object.keys(item.system.damageRolls).forEach(damageKey => {
+                        if(creatureItem.system.damageRolls[damageKey]){
+                            item.system.damageRolls[damageKey].damageType = { ...item.system.damageRolls[damageKey].damageType, revealed: creatureItem.system.damageRolls[damageKey].damageType.revealed };
+                        }
+                    });
                 }
             }
         });
@@ -3273,7 +3293,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
 
         dataObject.system.actions = Object.keys(dataObject.system.actions).reduce((acc, index) => {
             const action = dataObject.system.actions[index];
-            acc[action.item._id] = { ...action, damageStatsRevealed: false, };
+            acc[action.item._id] = { 
+                ...action, 
+                damageStatsRevealed: false, 
+               
+            };
 
             return acc;
         }, {});
@@ -3288,6 +3312,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
             if(item.type === 'spellcastingEntry'){
                 item.system.spelldc.dc = { revealed: false, value: item.system.spelldc.dc };
                 item.system.spelldc.value = { revealed: false, value: item.system.spelldc.value };
+            }
+
+            if(item.type === 'melee'){
+                Object.keys(item.system.damageRolls).forEach(key => {
+                    item.system.damageRolls[key].damageType = { revealed: false, value: item.system.damageRolls[key].damageType };
+                });
+
+                item.system.traits.value = item.system.traits.value.map(trait => ({ revealed: false, value: trait }));
             }
 
             acc[item._id] = { revealed: false, ...item };
@@ -4506,6 +4538,7 @@ const handleDataMigration = async () => {
     }
 
     if(version === '0.8.9.2'){
+        // Still some users with the old version of vague descriptions. Just a safety migration
         const vagueDescriptions = game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
         if(!vagueDescriptions.properties){
             game.settings.set('pf2e-bestiary-tracking', 'vague-descriptions', {
@@ -4530,13 +4563,30 @@ const handleDataMigration = async () => {
             });
         }
 
+        //Insert reveal properties on ability traits, and attack damage types
         await newMigrateBestiary((_, monster) => {
             for(var actionKey of Object.keys(monster.items)) {
                 const action = monster.items[actionKey];
                 if(action.type === 'action'){
                     action.system.traits.value = action.system.traits.value.map(trait => ({ revealed: false, value: trait }));
                 }
-            }        });
+            }
+            Object.keys(monster.system.actions).forEach(attackKey => {
+                Object.values(monster.items[attackKey].system.damageRolls).forEach(damageRoll => {
+                    damageRoll.damageType = { revealed: false, value: damageRoll.damageType };
+                });
+                monster.items[attackKey].system.traits.value = Object.keys(monster.items[attackKey].system.traits.value).map(traitKey => { 
+                    const traitsWithoutAttack = Object.keys(monster.system.actions[attackKey].traits).reduce((acc, traitKey) => {
+                        if(monster.system.actions[attackKey].traits[traitKey].name !== 'attack'){
+                            acc.push(monster.system.actions[attackKey].traits[traitKey]);
+                        }
+                        
+                        return acc;
+                    }, []);
+                    return { revealed: traitsWithoutAttack[traitKey].revealed, value: monster.items[attackKey].system.traits.value[traitKey] };
+                });
+            });
+        });
 
         version = '0.8.9.7';
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
@@ -4752,6 +4802,7 @@ const bestiaryAppearance = () => {
         default: {
             exceptionsDouble: false,
             attackTraits: false,
+            damageTypes: false,
             abilityTraits: false,
         },
     });

@@ -560,6 +560,7 @@ export const handleDataMigration = async () => {
     }
 
     if(version === '0.8.9.2'){
+        // Still some users with the old version of vague descriptions. Just a safety migration
         const vagueDescriptions = game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
         if(!vagueDescriptions.properties){
             game.settings.set('pf2e-bestiary-tracking', 'vague-descriptions', {
@@ -584,6 +585,7 @@ export const handleDataMigration = async () => {
             });
         }
 
+        //Insert reveal properties on ability traits, and attack damage types
         await newMigrateBestiary((_, monster) => {
             for(var actionKey of Object.keys(monster.items)) {
                 const action = monster.items[actionKey]
@@ -591,6 +593,22 @@ export const handleDataMigration = async () => {
                     action.system.traits.value = action.system.traits.value.map(trait => ({ revealed: false, value: trait }));
                 }
             };
+
+            Object.keys(monster.system.actions).forEach(attackKey => {
+                Object.values(monster.items[attackKey].system.damageRolls).forEach(damageRoll => {
+                    damageRoll.damageType = { revealed: false, value: damageRoll.damageType };
+                });
+                monster.items[attackKey].system.traits.value = Object.keys(monster.items[attackKey].system.traits.value).map(traitKey => { 
+                    const traitsWithoutAttack = Object.keys(monster.system.actions[attackKey].traits).reduce((acc, traitKey) => {
+                        if(monster.system.actions[attackKey].traits[traitKey].name !== 'attack'){
+                            acc.push(monster.system.actions[attackKey].traits[traitKey]);
+                        }
+                        
+                        return acc;
+                    }, []);
+                    return { revealed: traitsWithoutAttack[traitKey].revealed, value: monster.items[attackKey].system.traits.value[traitKey] };
+                });
+            });
         });
 
         version = '0.8.9.7';

@@ -219,6 +219,7 @@
                 "Name": "Detailed Information Toggles",
                 "ExceptionsDoubleVs": "(IWR) Exceptions And Double",
                 "AttackTraits": "Attack Traits",
+                "DamageTypes": "Damage Types",
                 "AbilityTraits": "Ability Traits"
             },
             "AdditionalCreatureTypes": {
