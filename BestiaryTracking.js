@@ -4679,6 +4679,44 @@ const newMigrateBestiary = async (update) => {
     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
 };
 
+const registerKeyBindings = () => {
+    game.keybindings.register("pf2e-bestiary-tracking", "open-bestiary", {
+        name: game.i18n.localize("PF2EBestiary.KeyBindings.OpenBestiary.Name"),
+        hint: game.i18n.localize("PF2EBestiary.KeyBindings.OpenBestiary.Hint"),
+        uneditable: [],
+        editable: [],
+        onDown: () => game.modules.get('pf2e-bestiary-tracking').macros.openBestiary(),
+        onUp: () => {},
+        restricted: false,
+        reservedModifiers: [],
+        precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL
+    });
+
+    game.keybindings.register("pf2e-bestiary-tracking", "show-monster", {
+        name: game.i18n.localize("PF2EBestiary.KeyBindings.ShowMonster.Name"),
+        hint: game.i18n.localize("PF2EBestiary.KeyBindings.ShowMonster.Hint"),
+        uneditable: [],
+        editable: [],
+        onDown: () => game.modules.get('pf2e-bestiary-tracking').macros.showMonster(),
+        onUp: () => {},
+        restricted: false,
+        reservedModifiers: [],
+        precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL
+    });
+
+    game.keybindings.register("pf2e-bestiary-tracking", "add-monster", {
+        name: game.i18n.localize("PF2EBestiary.KeyBindings.AddMonster.Name"),
+        hint: game.i18n.localize("PF2EBestiary.KeyBindings.AddMonster.Hint"),
+        uneditable: [],
+        editable: [],
+        onDown: () => game.modules.get('pf2e-bestiary-tracking').macros.addMonster(),
+        onUp: () => {},
+        restricted: true,
+        reservedModifiers: [],
+        precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL
+    });
+};
+
 const registerGameSettings = () => {
     configSettings();
     generalNonConfigSettings();
@@ -4959,7 +4997,12 @@ const showMonster = async () => {
         return;
     }
 
-    if(selectedMonster.actor.type !== 'npc'){
+    if(!selectedMonster.actor){
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoActor"));
+        return;
+    }
+
+    if(selectedMonster.actor.type !== 'npc' || selectedMonster.actor.hasPlayerOwner){
         ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"));
         return;
     }
@@ -4994,7 +5037,7 @@ const addMonster = async () => {
         return;
     }
 
-    if(selectedMonster.actor.type !== 'npc'){
+    if(selectedMonster.actor.type !== 'npc' || selectedMonster.actor.hasPlayerOwner){
         ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"));
         return;
     }
@@ -5011,7 +5054,13 @@ const addMonster = async () => {
         return;
     }
 
-    await PF2EBestiary.addMonster(selectedMonster.actor);
+    const successfull = await PF2EBestiary.addMonster(selectedMonster.actor);
+    if(successfull){
+        ui.notifications.info(game.i18n.format('PF2EBestiary.Bestiary.Info.AddedToBestiary', { creatures: selectedMonster.actor.name }));
+    }
+    else if(successfull === false){
+        ui.notifications.info(game.i18n.format('PF2EBestiary.Bestiary.Info.AlreadyExistsInBestiary', { creatures: selectedMonster.actor.name }));
+    }    
 };
 
 var macros = /*#__PURE__*/Object.freeze({
@@ -5023,6 +5072,7 @@ var macros = /*#__PURE__*/Object.freeze({
 
 Hooks.once('init', () => {
     registerGameSettings();
+    registerKeyBindings();
     RegisterHandlebarsHelpers.registerHelpers();
     game.socket.on(`module.pf2e-bestiary-tracking`, handleSocketEvent);
 

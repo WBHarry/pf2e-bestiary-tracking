@@ -1,6 +1,6 @@
 import PF2EBestiary from "./module/bestiary.js";
 import RegisterHandlebarsHelpers from "./scripts/handlebarHelpers.js";
-import { registerGameSettings } from "./scripts/setup.js";
+import { registerGameSettings, registerKeyBindings } from "./scripts/setup.js";
 import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
 import { handleDataMigration } from "./scripts/migrationHandler.js";
@@ -8,6 +8,7 @@ import { getBaseActor } from "./scripts/helpers.js";
 
 Hooks.once('init', () => {
     registerGameSettings();
+    registerKeyBindings();
     RegisterHandlebarsHelpers.registerHelpers();
     game.socket.on(`module.pf2e-bestiary-tracking`, handleSocketEvent);
 

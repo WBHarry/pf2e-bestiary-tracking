@@ -1,6 +1,12 @@
 {
     "PF2EBestiary": {
         "Name": "Bestiary Tracker",
+        "KeyBindings": {
+            "OpenBestiary": {
+                "Name": "Open Bestiary",
+                "Hint": "Opens the bestiary"
+            }
+        },
         "SavesHandler": {
             "Name": "Bestiary Save Slots",
             "SaveDirectory": "Save Directory",
@@ -280,6 +286,7 @@
         "Macros": {
             "ShowMonster": {
                 "NoTarget": "Aucun monstre sélectionné ou ciblé.",
+                "NoActor": "The creature has no actor in the world and is unlinked in the Bestiary.",
                 "InvalidTarget": "La cible doit être une créature (PNJ) !",
                 "TargetNotInBestiary": "Ce monstre n'a pas encore été ajouté au bestiaire !"
             },

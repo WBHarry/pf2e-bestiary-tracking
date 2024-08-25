@@ -1,6 +1,20 @@
 {
     "PF2EBestiary": {
         "Name": "Bestiary Tracker",
+        "KeyBindings": {
+            "OpenBestiary": {
+                "Name": "Open Bestiary",
+                "Hint": "Opens the bestiary"
+            },
+            "ShowMonster": {
+                "Name": "Show Monster",
+                "Hint": "Opens the bestiary on the currently selected or targeted creature"
+            },
+            "AddMonster": {
+                "Name": "Add Monster",
+                "Hint": "Adds the currently selected or targeted creature to the bestiary"
+            }
+        },
         "SavesHandler": {
             "Name": "Bestiary Save Slots",
             "SaveDirectory": "Save Directory",
@@ -281,6 +295,7 @@
         "Macros": {
             "ShowMonster": {
                 "NoTarget": "No monster selected or targeted.",
+                "NoActor": "The creature has no actor in the world and is unlinked in the Bestiary.",
                 "InvalidTarget": "Target must be an NPC creature!",
                 "TargetNotInBestiary": "That monster hasn't been added to the bestiary yet!"
             },

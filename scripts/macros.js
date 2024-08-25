@@ -15,7 +15,12 @@ export const showMonster = async () => {
         return;
     }
 
-    if(selectedMonster.actor.type !== 'npc'){
+    if(!selectedMonster.actor){
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoActor"));
+        return;
+    }
+
+    if(selectedMonster.actor.type !== 'npc' || selectedMonster.actor.hasPlayerOwner){
         ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"))
         return;
     }
@@ -50,7 +55,7 @@ export const addMonster = async () => {
         return;
     }
 
-    if(selectedMonster.actor.type !== 'npc'){
+    if(selectedMonster.actor.type !== 'npc' || selectedMonster.actor.hasPlayerOwner){
         ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"))
         return;
     }
@@ -67,5 +72,11 @@ export const addMonster = async () => {
         return;
     }
 
-    await PF2EBestiary.addMonster(selectedMonster.actor);
+    const successfull = await PF2EBestiary.addMonster(selectedMonster.actor);
+    if(successfull){
+        ui.notifications.info(game.i18n.format('PF2EBestiary.Bestiary.Info.AddedToBestiary', { creatures: selectedMonster.actor.name }));
+    }
+    else if(successfull === false){
+        ui.notifications.info(game.i18n.format('PF2EBestiary.Bestiary.Info.AlreadyExistsInBestiary', { creatures: selectedMonster.actor.name }));
+    }    
 };

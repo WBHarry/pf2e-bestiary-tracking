@@ -1,10 +1,49 @@
 import { optionalFields, revealedState } from "../data/bestiaryAppearance.js";
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
+import PF2EBestiary from "../module/bestiary.js";
 import BestiaryAppearanceMenu from "../module/bestiaryAppearanceMenu.js";
 import BestiaryIntegrationMenu from "../module/bestiaryIntegrationMenu.js";
 import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
+
+export const registerKeyBindings = () => {
+    game.keybindings.register("pf2e-bestiary-tracking", "open-bestiary", {
+        name: game.i18n.localize("PF2EBestiary.KeyBindings.OpenBestiary.Name"),
+        hint: game.i18n.localize("PF2EBestiary.KeyBindings.OpenBestiary.Hint"),
+        uneditable: [],
+        editable: [],
+        onDown: () => game.modules.get('pf2e-bestiary-tracking').macros.openBestiary(),
+        onUp: () => {},
+        restricted: false,
+        reservedModifiers: [],
+        precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL
+    });
+
+    game.keybindings.register("pf2e-bestiary-tracking", "show-monster", {
+        name: game.i18n.localize("PF2EBestiary.KeyBindings.ShowMonster.Name"),
+        hint: game.i18n.localize("PF2EBestiary.KeyBindings.ShowMonster.Hint"),
+        uneditable: [],
+        editable: [],
+        onDown: () => game.modules.get('pf2e-bestiary-tracking').macros.showMonster(),
+        onUp: () => {},
+        restricted: false,
+        reservedModifiers: [],
+        precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL
+    });
+
+    game.keybindings.register("pf2e-bestiary-tracking", "add-monster", {
+        name: game.i18n.localize("PF2EBestiary.KeyBindings.AddMonster.Name"),
+        hint: game.i18n.localize("PF2EBestiary.KeyBindings.AddMonster.Hint"),
+        uneditable: [],
+        editable: [],
+        onDown: () => game.modules.get('pf2e-bestiary-tracking').macros.addMonster(),
+        onUp: () => {},
+        restricted: true,
+        reservedModifiers: [],
+        precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL
+    });
+};
 
 export const registerGameSettings = () => {
     configSettings();
