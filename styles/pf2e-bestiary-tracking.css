@@ -377,13 +377,26 @@
   flex-direction: column;
   overflow-y: auto;
 }
-.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .monster-image {
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .monster-image-container {
+  position: relative;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .monster-image-container .monster-image {
   height: 150px;
   border-radius: 0.5rem;
   cursor: pointer;
 }
-.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .monster-image.token {
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .monster-image-container .monster-image.token {
   border-width: 0;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .monster-image-container .unlinked-icon {
+  position: absolute;
+  font-size: 16px;
+  top: 0px;
+  right: 0px;
+  padding: 4px;
+  background: black;
+  border-radius: 6px;
+  color: white;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .monster-left-data {
   display: flex;

@@ -132,6 +132,10 @@
                     }
                 }
             },
+            "UnlinkedDialog": {
+                "Title": "Unlinked Create Handling",
+                "Content": "The current creature lacks an actor in the world. Would you like to create one for it?"
+            },
             "Errors": {
                 "UnsupportedType": "Not a supported NPC type!",
                 "UnsupportedCharacterType": "Player Characters are not supported in the bestiary.",

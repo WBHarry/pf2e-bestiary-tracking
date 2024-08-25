@@ -1,3 +1,4 @@
+import { handleBestiaryMigration } from "../scripts/migrationHandler";
 import { socketEvent } from "../scripts/socket";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -78,7 +79,10 @@ export default class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin
         }
 
         const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-        bestiary.metadata = { ...bestiary.metadata, save: { folder: this.saveSlotDialog.folder, name: this.saveSlotDialog.name, id: `${this.saveSlotDialog.name}_${foundry.utils.randomID()}`, img: this.saveSlotDialog.img ? this.saveSlotDialog.img : null } }
+        bestiary.metadata = { 
+            ...bestiary.metadata, 
+            save: { folder: this.saveSlotDialog.folder, name: this.saveSlotDialog.name, id: `${this.saveSlotDialog.name}_${foundry.utils.randomID()}`, img: this.saveSlotDialog.img ? this.saveSlotDialog.img : null },
+        };
 
         const file = new File([JSON.stringify(bestiary)], `${this.saveSlotDialog.name}.json`, { type: 'application/json' });
         await FilePicker.upload('data', this.saveSlotDialog.folder, file, {});
@@ -108,7 +112,9 @@ export default class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin
 
         const loadedBestiary = context.files.find(x => x.metadata.save.id === button.id);
 
-        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', loadedBestiary);
+        const migratedBestiary = await handleBestiaryMigration(loadedBestiary);
+
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', migratedBestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
             data: { },

@@ -123,6 +123,10 @@
                     }
                 }
             },
+            "UnlinkedDialog": {
+                "Title": "Unlinked Create Handling",
+                "Content": "The current creature lacks an actor in the world. Would you like to create one for it?"
+            },
             "Errors": {
                 "UnsupportedType": "Type de PNJ non pris en charge !",
                 "UnsupportedCharacterType": "Les PJs ne sont pas pris en charge dans le bestiaire.",

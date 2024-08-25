@@ -58,6 +58,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             createMisinformation: this.createMisinformation,
             imagePopout: this.imagePopout,
             setCategoriesLayout: this.setCategoriesLayout,
+            unlinkedDialog: this.unlinkedDialog,
         },
         form: { handler: this.updateData, submitOnChange: true },
         window: {
@@ -168,6 +169,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const { category, type, monster } = selected;
         if(!monster) return { category, type, monster };
 
+        const original = await fromUuid(monster.uuid);
+        // const isUnlinked = !Boolean(original);
+        const isUnlinked = false; // Temporary until it is finished.
         const useTokenArt = await game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
         const contextLevel = playerLevel ?? monster.system.details.level.value;
 
@@ -432,7 +436,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 notes: {
                     public: monster.system.details.publicNotes,
                     private: monster.system.details.privateNotes,
-                }
+                },
+                isUnlinked: isUnlinked,
             }
         };
     }
@@ -1131,6 +1136,68 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             ...settings.categories,
             layout: Number.parseInt(button.dataset.option) 
         } });
+        this.render();
+    }
+
+    static async unlinkedDialog(){
+        const confirmed = await Dialog.confirm({
+            title: game.i18n.localize("PF2EBestiary.Bestiary.UnlinkedDialog.Title"),
+            content: game.i18n.localize("PF2EBestiary.Bestiary.UnlinkedDialog.Content"),
+            yes: () => true,
+            no: () => false,
+        });
+
+        if(!confirmed) return;
+
+        const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+        const restoredObject = Object.keys(bestiary.monster[this.selected.monster.uuid]).reduce((acc, key) => {
+            var baseField = bestiary.monster[this.selected.monster.uuid][key];
+            switch(key){
+                case 'uuid':
+                case '_id':
+                    break;
+                case 'name':
+                    acc[key] = baseField.value;
+                    break;
+                case 'system':
+                    baseField.attributes.immunities = Object.keys(baseField.attributes.immunities).map(key => ({ ...baseField.attributes.immunities[key] }));
+                    baseField.attributes.weaknesses = Object.keys(baseField.attributes.weaknesses).map(key => ({ ...baseField.attributes.weaknesses[key] }));
+                    baseField.attributes.resistances = Object.keys(baseField.attributes.resistances).map(key => ({ ...baseField.attributes.resistances[key] }));
+
+                    acc[key] = baseField;
+                    break;
+                case 'items':
+                    baseField = Object.keys(baseField).reduce((acc, fieldKey) => {
+                        const { revealed, ...rest } = baseField[fieldKey];
+                        acc.push({
+                            ...rest,
+                        });
+
+                        if(rest.type === 'action'){
+                            
+                        }
+
+                        if(rest.type === 'spell'){
+
+                        }
+
+                        if(rest.type === 'spellEntry'){
+
+                        }
+
+                        return acc;
+                    }, []);
+
+                    acc[key] = baseField;
+                    break;
+                default:
+                    acc[key] = baseField;
+            }
+
+            return acc;
+        }, {});
+
+        const newActor = await Actor.implementation.create([restoredObject]);
         this.render();
     }
 

@@ -367,15 +367,30 @@
                 flex-direction: column;
                 overflow-y: auto;
 
-                .monster-image {
-                    height: 150px;
-                    border-radius: 0.5rem;
-                    cursor: pointer;
-                    
-                    &.token {
-                        border-width: 0;
+                .monster-image-container {
+                    position: relative;
+                    .monster-image {
+                        height: 150px;
+                        border-radius: 0.5rem;
+                        cursor: pointer;
+                        
+                        &.token {
+                            border-width: 0;
+                        }
+                    }
+
+                    .unlinked-icon {
+                        position: absolute;
+                        font-size: 16px;
+                        top: 0px;
+                        right: 0px;
+                        padding: 4px;
+                        background: black;
+                        border-radius: 6px;
+                        color: white;
                     }
                 }
+
 
                 .monster-left-data {
                     display: flex;

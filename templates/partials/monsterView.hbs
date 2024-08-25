@@ -1,7 +1,10 @@
 <div class="monster-container flex-col">
     <div class="left-monster-container">
-        <img class="monster-image {{#if this.useTokenArt}}token{{/if}}" src="{{this.img}}" data-action="imagePopout" />
-        
+        <div class="monster-image-container">
+            <img class="monster-image {{#if this.useTokenArt}}token{{/if}}" src="{{this.img}}" data-action="imagePopout" />
+            {{#if this.isUnlinked}}<i class="fa-solid fa-link-slash unlinked-icon primary-hover-container" data-action="unlinkedDialog"></i>{{/if}}
+        </div>
+
         {{#if this.optionalFields.level}}
             <div class="monster-left-data primary-container {{PF2EBTToggleContainer this.user this.level}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.level}}" data-action="toggleRevealed" data-path="system.details.level" data-name="{{localize "PF2EBestiary.Miscellaneous.Level"}}" data-vague-property="level">
                 <div class="flex-data">
