@@ -2287,7 +2287,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
                     acc.values[immunityKey] = { 
                         ...immunity, 
                         value: immunity.fake || immunity.empty ? immunity.type : game.i18n.localize(immunity.typeLabels[immunity.type]),
-                        exceptions: immunity.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(immunity.typeLabels[x.value] )})) ?? [],
+                        exceptions: immunity.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(x.value.label ?? immunity.typeLabels[x.value] )})) ?? [],
                     };
 
                     return acc;
@@ -2300,8 +2300,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
                         value: resistance.fake || resistance.empty ? resistance.type : `${label} ${resistance.value}`, 
                         class: getWeaknessCategoryClass(contextLevel, resistance.value), 
                         category: label,
-                        exceptions: resistance.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(resistance.typeLabels[x.value] )})) ?? [],
-                        doubleVs: resistance.doubleVs?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(resistance.typeLabels[x.value] )})) ?? [],
+                        exceptions: resistance.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(x.value.label ?? resistance.typeLabels[x.value] )})) ?? [],
+                        doubleVs: resistance.doubleVs?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(x.value.label ?? resistance.typeLabels[x.value] )})) ?? [],
                     };
 
                     return acc;
@@ -2314,7 +2314,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
                         value: weakness.fake || weakness.empty ? weakness.type : `${label} ${weakness.value}`, 
                         class: getWeaknessCategoryClass(contextLevel, weakness.value), 
                         category: label,
-                        exceptions: weakness.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(weakness.typeLabels[x.value] )})) ?? [],
+                        exceptions: weakness.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(x.value.label ?? weakness.typeLabels[x.value] )})) ?? [],
                     };
 
                     return acc;
