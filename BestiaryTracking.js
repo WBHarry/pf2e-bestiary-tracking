@@ -5525,7 +5525,7 @@ Hooks.on("createChatMessage", async (message) => {
 
 Hooks.on("getChatLogEntryContext", (_, options) => {
     options.push({
-        name: game.i18n.localize("PF2EBestiary.ChatMessage.RevealAbility"),
+        name: game.i18n.localize("PF2EBestiary.Interactivity.RevealAbility"),
         icon: '<i class="fa-solid fa-eye"></i>',
         condition: li => {
             if(!game.user.isGM) return false;
@@ -5613,6 +5613,32 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
         
                 Hooks.callAll(socketEvent.UpdateBestiary, {});    
             }
+        }
+    });
+});
+
+Hooks.on('getDirectoryApplicationEntryContext', (_, buttons) => {
+    buttons.push({
+        name: game.i18n.localize("PF2EBestiary.Interactivity.RegisterInBestiary"),
+        icon: '<i class="fa-solid fa-spaghetti-monster-flying"></i>',
+        condition: li => {
+            if(!game.user.isGM) return false;
+
+            const actor = game.actors.get(li.data().documentId);
+            if(actor.type !== 'npc' || actor.hasPlayerOwner) return false;
+
+            const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+            return !Boolean(bestiary.monster[actor.uuid]);
+        },
+        callback: async li => {
+            const actor = game.actors.get(li.data().documentId);  
+            const successfull = await PF2EBestiary.addMonster(actor);
+            if(successfull){
+                ui.notifications.info(game.i18n.format('PF2EBestiary.Bestiary.Info.AddedToBestiary', { creatures: actor.name }));
+            }
+            else if(successfull === false){
+                ui.notifications.info(game.i18n.format('PF2EBestiary.Bestiary.Info.AlreadyExistsInBestiary', { creatures: actor.name }));
+            }    
         }
     });
 });

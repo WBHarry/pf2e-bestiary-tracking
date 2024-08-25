@@ -310,8 +310,9 @@
                 "TargetAlreadyInBestiary": "Cette créature est déjà dans le bestiaire !"
             }
         },
-        "ChatMessage": {
-            "RevealAbility": "Reveal Ability In Bestiary"
+        "Interactivity": {
+            "RevealAbility": "Reveal Ability In Bestiary",
+            "RegisterInBestiary": "Bestiary Add"
         }
     }
 }
