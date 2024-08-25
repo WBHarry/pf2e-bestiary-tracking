@@ -2790,7 +2790,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
             toggleSpell: this.toggleSpell,
             toggleRevealed: this.toggleRevealed,
             toggleAllRevealed: this.toggleAllRevealed,
-            toggleEverythingRevealed: this.toggleEverythingRevealed,
+            revealEverything: this.revealEverything,
+            hideEverything: this.hideEverything,
             refreshBestiary: this.refreshBestiary,
             handleSaveSlots: this.handleSaveSlots,
             resetBestiary: this.resetBestiary,
@@ -2819,6 +2820,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
                     label: 'PF2EBestiary.Bestiary.WindowControls.ResetBestiary',
                     action: 'resetBestiary'
                 },
+                {
+                    icon: 'fa-solid fa-eye',
+                    label: 'PF2EBestiary.Bestiary.WindowControls.RevealAll',
+                    action: 'revealEverything'
+                },
+                {
+                    icon: 'fa-solid fa-eye-slash',
+                    label: 'PF2EBestiary.Bestiary.WindowControls.HideAll',
+                    action: 'hideEverything'
+                }
             ]
         },
         dragDrop: [
@@ -2841,18 +2852,27 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
     }
 
     // Could possible rerender headercontrols here?
-    // _updateFrame(options) {
-    //     super._updateFrame(options);
-    // }
+    _updateFrame(options) {
+        if(this.selected.monster){
+            super._updateFrame({ window: { controls: true } });
+        } else {
+            super._updateFrame(options);
+        }
+    }
 
     _getHeaderControls() {
-        return this.options.window.controls?.filter(control => {
-            switch(control.action){
-                default:
-                    return game.user.isGM;
-            }
-        }) || [];
+        return this.options.window.controls?.filter(this.filterHeaderControls.bind(this)) || [];
     }
+
+    filterHeaderControls(control) {
+        switch(control.action){
+            case 'revealEverything':
+            case 'hideEverything':
+                return game.user.isGM && Boolean(this.selected.monster);
+            default:
+                return game.user.isGM;
+        }
+    };
 
     getTabs() {
         const tabs = {
@@ -3307,6 +3327,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
 
     static returnButton(_, button){
         this.selected = this.selected.monster ? { ...this.selected, type: button.dataset.contextType, monster: null } : this.selected.type ? { category: 'monster' } : this.selected;
+        this._updateFrame({ window: { controls: true } });
         this.render();
     }
     
@@ -3406,10 +3427,81 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
         });
     }
 
-    static async toggleEverythingRevealed(_, button){
+    static async revealEverything(){
+        await this.toggleEverythingRevealed(true);
+    }
+
+    static async hideEverything(){
+        await this.toggleEverythingRevealed(false);
+    }
+
+    async toggleEverythingRevealed(revealed){
         if(!game.user.isGM) return;
 
+        const monster = this.bestiary.monster[this.selected.monster.uuid];
 
+        monster.name.revealed = revealed;
+        monster.system.details.level.revealed = revealed;
+        monster.system.attributes.ac.revealed = revealed;
+        monster.system.attributes.hp.revealed = revealed;
+        Object.values(monster.system.skills).forEach(skill => skill.revealed = revealed);
+
+        Object.values(monster.system.attributes.immunities).forEach(immunity => {
+            immunity.revealed = revealed;
+            immunity.exceptions?.forEach(exception => exception.revealed = revealed);
+        });
+        Object.values(monster.system.attributes.weaknesses).forEach(weakness => {
+            weakness.revealed = revealed;
+            weakness.exceptions?.forEach(exception => exception.revealed = revealed);
+        });
+        Object.values(monster.system.attributes.resistances).forEach(resistance => {
+            resistance.revealed = revealed;
+            resistance.exceptions?.forEach(exception => exception.revealed = revealed);
+            resistance.doubleVs?.forEach(double => double.revealed = revealed);
+        });
+
+        Object.values(monster.system.saves).forEach(save => save.revealed = revealed);
+
+        monster.system.attributes.speed.revealed = revealed;
+        Object.values(monster.system.attributes.speed.otherSpeeds).forEach(speed => speed.revealed = revealed);
+        
+        Object.values(monster.system.traits.value).forEach(trait => trait.revealed = revealed);
+
+        Object.values(monster.system.abilities).forEach(ability => ability.revealed = revealed);
+
+        monster.system.perception.revealed = revealed;
+        Object.values(monster.system.perception.senses).forEach(sense => sense.revealed = revealed);
+
+        Object.values(monster.system.details.languages.value).forEach(language => language.revealed = revealed);
+
+        Object.keys(monster.system.actions).forEach(attackKey => {
+            monster.system.actions[attackKey].revealed = revealed;
+            monster.system.actions[attackKey].damageStatsRevealed = revealed;
+            monster.items[attackKey].system.traits.value.forEach(trait => trait.revealed = revealed);
+            Object.values(monster.items[attackKey].system.damageRolls).forEach(damage => damage.damageType.revealed = revealed);
+        });
+
+        Object.values(monster.items).forEach(item => {
+            item.revealed = revealed;
+            if(item.type === 'action'){
+                item.system.traits.value.forEach(trait => trait.revealed = revealed);
+            }
+            if(item.type === 'spellcastingEntry'){
+                item.system.spelldc.dc.revealed = revealed;
+                item.system.spelldc.value.revealed = revealed;
+            }
+        });
+
+        monster.system.details.publicNotes.revealed = revealed;
+        monster.system.details.privateNotes.revealed = revealed;
+
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: { },
+        });
+
+        Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
 
     static getUpdatedCreature(creature, data){

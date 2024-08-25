@@ -73,7 +73,9 @@
             "WindowControls": {
                 "RefreshBestiary": "Refresh Bestiary",
                 "SaveSlots": "Data Save Slots",
-                "ResetBestiary": "Reset Bestiary"
+                "ResetBestiary": "Reset Bestiary",
+                "RevealAll": "Reveal Creature",
+                "HideAll": "Hide Creature"
             },
             "Welcome": {
                 "Greeting": "Welcome to the Bestiary!",

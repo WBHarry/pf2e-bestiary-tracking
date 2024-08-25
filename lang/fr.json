@@ -5,6 +5,14 @@
             "OpenBestiary": {
                 "Name": "Open Bestiary",
                 "Hint": "Opens the bestiary"
+            },
+            "ShowMonster": {
+                "Name": "Show Monster",
+                "Hint": "Opens the bestiary on the currently selected or targeted creature"
+            },
+            "AddMonster": {
+                "Name": "Add Monster",
+                "Hint": "Adds the currently selected or targeted creature to the bestiary"
             }
         },
         "SavesHandler": {
@@ -64,7 +72,10 @@
             "Title": "Bestiaire",
             "WindowControls": {
                 "RefreshBestiary": "Rafraîchir le Bestiaire",
-                "ResetBestiary": "Réinitialiser le Bestiaire"
+                "SaveSlots": "Data Save Slots",
+                "ResetBestiary": "Réinitialiser le Bestiaire",
+                "RevealAll": "Reveal Creature",
+                "HideAll": "Hide Creature"
             },
             "Welcome": {
                 "Greeting": "Bienvenue dans le Bestiaire !",
