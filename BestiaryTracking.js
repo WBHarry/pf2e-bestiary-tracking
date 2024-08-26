@@ -4755,7 +4755,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$3(ApplicationV2$
     static DEFAULT_OPTIONS = {
         tag: 'form',
         id: 'pf2e-bestiary-tracking-appearance-menu',
-        classes: ["pf2e-bestiary-tracking", "bestiary-settings-menu"],
+        classes: ["bestiary-settings-menu"],
         position: { width: 680, height: 'auto' },
         actions: {
             resetContrastRevealedState: this.resetContrastRevealedState,
@@ -4893,7 +4893,7 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$2(ApplicationV2
     static DEFAULT_OPTIONS = {
         tag: 'form',
         id: 'pf2e-bestiary-tracking-integration-menu',
-        classes: ["pf2e-bestiary-tracking", "bestiary-settings-menu"],
+        classes: ["bestiary-settings-menu"],
         position: { width: 680, height: 'auto' },
         actions: {
             toggleChatMessageHandlingFields: this.toggleChatMessageHandlingFields,
@@ -4959,7 +4959,7 @@ class BestiaryLabelsMenu extends HandlebarsApplicationMixin$1(ApplicationV2$1) {
     static DEFAULT_OPTIONS = {
         tag: 'form',
         id: 'pf2e-bestiary-tracking-labels-menu',
-        classes: ["pf2e-bestiary-tracking", "bestiary-settings-menu"],
+        classes: ["bestiary-settings-menu"],
         position: { width: 'auto', height: 'auto' },
         actions: {
             resetSection: this.resetSection,
@@ -5022,7 +5022,7 @@ class VagueDescriptionsMenu extends HandlebarsApplicationMixin(ApplicationV2) {
     static DEFAULT_OPTIONS = {
         tag: 'form',
         id: 'pf2e-bestiary-tracking-vague-descriptions-menu',
-        classes: ["pf2e-bestiary-tracking", "bestiary-settings-menu"],
+        classes: ["bestiary-settings-menu"],
         position: { width: 'auto', height: 'auto' },
         actions: {
             toggleSection: this.toggleSection,
@@ -5159,7 +5159,7 @@ const generalNonConfigSettings = () => {
         scope: 'world',
         config: false,
         type: String,
-        default: '0.8.9.8.2',
+        default: '0.8.9.8.3',
     });
 
     game.settings.register('pf2e-bestiary-tracking', 'bestiary-tracking', {

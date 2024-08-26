@@ -23,7 +23,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
     static DEFAULT_OPTIONS = {
         tag: 'form',
         id: 'pf2e-bestiary-tracking-appearance-menu',
-        classes: ["pf2e-bestiary-tracking", "bestiary-settings-menu"],
+        classes: ["bestiary-settings-menu"],
         position: { width: 680, height: 'auto' },
         actions: {
             resetContrastRevealedState: this.resetContrastRevealedState,

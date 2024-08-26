@@ -22,10 +22,11 @@
 .theme-dark {
     .pf2e-bestiary-tracking {
         // Background
-        &.application {
-            background: @darkApplication;
-        }
-        
+        &.bestiary {
+            &.application {
+                background: @darkApplication;
+            }
+        }  
 
         // Containers
         .primary-container {
@@ -33,11 +34,13 @@
             border-color: @darkBorder;
             color: @darkPrimaryColor;
 
-            &.active {
+            &.active, &.active.empty {
                 background-color: @darkPrimaryAccent;
+                opacity: 1;
             }
 
             &.empty {
+                background-color: @darkPrimary;
                 opacity: 0.6;
             }
 
@@ -92,6 +95,7 @@
         .bookmark {
             &:hover {
                 background-color: @darkPrimaryAccent;
+                opacity: 1;
             }
         }
 
@@ -142,7 +146,7 @@
         border-color: @lightBorder;
         color: @lightPrimaryColor;
 
-        &.active {
+        &.active, &.active.empty {
             background-color: @lightPrimaryAccent;
         }
 

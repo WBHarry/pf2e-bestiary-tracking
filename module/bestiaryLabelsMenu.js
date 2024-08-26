@@ -16,7 +16,7 @@ export default class BestiaryLabelsMenu extends HandlebarsApplicationMixin(Appli
     static DEFAULT_OPTIONS = {
         tag: 'form',
         id: 'pf2e-bestiary-tracking-labels-menu',
-        classes: ["pf2e-bestiary-tracking", "bestiary-settings-menu"],
+        classes: ["bestiary-settings-menu"],
         position: { width: 'auto', height: 'auto' },
         actions: {
             resetSection: this.resetSection,

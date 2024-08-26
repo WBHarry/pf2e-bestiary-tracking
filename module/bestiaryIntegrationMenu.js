@@ -28,7 +28,7 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
     static DEFAULT_OPTIONS = {
         tag: 'form',
         id: 'pf2e-bestiary-tracking-integration-menu',
-        classes: ["pf2e-bestiary-tracking", "bestiary-settings-menu"],
+        classes: ["bestiary-settings-menu"],
         position: { width: 680, height: 'auto' },
         actions: {
             toggleChatMessageHandlingFields: this.toggleChatMessageHandlingFields,

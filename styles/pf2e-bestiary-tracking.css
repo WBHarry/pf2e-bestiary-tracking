@@ -743,96 +743,106 @@
 .pf2e-bestiary-tracking.bestiary .bookmark.expanded {
   width: 100%;
 }
-.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-container {
+.theme-dark:not([data-dorako-ui-scope]) .bestiary-settings-menu .tagify {
+  border-color: inherit;
+  background: inherit;
+}
+.theme-dark:not([data-dorako-ui-scope]) .bestiary-settings-menu .menu-category legend h4 {
+  color: var(--color-light-2);
+}
+.theme-dark.bestiary-settings-menu .menu-container {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .tagify-header {
+.theme-dark.bestiary-settings-menu .tagify-header {
   align-self: center;
   margin-bottom: 0;
   color: #ababab;
 }
-.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu tags {
+.theme-dark.bestiary-settings-menu tags {
   border-width: 2px;
 }
-.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category {
+.theme-dark.bestiary-settings-menu .menu-category {
   display: flex;
   flex-direction: column;
   border-style: double;
   border-width: 4px;
   border-color: #ababab;
 }
-.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category legend {
+.theme-dark.bestiary-settings-menu .menu-category legend {
   font-weight: bold;
   text-align: center;
 }
-.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category legend h4 {
+.theme-dark.bestiary-settings-menu .menu-category legend h4 {
   margin: 0;
-  color: #ababab;
   text-shadow: 0 0 #ababab;
 }
-.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .section-header {
+.theme-dark.bestiary-settings-menu .menu-category .section-header {
   position: relative;
   align-self: center;
 }
-.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .section-header div {
+.theme-dark.bestiary-settings-menu .menu-category .section-header div {
   font-weight: bold;
   font-size: 18px;
   margin: 4px 0 4px 0;
 }
-.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .section-header i {
+.theme-dark.bestiary-settings-menu .menu-category .section-header i {
   position: absolute;
   top: 8px;
   right: -22px;
   font-size: 14px;
 }
-.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .form-group {
+.theme-dark.bestiary-settings-menu .menu-category .form-group {
   text-wrap: nowrap;
 }
-.theme-dark .pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .form-group.underlined {
+.theme-dark.bestiary-settings-menu .menu-category .form-group.underlined {
   border-bottom: 1px solid #ababab;
 }
-.pf2e-bestiary-tracking.bestiary-settings-menu .menu-category {
+:not([data-dorako-ui-scope]) .tagify {
+  border-color: black;
+  background: #cfcfcf;
+}
+.bestiary-settings-menu .menu-category {
   display: flex;
   flex-direction: column;
   border-style: double;
   border-width: 4px;
   border-color: black;
 }
-.pf2e-bestiary-tracking.bestiary-settings-menu .menu-category legend {
+.bestiary-settings-menu .menu-category legend {
   font-weight: bold;
   text-align: center;
 }
-.pf2e-bestiary-tracking.bestiary-settings-menu .menu-category legend.flexed {
+.bestiary-settings-menu .menu-category legend.flexed {
   display: flex;
   align-items: center;
   gap: 4px;
 }
-.pf2e-bestiary-tracking.bestiary-settings-menu .menu-category legend h4 {
+.bestiary-settings-menu .menu-category legend h4 {
   margin: 0;
   color: black;
   text-shadow: 0 0 black;
 }
-.pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .section-header {
+.bestiary-settings-menu .menu-category .section-header {
   position: relative;
   align-self: center;
 }
-.pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .section-header div {
+.bestiary-settings-menu .menu-category .section-header div {
   font-weight: bold;
   font-size: 18px;
   margin: 4px 0 4px 0;
 }
-.pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .section-header i {
+.bestiary-settings-menu .menu-category .section-header i {
   position: absolute;
   top: 8px;
   right: -22px;
   font-size: 14px;
 }
-.pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .form-group {
+.bestiary-settings-menu .menu-category .form-group {
   text-wrap: nowrap;
 }
-.pf2e-bestiary-tracking.bestiary-settings-menu .menu-category .form-group.underlined {
+.bestiary-settings-menu .menu-category .form-group.underlined {
   border-bottom: 1px solid black;
 }
 .pf2e-bestiary-tracking {
@@ -928,7 +938,7 @@
   background: url(../../pf2e-dorako-ui/img/background-light.webp);
 }
 /* REMOVE ME. Temporary as a stopgap for Dorako */
-.theme-dark .pf2e-bestiary-tracking.application {
+.theme-dark .pf2e-bestiary-tracking.bestiary.application {
   background: rgba(11, 10, 19, 0.9);
 }
 .theme-dark .pf2e-bestiary-tracking .primary-container {
@@ -936,10 +946,13 @@
   border-color: #ababab;
   color: white;
 }
-.theme-dark .pf2e-bestiary-tracking .primary-container.active {
+.theme-dark .pf2e-bestiary-tracking .primary-container.active,
+.theme-dark .pf2e-bestiary-tracking .primary-container.active.empty {
   background-color: #760000;
+  opacity: 1;
 }
 .theme-dark .pf2e-bestiary-tracking .primary-container.empty {
+  background-color: #5e0000;
   opacity: 0.6;
 }
 .theme-dark .pf2e-bestiary-tracking .primary-container .data-icon {
@@ -978,6 +991,7 @@
 }
 .theme-dark .pf2e-bestiary-tracking .bookmark:hover {
   background-color: #760000;
+  opacity: 1;
 }
 .theme-dark .pf2e-bestiary-tracking .primary-hover-container {
   cursor: pointer;
@@ -1005,7 +1019,8 @@
   border-color: black;
   color: black;
 }
-.pf2e-bestiary-tracking .primary-container.active {
+.pf2e-bestiary-tracking .primary-container.active,
+.pf2e-bestiary-tracking .primary-container.active.empty {
   background-color: #FFF1DB;
 }
 .pf2e-bestiary-tracking .primary-container.empty {
