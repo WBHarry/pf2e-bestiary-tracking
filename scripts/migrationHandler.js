@@ -342,7 +342,12 @@ export const handleDataMigration = async () => {
         
         version = '0.8.9.8';
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
+    }
 
+    if(version === '0.8.9.8'){
+        version = '0.8.9.8.1';
+
+        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 
     const updatedBestiary = await handleBestiaryMigration(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
@@ -674,6 +679,37 @@ export const handleBestiaryMigration = async (bestiary) => {
         }, bestiary);
 
         bestiary.metadata.version = '0.8.9.7';
+    }
+
+    if(bestiary.metadata.version === '0.8.9.7'){
+        bestiary = await newMigrateBestiary((_, monster) => {
+            const infiniteGrabber = (object, property) => {
+                if(object[property]){
+                    if(object[property][property]){
+                        return infiniteGrabber(object[property], property);
+                    }
+
+                    return object;
+                }
+            };
+
+            Object.values(monster.items).forEach(item => {
+                if(item.type === 'melee' || item.type === 'action'){
+                    Object.keys(item.system.traits.value).forEach(traitKey => {
+                        item.system.traits.value[traitKey] = infiniteGrabber(item.system.traits.value[traitKey], 'value'); 
+                    });
+                }
+
+                if(item.type === 'melee'){
+                    Object.values(item.system.damageRolls).forEach(damage => {
+                        damage.damageType = infiniteGrabber(damage.damageType, 'value');
+                    });
+                }
+            });
+
+        }, bestiary);
+
+        bestiary.metadata.version = '0.8.9.8.1';
     }
 
     return bestiary;
