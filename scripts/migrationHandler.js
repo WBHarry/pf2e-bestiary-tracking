@@ -350,6 +350,12 @@ export const handleDataMigration = async () => {
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 
+    if(version === '0.8.9.8.1'){
+        version = '0.8.9.8.2';
+
+        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
+    }
+
     const updatedBestiary = await handleBestiaryMigration(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
 }
@@ -712,6 +718,35 @@ export const handleBestiaryMigration = async (bestiary) => {
 
         bestiary.metadata.version = '0.8.9.8.1';
     }
+
+    if(bestiary.metadata.version === '0.8.9.8.1'){
+        bestiary = await newMigrateBestiary((_, monster) => {
+            Object.keys(monster.system.actions).forEach(actionKey => {
+                const item = monster.items[actionKey];
+                if(item.type === 'equipment'){
+                    item.system.damageRolls = Object.keys(monster.system.actions[actionKey].weapon.system.damageRolls).reduce((acc, damageKey) => {
+                        const damage = monster.system.actions[actionKey].weapon.system.damageRolls[damageKey];
+                        acc[damageKey] = { ...damage, damageType: { revealed: false, value: damage.damageType } }
+
+                        return acc;
+                    }, {})
+                    
+                    // If this crops up more, make a general helper method to extract all types of rules.
+                    item.system.rules.forEach(rule => {
+                        if(rule.key === 'FlatModifier'){
+                            item.system.damageRolls[`${rule.damageType}-${foundry.utils.randomID()}`] = {
+                                damageType : { revealed: false, value: rule.damageType },
+                                damage: rule.value.toString(),
+                                isFromRule: true,
+                            };
+                        }
+                    });
+                }
+            });
+        }, bestiary);
+        
+        bestiary.metadata.version = '0.8.9.8.2';
+    }   
 
     return bestiary;
 };
