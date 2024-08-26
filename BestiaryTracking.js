@@ -2876,6 +2876,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
         },
         form: { handler: this.updateData, submitOnChange: true },
         window: {
+            resizable: true,
             controls: [
                 {
                     icon: 'fa-solid fa-arrow-rotate-left',

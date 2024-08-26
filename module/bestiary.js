@@ -63,6 +63,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         },
         form: { handler: this.updateData, submitOnChange: true },
         window: {
+            resizable: true,
             controls: [
                 {
                     icon: 'fa-solid fa-arrow-rotate-left',

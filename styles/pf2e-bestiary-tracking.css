@@ -523,12 +523,14 @@
   text-overflow: ellipsis;
   text-align: center;
   max-width: 25%;
+  min-width: 115px;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .right-monster-container-data {
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  overflow-x: hidden;
   gap: 8px;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .data-sections {
