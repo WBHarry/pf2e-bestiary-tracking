@@ -1257,18 +1257,37 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     acc[key] = baseField.value;
                     break;
                 case 'system':
-                    baseField.attributes.immunities = Object.keys(baseField.attributes.immunities).map(key => ({ ...baseField.attributes.immunities[key] }));
-                    baseField.attributes.weaknesses = Object.keys(baseField.attributes.weaknesses).map(key => ({ ...baseField.attributes.weaknesses[key] }));
-                    baseField.attributes.resistances = Object.keys(baseField.attributes.resistances).map(key => ({ ...baseField.attributes.resistances[key] }));
+                    baseField.traits.value = Object.keys(baseField.traits.value);
+                    baseField.attributes.immunities = Object.keys(baseField.attributes.immunities).filter(x => x !== 'none').map(key => ({ 
+                        ...baseField.attributes.immunities[key],
+                        exceptions: baseField.attributes.immunities[key].exceptions.map(exception => exception.value),
+                    }));
+                    baseField.attributes.weaknesses = Object.keys(baseField.attributes.weaknesses).filter(x => x !== 'none').map(key => ({ 
+                        ...baseField.attributes.weaknesses[key],
+                        exceptions: baseField.attributes.weaknesses[key].exceptions.map(exception => exception.value),
+                    }));
+                    baseField.attributes.resistances = Object.keys(baseField.attributes.resistances).filter(x => x !== 'none').map(key => ({ 
+                        ...baseField.attributes.resistances[key],
+                        exceptions: baseField.attributes.resistances[key].exceptions.map(exception => exception.value),
+                        doubleVs: baseField.attributes.resistances[key].doubleVs.map(double => double.value),
+                    }));
 
                     acc[key] = baseField;
                     break;
                 case 'items':
                     baseField = Object.keys(baseField).reduce((acc, fieldKey) => {
                         const { revealed, ...rest } = baseField[fieldKey];
-                        acc.push({
-                            ...rest,
-                        });
+
+                        if(rest.system.traits?.value){
+                            const keys = Object.keys(rest.system.traits.value);
+                            if(keys.length > 0 && rest.system.traits.value[keys[0]].value){
+                                rest.system.traits.value = keys.map(x => rest.system.traits.value[x].value);
+                            }
+                        }
+
+                        if(rest.system.damageRolls){
+                            Object.values(rest.system.damageRolls).forEach(damage => damage.damageType = damage.damageType.value);
+                        }
 
                         if(rest.type === 'action'){
                             
@@ -1281,6 +1300,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                         if(rest.type === 'spellEntry'){
 
                         }
+
+                        acc.push({
+                            ...rest,
+                        });
 
                         return acc;
                     }, []);
