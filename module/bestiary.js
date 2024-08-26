@@ -190,7 +190,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(!monster) return { category, type, monster };
 
         const original = await fromUuid(monster.uuid);
-        const isUnlinked = !Boolean(original);
+        // const isUnlinked = !Boolean(original);
+        const isUnlinked = false;
         const useTokenArt = await game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
         const contextLevel = playerLevel ?? monster.system.details.level.value;
 
