@@ -2227,7 +2227,8 @@ const handleDataMigration = async () => {
 };
 
 const handleBestiaryMigration = async (bestiary) => {
-    bestiary.metadata.version = !bestiary.metadata.version ? '0.8.9' : bestiary.metadata.version; 
+    const oldMonsterData = Object.keys(bestiary.monster).length > 0 && Boolean(bestiary.monster[Object.keys(bestiary.monster)[0]].traits); 
+    bestiary.metadata.version = oldMonsterData ? '0.8.8' : !bestiary.metadata.version ? '0.8.9' : bestiary.metadata.version; 
 
     if(bestiary.metadata.version === '0.8.8'){
         bestiary = await newMigrateBestiary(async (_, monster) => {
@@ -2275,7 +2276,7 @@ const handleBestiaryMigration = async (bestiary) => {
             
                 return acc;
             }, []);
-        const newBestiary = { monster: {}, npc: {} };
+        const newBestiary = { monster: {}, npc: {}, metadata: {} };
         for(var uuid of uuids){
             const orig = await fromUuid(uuid);
             const data = await PF2EBestiary.getMonsterData(orig);
@@ -2524,7 +2525,7 @@ const handleBestiaryMigration = async (bestiary) => {
                         }
                     };
                 }
-                else {
+                else if(monster.items[attackKey].system.damageRolls) {
                     Object.values(monster.items[attackKey].system.damageRolls).forEach(damageRoll => {
                         if(!damageRoll.damageType.value){
                             damageRoll.damageType = { revealed: false, value: damageRoll.damageType };
