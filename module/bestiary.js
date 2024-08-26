@@ -190,8 +190,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(!monster) return { category, type, monster };
 
         const original = await fromUuid(monster.uuid);
-        // const isUnlinked = !Boolean(original);
-        const isUnlinked = false; // Temporary until it is finished.
+        const isUnlinked = !Boolean(original);
         const useTokenArt = await game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
         const contextLevel = playerLevel ?? monster.system.details.level.value;
 
@@ -1247,7 +1246,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(!confirmed) return;
 
         const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-        const restoredObject = Object.keys(bestiary.monster[this.selected.monster.uuid]).reduce((acc, key) => {
+        const unlinkedMonster = foundry.utils.deepClone(bestiary.monster[this.selected.monster.uuid]);
+        const restoredObject = Object.keys(unlinkedMonster).reduce((acc, key) => {
             var baseField = bestiary.monster[this.selected.monster.uuid][key];
             switch(key){
                 case 'uuid':
@@ -1272,11 +1272,20 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                         doubleVs: baseField.attributes.resistances[key].doubleVs.map(double => double.value),
                     }));
 
+                    baseField.perception.details = baseField.perception.details.value;
+
+                    baseField.details.languages.value = baseField.details.languages.value.map(x => x.value);
+                    baseField.details.languages.details = baseField.details.languages.details.value; 
+
                     acc[key] = baseField;
                     break;
                 case 'items':
                     baseField = Object.keys(baseField).reduce((acc, fieldKey) => {
                         const { revealed, ...rest } = baseField[fieldKey];
+
+                        if(['Passive-None', 'Action-None', 'Attack-None', 'Spell-None'].includes(rest._id)){
+                            return acc;
+                        }
 
                         if(rest.system.traits?.value){
                             const keys = Object.keys(rest.system.traits.value);
@@ -1286,15 +1295,29 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                         }
 
                         if(rest.system.damageRolls){
-                            Object.values(rest.system.damageRolls).forEach(damage => damage.damageType = damage.damageType.value);
+                            Object.values(rest.system.damageRolls).forEach(damage => {
+                                damage.damageType = damage.damageType.value;
+                                if(typeof damage.kinds === 'object') Object.values(damage.kinds).reduce((acc, kind) => {
+                                    acc.push(kind);
+                                    return acc;
+                                }, []) 
+                            });
                         }
 
-                        if(rest.type === 'action'){
-                            
+                        if(rest.type === 'equipment'){
+                            const { damageRolls, ...systemRest } = rest.system;
+                            rest.system = systemRest;
                         }
 
                         if(rest.type === 'spell'){
-
+                            Object.values(rest.system.damage).forEach(damage => {
+                                if(typeof damage.kinds === 'object') {
+                                    damage.kinds =  Object.values(damage.kinds).reduce((acc, kind) => {
+                                        acc.push(kind);
+                                        return acc;
+                                    }, []);
+                                }
+                            })
                         }
 
                         if(rest.type === 'spellEntry'){
@@ -1318,6 +1341,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }, {});
 
         const newActor = await Actor.implementation.create([restoredObject]);
+        bestiary.monster[newActor[0].uuid] = { ...bestiary.monster[this.selected.monster.uuid], uuid: newActor[0].uuid, _id: newActor[0].id };
+        delete bestiary.monster[this.selected.monster.uuid];
+
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
+        Hooks.callAll(socketEvent.UpdateBestiary, {});
+
         this.render();
     }
 

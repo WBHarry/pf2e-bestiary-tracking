@@ -316,7 +316,7 @@ Hooks.on('getDirectoryApplicationEntryContext', (_, buttons) => {
             if(!game.user.isGM) return false;
 
             const actor = game.actors.get(li.data().documentId);
-            if(actor.type !== 'npc' || actor.hasPlayerOwner) return false;
+            if(!actor || actor.type !== 'npc' || actor.hasPlayerOwner) return false;
 
             const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
             return !Boolean(bestiary.monster[actor.uuid]);
