@@ -505,6 +505,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         context.optionalFields = game.settings.get('pf2e-bestiary-tracking', 'optional-fields');
         context.detailedInformation = game.settings.get('pf2e-bestiary-tracking', 'detailed-information-toggles');
         context.useTokenArt = game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
+        context.hideAbilityDescriptions = game.settings.get('pf2e-bestiary-tracking', 'hide-ability-descriptions');
         context.contrastRevealedState = game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state');
         context.vagueDescriptions = foundry.utils.deepClone(await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions'));
 

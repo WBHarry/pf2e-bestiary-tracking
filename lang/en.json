@@ -227,6 +227,7 @@
                     "Hint": "Customize the appearance and used fields of the Bestiary"
                 },
                 "UseTokenArt": "Use Token Art",
+                "HideAbilityDescriptions": "Hide Ability Descriptions",
                 "ContrastRevealedState": {
                     "Name": "Contrast Revealed State",
                     "Enabled": "Enabled",

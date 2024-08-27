@@ -629,7 +629,13 @@
                             {{#PF2EBTFilter 'revealed' '?' 9 this.actions}}
                                 <div class="actions-container secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat 'items.' @key}}" data-fake="{{this.fake}}">
                                     <div class="action-container">
-                                        <div class="pf2e-bestiary-bold {{#if (and (not (eq this.name 'None')) (gt this.description.length 0))}}action-name{{/if}}" data-action="toggleAbility" data-ability="{{this._id}}">{{this.name}}</div>
+                                        <div 
+                                            class="pf2e-bestiary-bold {{#if (and (not ../hideAbilityDescriptions) (and (not (eq this.name 'None')) (gt this.description.length 0)))}}action-name{{/if}}" 
+                                            {{#if (not ../hideAbilityDescriptions)}}data-action="toggleAbility"{{/if}}
+                                            data-ability="{{this._id}}"
+                                        >
+                                            {{this.name}}
+                                        </div>
                                         <span class="action-glyph">{{#if this.system.actions.value}}{{this.system.actions.value}}{{else}}{{#if (not (eq this.name 'None'))}}R{{/if}}{{/if}}</span>
                                         {{#if (gt (PF2EBTNrKeys this.traits) 0)}}
                                             <div class="attack-traits-container">
@@ -692,7 +698,13 @@
                             {{#PF2EBTFilter 'revealed' '?' 9 this.passives}}
                                 <div class="actions-container secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat 'items.' @key}}" data-fake="{{this.fake}}">
                                     <div class="action-container">
-                                        <div class="pf2e-bestiary-bold {{#if (and (not (eq this.name 'None')) (gt this.description.length 0))}}action-name{{/if}}" data-action="toggleAbility" data-ability="{{this._id}}">{{this.name}}</div>
+                                        <div 
+                                            class="pf2e-bestiary-bold {{#if (and (not ../hideAbilityDescriptions) (and (not (eq this.name 'None')) (gt this.description.length 0)))}}action-name{{/if}}" 
+                                            {{#if (not ../hideAbilityDescriptions)}}data-action="toggleAbility"{{/if}}
+                                            data-ability="{{this._id}}"
+                                        >
+                                            {{this.name}}
+                                        </div>
                                         {{#if (gt (PF2EBTNrKeys this.traits) 0)}}
                                             <div class="attack-traits-container">
                                                 {{#PF2EBTFilter 'revealed' '' 0 this.traits}}

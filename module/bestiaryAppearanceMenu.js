@@ -9,6 +9,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
 
         this.settings = {
             useTokenArt: game.settings.get('pf2e-bestiary-tracking', 'use-token-art'),
+            hideAbilityDescriptions: game.settings.get('pf2e-bestiary-tracking', 'hide-ability-descriptions'),
             additionalCreatureTypes: game.settings.get('pf2e-bestiary-tracking', 'additional-creature-types').map(x => ({ value: x.value, name: game.i18n.localize(x.name) })),
             contrastRevealedState: game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state'),
             optionalFields: game.settings.get('pf2e-bestiary-tracking', 'optional-fields'),
@@ -84,6 +85,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
         this.settings = {
             additionalCreatureTypes: this.settings.additionalCreatureTypes,
             useTokenArt: data.useTokenArt,
+            hideAbilityDescriptions: data.hideAbilityDescriptions,
             contrastRevealedState: data.contrastRevealedState,
             optionalFields: data.optionalFields,
             detailedInformation: { ...data.detailedInformation }
@@ -127,6 +129,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(A
         await game.settings.set('pf2e-bestiary-tracking', 'additional-creature-types', this.settings.additionalCreatureTypes.map(x => ({ value: x.value, name: CONFIG.PF2E.creatureTraits[x.value] })));
         await game.settings.set('pf2e-bestiary-tracking', 'contrast-revealed-state', this.settings.contrastRevealedState);
         await game.settings.set('pf2e-bestiary-tracking', 'use-token-art', this.settings.useTokenArt);
+        await game.settings.set('pf2e-bestiary-tracking', 'hide-ability-descriptions', this.settings.hideAbilityDescriptions);
         await game.settings.set('pf2e-bestiary-tracking', 'optional-fields', this.settings.optionalFields);
         await game.settings.set('pf2e-bestiary-tracking', 'detailed-information-toggles', this.settings.detailedInformation);
         this.close();

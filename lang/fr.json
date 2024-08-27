@@ -116,6 +116,9 @@
                 "Public": "Description",
                 "Private": "Notes Privées"
             },
+            "PlayerNotes": {
+                "Title": "Player Notes"
+            },
             "Misinformation": {
                 "AddMisinformation": "Ajouter des informations erronées",
                 "Dialog": {
@@ -225,6 +228,7 @@
                 "Hint": "Customize the appearance of the Bestiary"
             },
             "UseTokenArt": "Utiliser l'image du token",
+            "HideAbilityDescriptions": "Hide Ability Descriptions",
             "ContrastRevealedState": {
                 "Name": "Contraste révélant l'État",
                 "Enabled": "activé",

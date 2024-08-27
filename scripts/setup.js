@@ -200,6 +200,15 @@ const bestiaryAppearance = () => {
         default: false,
     });
 
+    game.settings.register('pf2e-bestiary-tracking', 'hide-ability-descriptions', {
+        name: game.i18n.localize('PF2EBestiary.Settings.HideAbilityDescriptions.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.HideAbilityDescriptions.Hint'),
+        scope: 'world',
+        config: false,
+        type: Boolean,
+        default: false,
+    });
+
     game.settings.register('pf2e-bestiary-tracking', 'detailed-information-toggles', {
         name: game.i18n.localize('PF2EBestiary.Settings.DetailedInformation.Name'),
         hint: game.i18n.localize('PF2EBestiary.Settings.DetailedInformation.Hint'),

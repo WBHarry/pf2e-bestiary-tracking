@@ -130,6 +130,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$5(ApplicationV2$
 
         this.settings = {
             useTokenArt: game.settings.get('pf2e-bestiary-tracking', 'use-token-art'),
+            hideAbilityDescriptions: game.settings.get('pf2e-bestiary-tracking', 'hide-ability-descriptions'),
             additionalCreatureTypes: game.settings.get('pf2e-bestiary-tracking', 'additional-creature-types').map(x => ({ value: x.value, name: game.i18n.localize(x.name) })),
             contrastRevealedState: game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state'),
             optionalFields: game.settings.get('pf2e-bestiary-tracking', 'optional-fields'),
@@ -205,6 +206,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$5(ApplicationV2$
         this.settings = {
             additionalCreatureTypes: this.settings.additionalCreatureTypes,
             useTokenArt: data.useTokenArt,
+            hideAbilityDescriptions: data.hideAbilityDescriptions,
             contrastRevealedState: data.contrastRevealedState,
             optionalFields: data.optionalFields,
             detailedInformation: { ...data.detailedInformation }
@@ -248,6 +250,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$5(ApplicationV2$
         await game.settings.set('pf2e-bestiary-tracking', 'additional-creature-types', this.settings.additionalCreatureTypes.map(x => ({ value: x.value, name: CONFIG.PF2E.creatureTraits[x.value] })));
         await game.settings.set('pf2e-bestiary-tracking', 'contrast-revealed-state', this.settings.contrastRevealedState);
         await game.settings.set('pf2e-bestiary-tracking', 'use-token-art', this.settings.useTokenArt);
+        await game.settings.set('pf2e-bestiary-tracking', 'hide-ability-descriptions', this.settings.hideAbilityDescriptions);
         await game.settings.set('pf2e-bestiary-tracking', 'optional-fields', this.settings.optionalFields);
         await game.settings.set('pf2e-bestiary-tracking', 'detailed-information-toggles', this.settings.detailedInformation);
         this.close();
@@ -3268,6 +3271,15 @@ const bestiaryAppearance = () => {
         default: false,
     });
 
+    game.settings.register('pf2e-bestiary-tracking', 'hide-ability-descriptions', {
+        name: game.i18n.localize('PF2EBestiary.Settings.HideAbilityDescriptions.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.HideAbilityDescriptions.Hint'),
+        scope: 'world',
+        config: false,
+        type: Boolean,
+        default: false,
+    });
+
     game.settings.register('pf2e-bestiary-tracking', 'detailed-information-toggles', {
         name: game.i18n.localize('PF2EBestiary.Settings.DetailedInformation.Name'),
         hint: game.i18n.localize('PF2EBestiary.Settings.DetailedInformation.Hint'),
@@ -4044,6 +4056,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
         context.optionalFields = game.settings.get('pf2e-bestiary-tracking', 'optional-fields');
         context.detailedInformation = game.settings.get('pf2e-bestiary-tracking', 'detailed-information-toggles');
         context.useTokenArt = game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
+        context.hideAbilityDescriptions = game.settings.get('pf2e-bestiary-tracking', 'hide-ability-descriptions');
         context.contrastRevealedState = game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state');
         context.vagueDescriptions = foundry.utils.deepClone(await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions'));
 
