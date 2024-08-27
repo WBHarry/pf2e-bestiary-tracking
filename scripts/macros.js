@@ -102,7 +102,7 @@ export const resetBestiary = async () => {
     for(var monsterKey in bestiary.monster){
         const monster = bestiary.monster[monsterKey];
         const journalEntry = game.journal.getName(bestiaryJournalEntry);
-        await journalEntry.pages.get(monster.system.details.playerNotes.document).delete();
+        await journalEntry.pages.get(monster.system.details.playerNotes.document)?.delete();
     }
 
     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', {
