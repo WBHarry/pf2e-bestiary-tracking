@@ -3070,7 +3070,7 @@ const newMigrateBestiary = async (update, bestiary) => {
     return bestiary;
 };
 
-const currentVersion = '0.8.9.9.4';
+const currentVersion = '0.8.9.9.5';
 const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
@@ -5600,10 +5600,13 @@ const resetBestiary = async () => {
     if(!confirmed) return;
 
     const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-    for(var monsterKey in bestiary.monster){
-        const monster = bestiary.monster[monsterKey];
-        const journalEntry = game.journal.getName(bestiaryJournalEntry);
-        await journalEntry.pages.get(monster.system.details.playerNotes.document)?.delete();
+
+    const journalEntry = game.journal.getName(bestiaryJournalEntry);
+    if(journalEntry){
+        for(var monsterKey in bestiary.monster){
+            const monster = bestiary.monster[monsterKey];
+            await journalEntry.pages.get(monster.system.details.playerNotes.document)?.delete();
+        }
     }
 
     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', {

@@ -6,7 +6,7 @@ import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
 
-export const currentVersion = '0.8.9.9.4';
+export const currentVersion = '0.8.9.9.5';
 export const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 export const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
