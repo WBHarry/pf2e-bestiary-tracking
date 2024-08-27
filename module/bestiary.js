@@ -561,6 +561,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this.selected.monster = null;
         this.search.name = '';
 
+        this._updateFrame({ window: { controls: true } });
+
         this.render();
     }
 

@@ -4116,6 +4116,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
         this.selected.monster = null;
         this.search.name = '';
 
+        this._updateFrame({ window: { controls: true } });
+
         this.render();
     }
 
