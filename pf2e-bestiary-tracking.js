@@ -1,6 +1,6 @@
 import PF2EBestiary from "./module/bestiary.js";
 import RegisterHandlebarsHelpers from "./scripts/handlebarHelpers.js";
-import { bestiaryFolder, registerGameSettings, registerKeyBindings } from "./scripts/setup.js";
+import { bestiaryFolder, registerGameSettings, registerKeyBindings, setupCollaborativeWrtiting } from "./scripts/setup.js";
 import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
 import { handleDataMigration } from "./scripts/migrationHandler.js";
@@ -24,6 +24,8 @@ Hooks.once("ready", () => {
 });
 
 Hooks.once("setup", () => {
+    setupCollaborativeWrtiting();
+
     if(typeof libWrapper === 'function') {
         libWrapper.register('pf2e-bestiary-tracking', 'Token.prototype._onClickLeft2', function (wrapped, ...args) {
             const baseActor = args[0].currentTarget.document.baseActor;
@@ -152,7 +154,7 @@ Hooks.on("createChatMessage", async (message) => {
             if(message.flags.pf2e.origin){
                 // Attacks | Actions | Spells
                 const actor = await fromUuid(message.flags.pf2e.origin.actor);
-                if(actor.type !== 'npc' || actor.hasPlayerOwner) return;
+                if(!actor || actor.type !== 'npc' || actor.hasPlayerOwner) return;
 
                 const actorUuid = getBaseActor(actor).uuid;
                 const monster = bestiary.monster[actorUuid];
@@ -179,7 +181,7 @@ Hooks.on("createChatMessage", async (message) => {
             else {
                  // Skills | Saving Throws
                  const actor = await fromUuid(`Actor.${message.flags.pf2e.context.actor}`);
-                 if(actor.type !== 'npc' || actor.hasPlayerOwner) return;
+                 if(!actor || actor.type !== 'npc' || actor.hasPlayerOwner) return;
 
                  const actorUuid = getBaseActor(actor).uuid;
                  const monster = bestiary.monster[actorUuid];

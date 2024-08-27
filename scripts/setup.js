@@ -6,9 +6,22 @@ import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
 
-export const currentVersion = '0.8.9.9.3';
+export const currentVersion = '0.8.9.9.4';
 export const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 export const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
+
+export const setupCollaborativeWrtiting = async () => {
+    if(!game.folders.getName(bestiaryFolder)){
+        const folder = await Folder.create({ "name": bestiaryFolder, "type": "JournalEntry" });
+        const journal = await JournalEntry.create({
+            name: bestiaryJournalEntry,
+            pages: [],
+            folder: folder.id
+        });
+    
+        await journal.update({ "ownership.default": 3 });
+    }
+};
 
 export const registerKeyBindings = () => {
     game.keybindings.register("pf2e-bestiary-tracking", "open-bestiary", {

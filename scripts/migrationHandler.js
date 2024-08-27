@@ -358,15 +358,6 @@ export const handleDataMigration = async () => {
     }
 
     if(version === '0.8.9.8.2'){
-        const folder = await Folder.create({ "name": bestiaryFolder, "type": "JournalEntry" });
-        const journal = await JournalEntry.create({
-            name: bestiaryJournalEntry,
-            pages: [],
-            folder: folder.id
-        });
-
-        await journal.update({ "ownership.default": 3 });
-
         version = '0.8.9.9';
 
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);

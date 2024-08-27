@@ -2605,15 +2605,6 @@ const handleDataMigration = async () => {
     }
 
     if(version === '0.8.9.8.2'){
-        const folder = await Folder.create({ "name": bestiaryFolder, "type": "JournalEntry" });
-        const journal = await JournalEntry.create({
-            name: bestiaryJournalEntry,
-            pages: [],
-            folder: folder.id
-        });
-
-        await journal.update({ "ownership.default": 3 });
-
         version = '0.8.9.9';
 
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
@@ -3079,9 +3070,22 @@ const newMigrateBestiary = async (update, bestiary) => {
     return bestiary;
 };
 
-const currentVersion = '0.8.9.9.3';
+const currentVersion = '0.8.9.9.4';
 const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
+
+const setupCollaborativeWrtiting = async () => {
+    if(!game.folders.getName(bestiaryFolder)){
+        const folder = await Folder.create({ "name": bestiaryFolder, "type": "JournalEntry" });
+        const journal = await JournalEntry.create({
+            name: bestiaryJournalEntry,
+            pages: [],
+            folder: folder.id
+        });
+    
+        await journal.update({ "ownership.default": 3 });
+    }
+};
 
 const registerKeyBindings = () => {
     game.keybindings.register("pf2e-bestiary-tracking", "open-bestiary", {
@@ -5643,6 +5647,8 @@ Hooks.once("ready", () => {
 });
 
 Hooks.once("setup", () => {
+    setupCollaborativeWrtiting();
+
     if(typeof libWrapper === 'function') {
         libWrapper.register('pf2e-bestiary-tracking', 'Token.prototype._onClickLeft2', function (wrapped, ...args) {
             const baseActor = args[0].currentTarget.document.baseActor;
@@ -5771,7 +5777,7 @@ Hooks.on("createChatMessage", async (message) => {
             if(message.flags.pf2e.origin){
                 // Attacks | Actions | Spells
                 const actor = await fromUuid(message.flags.pf2e.origin.actor);
-                if(actor.type !== 'npc' || actor.hasPlayerOwner) return;
+                if(!actor || actor.type !== 'npc' || actor.hasPlayerOwner) return;
 
                 const actorUuid = getBaseActor(actor).uuid;
                 const monster = bestiary.monster[actorUuid];
@@ -5798,7 +5804,7 @@ Hooks.on("createChatMessage", async (message) => {
             else {
                  // Skills | Saving Throws
                  const actor = await fromUuid(`Actor.${message.flags.pf2e.context.actor}`);
-                 if(actor.type !== 'npc' || actor.hasPlayerOwner) return;
+                 if(!actor || actor.type !== 'npc' || actor.hasPlayerOwner) return;
 
                  const actorUuid = getBaseActor(actor).uuid;
                  const monster = bestiary.monster[actorUuid];
