@@ -5577,6 +5577,11 @@ const addMonster = async () => {
 };
 
 const resetBestiary = async () => {
+    if(!game.user.isGM) {
+        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.AddMonster.GMOnly"));
+        return;
+    }
+
     const confirmed = await Dialog.confirm({
         title: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Title"),
         content: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Text"),
