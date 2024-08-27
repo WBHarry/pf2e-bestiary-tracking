@@ -308,6 +308,10 @@
             "AddMonster": {
                 "GMOnly": "Cette macro ne peut être utilisée que par le MJ.",
                 "TargetAlreadyInBestiary": "Cette créature est déjà dans le bestiaire !"
+            },
+            "ResetBestiary": {
+                "Title": "Reset Bestiary",
+                "Text": "This will remove all current data from your bestiary. Are you sure you want to do this?"
             }
         },
         "Interactivity": {

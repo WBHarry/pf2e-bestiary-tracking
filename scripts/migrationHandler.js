@@ -1,5 +1,6 @@
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import PF2EBestiary from "../module/bestiary.js";
+import { bestiaryFolder, bestiaryJournalEntry } from "./setup.js";
 import { acTable, attributeTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "./statisticsData.js";
 import { getCategoryLabel, getRollAverage } from "./statisticsHelper.js";
 
@@ -352,6 +353,19 @@ export const handleDataMigration = async () => {
 
     if(version === '0.8.9.8.1'){
         version = '0.8.9.8.2';
+
+        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
+    }
+
+    if(version === '0.8.9.8.2'){
+        const folder = await Folder.create({ "name": bestiaryFolder, "type": "JournalEntry" });
+        await JournalEntry.create({
+            name: bestiaryJournalEntry,
+            pages: [],
+            folder: folder.id
+        });
+
+        version = '0.8.9.9';
 
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
@@ -720,7 +734,7 @@ export const handleBestiaryMigration = async (bestiary) => {
     }
 
     if(bestiary.metadata.version === '0.8.9.8.1'){
-        bestiary = await newMigrateBestiary((_, monster) => {
+        bestiary = await newMigrateBestiary(async (_, monster) => {
             Object.keys(monster.system.actions).forEach(actionKey => {
                 const item = monster.items[actionKey];
                 if(item.type === 'equipment'){
@@ -747,6 +761,22 @@ export const handleBestiaryMigration = async (bestiary) => {
         
         bestiary.metadata.version = '0.8.9.8.2';
     }   
+
+    if(bestiary.metadata.version === '0.8.9.8.2'){
+        const journalEntry = game.journal.getName(bestiaryJournalEntry);
+        bestiary = await newMigrateBestiary(async (_, monster) => {
+            const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
+                name: monster.name.value,
+                text: {
+                    content: ""
+                }
+            }]);
+
+            monster.system.details.playerNotes = { document: page[0].id };
+        }, bestiary);
+        
+        bestiary.metadata.version = '0.8.9.9';
+    }
 
     return bestiary;
 };

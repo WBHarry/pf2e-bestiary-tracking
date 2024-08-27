@@ -1,5 +1,6 @@
 
-import { getBaseActor, getCreatureSize, getCreaturesTypes, getExpandedCreatureTypes, getIWRString, getMultiplesString, slugify } from "../scripts/helpers.js";
+import { getBaseActor, getCreatureSize, getCreaturesTypes, getExpandedCreatureTypes, getIWRString, slugify } from "../scripts/helpers.js";
+import { bestiaryJournalEntry } from "../scripts/setup.js";
 import { socketEvent } from "../scripts/socket.js";
 import { acTable, attackTable, attributeTable, damageTable, hpTable, savingThrowPerceptionTable, skillTable, spellAttackTable, spellDCTable } from "../scripts/statisticsData.js";
 import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getMixedCategoryLabel, getRollAverage, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
@@ -28,6 +29,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         };
 
         Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
+        Hooks.on(socketEvent.MonsterEditingUpdate, this.onEditingUpdate.bind(this));
     }
 
     get title(){
@@ -59,6 +61,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             createMisinformation: this.createMisinformation,
             imagePopout: this.imagePopout,
             setCategoriesLayout: this.setCategoriesLayout,
+            takeMonsterPen: this.takeMonsterPen,
             unlinkedDialog: this.unlinkedDialog,
         },
         form: { handler: this.updateData, submitOnChange: true },
@@ -139,7 +142,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             statistics: { active: true, cssClass: '', group: 'primary', id: 'statistics', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Statistics") },
             spells: { active: false, cssClass: '', group: 'primary', id: 'spells', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Spells") },
             lore: { active: false, cssClass: '', group: 'primary', id: 'lore', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Lore") },
-            // notes: { active: false, cssClass: '', group: 'primary', id: 'notes', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes") }
+            notes: { active: false, cssClass: '', group: 'primary', id: 'notes', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes") }
         }
 
         for ( const v of Object.values(tabs) ) {
@@ -181,6 +184,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         selected.monster.notes.public.text = await TextEditor.enrichHTML(selected.monster.notes.public.text);
         selected.monster.notes.private.text = await TextEditor.enrichHTML(selected.monster.notes.private.text);
+        selected.monster.notes.player.enriched = await TextEditor.enrichHTML(selected.monster.notes.player.enriched);
         selected.monster.actions = newActions;
         selected.monster.passives = newPassives;
     }
@@ -457,6 +461,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 notes: {
                     public: monster.system.details.publicNotes,
                     private: monster.system.details.privateNotes,
+                    player: {
+                        document: game.journal.getName(bestiaryJournalEntry).uuid,
+                        page: monster.system.details.playerNotes.document,
+                        text: game.journal.getName(bestiaryJournalEntry).pages.get(monster.system.details.playerNotes.document).text.content,
+                        enriched: game.journal.getName(bestiaryJournalEntry).pages.get(monster.system.details.playerNotes.document).text.content
+                    },
                 },
                 isUnlinked: isUnlinked,
             }
@@ -568,6 +578,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         });
 
         if(!confirmed) return;
+
+        const journalEntry = game.journal.getName(bestiaryJournalEntry);
+        await journalEntry.pages.get(this.bestiary[this.selected.category][button.dataset.monster].system.details.playerNotes.document).delete();
 
         delete this.bestiary[this.selected.category][button.dataset.monster];
         this.selected.monster = null;
@@ -972,6 +985,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(confirmed){
             this.toggleControls(false);
 
+            for(var monsterKey in this.bestiary.monster){
+                const monster = this.bestiary.monster[monsterKey];
+                const journalEntry = game.journal.getName(bestiaryJournalEntry);
+                await journalEntry.pages.get(monster.system.details.playerNotes.document).delete();
+            }
+
             this.selected = { category: 'monster', type: null, monster: null, abilities: [] };
             this.bestiary = { ...this.bestiary, monster: {}, npc: {} };
 
@@ -1237,6 +1256,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this.render();
     }
 
+    static async takeMonsterPen(){
+        await game.user.setFlag('pf2e-bestiary-tracking', 'hasMonsterPen', this.selected.monster.uuid);
+        this.render();
+
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: { },
+        });
+    }
+
     static async unlinkedDialog(){
         const confirmed = await Dialog.confirm({
             title: game.i18n.localize("PF2EBestiary.Bestiary.UnlinkedDialog.Title"),
@@ -1463,11 +1492,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static async updateData(event, element, formData){
-        const data = foundry.utils.expandObject(formData);
-        for(var key in data.object){
-            foundry.utils.setProperty(this, key, data.object[key]);
-        }
+        const updateString = Object.keys(formData.object)[0];
+        await game.journal.getName(bestiaryJournalEntry).pages.get(this.selected.monster.system.details.playerNotes.document).update({ 'text.content': formData.object[updateString] });
 
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.MonsterEditingUpdate,
+            data: { },
+        });
         this.render();
     }
 
@@ -1492,6 +1523,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         // We do not currently refresh already present creatures in the Bestiary.
         if(bestiary.monster[monster.uuid]) return false;
+
+
+        const journalEntry = game.journal.getName(bestiaryJournalEntry);
+        const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
+            name: monster.name.value,
+            text: {
+                content: ""
+            }
+        }]);
+        monster.system.details.playerNotes = { document: page[0].id };
 
         bestiary.monster[monster.uuid] = monster;
         
@@ -1750,6 +1791,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         const monster = await PF2EBestiary.getMonsterData(item);
         const updatedBestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+
+        const journalEntry = game.journal.getName(bestiaryJournalEntry);
+        const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
+            name: monster.name.value,
+            text: {
+                content: ""
+            }
+        }]);
+        monster.system.details.playerNotes = { document: page[0].id };
+
         updatedBestiary.monster[item.uuid] = monster;
         
         const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
@@ -1782,8 +1833,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this.render(true);
     };
 
+    onEditingUpdate = async () => {
+        const saveButton = $(this.element).find('.prosemirror *[data-action="save"]');
+        if(saveButton.length === 0){
+            this.render();
+        }
+    };
+
     close = async (options) => {
         Hooks.off(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
+        Hooks.off(socketEvent.MonsterEditingUpdate, this.onEditingUpdate);
 
         return super.close(options);
     }

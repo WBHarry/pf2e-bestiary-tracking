@@ -116,6 +116,9 @@
                 "Public": "Description",
                 "Private": "Private Notes"
             },
+            "PlayerNotes": {
+                "Title": "Player Notes"
+            },
             "Misinformation": {
                 "AddMisinformation": "Add Misinformation",
                 "Dialog": {
@@ -308,6 +311,10 @@
             "AddMonster": {
                 "GMOnly": "This macro can only be used by the GM.",
                 "TargetAlreadyInBestiary": "That creature is already in the bestiary!"
+            },
+            "ResetBestiary": {
+                "Title": "Reset Bestiary",
+                "Text": "This will remove all current data from your bestiary. Are you sure you want to do this?"
             }
         },
         "Interactivity": {

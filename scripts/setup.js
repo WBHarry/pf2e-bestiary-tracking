@@ -1,11 +1,14 @@
 import { optionalFields, revealedState } from "../data/bestiaryAppearance.js";
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
-import PF2EBestiary from "../module/bestiary.js";
 import BestiaryAppearanceMenu from "../module/bestiaryAppearanceMenu.js";
 import BestiaryIntegrationMenu from "../module/bestiaryIntegrationMenu.js";
 import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
+
+export const currentVersion = '0.8.9.9';
+export const bestiaryFolder = "pf2e-bestiary-tracking-folder";
+export const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
 export const registerKeyBindings = () => {
     game.keybindings.register("pf2e-bestiary-tracking", "open-bestiary", {
@@ -88,7 +91,7 @@ const generalNonConfigSettings = () => {
         scope: 'world',
         config: false,
         type: String,
-        default: '0.8.9.8.3',
+        default: currentVersion,
     });
 
     game.settings.register('pf2e-bestiary-tracking', 'bestiary-tracking', {
@@ -101,7 +104,7 @@ const generalNonConfigSettings = () => {
             monster: {},
             npc: {},
             metadata: {
-                version: '0.8.9.8.1'
+                version: currentVersion
             }
         },
     });

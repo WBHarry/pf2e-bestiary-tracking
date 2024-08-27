@@ -757,6 +757,34 @@
                             background-color: @mainBorder;
                         }
                     }
+
+                    .player-notes {
+                        height: 100%;
+
+                        legend {
+                            display: flex;
+                            align-items: center;
+                            gap: 32px;
+
+                            .player-notes-icon {
+                                font-size: 16px;
+                            }
+                        }
+
+                        .editor {
+                            height: 100%;
+                            overflow: auto;
+
+                            .editor-container {
+                                height: 100%;
+
+                                .editor-content {
+                                    height: 100%;
+                                    overflow: auto;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -711,6 +711,28 @@
   background-image: none;
   background-color: black;
 }
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes {
+  height: 100%;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes legend {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes legend .player-notes-icon {
+  font-size: 16px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes .editor {
+  height: 100%;
+  overflow: auto;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes .editor .editor-container {
+  height: 100%;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes .editor .editor-container .editor-content {
+  height: 100%;
+  overflow: auto;
+}
 .pf2e-bestiary-tracking.bestiary .right-bookmark-container {
   position: absolute;
   left: -100px;
