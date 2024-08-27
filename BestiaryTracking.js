@@ -3079,7 +3079,7 @@ const newMigrateBestiary = async (update, bestiary) => {
     return bestiary;
 };
 
-const currentVersion = '0.8.9.9';
+const currentVersion = '0.8.9.9.3';
 const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
@@ -3371,11 +3371,13 @@ const bestiaryIntegration = () => {
         onChange: async value => {
             if(!value || !game.user.isGM) return;
 
-            await newMigrateBestiary(async (_, monster) => {
+            const bestiary = await newMigrateBestiary(async (_, monster) => {
                 const origin = await fromUuid(monster.uuid);
 
                 await origin?.update({ "ownership.default": origin.ownership.default > 1 ? origin.ownership.default : 1 });
-            });
+            }, game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
+
+            await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
         }
     });
 
