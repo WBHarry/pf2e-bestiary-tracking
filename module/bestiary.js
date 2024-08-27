@@ -1720,7 +1720,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             if(item.type === 'action'){
                 item.system.traits.value = item.system.traits.value.map(trait => ({ revealed: false, value: trait }));
             
-                if(item.system.actionType.value === 'action' || item.system.actionType.value === 'reaction') hasActions = true;
+                if(item.system.actionType.value !== 'passive') hasActions = true;
                 if(item.system.actionType.value === 'passive') hasPassives = true;
             }
         }

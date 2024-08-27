@@ -2610,6 +2610,12 @@ const handleDataMigration = async () => {
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 
+    if(version === '0.8.9.8.2'){
+        version = '0.8.9.9.6';
+
+        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
+    }
+
     const updatedBestiary = await handleBestiaryMigration(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
 };
@@ -3017,6 +3023,24 @@ const handleBestiaryMigration = async (bestiary) => {
         bestiary.metadata.version = '0.8.9.9';
     }
 
+    if(bestiary.metadata.version === '0.8.9.9'){
+        bestiary = await newMigrateBestiary(async (_, monster) => {
+            const itemKeys = Object.keys(monster.items);
+            const actionKeys = itemKeys.filter(key => monster.items[key].type === 'action' && monster.items[key].system.actionType.value !== 'passive');
+            if(actionKeys.length > 1 && actionKeys.find(key => monster.items[key]._id === 'Action-None')){
+                monster.items = itemKeys.reduce((acc, key) => {
+                    if(monster.items[key]._id !== 'Action-None'){
+                        acc[key] = monster.items[key];
+                    }
+
+                    return acc;
+                }, {});
+            }
+        }, bestiary);
+
+        bestiary.metadata.version = '0.8.9.9.6';
+    }
+
     return bestiary;
 };
 
@@ -3070,7 +3094,7 @@ const newMigrateBestiary = async (update, bestiary) => {
     return bestiary;
 };
 
-const currentVersion = '0.8.9.9.5';
+const currentVersion = '0.8.9.9.6';
 const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
@@ -5276,7 +5300,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
             if(item.type === 'action'){
                 item.system.traits.value = item.system.traits.value.map(trait => ({ revealed: false, value: trait }));
             
-                if(item.system.actionType.value === 'action' || item.system.actionType.value === 'reaction') hasActions = true;
+                if(item.system.actionType.value !== 'passive') hasActions = true;
                 if(item.system.actionType.value === 'passive') hasPassives = true;
             }
         }
