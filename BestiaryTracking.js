@@ -3094,7 +3094,7 @@ const newMigrateBestiary = async (update, bestiary) => {
     return bestiary;
 };
 
-const currentVersion = '0.8.9.9.6';
+const currentVersion = '0.8.10';
 const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
