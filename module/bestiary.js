@@ -1197,8 +1197,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     tagify: [{
                         element: 'traits',
                         options: {
-                            whitelist: Object.keys(CONFIG.PF2E.creatureTraits).map(key => { 
-                                const label = CONFIG.PF2E.creatureTraits[key];
+                            whitelist: Object.keys(CONFIG.PF2E.actionTraits).map(key => { 
+                                const label = CONFIG.PF2E.actionTraits[key];
                                 return { value: key, name: game.i18n.localize(label) };
                             }),
                             dropdown : {
