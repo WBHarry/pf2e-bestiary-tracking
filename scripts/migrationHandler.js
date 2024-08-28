@@ -1,12 +1,14 @@
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import PF2EBestiary from "../module/bestiary.js";
-import { bestiaryFolder, bestiaryJournalEntry } from "./setup.js";
+import { bestiaryFolder, bestiaryJournalEntry, setupCollaborativeWrtiting } from "./setup.js";
 import { acTable, attributeTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "./statisticsData.js";
 import { getCategoryLabel, getRollAverage } from "./statisticsHelper.js";
 
 export const handleDataMigration = async () => {
     if(!game.user.isGM) return;
     
+    await setupCollaborativeWrtiting();
+
     var version = await game.settings.get('pf2e-bestiary-tracking', 'version');
     if(!version){
         version = '0.8.1';
@@ -793,6 +795,24 @@ export const handleBestiaryMigration = async (bestiary) => {
         }, bestiary);
 
         bestiary.metadata.version = '0.8.9.9.6';
+    }
+
+    if(bestiary.metadata.version === '0.8.9.9.6'){
+        const journalEntry = game.journal.getName(bestiaryJournalEntry);
+        if(journalEntry){
+            bestiary = await newMigrateBestiary(async (_, monster) => {
+                const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
+                    name: monster.name.value,
+                    text: {
+                        content: ""
+                    }
+                }]);
+    
+                monster.system.details.playerNotes = { document: page[0].id };
+            }, bestiary);
+        }
+
+        bestiary.metadata.version = '0.8.11';
     }
 
     return bestiary;

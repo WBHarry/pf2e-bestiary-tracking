@@ -17,15 +17,13 @@ Hooks.once('init', () => {
     ]);
 });
 
-Hooks.once("ready", () => {
+Hooks.once("ready", async () => {
     game.modules.get('pf2e-bestiary-tracking').macros = macros;
 
     handleDataMigration();
 });
 
 Hooks.once("setup", () => {
-    setupCollaborativeWrtiting();
-
     if(typeof libWrapper === 'function') {
         libWrapper.register('pf2e-bestiary-tracking', 'Token.prototype._onClickLeft2', function (wrapped, ...args) {
             const baseActor = args[0].currentTarget.document.baseActor;
