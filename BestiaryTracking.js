@@ -3470,6 +3470,137 @@ const socketEvent = {
     MonsterEditingUpdate: "MonsterEditingUpdate",
 };
 
+const openBestiary = async () => {
+    new PF2EBestiary().render(true);
+};
+
+const showMonster = async () => {
+    const selectedMonster = game.user.targets.size > 0 ? game.user.targets.values().next().value : 
+        canvas.tokens.controlled.length > 0 ? canvas.tokens.controlled[0]
+         : null;
+
+    if(!selectedMonster) 
+    {
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoTarget"));
+        return;
+    }
+
+    if(!selectedMonster.actor){
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoActor"));
+        return;
+    }
+
+    if(selectedMonster.actor.type !== 'npc' || selectedMonster.actor.hasPlayerOwner){
+        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"));
+        return;
+    }
+
+    const settings = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+
+    const category = 'monster';
+    const monster = settings[category][selectedMonster.document ? selectedMonster.document.baseActor.uuid : selectedMonster.baseActor.uuid];
+
+    if(!monster)
+    {
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"));
+        return;
+    }
+
+    new PF2EBestiary({ category, monsterUuid: monster.uuid }).render(true);
+};
+
+const addMonster = async () => {
+    if(!game.user.isGM) {
+        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.AddMonster.GMOnly"));
+        return;
+    }
+
+    const selectedMonster = game.user.targets.size > 0 ? game.user.targets.values().next().value : 
+    canvas.tokens.controlled.length > 0 ? canvas.tokens.controlled[0]
+    : null;
+
+    if(!selectedMonster) 
+    {
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoTarget"));
+        return;
+    }
+
+    if(selectedMonster.actor.type !== 'npc' || selectedMonster.actor.hasPlayerOwner){
+        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"));
+        return;
+    }
+
+    const settings = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+
+    const category = 'monster';
+    const baseActor = selectedMonster.document ? selectedMonster.document.baseActor : selectedMonster.baseActor;
+    const monster = settings[category][baseActor.uuid];
+
+    if(monster)
+    {
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.AddMonster.TargetAlreadyInBestiary"));
+        return;
+    }
+
+    const successfull = await PF2EBestiary.addMonster(selectedMonster.actor);
+    if(successfull){
+        ui.notifications.info(game.i18n.format('PF2EBestiary.Bestiary.Info.AddedToBestiary', { creatures: selectedMonster.actor.name }));
+    }
+    else if(successfull === false){
+        ui.notifications.info(game.i18n.format('PF2EBestiary.Bestiary.Info.AlreadyExistsInBestiary', { creatures: selectedMonster.actor.name }));
+    }    
+};
+
+const resetBestiary = async () => {
+    if(!game.user.isGM) {
+        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.AddMonster.GMOnly"));
+        return;
+    }
+
+    const confirmed = await Dialog.confirm({
+        title: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Title"),
+        content: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Text"),
+        yes: () => true,
+        no: () => false,
+    });
+
+    if(!confirmed) return;
+
+    const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+
+    const journalEntry = game.journal.getName(bestiaryJournalEntry);
+    if(journalEntry){
+        for(var monsterKey in bestiary.monster){
+            const monster = bestiary.monster[monsterKey];
+            await journalEntry.pages.get(monster.system.details.playerNotes.document)?.delete();
+        }
+    }
+
+    await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', {
+        monster: {},
+        npc: {},
+        metadata: {
+            version: currentVersion
+        }
+    });
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+        action: socketEvent.UpdateBestiary,
+        data: { },
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+
+    return true;
+};
+
+var macros = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    addMonster: addMonster,
+    openBestiary: openBestiary,
+    resetBestiary: resetBestiary,
+    showMonster: showMonster
+});
+
 const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
 
 class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin$1(ApplicationV2$1) {
@@ -3839,8 +3970,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                     ...action,
                     traits: action.system.traits.value.map(trait => ({ 
                         ...trait, 
-                        value: game.i18n.localize(CONFIG.PF2E.actionTraits[trait.value]), 
-                        description: game.i18n.localize(CONFIG.PF2E.traitsDescriptions[trait.value]),
+                        value: game.i18n.localize(CONFIG.PF2E.actionTraits[trait.value]??trait.value), 
+                        description: game.i18n.localize(CONFIG.PF2E.traitsDescriptions[trait.value]??""),
                         revealed: detailedInformation.abilityTraits ? trait.revealed : true 
                     })),
                     description: action.system.description.value,
@@ -4585,36 +4716,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     static async resetBestiary(){
-        if(!game.user.isGM) {
-            ui.notifications.info(game.i18n.localize("PF2EBestiary.Bestiary.Info.GMOnly"));
-        }
-
-        const confirmed = await Dialog.confirm({
-            title: "Reset Bestiary",
-            content: "Are you sure you want to reset all the bestiary data?",
-            yes: () => true,
-            no: () => false,
-        });
-
-        if(confirmed){
+        const successfull = await resetBestiary();
+        if(successfull){
             this.toggleControls(false);
-
-            for(var monsterKey in this.bestiary.monster){
-                const monster = this.bestiary.monster[monsterKey];
-                const journalEntry = game.journal.getName(bestiaryJournalEntry);
-                await journalEntry.pages.get(monster.system.details.playerNotes.document).delete();
-            }
-
-            this.selected = { category: 'monster', type: null, monster: null, abilities: [] };
-            this.bestiary = { ...this.bestiary, monster: {}, npc: {} };
-
             await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
             await game.socket.emit(`module.pf2e-bestiary-tracking`, {
                 action: socketEvent.UpdateBestiary,
                 data: { },
             });
-
-            this.render();
         }
     }
 
@@ -4771,6 +4880,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                                 label: game.i18n.localize("PF2EBestiary.Bestiary.Misinformation.Dialog.Attack.Actions"),
                                 required: true
                             }).toFormGroup({}, {name: "actions"}).outerHTML : ''}
+                            ${new foundry.data.fields.StringField({
+                                label: game.i18n.localize("PF2EBestiary.Bestiary.Misinformation.Dialog.Traitlabel"),
+                                required: false
+                            }).toFormGroup({}, {name: "traits"}).outerHTML}
                             ${new foundry.data.fields.HTMLField({
                                 label: game.i18n.localize("PF2EBestiary.Bestiary.Misinformation.Dialog.Ability.Description"),
                                 required: false
@@ -4795,7 +4908,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                                 system: {
                                     description: { value: elements.description?.value },
                                     traits: {
-                                        value: []
+                                        value: elements.traits.value ? JSON.parse(elements.traits.value).map(x => ({ 
+                                            revealed: false, 
+                                            value: x.value,
+                                        })) : []
                                     }
                                 },
                                 fake: true,
@@ -4811,7 +4927,24 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                         }
 
                         return { value: base, errors: [] };
-                    }
+                    },
+                    tagify: [{
+                        element: 'traits',
+                        options: {
+                            whitelist: Object.keys(CONFIG.PF2E.creatureTraits).map(key => { 
+                                const label = CONFIG.PF2E.creatureTraits[key];
+                                return { value: key, name: game.i18n.localize(label) };
+                            }),
+                            dropdown : {
+                                mapValueTo: 'name',
+                                searchKeys: ['name'],
+                                enabled: 0,              
+                                maxItems: 20,    
+                                closeOnSelect : true,
+                                highlightFirst: false,
+                              },
+                        },
+                    }],
                 }
         }
     } 
@@ -4836,20 +4969,30 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
             this.render();
         };
 
-        const { content, getValue, width } = this.getMisinformationDialogData(button.dataset.name);
+        const { content, getValue, width, tagify = [] } = this.getMisinformationDialogData(button.dataset.name);
         
         async function callback(_, button) {
             await addValue(getValue(button.form.elements));
         }
 
-        await foundry.applications.api.DialogV2.prompt({
+        const dialog = new foundry.applications.api.DialogV2({
+            buttons: [foundry.utils.mergeObject({
+                action: "ok", label: "Confirm", icon: "fas fa-check", default: true
+            }, { callback: callback })],
             content: content,
             rejectClose: false,
-            modal: true,
-            ok: { callback: callback },
+            modal: false,
             window: {title: game.i18n.localize('PF2EBestiary.Bestiary.Misinformation.Dialog.Title')},
             position: { width }
         });
+
+        await dialog.render(true);
+
+        for(var tag of tagify){
+            const element = $(dialog.element).find(`input[name="${tag.element}"]`);
+            new Y(element[0], tag.options);
+            console.log('asd');
+        }
     }
 
     static async imagePopout(){
@@ -5558,135 +5701,6 @@ class RegisterHandlebarsHelpers {
         return a%2;
     }
 }
-
-const openBestiary = async () => {
-    new PF2EBestiary().render(true);
-};
-
-const showMonster = async () => {
-    const selectedMonster = game.user.targets.size > 0 ? game.user.targets.values().next().value : 
-        canvas.tokens.controlled.length > 0 ? canvas.tokens.controlled[0]
-         : null;
-
-    if(!selectedMonster) 
-    {
-        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoTarget"));
-        return;
-    }
-
-    if(!selectedMonster.actor){
-        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoActor"));
-        return;
-    }
-
-    if(selectedMonster.actor.type !== 'npc' || selectedMonster.actor.hasPlayerOwner){
-        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"));
-        return;
-    }
-
-    const settings = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-
-    const category = 'monster';
-    const monster = settings[category][selectedMonster.document ? selectedMonster.document.baseActor.uuid : selectedMonster.baseActor.uuid];
-
-    if(!monster)
-    {
-        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"));
-        return;
-    }
-
-    new PF2EBestiary({ category, monsterUuid: monster.uuid }).render(true);
-};
-
-const addMonster = async () => {
-    if(!game.user.isGM) {
-        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.AddMonster.GMOnly"));
-        return;
-    }
-
-    const selectedMonster = game.user.targets.size > 0 ? game.user.targets.values().next().value : 
-    canvas.tokens.controlled.length > 0 ? canvas.tokens.controlled[0]
-    : null;
-
-    if(!selectedMonster) 
-    {
-        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoTarget"));
-        return;
-    }
-
-    if(selectedMonster.actor.type !== 'npc' || selectedMonster.actor.hasPlayerOwner){
-        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"));
-        return;
-    }
-
-    const settings = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-
-    const category = 'monster';
-    const baseActor = selectedMonster.document ? selectedMonster.document.baseActor : selectedMonster.baseActor;
-    const monster = settings[category][baseActor.uuid];
-
-    if(monster)
-    {
-        ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.AddMonster.TargetAlreadyInBestiary"));
-        return;
-    }
-
-    const successfull = await PF2EBestiary.addMonster(selectedMonster.actor);
-    if(successfull){
-        ui.notifications.info(game.i18n.format('PF2EBestiary.Bestiary.Info.AddedToBestiary', { creatures: selectedMonster.actor.name }));
-    }
-    else if(successfull === false){
-        ui.notifications.info(game.i18n.format('PF2EBestiary.Bestiary.Info.AlreadyExistsInBestiary', { creatures: selectedMonster.actor.name }));
-    }    
-};
-
-const resetBestiary = async () => {
-    if(!game.user.isGM) {
-        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.AddMonster.GMOnly"));
-        return;
-    }
-
-    const confirmed = await Dialog.confirm({
-        title: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Title"),
-        content: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Text"),
-        yes: () => true,
-        no: () => false,
-    });
-
-    if(!confirmed) return;
-
-    const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-
-    const journalEntry = game.journal.getName(bestiaryJournalEntry);
-    if(journalEntry){
-        for(var monsterKey in bestiary.monster){
-            const monster = bestiary.monster[monsterKey];
-            await journalEntry.pages.get(monster.system.details.playerNotes.document)?.delete();
-        }
-    }
-
-    await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', {
-        monster: {},
-        npc: {},
-        metadata: {
-            version: currentVersion
-        }
-    });
-
-    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-        action: socketEvent.UpdateBestiary,
-        data: { },
-    });
-    Hooks.callAll(socketEvent.UpdateBestiary, {});
-};
-
-var macros = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    addMonster: addMonster,
-    openBestiary: openBestiary,
-    resetBestiary: resetBestiary,
-    showMonster: showMonster
-});
 
 Hooks.once('init', () => {
     registerGameSettings();

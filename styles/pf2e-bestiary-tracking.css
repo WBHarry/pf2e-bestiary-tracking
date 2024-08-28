@@ -1128,3 +1128,10 @@
 .pf2e-bestiary-misinformation-dialog .editor-container {
   overflow: auto;
 }
+.theme-dark .dialog-content .tagify {
+  border-color: #efe6d8;
+  background-color: inherit;
+}
+.dialog-content .tagify {
+  border-color: black;
+}

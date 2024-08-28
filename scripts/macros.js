@@ -121,4 +121,6 @@ export const resetBestiary = async () => {
         data: { },
     });
     Hooks.callAll(socketEvent.UpdateBestiary, {});
+
+    return true;
 };

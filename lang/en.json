@@ -124,6 +124,7 @@
                 "Dialog": {
                     "Title": "Missinformation Select",
                     "SelectLabel": "Fake {property}",
+                    "Traitlabel": "Traits",
                     "Attack": {
                         "Range": "Range",
                         "Actions": "Actions",

@@ -1,10 +1,12 @@
 
 import { getBaseActor, getCreatureSize, getCreaturesTypes, getExpandedCreatureTypes, getIWRString, slugify } from "../scripts/helpers.js";
+import { resetBestiary } from "../scripts/macros.js";
 import { bestiaryJournalEntry } from "../scripts/setup.js";
 import { socketEvent } from "../scripts/socket.js";
 import { acTable, attackTable, attributeTable, damageTable, hpTable, savingThrowPerceptionTable, skillTable, spellAttackTable, spellDCTable } from "../scripts/statisticsData.js";
 import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getMixedCategoryLabel, getRollAverage, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
 import PF2EBestiarySavesHandler from "./savesHandler.js";
+import Tagify from '@yaireo/tagify';
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -229,8 +231,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     ...action,
                     traits: action.system.traits.value.map(trait => ({ 
                         ...trait, 
-                        value: game.i18n.localize(CONFIG.PF2E.actionTraits[trait.value]), 
-                        description: game.i18n.localize(CONFIG.PF2E.traitsDescriptions[trait.value]),
+                        value: game.i18n.localize(CONFIG.PF2E.actionTraits[trait.value]??trait.value), 
+                        description: game.i18n.localize(CONFIG.PF2E.traitsDescriptions[trait.value]??""),
                         revealed: detailedInformation.abilityTraits ? trait.revealed : true 
                     })),
                     description: action.system.description.value,
@@ -977,36 +979,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static async resetBestiary(){
-        if(!game.user.isGM) {
-            ui.notifications.info(game.i18n.localize("PF2EBestiary.Bestiary.Info.GMOnly"));
-        }
-
-        const confirmed = await Dialog.confirm({
-            title: "Reset Bestiary",
-            content: "Are you sure you want to reset all the bestiary data?",
-            yes: () => true,
-            no: () => false,
-        });
-
-        if(confirmed){
+        const successfull = await resetBestiary();
+        if(successfull){
             this.toggleControls(false);
-
-            for(var monsterKey in this.bestiary.monster){
-                const monster = this.bestiary.monster[monsterKey];
-                const journalEntry = game.journal.getName(bestiaryJournalEntry);
-                await journalEntry.pages.get(monster.system.details.playerNotes.document).delete();
-            }
-
-            this.selected = { category: 'monster', type: null, monster: null, abilities: [] };
-            this.bestiary = { ...this.bestiary, monster: {}, npc: {} };
-
             await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
             await game.socket.emit(`module.pf2e-bestiary-tracking`, {
                 action: socketEvent.UpdateBestiary,
                 data: { },
             });
-
-            this.render();
         }
     }
 
@@ -1163,6 +1143,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                                 label: game.i18n.localize("PF2EBestiary.Bestiary.Misinformation.Dialog.Attack.Actions"),
                                 required: true
                             }).toFormGroup({}, {name: "actions"}).outerHTML : ''}
+                            ${new foundry.data.fields.StringField({
+                                label: game.i18n.localize("PF2EBestiary.Bestiary.Misinformation.Dialog.Traitlabel"),
+                                required: false
+                            }).toFormGroup({}, {name: "traits"}).outerHTML}
                             ${new foundry.data.fields.HTMLField({
                                 label: game.i18n.localize("PF2EBestiary.Bestiary.Misinformation.Dialog.Ability.Description"),
                                 required: false
@@ -1187,7 +1171,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                                 system: {
                                     description: { value: elements.description?.value },
                                     traits: {
-                                        value: []
+                                        value: elements.traits.value ? JSON.parse(elements.traits.value).map(x => ({ 
+                                            revealed: false, 
+                                            value: x.value,
+                                        })) : []
                                     }
                                 },
                                 fake: true,
@@ -1203,7 +1190,24 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                         }
 
                         return { value: base, errors: [] };
-                    }
+                    },
+                    tagify: [{
+                        element: 'traits',
+                        options: {
+                            whitelist: Object.keys(CONFIG.PF2E.creatureTraits).map(key => { 
+                                const label = CONFIG.PF2E.creatureTraits[key];
+                                return { value: key, name: game.i18n.localize(label) };
+                            }),
+                            dropdown : {
+                                mapValueTo: 'name',
+                                searchKeys: ['name'],
+                                enabled: 0,              
+                                maxItems: 20,    
+                                closeOnSelect : true,
+                                highlightFirst: false,
+                              },
+                        },
+                    }],
                 }
         }
     } 
@@ -1228,20 +1232,30 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             this.render();
         };
 
-        const { content, getValue, width } = this.getMisinformationDialogData(button.dataset.name);
+        const { content, getValue, width, tagify = [] } = this.getMisinformationDialogData(button.dataset.name);
         
         async function callback(_, button) {
             await addValue(getValue(button.form.elements));
         }
 
-        await foundry.applications.api.DialogV2.prompt({
+        const dialog = new foundry.applications.api.DialogV2({
+            buttons: [foundry.utils.mergeObject({
+                action: "ok", label: "Confirm", icon: "fas fa-check", default: true
+            }, { callback: callback })],
             content: content,
             rejectClose: false,
-            modal: true,
-            ok: { callback: callback },
+            modal: false,
             window: {title: game.i18n.localize('PF2EBestiary.Bestiary.Misinformation.Dialog.Title')},
             position: { width }
         });
+
+        await dialog.render(true);
+
+        for(var tag of tagify){
+            const element = $(dialog.element).find(`input[name="${tag.element}"]`);
+            var ta = new Tagify(element[0], tag.options);
+            console.log('asd');
+        }
     }
 
     static async imagePopout(){

@@ -124,6 +124,7 @@
                 "Dialog": {
                     "Title": "Sélection des informations erronées",
                     "SelectLabel": "Fausse {propriété}",
+                    "Traitlabel": "Traits",
                     "Attack": {
                         "Range": "Portée",
                         "Actions": "Actions",

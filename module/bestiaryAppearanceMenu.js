@@ -1,4 +1,4 @@
-import { optionalFields, revealedState } from "../data/bestiaryAppearance.js";
+import { revealedState } from "../data/bestiaryAppearance.js";
 import Tagify from '@yaireo/tagify';
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
