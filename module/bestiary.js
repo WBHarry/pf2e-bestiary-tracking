@@ -409,12 +409,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     const action = monster.system.actions[actionKey];
                     const damageInstances = [];
                     var damageLabel = '';
-                    for(var damageKey of Object.keys(monster.items[actionKey].system.damageRolls)){
-                        const damage = monster.items[actionKey].system.damageRolls[damageKey];
-                        damageLabel = damageLabel.concat(`${damageLabel ? ' + ' : ''}${damage.damage} ${damage.damageType.value}`);
-                        const damageRollHelper = new Roll(damage.damage);
-                        
-                        damageInstances.push({ label: damage.damage, average: getRollAverage(damageRollHelper.terms), type: { ...damage.damageType, revealed: detailedInformation.damageTypes ? damage.damageType.revealed : true }, quality: damage.category, _id: damageKey  });
+
+                    if(!action.fake){
+                        for(var damageKey of Object.keys(monster.items[actionKey].system.damageRolls)){
+                            const damage = monster.items[actionKey].system.damageRolls[damageKey];
+                            damageLabel = damageLabel.concat(`${damageLabel ? ' + ' : ''}${damage.damage} ${damage.damageType.value}`);
+                            const damageRollHelper = new Roll(damage.damage);
+                            
+                            damageInstances.push({ label: damage.damage, average: getRollAverage(damageRollHelper.terms), type: { ...damage.damageType, revealed: detailedInformation.damageTypes ? damage.damageType.revealed : true }, quality: damage.category, _id: damageKey  });
+                        }
                     }
 
                     const damage = {
@@ -440,11 +443,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         
                             return acc;
                         }, { revealed: false, values: {} }),
-                        traits: monster.items[actionKey].system.traits.value.map(trait => ({
+                        traits: monster.items[actionKey]?.system?.traits?.value?.map(trait => ({
                             label: game.i18n.localize(CONFIG.PF2E.npcAttackTraits[trait.value]),
                             description: CONFIG.PF2E.traitsDescriptions[trait.value],
                             revealed: detailedInformation.attackTraits ? trait.revealed : true,
-                        })).filter(trait => trait.name !== 'attack'),
+                        })).filter(trait => trait.name !== 'attack') ?? [],
                         value: `${action.totalModifier >= 0 ? '+' : '-'} ${action.totalModifier}`, 
                         ...attackParts, 
                         ...damageParts 
@@ -1182,7 +1185,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                                
                                 type: 'action',
                                 system: {
-                                    description: { value: elements.description?.value } 
+                                    description: { value: elements.description?.value },
+                                    traits: {
+                                        value: []
+                                    }
                                 },
                                 fake: true,
                             },

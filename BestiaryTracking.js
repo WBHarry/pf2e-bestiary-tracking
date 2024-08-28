@@ -2623,8 +2623,8 @@ const handleDataMigration = async () => {
 };
 
 const handleBestiaryMigration = async (bestiary) => {
-    const oldMonsterData = Object.keys(bestiary.monster).length > 0 && Boolean(bestiary.monster[Object.keys(bestiary.monster)[0]].traits); 
-    bestiary.metadata.version = oldMonsterData ? '0.8.8' : !bestiary.metadata.version ? '0.8.9' : bestiary.metadata.version; 
+    const oldMonsterData = Object.keys(bestiary.monster).length > 0 && Object.keys(bestiary.monster).some(key => Boolean(bestiary.monster[key].traits)); 
+    bestiary.metadata.version = oldMonsterData ? '0.8.8.4' : !bestiary.metadata.version ? '0.8.9' : bestiary.metadata.version; 
 
     if(bestiary.metadata.version === '0.8.8'){
         bestiary = await newMigrateBestiary(async (_, monster) => {
@@ -2668,11 +2668,17 @@ const handleBestiaryMigration = async (bestiary) => {
     if(bestiary.metadata.version === '0.8.8.4'){
         // Change to storing all of actor.toObject. Lots of improvement in data retention, shouldn't be too much data.
         const uuids = Object.values(bestiary.monster).reduce((acc, monster) => {
-                if(monster.uuid) acc.push(monster.uuid);
+                if(monster.uuid && !monster.system) acc.push(monster.uuid);
             
                 return acc;
             }, []);
-        const newBestiary = { monster: {}, npc: {}, metadata: {} };
+        const newBestiary = { monster: Object.keys(bestiary.monster).reduce((acc, key) => {
+            if(Boolean(bestiary.monster[key].system)){
+                acc[key] = bestiary.monster[key];
+            }
+
+            return acc;
+        }, {}), npc: {}, metadata: {} };
         for(var uuid of uuids){
             const orig = await fromUuid(uuid);
             const data = await PF2EBestiary.getMonsterData(orig);
@@ -3043,6 +3049,24 @@ const handleBestiaryMigration = async (bestiary) => {
         bestiary.metadata.version = '0.8.9.9.6';
     }
 
+    if(bestiary.metadata.version === '0.8.9.9.6'){
+        const journalEntry = game.journal.getName(bestiaryJournalEntry);
+        if(journalEntry){
+            bestiary = await newMigrateBestiary(async (_, monster) => {
+                const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
+                    name: monster.name.value,
+                    text: {
+                        content: ""
+                    }
+                }]);
+    
+                monster.system.details.playerNotes = { document: page[0].id };
+            }, bestiary);
+        }
+
+        bestiary.metadata.version = '0.8.11';
+    }
+
     return bestiary;
 };
 
@@ -3096,7 +3120,7 @@ const newMigrateBestiary = async (update, bestiary) => {
     return bestiary;
 };
 
-const currentVersion = '0.8.10';
+const currentVersion = '0.8.12';
 const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
@@ -3994,12 +4018,15 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                     const action = monster.system.actions[actionKey];
                     const damageInstances = [];
                     var damageLabel = '';
-                    for(var damageKey of Object.keys(monster.items[actionKey].system.damageRolls)){
-                        const damage = monster.items[actionKey].system.damageRolls[damageKey];
-                        damageLabel = damageLabel.concat(`${damageLabel ? ' + ' : ''}${damage.damage} ${damage.damageType.value}`);
-                        const damageRollHelper = new Roll(damage.damage);
-                        
-                        damageInstances.push({ label: damage.damage, average: getRollAverage(damageRollHelper.terms), type: { ...damage.damageType, revealed: detailedInformation.damageTypes ? damage.damageType.revealed : true }, quality: damage.category, _id: damageKey  });
+
+                    if(!action.fake){
+                        for(var damageKey of Object.keys(monster.items[actionKey].system.damageRolls)){
+                            const damage = monster.items[actionKey].system.damageRolls[damageKey];
+                            damageLabel = damageLabel.concat(`${damageLabel ? ' + ' : ''}${damage.damage} ${damage.damageType.value}`);
+                            const damageRollHelper = new Roll(damage.damage);
+                            
+                            damageInstances.push({ label: damage.damage, average: getRollAverage(damageRollHelper.terms), type: { ...damage.damageType, revealed: detailedInformation.damageTypes ? damage.damageType.revealed : true }, quality: damage.category, _id: damageKey  });
+                        }
                     }
 
                     const damage = {
@@ -4025,11 +4052,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
         
                             return acc;
                         }, { revealed: false, values: {} }),
-                        traits: monster.items[actionKey].system.traits.value.map(trait => ({
+                        traits: monster.items[actionKey]?.system?.traits?.value?.map(trait => ({
                             label: game.i18n.localize(CONFIG.PF2E.npcAttackTraits[trait.value]),
                             description: CONFIG.PF2E.traitsDescriptions[trait.value],
                             revealed: detailedInformation.attackTraits ? trait.revealed : true,
-                        })).filter(trait => trait.name !== 'attack'),
+                        })).filter(trait => trait.name !== 'attack') ?? [],
                         value: `${action.totalModifier >= 0 ? '+' : '-'} ${action.totalModifier}`, 
                         ...attackParts, 
                         ...damageParts 
@@ -4766,7 +4793,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                                
                                 type: 'action',
                                 system: {
-                                    description: { value: elements.description?.value } 
+                                    description: { value: elements.description?.value },
+                                    traits: {
+                                        value: []
+                                    }
                                 },
                                 fake: true,
                             },

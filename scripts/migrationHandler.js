@@ -376,8 +376,8 @@ export const handleDataMigration = async () => {
 }
 
 export const handleBestiaryMigration = async (bestiary) => {
-    const oldMonsterData = Object.keys(bestiary.monster).length > 0 && Boolean(bestiary.monster[Object.keys(bestiary.monster)[0]].traits); 
-    bestiary.metadata.version = oldMonsterData ? '0.8.8' : !bestiary.metadata.version ? '0.8.9' : bestiary.metadata.version; 
+    const oldMonsterData = Object.keys(bestiary.monster).length > 0 && Object.keys(bestiary.monster).some(key => Boolean(bestiary.monster[key].traits)); 
+    bestiary.metadata.version = oldMonsterData ? '0.8.8.4' : !bestiary.metadata.version ? '0.8.9' : bestiary.metadata.version; 
 
     if(bestiary.metadata.version === '0.8.8'){
         bestiary = await newMigrateBestiary(async (_, monster) => {
@@ -421,11 +421,17 @@ export const handleBestiaryMigration = async (bestiary) => {
     if(bestiary.metadata.version === '0.8.8.4'){
         // Change to storing all of actor.toObject. Lots of improvement in data retention, shouldn't be too much data.
         const uuids = Object.values(bestiary.monster).reduce((acc, monster) => {
-                if(monster.uuid) acc.push(monster.uuid);
+                if(monster.uuid && !monster.system) acc.push(monster.uuid);
             
                 return acc;
             }, []);
-        const newBestiary = { monster: {}, npc: {}, metadata: {} };
+        const newBestiary = { monster: Object.keys(bestiary.monster).reduce((acc, key) => {
+            if(Boolean(bestiary.monster[key].system)){
+                acc[key] = bestiary.monster[key];
+            }
+
+            return acc;
+        }, {}), npc: {}, metadata: {} };
         for(var uuid of uuids){
             const orig = await fromUuid(uuid);
             const data = await PF2EBestiary.getMonsterData(orig);
