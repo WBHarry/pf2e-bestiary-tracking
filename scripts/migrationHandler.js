@@ -371,6 +371,12 @@ export const handleDataMigration = async () => {
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 
+    if(bestiary.metadata.version === '0.8.9.9.6'){
+        version = '0.8.12';
+
+        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
+    }
+
     const updatedBestiary = await handleBestiaryMigration(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
 }
@@ -819,6 +825,22 @@ export const handleBestiaryMigration = async (bestiary) => {
         }
 
         bestiary.metadata.version = '0.8.11';
+    }
+
+    if(bestiary.metadata.version === '0.8.11'){
+        const journalEntry = game.journal.getName(bestiaryJournalEntry);
+        if(journalEntry){
+            bestiary = await newMigrateBestiary(async (_, monster) => {
+                if(!monster.system.details.playerNotes?.document){
+                    const page = journalEntry.pages.find(x => x.name === monster.name.value);
+                    if(page){
+                        monster.system.details.playerNotes = { document: page.id };
+                    }
+                }
+            }, bestiary);
+        }
+
+        bestiary.metadata.version = '0.8.12';
     }
 
     return bestiary;

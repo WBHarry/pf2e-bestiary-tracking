@@ -2618,6 +2618,12 @@ const handleDataMigration = async () => {
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 
+    if(bestiary.metadata.version === '0.8.9.9.6'){
+        version = '0.8.12';
+
+        await game.settings.set('pf2e-bestiary-tracking', 'version', version);
+    }
+
     const updatedBestiary = await handleBestiaryMigration(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
 };
@@ -3065,6 +3071,22 @@ const handleBestiaryMigration = async (bestiary) => {
         }
 
         bestiary.metadata.version = '0.8.11';
+    }
+
+    if(bestiary.metadata.version === '0.8.11'){
+        const journalEntry = game.journal.getName(bestiaryJournalEntry);
+        if(journalEntry){
+            bestiary = await newMigrateBestiary(async (_, monster) => {
+                if(!monster.system.details.playerNotes?.document){
+                    const page = journalEntry.pages.find(x => x.name === monster.name.value);
+                    if(page){
+                        monster.system.details.playerNotes = { document: page.id };
+                    }
+                }
+            }, bestiary);
+        }
+
+        bestiary.metadata.version = '0.8.12';
     }
 
     return bestiary;
@@ -4371,7 +4393,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                 !monster.name.revealed ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown") : null;
 
             if(name) {
-                for(var token of canvas.tokens.placeables.filter(x => x.document.baseActor.uuid === monster.uuid)){
+                for(var token of canvas.tokens.placeables.filter(x => x.document?.baseActor?.uuid === monster.uuid)){
                     await token.document.update({ name });
                 }
             }
@@ -4517,6 +4539,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
         monster.system.details.publicNotes.revealed = revealed;
         monster.system.details.privateNotes.revealed = revealed;
 
+        await PF2EBestiary.handleTokenNames(this.selected.monster);
+
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
@@ -4527,6 +4551,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     static getUpdatedCreature(creature, data){
+        data.system.details.playerNotes = creature.system.details.playerNotes;
         data.name = { ...data.name, revealed: creature.name.revealed, custom: creature.name.custom };
         data.system.details.level = { ...data.system.details.level, revealed: creature.system.details.level.revealed, custom: creature.system.details.level.custom };
         data.system.attributes.ac = { ...data.system.attributes.ac, revealed: creature.system.attributes.ac.revealed, custom: creature.system.attributes.ac.custom};

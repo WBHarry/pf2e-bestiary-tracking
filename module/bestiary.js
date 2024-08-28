@@ -633,7 +633,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 !monster.name.revealed ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown") : null;
 
             if(name) {
-                for(var token of canvas.tokens.placeables.filter(x => x.document.baseActor.uuid === monster.uuid)){
+                for(var token of canvas.tokens.placeables.filter(x => x.document?.baseActor?.uuid === monster.uuid)){
                     await token.document.update({ name });
                 }
             }
@@ -780,6 +780,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         monster.system.details.publicNotes.revealed = revealed;
         monster.system.details.privateNotes.revealed = revealed;
 
+        await PF2EBestiary.handleTokenNames(this.selected.monster);
+
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
@@ -790,6 +792,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static getUpdatedCreature(creature, data){
+        data.system.details.playerNotes = creature.system.details.playerNotes;
         data.name = { ...data.name, revealed: creature.name.revealed, custom: creature.name.custom };
         data.system.details.level = { ...data.system.details.level, revealed: creature.system.details.level.revealed, custom: creature.system.details.level.custom };
         data.system.attributes.ac = { ...data.system.attributes.ac, revealed: creature.system.attributes.ac.revealed, custom: creature.system.attributes.ac.custom};
