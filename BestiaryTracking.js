@@ -2618,7 +2618,7 @@ const handleDataMigration = async () => {
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 
-    if(bestiary.metadata.version === '0.8.9.9.6'){
+    if(version === '0.8.9.9.6'){
         version = '0.8.12';
 
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
@@ -3142,7 +3142,7 @@ const newMigrateBestiary = async (update, bestiary) => {
     return bestiary;
 };
 
-const currentVersion = '0.8.12';
+const currentVersion = '0.8.14';
 const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
