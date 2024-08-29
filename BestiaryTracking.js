@@ -4962,7 +4962,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                         };
 
                         if(name === 'Action'){
-                            base.value.actions = actionOptions[Number.parseInt(elements.actions.value)]?.value;
+                            base.value.system.actions = { value : actionOptions[Number.parseInt(elements.actions.value)]?.value };
                             base.value.system.actionType = { value: base.value.actions === 'R' ? 'reaction' : 'action' };
                         }
                         else {

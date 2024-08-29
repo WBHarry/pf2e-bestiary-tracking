@@ -1,0 +1,45 @@
+<div class="monster-container">
+    <div class="left-monster-container">
+        <div class="monster-image-container">
+            <img class="monster-image {{#if this.useTokenArt}}token{{/if}}" src="{{this.img}}" data-action="imagePopout" />
+            {{#if this.isUnlinked}}<i class="fa-solid fa-link-slash unlinked-icon primary-hover-container" data-action="unlinkedDialog"></i>{{/if}}
+        </div>
+    </div>
+    <div class="right-monster-container">
+        <div class="flexcol">
+            <div class="monster-name-container">
+                <div class="monster-name primary-container {{PF2EBTToggleContainer this.user this.name}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.name}}" data-action="toggleRevealed" data-path="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}">
+                    {{#if (or this.user.isGM this.name.revealed)}}
+                        {{PF2EBTTertiary this.name.custom this.name.value}}
+                    {{else}}
+                        {{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}
+                    {{/if}}
+                </div>
+                <nav class="bestiary-tabs tabs">
+                    {{#each this.tabs as |tab|}}
+                        <a 
+                            class="
+                                bestiary-tab secondary-container primary-tab {{tab.cssClass}}
+                                {{#if (and (not ../user.isGM) (and (eq tab.id 'lore') (and (not ../notes.public.revealed) (not ../notes.private.revealed))))}} empty{{/if}}
+                                {{#if (and (not ../user.isGM) (eq tab.id 'spells'))}}
+                                    {{#if (or (and ../spells.fake (not ../spells.fake.revealed)) (and (not ../spells.fake) (eq (PF2EBTNrKeys ../this.spells.entries 'revealed') 0)))}}
+                                    empty
+                                    {{/if}}
+                                {{/if}}
+                            " 
+                            data-action="tab" 
+                            data-group="{{tab.group}}" 
+                            data-tab="{{tab.id}}"
+                        >
+                            <i class="{{tab.icon}}"></i>
+                            <label>{{tab.label}}</label>
+                        </a>
+                    {{/each}}
+                </nav>
+                <i class="fa-solid fa-reply monster-return-icon" data-action="returnButton" data-context-type="{{this.selected.type}}" title="{{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory" type=(PF2EBTCaptialize this.selected.type)}}"></i>
+            </div>
+
+            
+        </div>
+    </div>
+</div>
