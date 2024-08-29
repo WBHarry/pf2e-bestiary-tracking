@@ -241,31 +241,32 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
             const actorUuid = message.flags.pf2e?.origin?.actor ?? null;
             const actorId = message.flags.pf2e?.context?.actor ?? null;
             if(actorUuid){
-                const actor = game.actors.find(x => x.uuid === message.flags.pf2e.origin.actor);
-                if(actor.type !== 'npc' || actor.hasPlayerOwner) return;
+                const actor = getBaseActor(await fromUuid(message.flags.pf2e?.origin?.actor));
+                if(!actor || actor.type !== 'npc' || actor.hasPlayerOwner) return;
 
                 const rollOptions = message.flags.pf2e.origin.rollOptions;
                 const itemIdSplit = rollOptions.find(option => option.includes('item:id'))?.split(':') ?? null;
                 if(actor && itemIdSplit){
-                    const bestiaryEntry = bestiary.monster[message.flags.pf2e.origin.actor];
+                    const bestiaryEntry = bestiary.monster[actor.uuid];
+                    if(bestiaryEntry){               
+                        const item = actor.items.get(itemIdSplit[itemIdSplit.length-1]);
 
-                    const item = actor.items.get(itemIdSplit[itemIdSplit.length-1]);
-
-                    if(message.flags.pf2e.modifierName){
-                        const monsterItem = bestiaryEntry.system.actions[item.id];
-                        if(monsterItem){
-                            monsterItem.revealed = true;
-                        }
-                    } else {
-                        switch(item.type){
-                            case 'action':
-                                bestiaryEntry.items[item.id].revealed = true;
-                                break;
-                            case 'spell':
-                            case 'spell-cast':
-                                bestiaryEntry.items[item.id].revealed = true;
-                                bestiaryEntry.items[item.system.location.value].revealed = true;
-                                break;
+                        if(message.flags.pf2e.modifierName){
+                            const monsterItem = bestiaryEntry.system.actions[item.id];
+                            if(monsterItem){
+                                monsterItem.revealed = true;
+                            }
+                        } else {
+                            switch(item.type){
+                                case 'action':
+                                    bestiaryEntry.items[item.id].revealed = true;
+                                    break;
+                                case 'spell':
+                                case 'spell-cast':
+                                    bestiaryEntry.items[item.id].revealed = true;
+                                    bestiaryEntry.items[item.system.location.value].revealed = true;
+                                    break;
+                            }
                         }
                     }
                 }
