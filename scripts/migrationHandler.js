@@ -1,6 +1,6 @@
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import PF2EBestiary from "../module/bestiary.js";
-import { bestiaryFolder, bestiaryJournalEntry, setupCollaborativeWrtiting } from "./setup.js";
+import { bestiaryJournalEntry, setupCollaborativeWrtiting } from "./setup.js";
 import { acTable, attributeTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "./statisticsData.js";
 import { getCategoryLabel, getRollAverage } from "./statisticsHelper.js";
 
@@ -382,7 +382,7 @@ export const handleDataMigration = async () => {
 }
 
 export const handleBestiaryMigration = async (bestiary) => {
-    const oldMonsterData = Object.keys(bestiary.monster).length > 0 && Object.keys(bestiary.monster).some(key => Boolean(bestiary.monster[key].traits)); 
+    const oldMonsterData = Object.keys(bestiary.monster).length > 0 && Object.keys(bestiary.monster).some(key => !bestiary.monster[key].system); 
     bestiary.metadata.version = oldMonsterData ? '0.8.8.4' : !bestiary.metadata.version ? '0.8.9' : bestiary.metadata.version; 
 
     if(bestiary.metadata.version === '0.8.8'){
@@ -778,14 +778,21 @@ export const handleBestiaryMigration = async (bestiary) => {
     if(bestiary.metadata.version === '0.8.9.8.2'){
         const journalEntry = game.journal.getName(bestiaryJournalEntry);
         bestiary = await newMigrateBestiary(async (_, monster) => {
-            const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
-                name: monster.name.value,
-                text: {
-                    content: ""
+            if(!monster.system.details.playerNotes?.document){
+                const existingPage = journalEntry.pages.find(x => x.name === monster.name.value);
+                if(existingPage){
+                    await existingPage.delete();
                 }
-            }]);
 
-            monster.system.details.playerNotes = { document: page[0].id };
+                const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
+                    name: monster.name.value,
+                    text: {
+                        content: ""
+                    }
+                }]);
+    
+                monster.system.details.playerNotes = { document: page[0].id };
+            }
         }, bestiary);
         
         bestiary.metadata.version = '0.8.9.9';
@@ -811,8 +818,13 @@ export const handleBestiaryMigration = async (bestiary) => {
 
     if(bestiary.metadata.version === '0.8.9.9.6'){
         const journalEntry = game.journal.getName(bestiaryJournalEntry);
-        if(journalEntry){
-            bestiary = await newMigrateBestiary(async (_, monster) => {
+        bestiary = await newMigrateBestiary(async (_, monster) => {
+            if(!monster.system.details.playerNotes?.document){
+                const existingPage = journalEntry.pages.find(x => x.name === monster.name.value);
+                if(existingPage){
+                    await existingPage.delete();
+                }
+
                 const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
                     name: monster.name.value,
                     text: {
@@ -821,8 +833,8 @@ export const handleBestiaryMigration = async (bestiary) => {
                 }]);
     
                 monster.system.details.playerNotes = { document: page[0].id };
-            }, bestiary);
-        }
+            }
+        }, bestiary);
 
         bestiary.metadata.version = '0.8.11';
     }

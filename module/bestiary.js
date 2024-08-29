@@ -63,7 +63,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             createMisinformation: this.createMisinformation,
             imagePopout: this.imagePopout,
             setCategoriesLayout: this.setCategoriesLayout,
-            takeMonsterPen: this.takeMonsterPen,
             unlinkedDialog: this.unlinkedDialog,
         },
         form: { handler: this.updateData, submitOnChange: true },
@@ -535,7 +534,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
             return acc;
         }, []).sort((a, b) => {
-            if(context.layout.categories.filter.type === 0){
+            if(!context.layout?.categories?.filter?.type || context.layout.categories.filter.type === 0){
                 var comparison = a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0;
                 if(!game.user.isGM){
                     comparison = 
@@ -544,7 +543,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     !a.name.revealed && b.name.revealed ? -1 : 0;
                 }
 
-                return context.layout.categories.filter.direction === 0 ? comparison : (comparison * - 1);
+                return context.layout?.categories?.filter?.direction === 0 ? comparison : (comparison * - 1);
             } else {
                 var comparison = a.level.value - b.level.value;
                 if(!game.user.isGM){
@@ -1280,16 +1279,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             layout: Number.parseInt(button.dataset.option) 
         } });
         this.render();
-    }
-
-    static async takeMonsterPen(){
-        await game.user.setFlag('pf2e-bestiary-tracking', 'hasMonsterPen', this.selected.monster.uuid);
-        this.render();
-
-        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-            action: socketEvent.UpdateBestiary,
-            data: { },
-        });
     }
 
     static async unlinkedDialog(){

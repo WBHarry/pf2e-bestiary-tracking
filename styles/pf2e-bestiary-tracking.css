@@ -958,12 +958,11 @@
   opacity: 0.5;
 }
 /* REMOVE ME. Temporary as a stopgap for Dorako */
-.theme-dark .pf2e-bestiary-tracking[data-theme="crb"]:not([data-color-scheme="dark"]).bestiary.application {
-  background: url(../../pf2e-dorako-ui/img/background-light.webp);
+.theme-dark .pf2e-bestiary-tracking[data-dorako-ui-scope].bestiary.application {
+  background-color: inherit;
 }
-/* REMOVE ME. Temporary as a stopgap for Dorako */
 .theme-dark .pf2e-bestiary-tracking.bestiary.application {
-  background: rgba(11, 10, 19, 0.9);
+  background-color: rgba(11, 10, 19, 0.9);
 }
 .theme-dark .pf2e-bestiary-tracking .primary-container {
   background-color: #5e0000;

@@ -2629,7 +2629,7 @@ const handleDataMigration = async () => {
 };
 
 const handleBestiaryMigration = async (bestiary) => {
-    const oldMonsterData = Object.keys(bestiary.monster).length > 0 && Object.keys(bestiary.monster).some(key => Boolean(bestiary.monster[key].traits)); 
+    const oldMonsterData = Object.keys(bestiary.monster).length > 0 && Object.keys(bestiary.monster).some(key => !bestiary.monster[key].system); 
     bestiary.metadata.version = oldMonsterData ? '0.8.8.4' : !bestiary.metadata.version ? '0.8.9' : bestiary.metadata.version; 
 
     if(bestiary.metadata.version === '0.8.8'){
@@ -3024,14 +3024,21 @@ const handleBestiaryMigration = async (bestiary) => {
     if(bestiary.metadata.version === '0.8.9.8.2'){
         const journalEntry = game.journal.getName(bestiaryJournalEntry);
         bestiary = await newMigrateBestiary(async (_, monster) => {
-            const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
-                name: monster.name.value,
-                text: {
-                    content: ""
+            if(!monster.system.details.playerNotes?.document){
+                const existingPage = journalEntry.pages.find(x => x.name === monster.name.value);
+                if(existingPage){
+                    await existingPage.delete();
                 }
-            }]);
 
-            monster.system.details.playerNotes = { document: page[0].id };
+                const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
+                    name: monster.name.value,
+                    text: {
+                        content: ""
+                    }
+                }]);
+    
+                monster.system.details.playerNotes = { document: page[0].id };
+            }
         }, bestiary);
         
         bestiary.metadata.version = '0.8.9.9';
@@ -3057,8 +3064,13 @@ const handleBestiaryMigration = async (bestiary) => {
 
     if(bestiary.metadata.version === '0.8.9.9.6'){
         const journalEntry = game.journal.getName(bestiaryJournalEntry);
-        if(journalEntry){
-            bestiary = await newMigrateBestiary(async (_, monster) => {
+        bestiary = await newMigrateBestiary(async (_, monster) => {
+            if(!monster.system.details.playerNotes?.document){
+                const existingPage = journalEntry.pages.find(x => x.name === monster.name.value);
+                if(existingPage){
+                    await existingPage.delete();
+                }
+
                 const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
                     name: monster.name.value,
                     text: {
@@ -3067,8 +3079,8 @@ const handleBestiaryMigration = async (bestiary) => {
                 }]);
     
                 monster.system.details.playerNotes = { document: page[0].id };
-            }, bestiary);
-        }
+            }
+        }, bestiary);
 
         bestiary.metadata.version = '0.8.11';
     }
@@ -3142,7 +3154,7 @@ const newMigrateBestiary = async (update, bestiary) => {
     return bestiary;
 };
 
-const currentVersion = '0.8.14';
+const currentVersion = '0.8.15';
 const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
@@ -3588,23 +3600,30 @@ const resetBestiary = async () => {
 
     if(!confirmed) return;
 
-    const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-
-    const journalEntry = game.journal.getName(bestiaryJournalEntry);
-    if(journalEntry){
-        for(var monsterKey in bestiary.monster){
-            const monster = bestiary.monster[monsterKey];
-            await journalEntry.pages.get(monster.system.details.playerNotes.document)?.delete();
-        }
-    }
-
+    await game.journal.getName(bestiaryJournalEntry)?.delete();
+    await game.folders.getName(bestiaryFolder)?.delete();
+    
     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', {
-        monster: {},
-        npc: {},
-        metadata: {
-            version: currentVersion
-        }
+            monster: {},
+            npc: {},
+            metadata: {
+                version: currentVersion
+       }
     });
+    
+    const folder = await Folder.create(
+    { 
+       "name": bestiaryFolder, 
+       "type": "JournalEntry" 
+    });
+            
+    const journal = await JournalEntry.create({
+                name: bestiaryJournalEntry,
+                pages: [],
+                folder: folder.id
+    });
+        
+    await journal.update({ "ownership.default": 3 });
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
         action: socketEvent.UpdateBestiary,
@@ -3824,7 +3843,6 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
             createMisinformation: this.createMisinformation,
             imagePopout: this.imagePopout,
             setCategoriesLayout: this.setCategoriesLayout,
-            takeMonsterPen: this.takeMonsterPen,
             unlinkedDialog: this.unlinkedDialog,
         },
         form: { handler: this.updateData, submitOnChange: true },
@@ -4295,7 +4313,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
 
             return acc;
         }, []).sort((a, b) => {
-            if(context.layout.categories.filter.type === 0){
+            if(!context.layout?.categories?.filter?.type || context.layout.categories.filter.type === 0){
                 var comparison = a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0;
                 if(!game.user.isGM){
                     comparison = 
@@ -4304,7 +4322,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                     !a.name.revealed && b.name.revealed ? -1 : 0;
                 }
 
-                return context.layout.categories.filter.direction === 0 ? comparison : (comparison * - 1);
+                return context.layout?.categories?.filter?.direction === 0 ? comparison : (comparison * - 1);
             } else {
                 var comparison = a.level.value - b.level.value;
                 if(!game.user.isGM){
@@ -5039,16 +5057,6 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
             layout: Number.parseInt(button.dataset.option) 
         } });
         this.render();
-    }
-
-    static async takeMonsterPen(){
-        await game.user.setFlag('pf2e-bestiary-tracking', 'hasMonsterPen', this.selected.monster.uuid);
-        this.render();
-
-        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-            action: socketEvent.UpdateBestiary,
-            data: { },
-        });
     }
 
     static async unlinkedDialog(){
