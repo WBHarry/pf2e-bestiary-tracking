@@ -2188,14 +2188,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             this.selected.monster = this.bestiary[this.selected.category][this.selected.monster.uuid];
         }
 
-        const saveButton = $(this.element).find('.prosemirror *[data-action="save"]');
+        const saveButton = $(this.element).find('.prosemirror[collaborate="true"] *[data-action="save"]');
         if(saveButton.length === 0){
             this.render(true);
         }
     };
 
     onEditingUpdate = async () => {
-        const saveButton = $(this.element).find('.prosemirror *[data-action="save"]');
+        const saveButton = $(this.element).find('.prosemirror[collaborate="true"] *[data-action="save"]');
         if(saveButton.length === 0){
             this.render();
         }
