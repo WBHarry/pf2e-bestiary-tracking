@@ -862,9 +862,25 @@ export const handleBestiaryMigration = async (bestiary) => {
     }
 
     if(bestiary.metadata.version === '0.9.0'){
-        bestiary.npcCategories = {};
+        if(!bestiary.npcCategories){
+            bestiary.npcCategories = {};
+        }
         
         bestiary.metadata.version = '0.9.1';
+    }
+
+    if(bestiary.metadata.version === '0.9.1'){
+        for(var npcKey in bestiary.npc){
+            var npc = bestiary.npc[npcKey];
+
+            for(var category of npc.npcData.categories){
+                if(!bestiary.npcCategories[category.key]){
+                    bestiary.npcCategories[category.key] = category.name;
+                }
+            }
+        } 
+
+        bestiary.metadata.version = '0.9.2';
     }
 
     return bestiary;

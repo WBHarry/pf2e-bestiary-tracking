@@ -7,7 +7,7 @@ import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { isNPC } from "./helpers.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
 
-export const currentVersion = '0.9.1';
+export const currentVersion = '0.9.2';
 export const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 export const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
