@@ -7,4 +7,6 @@ export const revealedState = {
 export const optionalFields = {
     level: false,
     languages: false,
+    height: false,
+    weight: false,
 };

@@ -1,0 +1,15 @@
+<div class="flexcol data-section primary-container active">
+    <div class="data-header primary-container">
+        <div class="data-header-label {{#if this.user.isGM}}{{PF2EBTToggleContainer this.user data}}{{/if}}" data-action="toggleRevealed" data-path="{{path}}">
+            <i class="header-icon {{icon}}"></i>
+            <div class="flex-value">{{localize title}}</div>
+        </div>
+    </div>
+    <div class="data-body primary-border-container flex1">
+        {{#if (and this.user.isGM editMode)}}
+            <textarea name="{{concat path ".value"}}">{{data.value}}</textarea>
+        {{else}}
+            {{#if (or this.user.isGM data.revealed)}}{{data.value}}{{else}}?{{/if}}
+        {{/if}}
+    </div>
+</div>

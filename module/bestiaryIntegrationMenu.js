@@ -12,12 +12,18 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
                 doubleClickOpen: game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen'),
             },
             chatMessageHandling: game.settings.get('pf2e-bestiary-tracking', 'chat-message-handling'),
+            npcRegistration: game.settings.get('pf2e-bestiary-tracking', 'npc-registration'),
         }
 
         this.combatRegistrationOptions = [
             { name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.Never'), value: 0 },
             { name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.StartOfCombat'), value: 1 },
             { name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.CreatureDefeated'), value: 2 }
+        ];
+
+        this.npcRegistrationOptions = [
+            { name: game.i18n.localize('PF2EBestiary.Settings.NPCRegistation.Choices.Unique'), value: 0 },
+            { name: game.i18n.localize('PF2EBestiary.Settings.NPCRegistation.Choices.Tag'), value: 1 },
         ];
     }
 
@@ -49,6 +55,7 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
 
         context.settings = this.settings;
         context.combatRegistrationOptions = this.combatRegistrationOptions;
+        context.npcRegistrationOptions = this.npcRegistrationOptions;
 
         return context;
     }
@@ -74,6 +81,7 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
         await game.settings.set('pf2e-bestiary-tracking', 'automatic-combat-registration', this.settings.creatureRegistration.automaticCombatRegistration);
         await game.settings.set('pf2e-bestiary-tracking', 'doubleClickOpen', this.settings.creatureRegistration.doubleClickOpen);
         await game.settings.set('pf2e-bestiary-tracking', 'chat-message-handling', this.settings.chatMessageHandling);
+        await game.settings.set('pf2e-bestiary-tracking', 'npc-registration', this.settings.npcRegistration);
         this.close();
     };
 }

@@ -66,7 +66,9 @@
             "Save": "Save",
             "Except": "except",
             "Double": "double",
-            "Or": "or"
+            "Or": "or",
+            "NPC": "NPC",
+            "Add": "Add"
         },
         "Bestiary": {
             "Title": "Bestiary",
@@ -76,6 +78,11 @@
                 "ResetBestiary": "Reset Bestiary",
                 "RevealAll": "Reveal Creature",
                 "HideAll": "Hide Creature"
+            },
+            "Category": {
+                "Creatures": "Creatures",
+                "NPC": "NPC Gallery",
+                "Hazards": "Hazards"
             },
             "Welcome": {
                 "Greeting": "Welcome to the Bestiary!",
@@ -97,12 +104,16 @@
                 "ReturnToWelcome": "Return to the main page"
             },
             "CategoryView": {
-                "EmptyText": "No {category} encountered yet. Enjoy it while you can.",
-                "UnknownText": "Unknown dangers are always lurking.." 
+                "EmptyText": "No {category} creature encountered yet. Enjoy it while you can.",
+                "UnknownText": "Unknown dangers are always lurking..",
+                "EmptyCategoryText": "You haven't met anyone under the {category} classification",
+                "UnaffiliatedText": "You don't know any unaffiliated characters.."
             },
             "Miscellaneous": {
                 "UnknownCreature": "Unknown Creature",
                 "Unknown": "Unknown",
+                "Unaffiliated": "Unaffiliated",
+                "CategoryPlaceholder": "Add categories the NPC is affiliated with",
                 "LeftClick": "Left Click",
                 "RightClick": "Right Click"
             },
@@ -111,6 +122,28 @@
                 "Spells": "Spells",
                 "Lore": "Lore",
                 "Notes": "Notes"
+            },
+            "NPCTabs": {
+                "General": "General",
+                "Influence": "Influence"
+            },
+            "NPC": {
+                "NewCategory": "New NPC Category",
+                "NPCViewText": "NPC View",
+                "EditModeText": "Edit Mode Toggle",
+                "Dispositions": "Dispositions",
+                "Height": "Height",
+                "Weight": "Weight",
+                "Personality": "Personality",
+                "Appearance": "Appearance",
+                "Background": "Background",
+                "Disposition": {
+                    "Helpful": "Helpful",
+                    "Friendly": "Friendly",
+                    "Indifferent": "Indifferent",
+                    "Unfriendly": "Unfriendly",
+                    "Hostile": "Hostile"
+                }
             },
             "Lore": {
                 "Public": "Description",
@@ -238,7 +271,9 @@
                 "OptionalFields": {
                     "Name": "Optional Fields",
                     "Level": "Creature Level",
-                    "Languages": "Languages Known"
+                    "Languages": "Languages Known",
+                    "Height": "Height",
+                    "Weight": "Weight"
                 },
                 "DetailedInformation": {
                     "Name": "Detailed Information Toggles",
@@ -284,6 +319,14 @@
                     "Never": "Never",
                     "StartOfCombat": "Start Of Combat",
                     "CreatureDefeated": "On Creature Defeated"
+                }
+            },
+            "NPCRegistation": {
+                "Name": "NPC Registration",
+                "Hint": "Select the way NPCs will be recognised by the bestiary",
+                "Choices": {
+                    "Unique": "By Unique Rarity",
+                    "Tag": "By NPC Tag"
                 }
             },
             "HideTokenNames": {

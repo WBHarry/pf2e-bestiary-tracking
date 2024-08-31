@@ -1,6 +1,6 @@
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import PF2EBestiary from "../module/bestiary.js";
-import { bestiaryJournalEntry, setupCollaborativeWrtiting } from "./setup.js";
+import { bestiaryJournalEntry, currentVersion, setupCollaborativeWrtiting } from "./setup.js";
 import { acTable, attributeTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "./statisticsData.js";
 import { getCategoryLabel, getRollAverage } from "./statisticsHelper.js";
 
@@ -11,7 +11,7 @@ export const handleDataMigration = async () => {
 
     var version = await game.settings.get('pf2e-bestiary-tracking', 'version');
     if(!version){
-        version = '0.8.1';
+        version = currentVersion;
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 
@@ -383,7 +383,7 @@ export const handleDataMigration = async () => {
 
 export const handleBestiaryMigration = async (bestiary) => {
     const oldMonsterData = Object.keys(bestiary.monster).length > 0 && Object.keys(bestiary.monster).some(key => !bestiary.monster[key].system); 
-    bestiary.metadata.version = oldMonsterData ? '0.8.8.4' : !bestiary.metadata.version ? '0.8.9' : bestiary.metadata.version; 
+    bestiary.metadata.version = oldMonsterData ? '0.8.8.4' : !bestiary.metadata.version ? currentVersion : bestiary.metadata.version; 
 
     if(bestiary.metadata.version === '0.8.8'){
         bestiary = await newMigrateBestiary(async (_, monster) => {
@@ -853,6 +853,12 @@ export const handleBestiaryMigration = async (bestiary) => {
         }
 
         bestiary.metadata.version = '0.8.12';
+    }
+
+    if(bestiary.metadata.version < '0.9.0'){
+        bestiary.npcCategories = {};
+        
+        bestiary.metadata.version = '0.9.0';
     }
 
     return bestiary;

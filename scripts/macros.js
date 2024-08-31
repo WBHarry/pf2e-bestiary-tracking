@@ -102,11 +102,12 @@ export const resetBestiary = async () => {
     await game.folders.getName(bestiaryFolder)?.delete();
     
     await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', {
-            monster: {},
-            npc: {},
-            metadata: {
-                version: currentVersion
-       }
+        monster: {},
+        npc: {},
+        npcCategories: {},
+        metadata: {
+            version: currentVersion
+        }
     });
     
     const folder = await Folder.create(

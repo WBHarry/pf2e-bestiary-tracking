@@ -48,6 +48,11 @@
             height: calc(100% - 75px); // Ugly
         }
 
+        .header-icon {
+            width: 14px;
+            text-align: center;
+        }
+
         .bestiary-header {
             display: flex;
             align-items: center;
@@ -120,21 +125,11 @@
 
             .main-page-category-container {
                 display: flex;
-                flex-direction: column;
+                align-items: center;
                 gap: 32px;
 
                 img {
                     height: 200px;
-                }
-
-                .main-page-top-row {
-                    display: flex;
-                }
-
-                .main-page-bottom-row {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
                 }
 
                 .main-page-category-card {
@@ -177,6 +172,19 @@
                 }
             }
 
+            .category-container {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                height: 100%;
+
+                .category-section {
+                    flex: 50%;
+                    display: flex;
+                    flex-direction: column;
+                }
+            }
+
             .bestiary-welcome {
                 display: flex;
                 flex-direction: column;
@@ -205,20 +213,32 @@
         }
 
 
-
-        .bestiary-tabs {
-            gap: 0;
-            align-self: end;
-
-            .bestiary-tab {
-                border-style: solid;
-                border-width: 2px 0 2px 2px;
-                padding: 6px;
-                font-weight: 600;
+        .bestiary-toolbar-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: end;
+        
+            .toggle-switch-container {
+                display: flex;
+                align-items: center;
+                justify-content: end;
             }
 
-            .bestiary-tab:last-of-type {
-                border-right-width: 2px;
+            .bestiary-tabs {
+                gap: 0;
+                align-self: end;
+
+                .bestiary-tab {
+                    border-style: solid;
+                    border-width: 2px 0 2px 2px;
+                    padding: 6px;
+                    font-weight: 600;
+                }
+
+                .bestiary-tab:last-of-type {
+                    border-right-width: 2px;
+                }
             }
         }
         
@@ -406,6 +426,35 @@
                     }
                 }
 
+                .monster-left-list {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+
+                .monster-left-data-list {
+                    font-size: 12px;
+                }
+
+
+                .disposition-container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: space-evenly;
+
+                    .disposition-inner-container {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+
+                        .disposition-label {
+                            text-decoration: underline;
+                            margin-bottom: 4px;
+                        }
+                    }
+                }
+
                 .speeds-container {
                     display: flex;
                     align-items: center;
@@ -449,12 +498,96 @@
                 border: 0;
             }
 
+            .data-sections {
+                display: flex;
+                justify-content: space-between;
+                gap: 16px;
+
+                .data-section {
+                    flex: 1;
+                    border-radius: 6px;
+                }
+            }
+
+            .data-section {
+                display: flex;
+                flex-direction: column;
+                border-radius: 6px;
+            }
+
+            .data-header {
+                padding: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-radius: 4px 4px 0 0;
+                border-width: 1px;
+                border-style: solid;
+            }
+
+            .data-header-label {
+                display: flex;
+                align-items: center;
+                text-transform: uppercase;
+                gap: 8px;
+            }
+
+            .data-body {
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                padding: 4px;
+                border-width: 0 1px 1px 1px;
+                border-style: solid;
+                border-radius: 0 0 4px 4px;
+
+                .abilities-container {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    flex-wrap: wrap;
+
+                    .ability-container {    
+                        width: calc(33% - 5px);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+
+                        .ability-label {
+                            font-weight: bold;
+                            margin-right: 4px;
+                        }
+                    }
+                }
+
+                .data-chip-container {
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                    flex-wrap: wrap;
+
+                    .data-chip {
+                        text-wrap: nowrap;
+                        flex: 0;
+                    }
+                }
+            }
+
             .right-monster-container {
                 flex: 1;
                 display: flex;
                 flex-direction: column;
                 gap: 8px;
                 width: calc(100% - 166px); // Ugly
+
+                .tagify {
+                    height: 35px;
+
+                    .tagify__input {
+                        display: flex;
+                        align-items: center;
+                    }
+                }
 
                 .monster-name-container {
                     display: flex;
@@ -546,81 +679,6 @@
                     overflow-y: auto;
                     overflow-x: hidden;
                     gap: 8px;
-                }
-
-                .data-sections {
-                    display: flex;
-                    justify-content: space-between;
-                    gap: 16px;
-
-                    .data-section {
-                        flex: 1;
-                        border-radius: 6px;
-                    }
-                }
-
-                .data-section {
-                    display: flex;
-                    flex-direction: column;
-                    border-radius: 6px;
-                }
-
-                .data-header {
-                    padding: 8px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    border-radius: 4px 4px 0 0;
-                    border-width: 1px;
-                    border-style: solid;
-                }
-
-                .data-header-label {
-                    display: flex;
-                    align-items: center;
-                    text-transform: uppercase;
-                    gap: 8px;
-                }
-
-                .data-body {
-                    display: flex;
-                    flex-direction: column;
-                    flex: 1;
-                    padding: 4px;
-                    border-width: 0 1px 1px 1px;
-                    border-style: solid;
-                    border-radius: 0 0 4px 4px;
-
-                    .abilities-container {
-                        display: flex;
-                        align-items: center;
-                        gap: 8px;
-                        flex-wrap: wrap;
-
-                        .ability-container {    
-                            width: calc(33% - 5px);
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-
-                            .ability-label {
-                                font-weight: bold;
-                                margin-right: 4px;
-                            }
-                        }
-                    }
-
-                    .data-chip-container {
-                        display: flex;
-                        align-items: center;
-                        gap: 4px;
-                        flex-wrap: wrap;
-
-                        .data-chip {
-                            text-wrap: nowrap;
-                            flex: 0;
-                        }
-                    }
                 }
 
                 .actions-container {
@@ -803,7 +861,7 @@
         }
 
         .bookmark {
-            width: 80px;
+            width: 88px;
             font-size: 12px;
             font-weight: bold;
             border-width: 2px;

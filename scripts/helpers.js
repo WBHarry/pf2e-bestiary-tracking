@@ -64,3 +64,8 @@ export const getExpandedCreatureTypes = () => {
 export const getBaseActor = (actor) => {
     return actor.token ? actor.token.document ? actor.token.document.baseActor :  actor.token.baseActor : actor;
 };
+
+export const isNPC = (data) => {
+    const npcRegistration = game.settings.get('pf2e-bestiary-tracking', 'npc-registration');
+    return npcRegistration === 0 ? data.system.traits.rarity === 'unique' : Object.values(data.system.traits.value).find(x => x.value ? x.value === 'npc' : x === 'npc');
+};

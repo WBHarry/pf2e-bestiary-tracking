@@ -6,7 +6,7 @@ import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
 
-export const currentVersion = '0.8.15';
+export const currentVersion = '0.9.0';
 export const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 export const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
@@ -104,7 +104,7 @@ const generalNonConfigSettings = () => {
         scope: 'world',
         config: false,
         type: String,
-        default: currentVersion,
+        default: '',
     });
 
     game.settings.register('pf2e-bestiary-tracking', 'bestiary-tracking', {
@@ -117,7 +117,7 @@ const generalNonConfigSettings = () => {
             monster: {},
             npc: {},
             metadata: {
-                version: currentVersion
+                version: ''
             }
         },
     });
@@ -337,5 +337,18 @@ const bestiaryIntegration = () => {
                 spells: false,
             }
         },
+    });
+
+    game.settings.register('pf2e-bestiary-tracking', 'npc-registration', {
+        name: game.i18n.localize('PF2EBestiary.Settings.NPCRegistation.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.NPCRegistation.Hint'),
+        scope: 'world',
+        config: false,
+        type: Number,
+        choices: {
+            0: game.i18n.localize('PF2EBestiary.Settings.NPCRegistation.Choices.Unique'),
+            1: game.i18n.localize('PF2EBestiary.Settings.NPCRegistation.Choices.Tag'),
+        },
+        default: 0,
     });
 };

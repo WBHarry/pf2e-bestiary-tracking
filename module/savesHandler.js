@@ -1,4 +1,5 @@
 import { handleBestiaryMigration } from "../scripts/migrationHandler";
+import { bestiaryFolder, bestiaryJournalEntry } from "../scripts/setup";
 import { socketEvent } from "../scripts/socket";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -113,6 +114,43 @@ export default class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin
         const loadedBestiary = context.files.find(x => x.metadata.save.id === button.id);
 
         const migratedBestiary = await handleBestiaryMigration(loadedBestiary);
+
+        // Journal Handling
+        await game.journal.getName(bestiaryJournalEntry)?.delete();
+        await game.folders.getName(bestiaryFolder)?.delete();
+    
+        const journalFolder = await Folder.create(
+        { 
+           "name": bestiaryFolder, 
+           "type": "JournalEntry" 
+        });
+                
+        const journalEntry = await JournalEntry.create({
+                    name: bestiaryJournalEntry,
+                    pages: [],
+                    folder: journalFolder.id
+        });
+
+        for(var npcKey in migratedBestiary.monster){
+            const monster = migratedBestiary.monster[npcKey];
+            const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
+                name: monster.name.value,
+                text: {
+                    content: ""
+                }
+            }]);
+            monster.system.details.playerNotes = { document: page[0].id };
+        }
+        for(var npcKey in migratedBestiary.npc){
+            const npc = migratedBestiary.npc[npcKey];
+            const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
+                name: npc.name.value,
+                text: {
+                    content: ""
+                }
+            }]);
+            npc.system.details.playerNotes = { document: page[0].id };
+        }
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', migratedBestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {

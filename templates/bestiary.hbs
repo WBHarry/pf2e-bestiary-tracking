@@ -1,10 +1,13 @@
 <div>
-    {{#if (and this.selected.type (not this.selected.monster))}}
+    {{#if (not this.selected.monster)}}
         <header class="bestiary-header">
+            {{#if this.selected.category}}
             <div class="return-container" data-action="returnButton" data-context-type="{{this.selected.type}}">
                 <i class="fa-solid fa-reply"></i>
                 {{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome"}}
             </div>
+            {{/if}}
+            {{#if (and this.selected.type (not this.selected.monster))}}
             <div class="bestiary-toolbar">
                 <div class="bestiary-layout-settings secondary-container">
                     <i class="fa-solid fa-table-cells-large primary-hover-container {{#if (eq this.layout.categories.layout 0)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="0"></i>
@@ -20,38 +23,49 @@
                     {{#if search.name}}<i class="fa-solid fa-circle-xmark clear-icon primary-hover-container" data-action="clearSearch"></i>{{/if}}
                 </div>
             </div>
+            {{/if}}
         </header>
     {{/if}}
     <body>
         {{#if (not this.selected.type)}}
             <div class="bestiary-main-page">
                 <div class="main-page-category-container">
-                    <div class="main-page-top-row">
-                        <div class="main-page-category-card">
-                            <div class="main-page-category-image-container secondary-border-container">
-                                <img src="icons/creatures/magical/humanoid-silhouette-green.webp" />
-                                <h4 class="main-page-category-label primary-container">{{localize "Creatures"}}</h4>
-                            </div>
-                        </div>
-                        <div class="main-page-category-card">
-                            <div class="main-page-category-image-container secondary-border-container inactive">
-                                <img src="icons/environment/people/group.webp" class="inactive" />
-                                <h4 class="main-page-category-label primary-container inactive">{{localize "NPC Gallery"}}</h4>
-                            </div>
-                            <i class="fa-solid fa-lock under-development primary-icon"></i>
+                    <div class="main-page-category-card">
+                        <div class="main-page-category-image-container secondary-border-container primary-hover-container {{#if (eq this.selected.category 'monster')}}active border{{/if}}" data-action="selectCategory" data-category="monster">
+                            <img src="icons/creatures/magical/humanoid-silhouette-green.webp" />
+                            <h4 class="main-page-category-label primary-container">{{localize "PF2EBestiary.Bestiary.Category.Creatures"}}</h4>
                         </div>
                     </div>
-                    <div class="main-page-bottom-row">
-                        <div class="main-page-category-card">
-                            <div class="main-page-category-image-container secondary-border-container inactive">
-                                <img src="icons/environment/traps/trap-jaw-steel.webp" class="inactive" />
-                                <h4 class="main-page-category-label primary-container inactive">{{localize "Hazards"}}</h4>
-                            </div>
-                            <i class="fa-solid fa-lock under-development primary-icon"></i>
+                    <div class="main-page-category-card">
+                        <div class="main-page-category-image-container secondary-border-container primary-hover-container {{#if (eq this.selected.category 'npc')}}active border{{/if}}" data-action="selectCategory" data-category="npc">
+                            <img src="icons/environment/people/group.webp" />
+                            <h4 class="main-page-category-label primary-container">{{localize "PF2EBestiary.Bestiary.Category.NPC"}}</h4>
                         </div>
+                    </div>
+                    <div class="main-page-category-card">
+                        <div class="main-page-category-image-container secondary-border-container inactive">
+                            <img src="icons/environment/traps/trap-jaw-steel.webp" class="inactive" />
+                            <h4 class="main-page-category-label primary-container inactive">{{localize "PF2EBestiary.Bestiary.Category.Hazards"}}</h4>
+                        </div>
+                        <i class="fa-solid fa-lock under-development primary-icon"></i>
                     </div>
                 </div>
-
+                {{#if (eq this.selected.category 'npc')}}
+                    <div class="category-container">
+                        <div class="category-section">
+                            <div>{{localize "PF2EBestiary.Bestiary.NPC.NewCategory"}}</div>
+                            <div class="flexrow">
+                                <input class="secondary-container" type="text" name="npcData.newCategory.text" value="{{this.npcState.newCategory.text}}" />
+                                <button data-action="addNpcCategory" {{#if (not this.npcState.newCategory.text)}}disabled{{/if}}><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.Miscellaneous.Add"}}</button>
+                            </div>
+                        </div>
+                        <div class="category-section">
+                            {{#each this.npcCategories as |category key|}}
+                                <button data-action="removeNPCCategory" data-key="{{key}}">{{category}}<i class="fa-solid fa-trash"></i></button>
+                            {{/each}}
+                        </div>
+                    </div>
+                {{/if}}
                 <div class="bestiary-welcome">
                     <h3 class="title">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h3> 
                     <div class="sub-title">{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.Title"}}</div>
@@ -73,37 +87,58 @@
             </div>
         {{else}}
             {{#if this.selected.monster}}
-                {{#with this.selected.monster}}
-                    {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" 
-                        selected=../selected 
-                        user=../user 
-                        vagueDescriptions=../vagueDescriptions 
-                        tabs=../tabs 
-                        useTokenArt=../useTokenArt 
-                        hideAbilityDescriptions=../hideAbilityDescriptions
-                        optionalFields=../optionalFields 
-                        contrastRevealedState =../contrastRevealedState 
-                        detailedInformation = ../detailedInformation
-                    }}
-                {{/with}}
+                {{#if (and this.selected.monster.npcData this.npcState.npcView)}}
+                    {{#with this.selected.monster.npcData}}
+                        {{> "modules/pf2e-bestiary-tracking/templates/partials/npcView.hbs" 
+                            creatureData=../selected.monster
+                            selected=../selected 
+                            user=../user 
+                            useTokenArt=../useTokenArt 
+                            tabs=../npcTabs
+                            contrastRevealedState =../contrastRevealedState 
+                            optionalFields=../optionalFields 
+                            npcState=../npcState
+                            dispositions=../dispositions
+                        }}
+                    {{/with}}
+                {{else}}
+                    {{#with this.selected.monster}}
+                        {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" 
+                            selected=../selected 
+                            user=../user 
+                            vagueDescriptions=../vagueDescriptions 
+                            tabs=../tabs 
+                            useTokenArt=../useTokenArt 
+                            hideAbilityDescriptions=../hideAbilityDescriptions
+                            optionalFields=../optionalFields 
+                            contrastRevealedState =../contrastRevealedState 
+                            detailedInformation = ../detailedInformation
+                            npcState=../npcState
+                        }}
+                    {{/with}}
+                {{/if}}
             {{else}}
                 <div class="type-overview-container">
                     {{#if (eq (PF2EBTNrKeys this.openType) 0)}}
                         {{#if (eq this.selected.type 'unknown')}}
-                            {{localize "PF2EBestiary.Bestiary.CategoryView.UnknownText" category=this.selected.type}}
+                            {{localize "PF2EBestiary.Bestiary.CategoryView.UnknownText"}}
                         {{else}}
-                            {{localize "PF2EBestiary.Bestiary.CategoryView.EmptyText" category=this.selected.type}}
+                            {{#if (eq this.selected.type 'unaffiliated')}}
+                                {{localize "PF2EBestiary.Bestiary.CategoryView.UnaffiliatedText"}}
+                            {{else}}
+                                {{this.typeTitle}}
+                            {{/if}}
                         {{/if}}
                     {{else}}
                         {{#each this.openType as |type key|}}
                             <div class="type-container primary-container {{#if (eq ../layout.categories.layout 1)}}trio{{/if}}{{#if (eq ../layout.categories.layout 2)}}quarter{{/if}}" data-action="selectMonster" data-monster="{{type.uuid}}">
                                 <img src="{{type.img}}" />
                                 <div class="type-text-container">
-                                    {{#if type.name.revealed}}
-                                        {{PF2EBTTertiary type.name.custom type.name.value}}
+                                    {{#if ../user.isGM}}
+                                        {{type.name.value}}
                                     {{else}}
-                                        {{#if ../user.isGM}}
-                                            {{type.name.value}}
+                                        {{#if type.name.revealed}}
+                                            {{PF2EBTTertiary type.name.custom type.name.value}}
                                         {{else}}
                                             {{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}
                                         {{/if}}
@@ -119,10 +154,20 @@
         {{/if}}
     </body>
     <div class="right-bookmark-container">
-        {{#each bestiary.monster as |type key|}}
-            <div class="bookmark primary-container {{#if (eq ../selected.type key)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys type.values) 0)}} empty{{else}} active{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
-                {{type.name}}
-            </div>
-        {{/each}}
+        {{#if (eq this.selected.category 'monster')}}
+            {{#each bestiary.monster as |type key|}}
+                <div class="bookmark primary-container {{#if (eq ../selected.type key)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys type.values) 0)}} empty{{else}} active{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
+                    {{type.name}}
+                </div>
+            {{/each}}
+        {{else}}
+            {{#if (eq this.selected.category 'npc')}}
+                {{#each bestiary.npc as |category key|}}
+                    <div class="bookmark primary-container {{#if (eq ../selected.type key)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys category.values) 0)}} empty{{else}} active{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
+                        {{category.name}}
+                    </div>
+                {{/each}}
+            {{/if}}
+        {{/if}}
     </div>
 </div>
