@@ -177,11 +177,16 @@
                 align-items: center;
                 gap: 4px;
                 height: 100%;
+                align-items: start;
+                margin-top: 8px;
 
                 .category-section {
-                    flex: 50%;
-                    display: flex;
-                    flex-direction: column;
+                    flex: 1;
+                    gap: 8px;
+                    
+                    .category-label {
+                        white-space: nowrap;
+                    }
                 }
             }
 
@@ -223,6 +228,8 @@
                 display: flex;
                 align-items: center;
                 justify-content: end;
+                position: relative;
+                right: 16px;
             }
 
             .bestiary-tabs {

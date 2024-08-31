@@ -894,21 +894,39 @@ export const migrateBestiary = async (update) => {
 
 export const newMigrateBestiary = async (update, bestiary) => {
     const toRemoveSadly = [];
-    for(var monsterKey in bestiary.monster){
-        const monster = bestiary.monster[monsterKey];
+    for(var npcKey in bestiary.monster){
+        const monster = bestiary.monster[npcKey];
 
-        const failure = await update(bestiary, monster, monsterKey);
+        const failure = await update(bestiary, monster, npcKey, 'monster');
         
         // Only send back a value from update when it's a critical update. Otherwise allow unlinked actors to stay.
         if(failure){
-            toRemoveSadly.push(monsterKey);
+            toRemoveSadly.push(npcKey);
         }
 
-        bestiary.monster[monsterKey] = foundry.utils.deepClone(bestiary.monster[monsterKey]);
+        bestiary.monster[npcKey] = foundry.utils.deepClone(bestiary.monster[npcKey]);
     }
 
     for(var toRemove of toRemoveSadly){
         delete bestiary.monster[toRemove];
+    }
+
+    const toRemoveNPC = [];
+    for(var npcKey in bestiary.npc){
+        const monster = bestiary.npc[npcKey];
+
+        const failure = await update(bestiary, monster, npcKey, 'npc');
+        
+        // Only send back a value from update when it's a critical update. Otherwise allow unlinked actors to stay.
+        if(failure){
+            toRemoveNPC.push(npcKey);
+        }
+
+        bestiary.npc[npcKey] = foundry.utils.deepClone(bestiary.monster[npcKey]);
+    }
+
+    for(var toRemove of toRemoveNPC){
+        delete bestiary.npc[toRemove];
     }
 
     return bestiary;

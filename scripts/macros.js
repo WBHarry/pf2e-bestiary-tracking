@@ -1,4 +1,5 @@
 import PF2EBestiary from "../module/bestiary.js";
+import { isNPC } from "./helpers.js";
 import { bestiaryFolder, bestiaryJournalEntry, currentVersion } from "./setup.js";
 import { socketEvent } from "./socket.js";
 
@@ -29,8 +30,11 @@ export const showMonster = async () => {
 
     const settings = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
 
-    const category = 'monster'
-    const monster = settings[category][selectedMonster.document ? selectedMonster.document.baseActor.uuid : selectedMonster.baseActor.uuid];
+    const actor = selectedMonster.document ? selectedMonster.document.baseActor : selectedMonster.baseActor;
+
+    const actorIsNPC = isNPC(actor);
+    const category = actorIsNPC ? 'npc' : 'monster';
+    const monster = settings[category][actor.uuid];
 
     if(!monster)
     {
@@ -38,7 +42,7 @@ export const showMonster = async () => {
         return;
     }
 
-    new PF2EBestiary({ category, monsterUuid: monster.uuid }).render(true)
+    new PF2EBestiary({ category, monsterUuid: monster.uuid, actorIsNPC: actorIsNPC }).render(true)
 };
 
 export const addMonster = async () => {

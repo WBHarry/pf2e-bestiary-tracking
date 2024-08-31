@@ -12,12 +12,21 @@ import Tagify from '@yaireo/tagify';
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
 export default class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
-    constructor({category = null, monsterUuid = null} = {category: null, monsterUuid: null}){
+    constructor({category = null, monsterUuid = null, actorIsNPC} = {category: 'monster', monsterUuid: null}){
         super({});
 
         this.bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
 
-        const monsterCreatureTypes = category && monsterUuid && this.bestiary[category][monsterUuid] ? getCreaturesTypes(this.bestiary[category][monsterUuid].system.traits.value).map(x => x.key): [];
+        var monsterCreatureTypes = [];
+        if(category && monsterUuid) {
+            if(actorIsNPC){
+                monsterCreatureTypes = this.bestiary[category][monsterUuid].npcData.categories.length > 0 ? this.bestiary[category][monsterUuid].npcData.categories[0] : ['unaffiliated'];
+            }
+            else {
+                monsterCreatureTypes = getCreaturesTypes(this.bestiary[category][monsterUuid].system.traits.value).map(x => x.key);
+            }
+        } 
+        
         this.selected = {
             category,
             type: monsterCreatureTypes.length > 0 ? monsterCreatureTypes[0] : null,
@@ -33,7 +42,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         this.npcData = {
             editMode: false,
-            npcView: true,
+            npcView: actorIsNPC ? true : false,
             newCategory: {
                 text: null,
             }
@@ -117,7 +126,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         application: {
             id: "bestiary",
             template: "modules/pf2e-bestiary-tracking/templates/bestiary.hbs",
-            scrollable: [".left-monster-container", ".right-monster-container-data", ".type-overview-container", ".spells-tab"]
+            // scrollable: [".left-monster-container", ".right-monster-container-data", ".type-overview-container", ".spells-tab"]
         }
     }
 
@@ -125,12 +134,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         super._attachPartListeners(partId, htmlElement, options);
         $(htmlElement).find(".toggle-container:not(.misinformation)").on("contextmenu", this.obscureData.bind(this));
         $(htmlElement).find(".misinformation").on("contextmenu", this.unObscureData.bind(this));
+        $(htmlElement).find(".bookmark.npc").on("contextmenu", this.removeBookmark.bind(this));
 
         const npcCategoryInput = $(htmlElement).find(".npc-category-input")[0];
         if(npcCategoryInput)
         {
             const categories = Object.keys(this.bestiary.npcCategories).map(key => ({
-                key: key,
+                value: key,
                 name: this.bestiary.npcCategories[key],
             }));
 
@@ -138,6 +148,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 tagTextProp: "name",
                 enforceWhitelist: true,
                 whitelist : categories,
+                callback: { invalid: () => console.log('invalid') },
                 placeholder: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.CategoryPlaceholder"),
                 dropdown : {
                   mapValueTo: 'name',
@@ -195,7 +206,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     getNPCTabs() {
         const tabs = {
             general: { active: true, cssClass: '', group: 'npc', id: 'general', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.General") },
-            influence: { active: false, cssClass: '', group: 'npc', id: 'influence', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.Influence") },
+            // influence: { active: false, cssClass: '', group: 'npc', id: 'influence', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.Influence") },
         }
 
         for ( const v of Object.values(tabs) ) {
@@ -750,9 +761,29 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this.render();
     }
 
+    async removeBookmark(event){
+        if(event.currentTarget.dataset.bookmark === 'unaffiliated') return;
+
+        delete this.bestiary.npcCategories[event.currentTarget.dataset.bookmark];
+
+        for(var npcKey in this.bestiary.npc){
+            var npc = this.bestiary.npc[npcKey];
+            npc.npcData.categories = npc.npcData.categories.filter(category => category.key !== event.currentTarget.dataset.bookmark);
+        }
+
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: { },
+        });
+
+        Hooks.callAll(socketEvent.UpdateBestiary, {});
+    }
+
     static selectMonster(_, button){
         this.selected.monster = this.bestiary[this.selected.category][button.dataset.monster];
-        this.tabGroups = { primary: 'statistics' };
+        this.npcData.npcView = isNPC(this.selected.monster) ? true : false;
+        this.tabGroups = { primary: 'statistics', secondary: 'general' };
         this.render();
     }
 
@@ -804,7 +835,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
     async updateNpcCategories(event){
         const categories = event.detail?.value ? JSON.parse(event.detail.value) : [];
-        this.bestiary.npc[this.selected.monster.uuid].npcData.categories = categories;
+        this.bestiary.npc[this.selected.monster.uuid].npcData.categories = categories.map(x => ({ key: x.value, name: x.name }));
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -857,7 +888,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     static async toggleAllRevealed(_, button){
         if(!game.user.isGM) return;
 
-        var values = Object.values(foundry.utils.getProperty(this.bestiary.monster[this.selected.monster.uuid], button.dataset.path));;
+        const category = isNPC(this.selected.monster) ? 'npc' : 'monster';
+        var values = Object.values(foundry.utils.getProperty(this.bestiary[category][this.selected.monster.uuid], button.dataset.path));;
         var allRevealed = false;
         switch(button.dataset.type){
             case 'actions':
@@ -869,12 +901,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 allRevealed = values.every(x => x.revealed);
                 break;
             case 'perception':
-                allRevealed = values.every(x => x.revealed) && this.bestiary.monster[this.selected.monster.uuid].system.perception.revealed;
-                this.bestiary.monster[this.selected.monster.uuid].system.perception.revealed = !allRevealed;
+                allRevealed = values.every(x => x.revealed) && this.bestiary[category][this.selected.monster.uuid].system.perception.revealed;
+                this.bestiary[category][this.selected.monster.uuid].system.perception.revealed = !allRevealed;
                 break;
             case 'speed':
-                allRevealed = values.every(x => x.revealed) && this.bestiary.monster[this.selected.monster.uuid].system.attributes.speed.revealed;
-                this.bestiary.monster[this.selected.monster.uuid].system.attributes.speed.revealed = !allRevealed;
+                allRevealed = values.every(x => x.revealed) && this.bestiary[category][this.selected.monster.uuid].system.attributes.speed.revealed;
+                this.bestiary[category][this.selected.monster.uuid].system.attributes.speed.revealed = !allRevealed;
             case 'spell-level':
                 values = values.filter(spell => {
                     const isSpellOfEntry = spell.type === 'spell' && spell.system.location.value === button.dataset.entryValue;
@@ -1143,13 +1175,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(!game.user.isGM) return;
         this.toggleControls(false);
 
-        for(var npcKey in this.bestiary.monster){
-            const actor = await fromUuid(npcKey);
+        for(var monsterKey in this.bestiary.monster){
+            const actor = await fromUuid(monsterKey);
 
             if(actor){
                 const data = await PF2EBestiary.getMonsterData(actor);
-                const updatedData = PF2EBestiary.getUpdatedCreature(this.bestiary.monster[npcKey], data);
-                this.bestiary.monster[npcKey] = updatedData;
+                const updatedData = PF2EBestiary.getUpdatedCreature(this.bestiary.monster[monsterKey], data);
+                this.bestiary.monster[monsterKey] = updatedData;
             } 
         }
 
@@ -1545,9 +1577,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(!confirmed) return;
 
         const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-        const unlinkedMonster = foundry.utils.deepClone(bestiary.monster[this.selected.monster.uuid]);
+        const category = isNPC(this.selected.monster) ? 'npc' : 'monster';
+        const unlinkedMonster = foundry.utils.deepClone(bestiary[category][this.selected.monster.uuid]);
         const restoredObject = Object.keys(unlinkedMonster).reduce((acc, key) => {
-            var baseField = bestiary.monster[this.selected.monster.uuid][key];
+            var baseField = bestiary[category][this.selected.monster.uuid][key];
             switch(key){
                 case 'uuid':
                 case '_id':
@@ -1640,8 +1673,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }, {});
 
         const newActor = await Actor.implementation.create([restoredObject]);
-        bestiary.monster[newActor[0].uuid] = { ...bestiary.monster[this.selected.monster.uuid], uuid: newActor[0].uuid, _id: newActor[0].id };
-        delete bestiary.monster[this.selected.monster.uuid];
+        bestiary[category][newActor[0].uuid] = { ...bestiary[category][this.selected.monster.uuid], uuid: newActor[0].uuid, _id: newActor[0].id };
+        delete bestiary[category][this.selected.monster.uuid];
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
         Hooks.callAll(socketEvent.UpdateBestiary, {});
@@ -1803,10 +1836,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const monster = await PF2EBestiary.getMonsterData(getBaseActor(item));
         if (!monster) return null;
 
+        const actorIsNPC = isNPC(monster);
         const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
 
         // We do not currently refresh already present creatures in the Bestiary.
-        if(bestiary.monster[monster.uuid]) return false;
+        if(actorIsNPC ? bestiary.npc[monster.uuid] : bestiary.monster[monster.uuid]) return false;
 
 
         const journalEntry = game.journal.getName(bestiaryJournalEntry);
@@ -1818,7 +1852,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }]);
         monster.system.details.playerNotes = { document: page[0].id };
 
-        bestiary.monster[monster.uuid] = monster;
+        if(actorIsNPC) bestiary.npc[monster.uuid] = monster;
+        else bestiary.monster[monster.uuid] = monster;
         
         const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
         if(doubleClickOpenActivated){

@@ -223,11 +223,15 @@
   align-items: center;
   gap: 4px;
   height: 100%;
+  align-items: start;
+  margin-top: 8px;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .category-container .category-section {
-  flex: 50%;
-  display: flex;
-  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .category-container .category-section .category-label {
+  white-space: nowrap;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-welcome {
   display: flex;
@@ -260,6 +264,8 @@
   display: flex;
   align-items: center;
   justify-content: end;
+  position: relative;
+  right: 16px;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-toolbar-container .bestiary-tabs {
   gap: 0;

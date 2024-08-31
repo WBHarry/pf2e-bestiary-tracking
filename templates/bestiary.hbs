@@ -51,18 +51,12 @@
                     </div>
                 </div>
                 {{#if (eq this.selected.category 'npc')}}
+                    <div style="margin-top: 8px;">{{localize "PF2EBestiary.Bestiary.NPC.NPCCategoryDescription"}}</div>
                     <div class="category-container">
-                        <div class="category-section">
-                            <div>{{localize "PF2EBestiary.Bestiary.NPC.NewCategory"}}</div>
-                            <div class="flexrow">
-                                <input class="secondary-container" type="text" name="npcData.newCategory.text" value="{{this.npcState.newCategory.text}}" />
-                                <button data-action="addNpcCategory" {{#if (not this.npcState.newCategory.text)}}disabled{{/if}}><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.Miscellaneous.Add"}}</button>
-                            </div>
-                        </div>
-                        <div class="category-section">
-                            {{#each this.npcCategories as |category key|}}
-                                <button data-action="removeNPCCategory" data-key="{{key}}">{{category}}<i class="fa-solid fa-trash"></i></button>
-                            {{/each}}
+                        <div class="category-section flexrow">
+                            <div class="category-label flex0">{{localize "PF2EBestiary.Bestiary.NPC.NewCategory"}}</div>
+                            <input class="secondary-container" type="text" name="npcData.newCategory.text" value="{{this.npcState.newCategory.text}}" />
+                            <button data-action="addNpcCategory" {{#if (not this.npcState.newCategory.text)}}disabled{{/if}}><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.Miscellaneous.Add"}}</button>
                         </div>
                     </div>
                 {{/if}}
@@ -163,7 +157,7 @@
         {{else}}
             {{#if (eq this.selected.category 'npc')}}
                 {{#each bestiary.npc as |category key|}}
-                    <div class="bookmark primary-container {{#if (eq ../selected.type key)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys category.values) 0)}} empty{{else}} active{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
+                    <div class="bookmark npc primary-container {{#if (eq ../selected.type key)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys category.values) 0)}} empty{{else}} active{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
                         {{category.name}}
                     </div>
                 {{/each}}

@@ -128,6 +128,7 @@
                 "Influence": "Influence"
             },
             "NPC": {
+                "NPCCategoryDescription": "NPCs are sorted into categories created by the GM. You can add one below. Remove categories by rightclicking their bookmarks.",
                 "NewCategory": "New NPC Category",
                 "NPCViewText": "NPC View",
                 "EditModeText": "Edit Mode Toggle",

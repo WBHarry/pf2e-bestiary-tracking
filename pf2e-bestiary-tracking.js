@@ -4,7 +4,7 @@ import { bestiaryFolder, registerGameSettings, registerKeyBindings, setupCollabo
 import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
 import { handleDataMigration } from "./scripts/migrationHandler.js";
-import { getBaseActor } from "./scripts/helpers.js";
+import { getBaseActor, isNPC } from "./scripts/helpers.js";
 
 Hooks.once('init', () => {
     registerGameSettings();
@@ -47,7 +47,10 @@ Hooks.once("setup", () => {
             if(!openBestiary || (game.user.isGM && !args[0].altKey)) return wrapped(...args);
   
             const settings = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-            const monster = settings.monster[baseActor.uuid];
+            
+            const actorIsNPC = isNPC(baseActor);
+            const category = actorIsNPC ? 'npc' : 'monster';
+            const monster = settings[category][baseActor.uuid];
 
             if(!monster)
             {
@@ -55,7 +58,7 @@ Hooks.once("setup", () => {
                 return;
             }
 
-            new PF2EBestiary({ category: 'monster', monsterUuid: monster.uuid }).render(true);
+            new PF2EBestiary({ category: category, monsterUuid: monster.uuid, actorIsNPC: actorIsNPC }).render(true);
         });
     }
 });
@@ -99,9 +102,10 @@ Hooks.on("xdy-pf2e-workbench.tokenCreateMystification", token => {
     if(game.settings.get('pf2e-bestiary-tracking', 'hide-token-names')){
         const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
     
-        const uuid = token.baseActor?.uuid ?? token.actor.uuid;
-        if(uuid){
-            const monster = bestiary.monster[uuid];
+        const actor = token.baseActor ?? token.actor;
+        const category = isNPC(actor) ? 'npc' : 'monster';
+        if(actor.uuid){
+            const monster = bestiary[category][actor.uuid];
             if(monster && (monster.name.revealed)){
                 return false;
             }
@@ -116,7 +120,8 @@ Hooks.on("preCreateToken", async token => {
 
     if(game.settings.get('pf2e-bestiary-tracking', 'hide-token-names')){
         const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-        const monster = bestiary.monster[token.baseActor.uuid];
+        const category = isNPC(token.baseActor) ? 'npc' : 'monster';
+        const monster = bestiary[category][token.baseActor.uuid];
         if(monster){
             if(monster.name.revealed) {
                 await token.updateSource({ name: monster.name.custom ? monster.name.custom : monster.name.value });
@@ -158,8 +163,9 @@ Hooks.on("createChatMessage", async (message) => {
                 const actor = await fromUuid(message.flags.pf2e.origin.actor);
                 if(!actor || actor.type !== 'npc' || actor.hasPlayerOwner) return;
 
+                const category = isNPC(actor) ? 'npc' : 'monster';
                 const actorUuid = getBaseActor(actor).uuid;
-                const monster = bestiary.monster[actorUuid];
+                const monster = bestiary[category][actorUuid];
 
                 const item = await fromUuid(message.flags.pf2e.origin.uuid);
                 if(monster && item){
@@ -185,8 +191,9 @@ Hooks.on("createChatMessage", async (message) => {
                  const actor = await fromUuid(`Actor.${message.flags.pf2e.context.actor}`);
                  if(!actor || actor.type !== 'npc' || actor.hasPlayerOwner) return;
 
+                 const category = isNPC(actor) ? 'npc' : 'monster';
                  const actorUuid = getBaseActor(actor).uuid;
-                 const monster = bestiary.monster[actorUuid];
+                 const monster = bestiary[category][actorUuid];
 
                  if(monster){
                      if(message.flags.pf2e.context.type === 'skill-check' && automaticReveal.skills)
@@ -226,15 +233,23 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
             if(!game.user.isGM) return false;
 
             const message = game.messages.get(li.data().messageId);
-            const actorUuid = message.flags.pf2e?.origin?.actor ?? null;
+            const actorUuid = message.flags.pf2e?.origin?.actor ?? null;            
             const actorId = message.flags.pf2e?.context?.actor ?? null;
+
             if(actorUuid || actorId){
                 const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-                const actor = game.actors.find(x => x.uuid === actorUuid || x.id === actorId);
 
-                if(actor.type !== 'npc' || actor.hasPlayerOwner) return false;
+                var actor = null;
+                if(actorUuid){
+                    actor = game.actors.find(x => x.uuid === actorUuid) ?? canvas.scene.tokens.find(x => x.actor.uuid === actorUuid).baseActor;
+                }
+                else actor = game.actors.find(x => x.id === actorId); 
 
-                return Boolean(bestiary.monster[actor.uuid]);
+                if(!actor || actor.type !== 'npc' || actor.hasPlayerOwner) return false;
+
+                const category = isNPC(actor) ? 'npc': 'monster';
+
+                return Boolean(bestiary[category][actor.uuid]);
             }
 
             return false;
@@ -251,7 +266,8 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
                 const rollOptions = message.flags.pf2e.origin.rollOptions;
                 const itemIdSplit = rollOptions.find(option => option.includes('item:id'))?.split(':') ?? null;
                 if(actor && itemIdSplit){
-                    const bestiaryEntry = bestiary.monster[actor.uuid];
+                    const category = isNPC(actor) ? 'npc': 'monster';
+                    const bestiaryEntry = bestiary[category][actor.uuid];
                     if(bestiaryEntry){               
                         const item = actor.items.get(itemIdSplit[itemIdSplit.length-1]);
 
@@ -280,8 +296,9 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
                 const actor = game.actors.find(x => x.id === actorId);
                 if(actor.type !== 'npc' || actor.hasPlayerOwner) return;
 
+                const category = isNPC(actor) ? 'npc': 'monster';
                 const actorUuid = getBaseActor(actor).uuid;
-                const monster = bestiary.monster[actorUuid];
+                const monster = bestiary[category][actorUuid];
                 if(monster){
                     if(message.flags.pf2e.context.type === 'skill-check')
                     {
@@ -323,8 +340,9 @@ Hooks.on('getDirectoryApplicationEntryContext', (_, buttons) => {
             const actor = game.actors.get(li.data().documentId);
             if(!actor || actor.type !== 'npc' || actor.hasPlayerOwner) return false;
 
+            const category = isNPC(actor) ? 'npc' : 'monster';
             const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-            return !Boolean(bestiary.monster[actor.uuid]);
+            return !Boolean(bestiary[category][actor.uuid]);
         },
         callback: async li => {
             const actor = game.actors.get(li.data().documentId);  

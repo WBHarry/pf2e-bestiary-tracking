@@ -4,6 +4,7 @@ import BestiaryAppearanceMenu from "../module/bestiaryAppearanceMenu.js";
 import BestiaryIntegrationMenu from "../module/bestiaryIntegrationMenu.js";
 import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
+import { isNPC } from "./helpers.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
 
 export const currentVersion = '0.9.0';
@@ -83,7 +84,8 @@ const configSettings = () => {
                 var name = token.document.baseActor.name;
                 if(value){
                     const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-                    const monster = bestiary.monster[token.document.baseActor.uuid];
+                    const category = isNPC(token.document.baseActor) ? 'npc' : 'monster';
+                    const monster = bestiary[category][token.document.baseActor.uuid];
                     if(monster){
                         name = monster.name.revealed && monster.name.custom ? monster.name.custom : 
                             monster.name.revealed && !monster.name.custom ? monster.name.value :
