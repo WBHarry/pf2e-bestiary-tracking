@@ -861,7 +861,7 @@ export const handleBestiaryMigration = async (bestiary) => {
         bestiary.metadata.version = '0.9.0';
     }
 
-    if(bestiary.metadata.ersion === '0.9.0'){
+    if(bestiary.metadata.version === '0.9.0'){
         bestiary.npcCategories = {};
         
         bestiary.metadata.version = '0.9.1';
