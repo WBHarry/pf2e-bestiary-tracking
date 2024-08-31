@@ -2,7 +2,6 @@
     <div class="left-monster-container flexcol">
         <div class="monster-image-container">
             <img class="monster-image {{#if this.useTokenArt}}token{{/if}}" src="{{this.creatureData.img}}" data-action="imagePopout" />
-            {{!-- {{#if this.isUnlinked}}<i class="fa-solid fa-link-slash unlinked-icon primary-hover-container" data-action="unlinkedDialog"></i>{{/if}} --}}
         </div>
         {{#if this.optionalFields.height}}
             {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-up-down" title="PF2EBestiary.Bestiary.NPC.Height" editMode=this.npcState.editMode path="npc.npcData.general.height" data=this.general.height }}
@@ -22,7 +21,7 @@
                     <div class="disposition-inner-container">
                         <h4 class="disposition-label">{{disposition.name}}</h4>
                         {{#if ../npcState.editMode}}
-                            <select name="{{concat "npc.npcData.general.disposition." disposition.id ".value"}}">
+                            <select class="data-input secondary-container" name="{{concat "npc.npcData.general.disposition." disposition.id ".value"}}">
                                 {{selectOptions ../dispositions selected=disposition.value valueAttr="value" labelAttr="name" localize=true}}
                             </select>
                         {{else}}
@@ -37,7 +36,7 @@
         <div class="flexcol">
             <div class="monster-name-container">
                 <div class="monster-name primary-container {{PF2EBTToggleContainer this.user this.creatureData.name}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.creatureData.name}}" data-action="toggleRevealed" data-path="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}">
-                    {{#if (or this.user.isGM this.name.revealed)}}
+                    {{#if (or this.user.isGM this.creatureData.name.revealed)}}
                         {{PF2EBTTertiary this.creatureData.name.custom this.creatureData.name.value}}
                     {{else}}
                         {{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}
@@ -46,10 +45,12 @@
                 <div class="bestiary-toolbar-container">
                     <div class="flexrow">
                         <div class="toggle-switch-container">
-                            <div class="toggle-switch">
-                                <i class="fa-solid fa-screwdriver-wrench"></i>
-                                <input type="checkbox" name="npcData.editMode" {{checked this.npcState.editMode}} title="{{localize "PF2EBestiary.Bestiary.NPC.EditModeText"}}" />
-                            </div>
+                            {{#if this.user.isGM}}
+                                <div class="toggle-switch">
+                                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                                    <input type="checkbox" name="npcData.editMode" {{checked this.npcState.editMode}} title="{{localize "PF2EBestiary.Bestiary.NPC.EditModeText"}}" />
+                                </div>
+                            {{/if}}
                             <div class="toggle-switch">
                                 <i class="fa-solid fa-user"></i>
                                 <input type="checkbox" name="npcData.npcView" {{checked this.npcState.npcView}} title="{{localize "PF2EBestiary.Bestiary.NPC.NPCViewText"}}" />

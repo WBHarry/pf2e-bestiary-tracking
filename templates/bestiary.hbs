@@ -42,7 +42,7 @@
                             <h4 class="main-page-category-label primary-container">{{localize "PF2EBestiary.Bestiary.Category.NPC"}}</h4>
                         </div>
                     </div>
-                    <div class="main-page-category-card">
+                    <div class="main-page-category-card" title="Not available yet!">
                         <div class="main-page-category-image-container secondary-border-container inactive">
                             <img src="icons/environment/traps/trap-jaw-steel.webp" class="inactive" />
                             <h4 class="main-page-category-label primary-container inactive">{{localize "PF2EBestiary.Bestiary.Category.Hazards"}}</h4>
@@ -50,7 +50,7 @@
                         <i class="fa-solid fa-lock under-development primary-icon"></i>
                     </div>
                 </div>
-                {{#if (eq this.selected.category 'npc')}}
+                {{#if (and this.user.isGM (eq this.selected.category 'npc'))}}
                     <div style="margin-top: 8px;">{{localize "PF2EBestiary.Bestiary.NPC.NPCCategoryDescription"}}</div>
                     <div class="category-container">
                         <div class="category-section flexrow">

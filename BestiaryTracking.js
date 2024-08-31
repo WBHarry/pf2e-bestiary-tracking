@@ -5398,8 +5398,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
         }
 
         const {prototypeToken, name, uuid} = actor;
+        const title = this.selected.monster.name.revealed ? 
+                this.selected.monster.name.custom ? this.selected.monster.name.custom :
+                this.selected.monster.name.value :
+            game.i18n.localize('PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature');
+
         const useTokenArt = await game.settings.get('pf2e-bestiary-tracking', 'use-token-art');
-        new ImagePopout(useTokenArt ? prototypeToken.texture.src : actor.img, {title: name, uuid: uuid}).render(true);
+        new ImagePopout(useTokenArt ? prototypeToken.texture.src : actor.img, { 
+            title: game.user.isGM ? name : title, 
+            uuid: uuid 
+        }).render(true);
     }
 
     static async setCategoriesLayout(_, button){
@@ -5688,10 +5696,17 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
 
-        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-            action: socketEvent.MonsterEditingUpdate,
-            data: { },
-        });
+        if(pageText !== undefined){
+            await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+                action: socketEvent.MonsterEditingUpdate,
+                data: { },
+            });
+        } else {
+            await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+                action: socketEvent.UpdateBestiary,
+                data: { },
+            });
+        }
         
         Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
@@ -6050,7 +6065,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
             this.selected.monster = this.bestiary[this.selected.category][this.selected.monster.uuid];
         }
 
-        this.render(true);
+        const saveButton = $(this.element).find('.prosemirror *[data-action="save"]');
+        if(saveButton.length === 0){
+            this.render(true);
+        }
     };
 
     onEditingUpdate = async () => {

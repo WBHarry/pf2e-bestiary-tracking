@@ -529,6 +529,15 @@
   border-style: solid;
   border-radius: 0 0 4px 4px;
 }
+.pf2e-bestiary-tracking.bestiary .monster-container .data-body .data-input {
+  border-radius: 6px;
+  border-width: 1px;
+  border-style: solid;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .data-body .data-input.editor {
+  height: 100%;
+  overflow: auto;
+}
 .pf2e-bestiary-tracking.bestiary .monster-container .data-body .abilities-container {
   display: flex;
   align-items: center;
