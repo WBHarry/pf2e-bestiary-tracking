@@ -3122,6 +3122,12 @@ const handleBestiaryMigration = async (bestiary) => {
         bestiary.metadata.version = '0.9.0';
     }
 
+    if(bestiary.metadata.ersion === '0.9.0'){
+        bestiary.npcCategories = {};
+        
+        bestiary.metadata.version = '0.9.1';
+    }
+
     return bestiary;
 };
 
@@ -3193,7 +3199,7 @@ const newMigrateBestiary = async (update, bestiary) => {
     return bestiary;
 };
 
-const currentVersion = '0.9.0';
+const currentVersion = '0.9.1';
 const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
@@ -3304,6 +3310,7 @@ const generalNonConfigSettings = () => {
         default: {
             monster: {},
             npc: {},
+            npcCategories: {},
             metadata: {
                 version: ''
             }
