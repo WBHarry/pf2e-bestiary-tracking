@@ -289,7 +289,7 @@
                         height: 125px;
                     }
 
-                    .delete-button {
+                    .delete-button, .toggle-hide-button {
                         font-size: 32px;
                     }
                 }
@@ -302,7 +302,7 @@
                         height: 100px;
                     }
 
-                    .delete-button {
+                    .delete-button, .toggle-hide-button {
                         font-size: 24px;
                     }
                 }
@@ -325,11 +325,15 @@
                     top: 4px;
                     right: 8px;
                     font-size: 48px;
-                    cursor: pointer;
+                }
 
-                    &:hover {
-                        filter: drop-shadow(0 0 3px @secondaryHover);
-                    }
+                .toggle-hide-button {
+                    position: absolute;
+                    top: 4px;
+                    left: 8px;
+                    font-size: 48px;
+                    width: 60px;
+                    text-align: center;
                 }
             }
         }

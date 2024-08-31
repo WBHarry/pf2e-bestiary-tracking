@@ -66,6 +66,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             selectBookmark: this.selectBookmark,
             selectMonster: this.selectMonster,
             removeMonster: this.removeMonster,
+            toggleHideMonster: this.toggleHideMonster,
             toggleStatistics: this.toggleStatistics,
             returnButton: this.returnButton,
             toggleAbility: this.toggleAbility,
@@ -656,16 +657,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             this.selected.category === 'monster' ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyText", { category: getExpandedCreatureTypes()[this.selected.type].name }) : 
             this.selected.category === 'npc' ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyCategoryText", { category: context.bestiary.npcCategories[this.selected.type]}) : '' : '';
         
-        return context;
-    };
-
-    monsterPreparation = async (context) => {
-        context.tabs = this.getMonsterTabs();
         context.openType = (context.selected.type ? Object.keys(context.bestiary[context.selected.category][context.selected.type].values).reduce((acc, monsterKey) => { 
             const monster = context.bestiary[this.selected.category][context.selected.type].values[monsterKey];
+            if(!game.user.isGM && monster.hidden) return acc;
+
             monster.img = context.useTokenArt ? monster.prototypeToken.texture.src : monster.img;
             const match = monster.name.value.toLowerCase().match(this.search.name.toLowerCase());
-            const unrevealedMatch = game.i18n.localize('PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature').toLowerCase().match(this.search.name.toLowerCase());
+            const unrevealedMatch = game.i18n.localize(context.selected.category === 'monster' ? 'PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature' : 'PF2EBestiary.Bestiary.Miscellaneous.Unaffiliated').toLowerCase().match(this.search.name.toLowerCase());
             if(!this.search.name || ((monster.name.revealed || game.user.isGM) && match) || (!monster.name.revealed && !game.user.isGM && unrevealedMatch)) {
                 acc.push(monster);
             }
@@ -698,45 +696,17 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         return context;
     };
 
+    monsterPreparation = async (context) => {
+        context.tabs = this.getMonsterTabs();
+        
+        return context;
+    };
+
     npcPreparation = async (context) => {
         context.tabs = this.getMonsterTabs();
         context.npcTabs = this.getNPCTabs();
         context.dispositions = Object.keys(dispositions).map(x => dispositions[x]);
         context.npcCategories = this.bestiary.npcCategories;
-        
-        context.openType = context.openType = (context.selected.type ? Object.keys(context.bestiary[context.selected.category][context.selected.type].values).reduce((acc, npcKey) => { 
-            const npc = context.bestiary[this.selected.category][context.selected.type].values[npcKey];
-            npc.img = context.useTokenArt ? npc.prototypeToken.texture.src : npc.img;
-            const match = npc.name.value.toLowerCase().match(this.search.name.toLowerCase());
-            const unrevealedMatch = game.i18n.localize('PF2EBestiary.Bestiary.Miscellaneous.Unaffiliated').toLowerCase().match(this.search.name.toLowerCase());
-            if(!this.search.name || ((npc.name.revealed || game.user.isGM) && match) || (!npc.name.revealed && !game.user.isGM && unrevealedMatch)) {
-                acc.push(npc);
-            }
-
-            return acc;
-        }, []).sort((a, b) => {
-            if(!context.layout?.categories?.filter?.type || context.layout.categories.filter.type === 0){
-                var comparison = a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0;
-                if(!game.user.isGM){
-                    comparison = 
-                    a.name.revealed && b.name.revealed ? (a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0) :
-                    a.name.revealed && !b.name.revealed ? 1 :
-                    !a.name.revealed && b.name.revealed ? -1 : 0;
-                }
-
-                return context.layout?.categories?.filter?.direction === 0 ? comparison : (comparison * - 1);
-            } else {
-                var comparison = a.level.value - b.level.value;
-                if(!game.user.isGM){
-                    comparison = 
-                    a.level.revealed && b.level.revealed ?  a.level.value - b.level.value : 
-                    a.level.revealed && !b.level.revealed ? 1 :
-                    !a.level.revealed && b.level.revealed ? -1 : 0;
-                }
-
-                return context.layout.categories.filter.direction === 0 ? comparison : (comparison * -1); 
-            }
-        }) : null);
 
         return context;
     };
@@ -802,6 +772,18 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         delete this.bestiary[this.selected.category][button.dataset.monster];
         this.selected.monster = null;
+
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: { },
+        });
+
+        this.render();
+    }
+
+    static async toggleHideMonster(_, button){
+        this.bestiary[this.selected.category][button.dataset.uuid].hidden = !this.bestiary[this.selected.category][button.dataset.uuid].hidden;
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -1027,6 +1009,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static getUpdatedCreature(creature, data){
+        data.hidden = creature.hidden;
         data.system.details.playerNotes = creature.system.details.playerNotes;
         data.name = { ...data.name, revealed: creature.name.revealed, custom: creature.name.custom };
         data.system.details.level = { ...data.system.details.level, revealed: creature.system.details.level.revealed, custom: creature.system.details.level.custom };
@@ -2096,7 +2079,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         dataObject.system.details.publicNotes =  { revealed: false, text: dataObject.system.details.publicNotes };
         dataObject.system.details.privateNotes = { revealed: false, text: dataObject.system.details.privateNotes }; 
 
+        const hiddenSettings = game.settings.get('pf2e-bestiary-tracking', 'hidden-settings');
         if(isNPC(dataObject)){
+            dataObject.hidden = hiddenSettings.npc;
             dataObject.npcData = {
                 categories: [],
                 general: {
@@ -2112,6 +2097,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
                 },
             };
+        } else {
+            dataObject.hidden = hiddenSettings.monster;
         }
 
         return dataObject;

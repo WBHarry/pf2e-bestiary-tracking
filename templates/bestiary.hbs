@@ -139,7 +139,10 @@
                                     {{/if}}
                                 </div>
 
-                                {{#if ../user.isGM}}<i class="fa-solid fa-delete-left delete-button" data-action="removeMonster" data-monster="{{type.uuid}}"></i>{{/if}}
+                                {{#if ../user.isGM}}
+                                    <i class="{{#if type.hidden}}fa-solid fa-eye-slash{{else}}fa-solid fa-eye{{/if}} toggle-hide-button primary-hover-container" data-action="toggleHideMonster" data-uuid="{{type.uuid}}"></i>
+                                    <i class="fa-solid fa-delete-left delete-button primary-hover-container" data-action="removeMonster" data-monster="{{type.uuid}}"></i>
+                                {{/if}}
                             </div>
                         {{/each}}
                     {{/if}}

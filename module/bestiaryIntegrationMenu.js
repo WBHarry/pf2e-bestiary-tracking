@@ -13,6 +13,7 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
             },
             chatMessageHandling: game.settings.get('pf2e-bestiary-tracking', 'chat-message-handling'),
             npcRegistration: game.settings.get('pf2e-bestiary-tracking', 'npc-registration'),
+            hiddenSettings: game.settings.get('pf2e-bestiary-tracking', 'hidden-settings'),
         }
 
         this.combatRegistrationOptions = [
@@ -38,6 +39,7 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
         position: { width: 680, height: 'auto' },
         actions: {
             toggleChatMessageHandlingFields: this.toggleChatMessageHandlingFields,
+            toggleHiddenSettingsFields: this.toggleHiddenSettingsFields,
             save: this.save,
         },
         form: { handler: this.updateData, submitOnChange: true },
@@ -77,11 +79,23 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
         this.render();
     };
 
+    static async toggleHiddenSettingsFields(){
+        const keys = Object.keys(this.settings.hiddenSettings);
+        const enable = Object.values(this.settings.hiddenSettings).some(x => !x);
+        this.settings.hiddenSettings = keys.reduce((acc, key) => {
+            acc[key] = enable;
+            return acc;
+        }, {});
+        
+        this.render();
+    };
+
     static async save(_){
         await game.settings.set('pf2e-bestiary-tracking', 'automatic-combat-registration', this.settings.creatureRegistration.automaticCombatRegistration);
         await game.settings.set('pf2e-bestiary-tracking', 'doubleClickOpen', this.settings.creatureRegistration.doubleClickOpen);
         await game.settings.set('pf2e-bestiary-tracking', 'chat-message-handling', this.settings.chatMessageHandling);
         await game.settings.set('pf2e-bestiary-tracking', 'npc-registration', this.settings.npcRegistration);
+        await game.settings.set('pf2e-bestiary-tracking', 'hidden-settings', this.settings.hiddenSettings);
         this.close();
     };
 }

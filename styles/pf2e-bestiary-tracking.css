@@ -317,7 +317,8 @@
 .pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.trio img {
   height: 125px;
 }
-.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.trio .delete-button {
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.trio .delete-button,
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.trio .toggle-hide-button {
   font-size: 32px;
 }
 .pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.quarter {
@@ -327,7 +328,8 @@
 .pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.quarter img {
   height: 100px;
 }
-.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.quarter .delete-button {
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.quarter .delete-button,
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.quarter .toggle-hide-button {
   font-size: 24px;
 }
 .pf2e-bestiary-tracking.bestiary .type-overview-container .type-container img {
@@ -346,10 +348,14 @@
   top: 4px;
   right: 8px;
   font-size: 48px;
-  cursor: pointer;
 }
-.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container .delete-button:hover {
-  filter: drop-shadow(0 0 3px grey);
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container .toggle-hide-button {
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  font-size: 48px;
+  width: 60px;
+  text-align: center;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container {
   display: flex;
@@ -837,53 +843,53 @@
 .theme-dark:not([data-dorako-ui-scope]) .bestiary-settings-menu .menu-category legend h4 {
   color: var(--color-light-2);
 }
-.theme-dark.bestiary-settings-menu .menu-container {
+.theme-dark .bestiary-settings-menu .menu-container {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.theme-dark.bestiary-settings-menu .tagify-header {
+.theme-dark .bestiary-settings-menu .tagify-header {
   align-self: center;
   margin-bottom: 0;
   color: #ababab;
 }
-.theme-dark.bestiary-settings-menu tags {
+.theme-dark .bestiary-settings-menu tags {
   border-width: 2px;
 }
-.theme-dark.bestiary-settings-menu .menu-category {
+.theme-dark .bestiary-settings-menu .menu-category {
   display: flex;
   flex-direction: column;
   border-style: double;
   border-width: 4px;
   border-color: #ababab;
 }
-.theme-dark.bestiary-settings-menu .menu-category legend {
+.theme-dark .bestiary-settings-menu .menu-category legend {
   font-weight: bold;
   text-align: center;
 }
-.theme-dark.bestiary-settings-menu .menu-category legend h4 {
+.theme-dark .bestiary-settings-menu .menu-category legend h4 {
   margin: 0;
   text-shadow: 0 0 #ababab;
 }
-.theme-dark.bestiary-settings-menu .menu-category .section-header {
+.theme-dark .bestiary-settings-menu .menu-category .section-header {
   position: relative;
   align-self: center;
 }
-.theme-dark.bestiary-settings-menu .menu-category .section-header div {
+.theme-dark .bestiary-settings-menu .menu-category .section-header div {
   font-weight: bold;
   font-size: 18px;
   margin: 4px 0 4px 0;
 }
-.theme-dark.bestiary-settings-menu .menu-category .section-header i {
+.theme-dark .bestiary-settings-menu .menu-category .section-header i {
   position: absolute;
   top: 8px;
   right: -22px;
   font-size: 14px;
 }
-.theme-dark.bestiary-settings-menu .menu-category .form-group {
+.theme-dark .bestiary-settings-menu .menu-category .form-group {
   text-wrap: nowrap;
 }
-.theme-dark.bestiary-settings-menu .menu-category .form-group.underlined {
+.theme-dark .bestiary-settings-menu .menu-category .form-group.underlined {
   border-bottom: 1px solid #ababab;
 }
 :not([data-dorako-ui-scope]) .tagify {

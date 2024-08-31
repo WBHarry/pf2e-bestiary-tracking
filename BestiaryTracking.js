@@ -277,6 +277,7 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$4(ApplicationV2
             },
             chatMessageHandling: game.settings.get('pf2e-bestiary-tracking', 'chat-message-handling'),
             npcRegistration: game.settings.get('pf2e-bestiary-tracking', 'npc-registration'),
+            hiddenSettings: game.settings.get('pf2e-bestiary-tracking', 'hidden-settings'),
         };
 
         this.combatRegistrationOptions = [
@@ -302,6 +303,7 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$4(ApplicationV2
         position: { width: 680, height: 'auto' },
         actions: {
             toggleChatMessageHandlingFields: this.toggleChatMessageHandlingFields,
+            toggleHiddenSettingsFields: this.toggleHiddenSettingsFields,
             save: this.save,
         },
         form: { handler: this.updateData, submitOnChange: true },
@@ -341,11 +343,23 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$4(ApplicationV2
         this.render();
     };
 
+    static async toggleHiddenSettingsFields(){
+        const keys = Object.keys(this.settings.hiddenSettings);
+        const enable = Object.values(this.settings.hiddenSettings).some(x => !x);
+        this.settings.hiddenSettings = keys.reduce((acc, key) => {
+            acc[key] = enable;
+            return acc;
+        }, {});
+        
+        this.render();
+    };
+
     static async save(_){
         await game.settings.set('pf2e-bestiary-tracking', 'automatic-combat-registration', this.settings.creatureRegistration.automaticCombatRegistration);
         await game.settings.set('pf2e-bestiary-tracking', 'doubleClickOpen', this.settings.creatureRegistration.doubleClickOpen);
         await game.settings.set('pf2e-bestiary-tracking', 'chat-message-handling', this.settings.chatMessageHandling);
         await game.settings.set('pf2e-bestiary-tracking', 'npc-registration', this.settings.npcRegistration);
+        await game.settings.set('pf2e-bestiary-tracking', 'hidden-settings', this.settings.hiddenSettings);
         this.close();
     };
 }
@@ -3144,6 +3158,8 @@ const handleBestiaryMigration = async (bestiary) => {
         bestiary.metadata.version = '0.9.2';
     }
 
+    if(bestiary.metadata.version === '0.9.2');
+
     return bestiary;
 };
 
@@ -3215,7 +3231,7 @@ const newMigrateBestiary = async (update, bestiary) => {
     return bestiary;
 };
 
-const currentVersion = '0.9.2';
+const currentVersion = '0.9.3';
 const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
@@ -3561,6 +3577,19 @@ const bestiaryIntegration = () => {
             1: game.i18n.localize('PF2EBestiary.Settings.NPCRegistation.Choices.Tag'),
         },
         default: 0,
+    });
+
+    game.settings.register('pf2e-bestiary-tracking', 'hidden-settings', {
+        name: game.i18n.localize('PF2EBestiary.Settings.HiddenSettings.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.HiddenSettings.Hint'),
+        scope: 'world',
+        config: false,
+        type: Object,
+        default: {
+            monster: false,
+            npc: false,
+            hazard: false,
+        },
     });
 };
 
@@ -3970,6 +3999,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
             selectBookmark: this.selectBookmark,
             selectMonster: this.selectMonster,
             removeMonster: this.removeMonster,
+            toggleHideMonster: this.toggleHideMonster,
             toggleStatistics: this.toggleStatistics,
             returnButton: this.returnButton,
             toggleAbility: this.toggleAbility,
@@ -4559,16 +4589,13 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
             this.selected.category === 'monster' ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyText", { category: getExpandedCreatureTypes()[this.selected.type].name }) : 
             this.selected.category === 'npc' ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyCategoryText", { category: context.bestiary.npcCategories[this.selected.type]}) : '' : '';
         
-        return context;
-    };
-
-    monsterPreparation = async (context) => {
-        context.tabs = this.getMonsterTabs();
         context.openType = (context.selected.type ? Object.keys(context.bestiary[context.selected.category][context.selected.type].values).reduce((acc, monsterKey) => { 
             const monster = context.bestiary[this.selected.category][context.selected.type].values[monsterKey];
+            if(!game.user.isGM && monster.hidden) return acc;
+
             monster.img = context.useTokenArt ? monster.prototypeToken.texture.src : monster.img;
             const match = monster.name.value.toLowerCase().match(this.search.name.toLowerCase());
-            const unrevealedMatch = game.i18n.localize('PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature').toLowerCase().match(this.search.name.toLowerCase());
+            const unrevealedMatch = game.i18n.localize(context.selected.category === 'monster' ? 'PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature' : 'PF2EBestiary.Bestiary.Miscellaneous.Unaffiliated').toLowerCase().match(this.search.name.toLowerCase());
             if(!this.search.name || ((monster.name.revealed || game.user.isGM) && match) || (!monster.name.revealed && !game.user.isGM && unrevealedMatch)) {
                 acc.push(monster);
             }
@@ -4601,45 +4628,17 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
         return context;
     };
 
+    monsterPreparation = async (context) => {
+        context.tabs = this.getMonsterTabs();
+        
+        return context;
+    };
+
     npcPreparation = async (context) => {
         context.tabs = this.getMonsterTabs();
         context.npcTabs = this.getNPCTabs();
         context.dispositions = Object.keys(dispositions).map(x => dispositions[x]);
         context.npcCategories = this.bestiary.npcCategories;
-        
-        context.openType = context.openType = (context.selected.type ? Object.keys(context.bestiary[context.selected.category][context.selected.type].values).reduce((acc, npcKey) => { 
-            const npc = context.bestiary[this.selected.category][context.selected.type].values[npcKey];
-            npc.img = context.useTokenArt ? npc.prototypeToken.texture.src : npc.img;
-            const match = npc.name.value.toLowerCase().match(this.search.name.toLowerCase());
-            const unrevealedMatch = game.i18n.localize('PF2EBestiary.Bestiary.Miscellaneous.Unaffiliated').toLowerCase().match(this.search.name.toLowerCase());
-            if(!this.search.name || ((npc.name.revealed || game.user.isGM) && match) || (!npc.name.revealed && !game.user.isGM && unrevealedMatch)) {
-                acc.push(npc);
-            }
-
-            return acc;
-        }, []).sort((a, b) => {
-            if(!context.layout?.categories?.filter?.type || context.layout.categories.filter.type === 0){
-                var comparison = a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0;
-                if(!game.user.isGM){
-                    comparison = 
-                    a.name.revealed && b.name.revealed ? (a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0) :
-                    a.name.revealed && !b.name.revealed ? 1 :
-                    !a.name.revealed && b.name.revealed ? -1 : 0;
-                }
-
-                return context.layout?.categories?.filter?.direction === 0 ? comparison : (comparison * - 1);
-            } else {
-                var comparison = a.level.value - b.level.value;
-                if(!game.user.isGM){
-                    comparison = 
-                    a.level.revealed && b.level.revealed ?  a.level.value - b.level.value : 
-                    a.level.revealed && !b.level.revealed ? 1 :
-                    !a.level.revealed && b.level.revealed ? -1 : 0;
-                }
-
-                return context.layout.categories.filter.direction === 0 ? comparison : (comparison * -1); 
-            }
-        }) : null);
 
         return context;
     };
@@ -4705,6 +4704,18 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
 
         delete this.bestiary[this.selected.category][button.dataset.monster];
         this.selected.monster = null;
+
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: { },
+        });
+
+        this.render();
+    }
+
+    static async toggleHideMonster(_, button){
+        this.bestiary[this.selected.category][button.dataset.uuid].hidden = !this.bestiary[this.selected.category][button.dataset.uuid].hidden;
 
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -4929,6 +4940,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     static getUpdatedCreature(creature, data){
+        data.hidden = creature.hidden;
         data.system.details.playerNotes = creature.system.details.playerNotes;
         data.name = { ...data.name, revealed: creature.name.revealed, custom: creature.name.custom };
         data.system.details.level = { ...data.system.details.level, revealed: creature.system.details.level.revealed, custom: creature.system.details.level.custom };
@@ -5996,7 +6008,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
         dataObject.system.details.publicNotes =  { revealed: false, text: dataObject.system.details.publicNotes };
         dataObject.system.details.privateNotes = { revealed: false, text: dataObject.system.details.privateNotes }; 
 
+        const hiddenSettings = game.settings.get('pf2e-bestiary-tracking', 'hidden-settings');
         if(isNPC(dataObject)){
+            dataObject.hidden = hiddenSettings.npc;
             dataObject.npcData = {
                 categories: [],
                 general: {
@@ -6012,6 +6026,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
 
                 },
             };
+        } else {
+            dataObject.hidden = hiddenSettings.monster;
         }
 
         return dataObject;

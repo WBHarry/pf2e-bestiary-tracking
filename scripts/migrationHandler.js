@@ -883,6 +883,12 @@ export const handleBestiaryMigration = async (bestiary) => {
         bestiary.metadata.version = '0.9.2';
     }
 
+    if(bestiary.metadata.version === '0.9.2'){
+
+
+        // bestiary.metadata.version = '0.9.3';
+    }
+
     return bestiary;
 };
 

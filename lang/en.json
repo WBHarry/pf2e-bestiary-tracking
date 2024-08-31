@@ -305,6 +305,12 @@
                     "Attacks": "Attacks",
                     "Actions": "Actions",
                     "Spells": "Spells"
+                },
+                "HiddenSettings": {
+                    "Name": "Hidden Settings",
+                    "Monster": "Monster",
+                    "NPC": "NPC",
+                    "Hazard": "Hazard"
                 }
             }
         },
