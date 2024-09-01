@@ -33,8 +33,9 @@ export const getIWRString = (base, isResistance) => { // Mangled. Wtf.
 
 export const getCreaturesTypes = (traits, onlyActive) => {
     const creatureTypes = getExpandedCreatureTypes();
-    const types = Object.keys(traits).reduce((acc, traitKey) => {
-        if(Object.keys(creatureTypes).includes(traitKey)) acc.push({key: traitKey, revealed: traits[traitKey].revealed, name: creatureTypes[traitKey]});
+    const types = traits.reduce((acc, trait) => {
+        const typeMatch = creatureTypes.find(x => x.value === trait.value);
+        if(typeMatch) acc.push({key: typeMatch.value, revealed: trait.revealed, name: typeMatch.name});
 
         return acc;
     }, []);
@@ -44,21 +45,21 @@ export const getCreaturesTypes = (traits, onlyActive) => {
 
 export const getExpandedCreatureTypes = () => {
     const allTypes = [
-        ...Object.keys(CONFIG.PF2E.creatureTypes).map(type => ({ value: type, name: game.i18n.localize(CONFIG.PF2E.creatureTypes[type]) })),
-        ...game.settings.get('pf2e-bestiary-tracking', 'additional-creature-types').map(type => ({ value: type.value, name: game.i18n.localize(type.name) })),
+        ...Object.keys(CONFIG.PF2E.creatureTypes).map(type => ({ value: type, name: game.i18n.localize(CONFIG.PF2E.creatureTypes[type]), values: [] })),
+        ...game.settings.get('pf2e-bestiary-tracking', 'additional-creature-types').map(type => ({ value: type.value, name: game.i18n.localize(type.name), values: [] })),
     ].sort((a, b) => {
         if(a.name < b.name) return -1;
         else if(a.name > b.name) return 1;
         else return 0;
     });
     
-    const types = { unknown: { name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"), values: {} } };
-    allTypes.forEach(type => {
-        types[type.value] = { name: type.name, values: {} }
-    });
+    // const types = { unknown: { name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"), values: {} } };
+    // allTypes.forEach(type => {
+    //     types[type.value] = { name: type.name, values: {} }
+    // });
 
 
-    return types;
+    return [{ value: 'unknown', name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"), values: [] }, ...allTypes];
 };
 
 export const getBaseActor = (actor) => {

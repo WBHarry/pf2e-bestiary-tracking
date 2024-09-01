@@ -46,6 +46,13 @@
             }
         }
     },
+    "documentTypes": {
+        "JournalEntryPage": {
+            "creature": {},
+            "npc": {},
+            "hazard": {}
+        }
+    },
     "packs": [
         {
             "name": "pf2e-bestiary-tracking-macros",

@@ -1,5 +1,7 @@
+import { Bestiary } from "../data/bestiary.js";
 import { optionalFields, revealedState } from "../data/bestiaryAppearance.js";
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
+import { Creature } from "../data/creature.js";
 import BestiaryAppearanceMenu from "../module/bestiaryAppearanceMenu.js";
 import BestiaryIntegrationMenu from "../module/bestiaryIntegrationMenu.js";
 import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
@@ -10,6 +12,13 @@ import { newMigrateBestiary } from "./migrationHandler.js";
 export const currentVersion = '0.9.3';
 export const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 export const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
+
+export const dataTypeSetup = () => {
+    CONFIG.JournalEntryPage.dataModels = {
+        ...CONFIG.JournalEntryPage.dataModels,
+        "pf2e-bestiary-tracking.creature": Creature,
+    };
+};
 
 export const setupCollaborativeWrtiting = async () => {
     if(!game.folders.getName(bestiaryFolder)){
@@ -114,15 +123,8 @@ const generalNonConfigSettings = () => {
         hint: game.i18n.localize("PF2EBestiary.Menus.Data.Hint"),
         scope: 'world',
         config: false,
-        type: Object,
-        default: {
-            monster: {},
-            npc: {},
-            npcCategories: {},
-            metadata: {
-                version: ''
-            }
-        },
+        type: String,
+        default: '',
     });
 
     game.settings.register('pf2e-bestiary-tracking', 'bestiary-layout', {

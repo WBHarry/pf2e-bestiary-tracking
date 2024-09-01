@@ -1,12 +1,13 @@
 import PF2EBestiary from "./module/bestiary.js";
 import RegisterHandlebarsHelpers from "./scripts/handlebarHelpers.js";
-import { bestiaryFolder, registerGameSettings, registerKeyBindings, setupCollaborativeWrtiting } from "./scripts/setup.js";
+import { bestiaryFolder, dataTypeSetup, registerGameSettings, registerKeyBindings, setupCollaborativeWrtiting } from "./scripts/setup.js";
 import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
 import { handleDataMigration } from "./scripts/migrationHandler.js";
 import { getBaseActor, isNPC } from "./scripts/helpers.js";
 
 Hooks.once('init', () => {
+    dataTypeSetup();
     registerGameSettings();
     registerKeyBindings();
     RegisterHandlebarsHelpers.registerHelpers();

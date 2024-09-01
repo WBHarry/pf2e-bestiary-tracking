@@ -33,8 +33,9 @@ const getIWRString = (base, isResistance) => { // Mangled. Wtf.
 
 const getCreaturesTypes = (traits, onlyActive) => {
     const creatureTypes = getExpandedCreatureTypes();
-    const types = Object.keys(traits).reduce((acc, traitKey) => {
-        if(Object.keys(creatureTypes).includes(traitKey)) acc.push({key: traitKey, revealed: traits[traitKey].revealed, name: creatureTypes[traitKey]});
+    const types = traits.reduce((acc, trait) => {
+        const typeMatch = creatureTypes.find(x => x.value === trait.value);
+        if(typeMatch) acc.push({key: typeMatch.value, revealed: trait.revealed, name: typeMatch.name});
 
         return acc;
     }, []);
@@ -44,21 +45,21 @@ const getCreaturesTypes = (traits, onlyActive) => {
 
 const getExpandedCreatureTypes = () => {
     const allTypes = [
-        ...Object.keys(CONFIG.PF2E.creatureTypes).map(type => ({ value: type, name: game.i18n.localize(CONFIG.PF2E.creatureTypes[type]) })),
-        ...game.settings.get('pf2e-bestiary-tracking', 'additional-creature-types').map(type => ({ value: type.value, name: game.i18n.localize(type.name) })),
+        ...Object.keys(CONFIG.PF2E.creatureTypes).map(type => ({ value: type, name: game.i18n.localize(CONFIG.PF2E.creatureTypes[type]), values: [] })),
+        ...game.settings.get('pf2e-bestiary-tracking', 'additional-creature-types').map(type => ({ value: type.value, name: game.i18n.localize(type.name), values: [] })),
     ].sort((a, b) => {
         if(a.name < b.name) return -1;
         else if(a.name > b.name) return 1;
         else return 0;
     });
     
-    const types = { unknown: { name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"), values: {} } };
-    allTypes.forEach(type => {
-        types[type.value] = { name: type.name, values: {} };
-    });
+    // const types = { unknown: { name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"), values: {} } };
+    // allTypes.forEach(type => {
+    //     types[type.value] = { name: type.name, values: {} }
+    // });
 
 
-    return types;
+    return [{ value: 'unknown', name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"), values: [] }, ...allTypes];
 };
 
 const getBaseActor = (actor) => {
@@ -69,6 +70,33 @@ const isNPC = (data) => {
     const npcRegistration = game.settings.get('pf2e-bestiary-tracking', 'npc-registration');
     return npcRegistration === 0 ? data.system.traits.rarity === 'unique' : Object.values(data.system.traits.value).find(x => x.value ? x.value === 'npc' : x === 'npc');
 };
+
+class Bestiary extends foundry.abstract.TypeDataModel {
+    static defineSchema() {
+        const fields = foundry.data.fields;
+        return {
+            version: new fields.StringField({ required: true, nullable: true, initial: null }),
+            npcCategories: new fields.ArrayField(new fields.SchemaField({
+                key: new fields.StringField({ required: true }),
+                name: new fields.StringField({ required: true }),
+            }), { initial: [] }),
+        };
+    }
+
+    get creatures(){
+        return this.pages.filter(page => page.type === 'creature');
+    }
+
+    get npcs(){
+        return this.pages.filter(page => page.type === 'npc');
+    }
+
+    get hazards(){
+        return this.pages.filter(page => page.type === 'hazard');
+    }
+
+    prepareDerivedData() {}
+}
 
 const revealedState = {
     enabled: false,
@@ -99,6 +127,410 @@ const getVagueDescriptionLabels = () => ({
         terrible: game.i18n.localize('PF2EBestiary.Menus.BestiaryLabels.VagueDescriptions.ShortOptions.Terrible'),
     }
 });
+
+const fields = foundry.data.fields;
+
+const toggleStringField = () => new fields.SchemaField({
+    revealed: new fields.BooleanField({ required: true, initial: false }),
+    value: new fields.StringField({ required: true }),
+    custom: new fields.StringField({}),
+}); 
+
+const toggleNumberField = () => new fields.SchemaField({
+    revealed: new fields.BooleanField({ required: true, initial: false }),
+    value: new fields.NumberField({ required: true, integer: true }),
+    custom: new fields.StringField({}),
+}); 
+
+const getCreatureData = (actor) => {
+    return {
+        type: 'pf2e-bestiary-tracking.creature',
+        name: actor.name,
+        system: {
+            uuid: actor.uuid,
+            img: actor.img,
+            texture: actor.prototypeToken.texture.src,
+            name: { value: actor.name },
+            ac: { value: Number.parseInt(actor.system.attributes.ac.value) },
+            hp: { value: Number.parseInt(actor.system.attributes.hp.value) },
+            level: { value: Number.parseInt(actor.system.details.level.value) },
+            size: actor.system.traits.size.value,
+            rarity: { value: actor.system.traits.rarity },
+            traits: actor.system.traits.value.map(trait => ({ value: trait })),
+            skills: Object.keys(actor.system.skills).map(key => ({
+              value: Number.parseInt(actor.system.skills[key].base),
+              totalModifier: Number.parseInt(actor.system.skills[key].totalModifier), 
+            })),
+            saves: {
+              fortitude: { value: actor.system.saves.fortitude.value },
+              reflex: { value: actor.system.saves.reflex.value },
+              will: { value: actor.system.saves.will.value },
+            },
+            speeds: {
+              details: { },
+              values: [
+                { name: 'Land', value: actor.system.attributes.speed.value },
+                ...actor.system.attributes.speed.otherSpeeds.map(speed => ({
+                  name: speed.label,
+                  value: speed.value
+                }))
+              ],  
+            },
+            abilities: Object.keys(actor.system.abilities).map(key => ({
+              key: key,
+              mod: actor.system.abilities[key].mod,
+            })),
+            senses: {
+              perception: { value: actor.system.perception.value },
+              details: { value: actor.system.perception.details.value },
+              senses: actor.system.perception.senses.map(sense => ({ value: sense.type }))
+            },
+            languages: {
+              details: { value: actor.system.details.languages.details },
+              values: actor.system.details.languages.value.map(language => ({
+                value: language,
+              }))
+            },
+            immunities: Object.keys(actor.system.attributes.immunities).reduce((acc, key) => {
+                const immunity = actor.system.attributes.immunities[key];
+                acc[getIWRString(immunity)] = { 
+                    revealed: false, 
+                    value: immunity.value, 
+                    exceptions:  immunity.exceptions.map(exception => ({ value: exception })),
+                };
+
+                return acc;
+            }, {}),
+            weaknesses: Object.keys(actor.system.attributes.weaknesses).reduce((acc, key) => {
+                const weakness = actor.system.attributes.weaknesses[key];
+                acc[getIWRString(weakness)] = { 
+                    revealed: false, 
+                    value: weakness.value, 
+                    exceptions:  weakness.exceptions.map(exception => ({ value: exception })),
+                };
+
+                return acc;
+            }, {}),
+            resistances: Object.keys(actor.system.attributes.resistances).reduce((acc, key) => {
+                const resistance = actor.system.attributes.resistances[key];
+                acc[getIWRString(resistance)] = { 
+                    revealed: false, 
+                    value: resistance.value, 
+                    exceptions:  resistance.exceptions.map(exception => ({ value: exception })),
+                };
+
+                return acc;
+            }, {}),
+            attacks: Object.keys(actor.system.actions).reduce((acc, actionKey) => {
+              const attack = actor.system.actions[actionKey];
+              const item = actor.items.get(attack.item.id);
+              const traits = item.system.traits.value.map(trait => ({ value: trait }));
+              
+              if(item.type === 'melee' || item.type === 'equipment'){
+                acc[attack.item.id] = {
+                  name: attack.label,
+                  actions: attack.glyph,
+                  totalModifier: attack.totalModifier,
+                  isMelee: attack.weapon.isMelee,
+                  damageRolls: Object.keys(item.system.damageRolls).map(damage => ({ 
+                    damageType: { value: item.system.damageRolls[damage].damageType } 
+                  })),
+                  traits: traits,
+                  rules: item.system.rules,
+                };
+              }
+
+              return acc;
+            }, {}),
+            actions: Array.from(actor.items).reduce((acc, action) => {
+              if(action.type === 'action' && action.system.actionType.value !== 'passive'){
+                acc[action.id] = {
+                  label: action.system.label,
+                  traits: action.system.traits.value.map(trait => ({ value: trait.value })),
+                  description: action.system.description.value,
+                };
+              }
+
+              return acc;
+            }, {}),
+            passives: Array.from(actor.items).reduce((acc, action) => {
+              if(action.type === 'action' && action.system.actionType.value === 'passive'){
+                acc[action.id] = {
+                  label: action.system.label,
+                  traits: action.system.traits.value.map(trait => ({ value: trait.value })),
+                  description: action.system.description.value,
+                };
+              }
+
+              return acc;
+            }, {}),
+            // spells: ,
+            notes: {
+              public: { value: actor.system.details.publicNotes },
+              private: { value: actor.system.details.privateNotes },
+            },
+        }
+    };
+};
+
+class MappingField extends foundry.data.fields.ObjectField {
+    constructor(model, options) {
+      if ( !(model instanceof foundry.data.fields.DataField) ) {
+        throw new Error("MappingField must have a DataField as its contained element");
+      }
+      super(options);
+  
+      /**
+       * The embedded DataField definition which is contained in this field.
+       * @type {DataField}
+       */
+      this.model = model;
+    }
+  
+    /* -------------------------------------------- */
+  
+    /** @inheritdoc */
+    static get _defaults() {
+      return foundry.utils.mergeObject(super._defaults, {
+        initialKeys: null,
+        initialValue: null,
+        initialKeysOnly: false
+      });
+    }
+  
+    /* -------------------------------------------- */
+  
+    /** @inheritdoc */
+    _cleanType(value, options) {
+      Object.entries(value).forEach(([k, v]) => value[k] = this.model.clean(v, options));
+      return value;
+    }
+  
+    /* -------------------------------------------- */
+  
+    /** @inheritdoc */
+    getInitialValue(data) {
+      let keys = this.initialKeys;
+      const initial = super.getInitialValue(data);
+      if ( !keys || !foundry.utils.isEmpty(initial) ) return initial;
+      if ( !(keys instanceof Array) ) keys = Object.keys(keys);
+      for ( const key of keys ) initial[key] = this._getInitialValueForKey(key);
+      return initial;
+    }
+  
+    /* -------------------------------------------- */
+  
+    /**
+     * Get the initial value for the provided key.
+     * @param {string} key       Key within the object being built.
+     * @param {object} [object]  Any existing mapping data.
+     * @returns {*}              Initial value based on provided field type.
+     */
+    _getInitialValueForKey(key, object) {
+      const initial = this.model.getInitialValue();
+      return this.initialValue?.(key, initial, object) ?? initial;
+    }
+  
+    /* -------------------------------------------- */
+  
+    /** @override */
+    _validateType(value, options={}) {
+      if ( foundry.utils.getType(value) !== "Object" ) throw new Error("must be an Object");
+      const errors = this._validateValues(value, options);
+      if ( !foundry.utils.isEmpty(errors) ) throw new foundry.data.fields.ModelValidationError(errors);
+    }
+  
+    /* -------------------------------------------- */
+  
+    /**
+     * Validate each value of the object.
+     * @param {object} value     The object to validate.
+     * @param {object} options   Validation options.
+     * @returns {Object<Error>}  An object of value-specific errors by key.
+     */
+    _validateValues(value, options) {
+      const errors = {};
+      for ( const [k, v] of Object.entries(value) ) {
+        const error = this.model.validate(v, options);
+        if ( error ) errors[k] = error;
+      }
+      return errors;
+    }
+  
+    /* -------------------------------------------- */
+  
+    /** @override */
+    initialize(value, model, options={}) {
+      if ( !value ) return value;
+      const obj = {};
+      const initialKeys = (this.initialKeys instanceof Array) ? this.initialKeys : Object.keys(this.initialKeys ?? {});
+      const keys = this.initialKeysOnly ? initialKeys : Object.keys(value);
+      for ( const key of keys ) {
+        const data = value[key] ?? this._getInitialValueForKey(key, value);
+        obj[key] = this.model.initialize(data, model, options);
+      }
+      return obj;
+    }
+  
+    /* -------------------------------------------- */
+  
+    /** @inheritdoc */
+    _getField(path) {
+      if ( path.length === 0 ) return this;
+      else if ( path.length === 1 ) return this.model;
+      path.shift();
+      return this.model._getField(path);
+    }
+  }
+
+class Creature extends foundry.abstract.TypeDataModel {
+    static defineSchema() {
+        const fields = foundry.data.fields;
+        return {
+            hidden: new fields.BooleanField({ required: true, initial: false }),
+            uuid: new fields.StringField({ required: true }),
+            img: new fields.StringField({ required: true }),
+            texture: new fields.StringField({ required: true }),
+            name: toggleStringField(),
+            ac: toggleNumberField(),
+            hp: toggleNumberField(),
+            level: toggleNumberField(),
+            skills: new fields.ArrayField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                value: new fields.NumberField({ required: true, integer: true }),
+                totalModifier: new fields.NumberField({ required: true, integer: true }),
+            })),
+            abilities: new fields.ArrayField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                mod: new fields.NumberField({ required: true, integer: true }),
+                key: new fields.StringField({ required: true }),
+            })),    
+            saves: new fields.SchemaField({
+                fortitude: toggleNumberField(),
+                reflex: toggleNumberField(),
+                will: toggleNumberField(),
+            }),
+            speeds: new fields.SchemaField({
+                details: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    name: new fields.StringField({ required: true }),
+                }, { required: false }),
+                values: new fields.ArrayField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    name: new fields.StringField({ required: true }),
+                    value: new fields.NumberField({ required: true, integer: true })
+                }))
+            }),
+            immunities: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                value: new fields.NumberField({ required: true, integer: true }),
+                exceptions: new fields.ArrayField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.StringField({ required: true }) 
+                })),
+            })),
+            weaknesses: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                value: new fields.NumberField({ required: true, integer: true }),
+                exceptions: new fields.ArrayField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.StringField({ required: true }) 
+                })),
+            })),
+            resistances: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                value: new fields.NumberField({ required: true, integer: true }),
+                exceptions: new fields.ArrayField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.StringField({ required: true }) 
+                })),
+                doubleVs: new fields.ArrayField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.StringField({ required: true }) 
+                })),
+            })),
+            rarity: new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                value: new fields.StringField({ required: true }),
+            }),
+            traits: new fields.ArrayField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                value: new fields.StringField({ required: true }) 
+            })),
+            attacks: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                damageStatsRevealed: new fields.BooleanField({ required: true, initial: false }),
+                name: new fields.StringField({ required: true }),
+                actions: new fields.StringField({ required: true }),
+                totalModifier: new fields.NumberField({ required: true }),
+                isMelee: new fields.BooleanField({ required: true }),
+                traits: new fields.ArrayField(new fields.StringField({ required: true })),
+                damageRolls: new fields.ArrayField(new fields.SchemaField({
+                    damageType: new fields.SchemaField({
+                        revealed: new fields.BooleanField({ required: true, initial: false }),
+                        value: new fields.StringField({ required: true })
+                    })
+                })),
+                rules: new fields.ObjectField({}),
+            })),
+            actions: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                label: new fields.StringField({ required: true }),
+                traits: new fields.ArrayField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.StringField({ required: true })
+                })),
+                description: new fields.HTMLField({ required: true, initial: '' }),
+            })),
+            passives: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                label: new fields.StringField({ required: true }),
+                traits: new fields.ArrayField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.StringField({ required: true })
+                })),
+                description: new fields.HTMLField({ required: true, initial: '' }),
+            })),
+            senses: new MappingField(new fields.SchemaField({
+                perception: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.NumberField({ required: true, integer: true }),
+                }),
+                details: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.NumberField({ required: true, integer: true }),
+                }),
+                senses: new fields.ArrayField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.StringField({ required: true }),
+                })),
+            })),
+            languages: new fields.ArrayField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                value: new fields.StringField({ required: true }),
+            })),
+            notes: new fields.SchemaField({
+                public: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.HTMLField({ required: true, initial: '' }),
+                }),
+                private: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.HTMLField({ required: true, initial: '' }),
+                }),
+                player: new fields.HTMLField({ required: true, initial: '' })
+            }),
+        };
+    }
+
+    get displayImage(){
+        return game.settings.get('pf2e-bestiary-tracking', 'use-token-art') ? this.texture : this.img;
+    }
+
+    prepareDerivedData() {
+
+    }
+}
 
 /*
 Tagify v4.27.0 - tags input component
@@ -2285,10 +2717,22 @@ const handleDataMigration = async () => {
     
     await setupCollaborativeWrtiting();
 
-    var version = await game.settings.get('pf2e-bestiary-tracking', 'version');
+    var version = game.settings.get('pf2e-bestiary-tracking', 'version');
     if(!version){
         version = currentVersion;
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
+    }
+
+    const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+    const bestiaryObject = null;
+    try {
+        bestiaryObject = JSON.parse(bestiary);
+    } catch{}    if(!bestiary || bestiaryObject ){
+        const journal = await JournalEntry.create({ name: game.i18n.localize('PF2EBestiary.Miscellaneous.FirstBestiary') });
+        await journal.setFlag('pf2e-bestiary-tracking', 'version', !bestiary ? currentVersion : '0.9.2');
+        await journal.setFlag('pf2e-bestiary-tracking', 'npcCategories', !bestiary ? {} : bestiaryObject.npcCategories);
+        // HAVE TO HANDLE MIGRATION OF OLD BESTIARIES BEFORE THIS POINT
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', journal.id);
     }
 
     if(version === '0.8.1'){
@@ -2653,8 +3097,8 @@ const handleDataMigration = async () => {
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 
-    const updatedBestiary = await handleBestiaryMigration(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
-    await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
+    // const updatedBestiary = await handleBestiaryMigration(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
+    // await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
 };
 
 const handleBestiaryMigration = async (bestiary) => {
@@ -3235,6 +3679,13 @@ const currentVersion = '0.9.3';
 const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry";
 
+const dataTypeSetup = () => {
+    CONFIG.JournalEntryPage.dataModels = {
+        ...CONFIG.JournalEntryPage.dataModels,
+        "pf2e-bestiary-tracking.creature": Creature,
+    };
+};
+
 const setupCollaborativeWrtiting = async () => {
     if(!game.folders.getName(bestiaryFolder)){
         const folder = await Folder.create({ "name": bestiaryFolder, "type": "JournalEntry" });
@@ -3338,15 +3789,8 @@ const generalNonConfigSettings = () => {
         hint: game.i18n.localize("PF2EBestiary.Menus.Data.Hint"),
         scope: 'world',
         config: false,
-        type: Object,
-        default: {
-            monster: {},
-            npc: {},
-            npcCategories: {},
-            metadata: {
-                version: ''
-            }
-        },
+        type: String,
+        default: '',
     });
 
     game.settings.register('pf2e-bestiary-tracking', 'bestiary-layout', {
@@ -3948,22 +4392,23 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
     constructor({category = null, monsterUuid = null, actorIsNPC} = {category: 'monster', monsterUuid: null}){
         super({});
 
-        this.bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+        this.bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
 
+        const entity = monsterUuid ? this.bestiary.pages.find(x => x.system.uuid === monsterUuid) : null;
         var monsterCreatureTypes = [];
         if(category && monsterUuid) {
             if(actorIsNPC){
                 monsterCreatureTypes = this.bestiary[category][monsterUuid].npcData.categories.length > 0 ? this.bestiary[category][monsterUuid].npcData.categories[0] : ['unaffiliated'];
             }
             else {
-                monsterCreatureTypes = getCreaturesTypes(this.bestiary[category][monsterUuid].system.traits.value).map(x => x.key);
+                monsterCreatureTypes = getCreaturesTypes(entity.traits).map(x => x.key);
             }
         } 
         
         this.selected = {
             category,
             type: monsterCreatureTypes.length > 0 ? monsterCreatureTypes[0] : null,
-            monster: category && monsterUuid ? this.bestiary[category][monsterUuid] : null,
+            monster: entity,
             abilities: [],
         };
 
@@ -4550,18 +4995,79 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
             })
         };
     }
+
+    getBookmarks(){
+        if(this.selected.category === 'monster'){
+            return this.bestiary.pages.filter(creature => {
+                const isCreature = creature.type === 'pf2e-bestiary-tracking.creature';
+                if(!isCreature) return false;
+
+                const match = creature.system.name.value.toLowerCase().match(this.search.name.toLowerCase());
+                const unrevealedMatch = game.i18n.localize('PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature').toLowerCase().match(this.search.name.toLowerCase());
+                if(!this.search.name || ((creature.system.name.revealed || game.user.isGM) && match) || (!creature.system.name.revealed && !game.user.isGM && unrevealedMatch)) {
+                    return true;
+                }
+
+                return false;
+            }).sort((a, b) => {
+                    if(!context.layout?.categories?.filter?.type || context.layout.categories.filter.type === 0){
+                        var comparison = a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0;
+                        if(!game.user.isGM){
+                            comparison = 
+                            a.name.revealed && b.name.revealed ? (a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0) :
+                            a.name.revealed && !b.name.revealed ? 1 :
+                            !a.name.revealed && b.name.revealed ? -1 : 0;
+                        }
+        
+                        return context.layout?.categories?.filter?.direction === 0 ? comparison : (comparison * - 1);
+                    } else {
+                        var comparison = a.level.value - b.level.value;
+                        if(!game.user.isGM){
+                            comparison = 
+                            a.level.revealed && b.level.revealed ?  a.level.value - b.level.value : 
+                            a.level.revealed && !b.level.revealed ? 1 :
+                            !a.level.revealed && b.level.revealed ? -1 : 0;
+                        }
+        
+                        return context.layout.categories.filter.direction === 0 ? comparison : (comparison * -1); 
+                    }
+            }).reduce((acc, creature) => {
+                const types = getCreaturesTypes(creature.system.traits);
+
+                var usedTypes = types.map(x => x.key);
+                if(!game.user.isGM){
+                    usedTypes = types.filter(x => x.revealed).map(x => x.key);
+                }
+                
+                if(usedTypes.length === 0) usedTypes = ['unknown'];
+
+                for(var type of usedTypes){
+                    acc.find(x => x.value === type)?.values?.push({
+                        id: creature.id, 
+                        name: creature.system.name, 
+                        hidden: creature.system.hidden,
+                        img: creature.system.displayImage,
+                    });
+                }
+
+                return acc;
+            }, getExpandedCreatureTypes());
+        } else if(this.selected.category === 'pf2e-bestiary-tracking.npc') ; else return [];
+    }
     
     async _prepareContext(_options) {
         var context = await super._prepareContext(_options);
 
         context = await this.sharedPreparation(context);
+        context.bookmarks = this.getBookmarks();
+        context.bookmarkEntities = this.selected.type ? context.bookmarks.find(x => x.value === this.selected.type).values : [];
 
-        if(this.selected.category === 'npc'){
-            context = await this.npcPreparation(context);
-        }
-        else {
-            context = await this.monsterPreparation(context);
-        }
+        // if(this.selected.category === 'npc'){
+        //     context = await this.npcPreparation(context);
+        // }
+        // else {
+        //     context = await this.monsterPreparation(context);
+        // }
 
         return context;
     }
@@ -4574,56 +5080,57 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
         context.hideAbilityDescriptions = game.settings.get('pf2e-bestiary-tracking', 'hide-ability-descriptions');
         context.contrastRevealedState = game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state');
         context.vagueDescriptions = foundry.utils.deepClone(await game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions'));
-
-        context.user = game.user;
         context.vagueDescriptions.settings.playerBased = game.user.isGM ? false : context.vagueDescriptions.settings.playerBased;
+        context.user = game.user;
         context.playerLevel = game.user.character ? game.user.character.system.details.level.value : null;
         context.search = this.search;
         context.npcState = this.npcData;
-
         context.selected = foundry.utils.deepClone(this.selected);
-        context.selected = await this.prepareData(context.selected, context.vagueDescriptions.settings.playerBased ? context.playerLevel : null, context.vagueDescriptions, context.detailedInformation);
-        await this.enrichTexts(context.selected);
-        context.bestiary = this.prepareBestiary(foundry.utils.deepClone(this.bestiary));
+
+        // context.selected = await this.prepareData(context.selected, context.vagueDescriptions.settings.playerBased ? context.playerLevel : null, context.vagueDescriptions, context.detailedInformation);
+        // await this.enrichTexts(context.selected);
+        // context.bestiary = this.prepareBestiary(foundry.utils.deepClone(this.bestiary));
         context.typeTitle = this.selected.type ? 
-            this.selected.category === 'monster' ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyText", { category: getExpandedCreatureTypes()[this.selected.type].name }) : 
+            this.selected.category === 'monster' ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyText", { category: getExpandedCreatureTypes().find(x => x.value === this.selected.type).name }) : 
             this.selected.category === 'npc' ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyCategoryText", { category: context.bestiary.npcCategories[this.selected.type]}) : '' : '';
         
-        context.openType = (context.selected.type ? Object.keys(context.bestiary[context.selected.category][context.selected.type].values).reduce((acc, monsterKey) => { 
-            const monster = context.bestiary[this.selected.category][context.selected.type].values[monsterKey];
-            if(!game.user.isGM && monster.hidden) return acc;
+        // context.openType = (context.selected.type ? Object.keys(context.bestiary[context.selected.category][context.selected.type].values).reduce((acc, monsterKey) => { 
+        //     const monster = context.bestiary[this.selected.category][context.selected.type].values[monsterKey];
+        //     if(!game.user.isGM && monster.hidden) return acc;
 
-            monster.img = context.useTokenArt ? monster.prototypeToken.texture.src : monster.img;
-            const match = monster.name.value.toLowerCase().match(this.search.name.toLowerCase());
-            const unrevealedMatch = game.i18n.localize(context.selected.category === 'monster' ? 'PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature' : 'PF2EBestiary.Bestiary.Miscellaneous.Unaffiliated').toLowerCase().match(this.search.name.toLowerCase());
-            if(!this.search.name || ((monster.name.revealed || game.user.isGM) && match) || (!monster.name.revealed && !game.user.isGM && unrevealedMatch)) {
-                acc.push(monster);
-            }
+        //     monster.img = context.useTokenArt ? monster.prototypeToken.texture.src : monster.img;
+        //     const match = monster.name.value.toLowerCase().match(this.search.name.toLowerCase());
+        //     const unrevealedMatch = game.i18n.localize(context.selected.category === 'monster' ? 'PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature' : 'PF2EBestiary.Bestiary.Miscellaneous.Unaffiliated').toLowerCase().match(this.search.name.toLowerCase());
+        //     if(!this.search.name || ((monster.name.revealed || game.user.isGM) && match) || (!monster.name.revealed && !game.user.isGM && unrevealedMatch)) {
+        //         acc.push(monster);
+        //     }
 
-            return acc;
-        }, []).sort((a, b) => {
-            if(!context.layout?.categories?.filter?.type || context.layout.categories.filter.type === 0){
-                var comparison = a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0;
-                if(!game.user.isGM){
-                    comparison = 
-                    a.name.revealed && b.name.revealed ? (a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0) :
-                    a.name.revealed && !b.name.revealed ? 1 :
-                    !a.name.revealed && b.name.revealed ? -1 : 0;
-                }
+        //     return acc;
+        // }, []).sort((a, b) => {
+        //     if(!context.layout?.categories?.filter?.type || context.layout.categories.filter.type === 0){
+        //         var comparison = a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0;
+        //         if(!game.user.isGM){
+        //             comparison = 
+        //             a.name.revealed && b.name.revealed ? (a.name.value < b.name.value ? -1 : a.name.value > b.name.value ? 1 : 0) :
+        //             a.name.revealed && !b.name.revealed ? 1 :
+        //             !a.name.revealed && b.name.revealed ? -1 : 0;
+        //         }
 
-                return context.layout?.categories?.filter?.direction === 0 ? comparison : (comparison * - 1);
-            } else {
-                var comparison = a.level.value - b.level.value;
-                if(!game.user.isGM){
-                    comparison = 
-                    a.level.revealed && b.level.revealed ?  a.level.value - b.level.value : 
-                    a.level.revealed && !b.level.revealed ? 1 :
-                    !a.level.revealed && b.level.revealed ? -1 : 0;
-                }
+        //         return context.layout?.categories?.filter?.direction === 0 ? comparison : (comparison * - 1);
+        //     } else {
+        //         var comparison = a.level.value - b.level.value;
+        //         if(!game.user.isGM){
+        //             comparison = 
+        //             a.level.revealed && b.level.revealed ?  a.level.value - b.level.value : 
+        //             a.level.revealed && !b.level.revealed ? 1 :
+        //             !a.level.revealed && b.level.revealed ? -1 : 0;
+        //         }
 
-                return context.layout.categories.filter.direction === 0 ? comparison : (comparison * -1); 
-            }
-        }) : null);
+        //         return context.layout.categories.filter.direction === 0 ? comparison : (comparison * -1); 
+        //     }
+        // }) : null);
+
+        context.bookmarks = [];
 
         return context;
     };
@@ -4699,13 +5206,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
 
         if(!confirmed) return;
 
-        const journalEntry = game.journal.getName(bestiaryJournalEntry);
-        await journalEntry.pages.get(this.bestiary[this.selected.category][button.dataset.monster].system.details.playerNotes.document).delete();
+        // const journalEntry = game.journal.getName(bestiaryJournalEntry);
+        // await journalEntry.pages.get(this.bestiary[this.selected.category][button.dataset.monster].system.details.playerNotes.document).delete();
 
-        delete this.bestiary[this.selected.category][button.dataset.monster];
-        this.selected.monster = null;
+        await this.bestiary.pages.get(button.dataset.monster).delete();
 
-        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
             data: { },
@@ -4715,9 +5220,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     static async toggleHideMonster(_, button){
-        this.bestiary[this.selected.category][button.dataset.uuid].hidden = !this.bestiary[this.selected.category][button.dataset.uuid].hidden;
+        const entity = this.bestiary.pages.get(button.dataset.id);
+        await entity.update({ 'system.hidden': !entity.system.hidden });
 
-        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
             data: { },
@@ -5729,8 +6234,6 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
             await foundry.utils.setProperty(this, property, simpleFields[property]);
         }
 
-        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
-
         if(pageText !== undefined){
             await game.socket.emit(`module.pf2e-bestiary-tracking`, {
                 action: socketEvent.MonsterEditingUpdate,
@@ -6049,57 +6552,57 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
             return;
         }
 
-        const item = baseItem.pack ? await Actor.implementation.create(baseItem.toObject()) : baseItem;
-        const actorIsNPC = isNPC(item);
+        await game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking')).createEmbeddedDocuments("JournalEntryPage", [getCreatureData(baseItem)]);
 
-        // Creature already in Bestiary.
-        if(actorIsNPC ? this.bestiary.npc[item.uuid] : this.bestiary.monster[item.uuid]){
-            await this.refreshCreature(item.uuid, actorIsNPC);
-            return;
-        }
+        // const item = baseItem.pack ? await Actor.implementation.create(baseItem.toObject()) : baseItem;
+        // const actorIsNPC = isNPC(item);
 
-        const monster = await PF2EBestiary.getMonsterData(item);
-        const updatedBestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+        // // Creature already in Bestiary.
+        // if(actorIsNPC ? this.bestiary.npc[item.uuid] : this.bestiary.monster[item.uuid]){
+        //     await this.refreshCreature(item.uuid, actorIsNPC);
+        //     return;
+        // }
 
-        const journalEntry = game.journal.getName(bestiaryJournalEntry);
-        const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
-            name: monster.name.value,
-            text: {
-                content: ""
-            }
-        }]);
-        monster.system.details.playerNotes = { document: page[0].id };
+        // const monster = await PF2EBestiary.getMonsterData(item);
+        // const updatedBestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
 
-        if(actorIsNPC){
-            updatedBestiary.npc[item.uuid] = monster;
-        }
-        else {
-            updatedBestiary.monster[item.uuid] = monster;
-        }
+        // const journalEntry = game.journal.getName(bestiaryJournalEntry);
+        // const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
+        //     name: monster.name.value,
+        //     text: {
+        //         content: ""
+        //     }
+        // }]);
+        // monster.system.details.playerNotes = { document: page[0].id };
+
+        // if(actorIsNPC){
+        //     updatedBestiary.npc[item.uuid] = monster;
+        // }
+        // else {
+        //     updatedBestiary.monster[item.uuid] = monster;
+        // }
         
-        const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
-        if(doubleClickOpenActivated){
-            const ownership = item.ownership.default > 1 ? item.ownership.default : 1;
-            await item.update({ "ownership.default": ownership });
+        // const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
+        // if(doubleClickOpenActivated){
+        //     const ownership = item.ownership.default > 1 ? item.ownership.default : 1;
+        //     await item.update({ "ownership.default": ownership });
 
-            const baseItem = await fromUuid(item.uuid);
-            await baseItem.update({ "ownership.default": ownership });
-        }
+        //     const baseItem = await fromUuid(item.uuid);
+        //     await baseItem.update({ "ownership.default": ownership });
+        // }
         
-        this.bestiary = updatedBestiary;
-        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
+        // this.bestiary = updatedBestiary;
+        // await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
 
-        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-            action: socketEvent.UpdateBestiary,
-            data: { },
-        });
+        // await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+        //     action: socketEvent.UpdateBestiary,
+        //     data: { },
+        // });
 
         this.render();
     }
 
-    onBestiaryUpdate = async () => {
-        this.bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-        
+    onBestiaryUpdate = async () => {        
         if(this.selected.monster?.uuid){
             this.selected.monster = this.bestiary[this.selected.category][this.selected.monster.uuid];
         }
@@ -6222,6 +6725,7 @@ class RegisterHandlebarsHelpers {
 }
 
 Hooks.once('init', () => {
+    dataTypeSetup();
     registerGameSettings();
     registerKeyBindings();
     RegisterHandlebarsHelpers.registerHelpers();

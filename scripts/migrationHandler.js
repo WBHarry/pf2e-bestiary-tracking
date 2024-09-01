@@ -9,10 +9,23 @@ export const handleDataMigration = async () => {
     
     await setupCollaborativeWrtiting();
 
-    var version = await game.settings.get('pf2e-bestiary-tracking', 'version');
+    var version = game.settings.get('pf2e-bestiary-tracking', 'version');
     if(!version){
         version = currentVersion;
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
+    }
+
+    const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+    const bestiaryObject = null;
+    try {
+        bestiaryObject = JSON.parse(bestiary);
+    } catch{};
+    if(!bestiary || bestiaryObject ){
+        const journal = await JournalEntry.create({ name: game.i18n.localize('PF2EBestiary.Miscellaneous.FirstBestiary') });
+        await journal.setFlag('pf2e-bestiary-tracking', 'version', !bestiary ? currentVersion : '0.9.2');
+        await journal.setFlag('pf2e-bestiary-tracking', 'npcCategories', !bestiary ? {} : bestiaryObject.npcCategories);
+        // HAVE TO HANDLE MIGRATION OF OLD BESTIARIES BEFORE THIS POINT
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', journal.id);
     }
 
     if(version === '0.8.1'){
@@ -377,8 +390,8 @@ export const handleDataMigration = async () => {
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 
-    const updatedBestiary = await handleBestiaryMigration(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
-    await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
+    // const updatedBestiary = await handleBestiaryMigration(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
+    // await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
 }
 
 export const handleBestiaryMigration = async (bestiary) => {
@@ -958,4 +971,8 @@ export const newMigrateBestiary = async (update, bestiary) => {
     }
 
     return bestiary;
+};
+
+export const migrateBestiaryJournal = async (update, bestiary) => {
+
 };
