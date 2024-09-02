@@ -68,7 +68,7 @@ export default class RegisterHandlebarsHelpers {
         
         if(op && !use){
             for(var i = 0; i < keys.length; i++){
-                ret = ret + options.fn({ ...context[keys[i]], last: i === keys.length-1, index: i, length: keys.length });
+                ret = ret + options.fn({ ...context[keys[i]], key: keys[i], last: i === keys.length-1, index: i, length: keys.length });
             }
           
             return ret; 
@@ -86,7 +86,7 @@ export default class RegisterHandlebarsHelpers {
         if(keys.length === 0) return `<div style="margin-left: ${leftMargin}px;">${fallback}</div>`;
 
         for(var i = 0; i < keys.length; i++){
-            ret = ret + options.fn({ ...context[keys[i]], last: i === keys.length-1, index: i, length: keys.length });
+            ret = ret + options.fn({ ...context[keys[i]], key: keys[i], last: i === keys.length-1, index: i, length: keys.length });
         }
       
         return ret;

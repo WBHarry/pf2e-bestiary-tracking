@@ -114,7 +114,8 @@ export class Creature extends foundry.abstract.TypeDataModel {
                 revealed: new fields.BooleanField({ required: true, initial: false }),
                 fake: new fields.BooleanField({}),
                 label: new fields.StringField({ required: true }),
-                traits: new fields.ArrayField(new fields.SchemaField({
+                actions: new fields.StringField({ required: true }),
+                traits: new MappingField(new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
                     value: new fields.StringField({ required: true })
                 })),
@@ -124,11 +125,52 @@ export class Creature extends foundry.abstract.TypeDataModel {
                 revealed: new fields.BooleanField({ required: true, initial: false }),
                 fake: new fields.BooleanField({}),
                 label: new fields.StringField({ required: true }),
-                traits: new fields.ArrayField(new fields.SchemaField({
+                traits: new MappingField(new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
                     value: new fields.StringField({ required: true })
                 })),
                 description: new fields.HTMLField({ required: true, initial: '' }),
+            })),
+            spells: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                tradition: new fields.StringField({ required: true }),
+                category: new fields.StringField({ required: true }),
+                dc: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.NumberField({ required: true, integer: true }),
+                }),
+                attack: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.NumberField({ required: true, integer: true }),
+                }),
+                mod: new fields.SchemaField({
+                    value: new fields.NumberField({ required: true, integer: true }),
+                }),
+                levels: new MappingField(new fields.SchemaField({
+                    value: new fields.StringField({ required: true }),
+                    spells: new MappingField(new fields.SchemaField({
+                        revealed: new fields.BooleanField({ required: true, initial: false }),
+                        label: new fields.StringField({ required: true }),
+                        img: new fields.StringField({ required: true }),
+                        actions: new fields.StringField({ required: true }),
+                        defense: new fields.SchemaField({
+                            statistic: new fields.StringField({}),
+                            basic: new fields.BooleanField({}),
+                        }, { required: false, nullable: true, initial: null }),
+                        range: new fields.StringField({}),
+                        traits: new fields.SchemaField({
+                            rarity: new fields.StringField({ required: true }),
+                            traditions: new fields.ArrayField(new fields.StringField({})),
+                            values: new MappingField(new fields.SchemaField({
+                                value: new fields.StringField({ required: true }),
+                            })),
+                        }),
+                        description: new fields.SchemaField({
+                            gm: new fields.HTMLField({ required: true }),
+                            value: new fields.HTMLField({ required: true }),
+                        }),
+                    })),
+                })),
             })),
             senses: new fields.SchemaField({
                 perception: new fields.SchemaField({
@@ -199,6 +241,48 @@ export class Creature extends foundry.abstract.TypeDataModel {
         }, {});
     }
 
+    get sortedSpells(){
+        return Object.keys(this.spells).reduce((acc, entry) => {
+            acc[entry] = { 
+                ...this.spells[entry],
+                label: `${game.i18n.localize(CONFIG.PF2E.magicTraditions[this.spells[entry].tradition])} ${game.i18n.localize(CONFIG.PF2E.preparationType[this.spells[entry].category])} ${game.i18n.localize("PF2E.Item.Spell.Plural")}`,
+                levels: Object.keys(this.spells[entry].levels).reduce((acc, levelKey) => {
+                    const level = this.spells[entry].levels[levelKey];
+                    acc.push({
+                        ...level,
+                        key: levelKey,
+                        revealed: Object.values(level.spells).some(x => x.revealed),
+                        label: levelKey === 'Cantrips' ? 
+                            game.i18n.localize('PF2E.Actor.Creature.Spellcasting.Cantrips') : 
+                            game.i18n.format('PF2E.Item.Spell.Rank.Ordinal', { rank: game.i18n.format("PF2E.OrdinalNumber", { value: level.value, suffix: levelKey === '1' ? 'st' : levelKey === '2' ? 'nd' : levelKey === '3' ? 'rd' : 'th' }) }),
+                        spells: Object.keys(level.spells).reduce((acc, spell) => {
+                            acc[spell] = {
+                                ...level.spells[spell],
+                                defense: !level.spells[spell].defense ? null : 
+                                    { ...level.spells[spell].defense, label: level.spells[spell].defense.basic ? 
+                                        game.i18n.format('PF2E.InlineCheck.BasicWithSave', { save: game.i18n.localize(CONFIG.PF2E.saves[level.spells[spell].defense.statistic]) }) : 
+                                        game.i18n.localize(CONFIG.PF2E.saves[level.spells[spell].defense.statistic]) 
+                                    }
+                            };
+
+                            return acc;
+                        }, {}),
+                    });
+
+                    return acc;
+                }, []).sort((a, b) => {
+                    if(a.key === 'Cantrips' && b.key !== 'Cantrips') return -1;
+                    else if(a.key !== 'Cantrips' && b.key === 'Cantrips') return 1;
+                    else if(a.key === 'Cantrips' && b.key === 'Cantrips') return 0;
+
+                    return a.key - b.key;
+                }), 
+            };
+
+            return acc;
+        }, {});
+    }
+
     prepareDerivedData() {
         this.immunities = Object.keys(this.immunities).reduce((acc, key) => {
             const exceptionKeys = Object.keys(this.immunities[key].exceptions);
@@ -248,10 +332,11 @@ export class Creature extends foundry.abstract.TypeDataModel {
             return acc;
         }, {});
 
+        const detailedInformation = game.settings.get('pf2e-bestiary-tracking', 'detailed-information-toggles');
         this.resistances = Object.keys(this.resistances).reduce((acc, key) => {
             const exceptionKeys = Object.keys(this.resistances[key].exceptions);
             const doubleKeys = Object.keys(this.resistances[key].doubleVs);
-            const revealedDoubleKeys = doubleKeys.filter(dbKey => this.resistances[key].doubleVs[dbKey].revealed);
+            const revealedDoubleKeys = doubleKeys.filter(dbKey => detailedInformation.exceptionsDouble || this.resistances[key].doubleVs[dbKey].revealed);
             acc[key] = {
                 ...this.resistances[key],
                 label: CONFIG.PF2E.resistanceTypes[this.resistances[key].type] ?? this.resistances[key].type,
@@ -281,9 +366,10 @@ export class Creature extends foundry.abstract.TypeDataModel {
             return acc;
         }, {});
 
+        const speedDetails = this.speeds.details.value ? { details: this.speeds.details } : {};
         this.speeds.values = { 
             ...this.speeds.values,
-            details: this.speeds.details,
+            ...speedDetails,
         };
 
         this.traits = Object.keys(this.traits).reduce((acc, key) => {
@@ -321,6 +407,44 @@ export class Creature extends foundry.abstract.TypeDataModel {
                         description: CONFIG.PF2E.traitsDescriptions[this.attacks[key].traits[trait].description] ?? this.attacks[key].traits[trait].description,
                         suffix: index !== traitKeys.length-1 ? ',&nbsp;' : ')',
                     };
+                    return acc;
+                }, {}),
+            };
+
+            return acc;
+        }, {});
+
+        this.actions = Object.keys(this.actions).reduce((acc, key) => {
+            const traitKeys = Object.keys(this.actions[key].traits);
+            acc[key] = { 
+                ...this.actions[key], 
+                traits: traitKeys.reduce((acc, trait, index) => {
+                    acc[trait] = {  
+                        ...this.actions[key].traits[trait],
+                        label: CONFIG.PF2E.npcAttackTraits[this.actions[key].traits[trait].value] ?? this.actions[key].traits[trait].value,
+                        description: CONFIG.PF2E.traitsDescriptions[this.actions[key].traits[trait].value] ?? '',
+                        suffix: index !== traitKeys.length-1 ? ',&nbsp;' : ''
+                    };
+
+                    return acc;
+                }, {}),
+            };
+
+            return acc;
+        }, {});
+
+        this.passives = Object.keys(this.passives).reduce((acc, key) => {
+            const traitKeys = Object.keys(this.passives[key].traits);
+            acc[key] = { 
+                ...this.passives[key], 
+                traits: traitKeys.reduce((acc, trait, index) => {
+                    acc[trait] = {  
+                        ...this.passives[key].traits[trait],
+                        label: CONFIG.PF2E.npcAttackTraits[this.passives[key].traits[trait].value] ?? this.passives[key].traits[trait].value,
+                        description: CONFIG.PF2E.traitsDescriptions[this.passives[key].traits[trait].value] ?? '',
+                        suffix: index !== traitKeys.length-1 ? ',&nbsp;' : ''
+                    };
+
                     return acc;
                 }, {}),
             };

@@ -675,12 +675,6 @@
   align-items: center;
   gap: 4px;
 }
-.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container .action-container .action-name {
-  cursor: pointer;
-}
-.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container .action-container .action-name:hover {
-  filter: drop-shadow(0 0 3px red);
-}
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container .action-description {
   height: auto;
   max-height: 0;

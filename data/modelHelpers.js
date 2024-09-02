@@ -76,7 +76,7 @@ export const getCreatureData = (actor) => {
                     revealed: false, 
                     type: immunity.type, 
                     exceptions:  immunity.exceptions.reduce((acc, exception) => {  
-                      acc[exception] = { type: exception }
+                      acc[exception] = { type: exception.label ?? exception }
                       return acc;
                     }, {}),
                 };
@@ -90,7 +90,7 @@ export const getCreatureData = (actor) => {
                     type: weakness.type,
                     value: weakness.value, 
                     exceptions:  weakness.exceptions.reduce((acc, exception) => {  
-                      acc[exception] = { type: exception }
+                      acc[exception] = { type: exception.label ?? exception }
                       return acc;
                     }, {}),
                 };
@@ -104,11 +104,11 @@ export const getCreatureData = (actor) => {
                     type: resistance.type,
                     value: resistance.value, 
                     exceptions:  resistance.exceptions.reduce((acc, exception) => {  
-                      acc[exception] = { type: exception }
+                      acc[exception] = { type: exception.label ?? exception }
                       return acc;
                     }, {}),
                     doubleVs: resistance.doubleVs.reduce((acc, doubleVs) => {  
-                      acc[doubleVs] = { type: doubleVs }
+                      acc[doubleVs] = { type: doubleVs.label ?? doubleVs }
                       return acc;
                     }, {}),
                 };
@@ -152,8 +152,12 @@ export const getCreatureData = (actor) => {
             actions: Array.from(actor.items).reduce((acc, action) => {
               if(action.type === 'action' && action.system.actionType.value !== 'passive'){
                 acc[action.id] = {
-                  label: action.system.label,
-                  traits: action.system.traits.value.map(trait => ({ value: trait.value })),
+                  label: action.name,
+                  actions: action.system.actions.value ?? 'R',
+                  traits: action.system.traits.value.reduce((acc, trait) => {
+                    acc[trait] = { value: trait };
+                    return acc;
+                  }, {}),
                   description: action.system.description.value,
                 };
               }
@@ -163,15 +167,69 @@ export const getCreatureData = (actor) => {
             passives: Array.from(actor.items).reduce((acc, action) => {
               if(action.type === 'action' && action.system.actionType.value === 'passive'){
                 acc[action.id] = {
-                  label: action.system.label,
-                  traits: action.system.traits.value.map(trait => ({ value: trait.value })),
+                  label: action.name,
+                  traits: action.system.traits.value.reduce((acc, trait) => {
+                    acc[trait] = { value: trait };
+                    return acc;
+                  }, {}),
                   description: action.system.description.value,
                 };
               }
 
               return acc;
             }, {}),
-            // spells: ,
+            spells: Array.from(actor.items).reduce((acc, entry) => {
+              if(entry.type === 'spellcastingEntry'){
+                const levels = {};
+                actor.items.forEach(spell => {
+                  if(spell.type === 'spell' && spell.system.location.value === entry.id){
+                    const levelValue = spell.system.traits.value.includes("cantrip") ? 'Cantrips' : spell.system.location.heightenedLevel ?? spell.system.cast.focusPoints ? Math.ceil(monster.system.details.level.value / 2) : spell.system.level.value;
+                    const label = levelValue === 'Cantrips' ? levelValue : levelValue === 1 ? '1st Rank' : levelValue === 2 ? '2nd Rank' : levelValue === 3 ? '3rd Rank' : `${levelValue}th Rank`;
+
+                    var level = Object.values(levels).find(x => x.value === levelValue);
+                    if(!level) {
+                        level = { value: levelValue, spells: {} };
+                    }
+
+                    level.spells[spell._id] = {
+                        label: spell.name,
+                        img: spell.img,
+                        actions: spell.actionGlyph,
+                        defense: spell.system.defense?.save?.statistic ? {
+                          statistic: spell.system.defense.save.statistic,
+                          basic: spell.system.defense.save.basic,
+                        } : null,
+                        range: spell.system.range.value,
+                        traits: {
+                          rarity: spell.system.traits.rarity,
+                          traditions: spell.system.traits.traditions,
+                          values: spell.system.traits.value.reduce((acc, trait ) => {
+                            acc[trait] = { value: trait };
+                            return acc;
+                          }, {})
+                        },
+                        description: {
+                            gm: spell.system.description.gm,
+                            value: spell.system.description.value,
+                        }
+                    };
+
+                    levels[levelValue] = level;
+                  }
+                }); 
+
+                acc[entry.id] = {
+                  tradition: entry.system.tradition.value,
+                  category: entry.category,
+                  dc: { value: entry.system.spelldc.dc },
+                  mod: { value: entry.system.spelldc.mod },
+                  attack: { value: entry.system.spelldc.value },
+                  levels: levels,
+                };
+              }
+
+              return acc;
+            }, {}),
             notes: {
               public: { value: actor.system.details.publicNotes },
               private: { value: actor.system.details.privateNotes },

@@ -98,6 +98,7 @@
                 {{else}}
                     {{#with this.selected.monster}}
                         {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" 
+                            uuid=this.uuid
                             selected=../selected 
                             user=../user 
                             vagueDescriptions=../vagueDescriptions 

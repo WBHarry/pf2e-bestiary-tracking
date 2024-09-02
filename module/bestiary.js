@@ -129,7 +129,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         application: {
             id: "bestiary",
             template: "modules/pf2e-bestiary-tracking/templates/bestiary.hbs",
-            // scrollable: [".left-monster-container", ".right-monster-container-data", ".type-overview-container", ".spells-tab"]
+            scrollable: [".left-monster-container", ".right-monster-container-data", ".type-overview-container", ".spells-tab"]
         }
     }
 
@@ -951,10 +951,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     }
                 });
                 break;
-            case 'passives':
-                values = values.filter(x => x.type === 'action' && x.system.actionType.value === 'passive');
-                allRevealed = values.every(x => x.revealed);
-                break;
             case 'senses':
                 allRevealed = Object.values(this.selected.monster.system.senses.senses).every(x => x.revealed) && this.selected.monster.system.senses.perception.revealed && this.selected.monster.system.senses.details.revealed;
                 await this.selected.monster.update({
@@ -982,15 +978,32 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 });
                 break;
             case 'spell-level':
-                values = values.filter(spell => {
-                    const isSpellOfEntry = spell.type === 'spell' && spell.system.location.value === button.dataset.entryValue;
-                    if(isSpellOfEntry){
-                        const isCantrip = spell.system.traits.value.includes("cantrip");
-                        return button.dataset.spellLevel === 'Cantrips' ? isCantrip : !isCantrip && Number.parseInt(button.dataset.spellLevel) === spell.system.level.value;
-                    }
-
-                    return false;
-                }); 
+                allRevealed = Object.values(this.selected.monster.system.spells[button.dataset.entryValue].levels[button.dataset.spellLevel].spells).every(x => x.revealed);
+                const update = {
+                    system: {
+                        spells: Object.keys(this.selected.monster.system.spells).reduce((acc, entryKey) => {
+                            const entry = this.selected.monster.system.spells[entryKey];
+                            if(button.dataset.entryValue){
+                                acc[entryKey] = {
+                                    levels: Object.keys(entry.levels).reduce((acc, level) => {
+                                        if(level === button.dataset.spellLevel){
+                                            acc[level] = {
+                                                spells: Object.keys(entry.levels[level].spells).reduce((acc, spell) => {
+                                                    acc[spell] = { revealed: !allRevealed };
+                                                    return acc;
+                                                }, {})
+                                            }
+                                        }
+                                        return acc;
+                                    }, {})
+                                };
+                            }
+    
+                            return acc;
+                    }, {})} 
+                };
+                await this.selected.monster.update(update, { diff: true });
+                break;
             default:
                 allRevealed = keys.every(key => property[key].revealed);
                 await this.selected.monster.update({ [button.dataset.path]: keys.reduce((acc, key) => {
@@ -1488,28 +1501,19 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                             value: {
                                 revealed: false, 
                                 _id: id, 
-                                name: elements.misinformation.value, 
-                               
+                                label: elements.misinformation.value,
                                 type: 'action',
-                                system: {
-                                    description: { value: elements.description?.value },
-                                    traits: {
-                                        value: elements.traits.value ? JSON.parse(elements.traits.value).map(x => ({ 
-                                            revealed: false, 
-                                            value: x.value,
-                                        })) : []
-                                    }
-                                },
+                                description: elements.description?.value,
+                                traits: elements.traits.value ? JSON.parse(elements.traits.value).map(x => ({ 
+                                    revealed: false, 
+                                    value: x.value,
+                                })) : [],
                                 fake: true,
                             },
                         };
 
                         if(name === 'Action'){
-                            base.value.system.actions = { value : actionOptions[Number.parseInt(elements.actions.value)]?.value };
-                            base.value.system.actionType = { value: base.value.actions === 'R' ? 'reaction' : 'action' };
-                        }
-                        else {
-                            base.value.system.actionType = { value: 'passive' };
+                            base.value.actions = actionOptions[Number.parseInt(elements.actions.value)]?.value;
                         }
 
                         return { value: base, errors: [] };
@@ -1856,34 +1860,24 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static async updateData(event, element, formData){
-        const { pageText, npc, ...rest } = foundry.utils.expandObject(formData.object);
+        const { npc, system, ...rest } = foundry.utils.expandObject(formData.object);
         const npcFields = npc ? foundry.utils.flattenObject(npc) : {};
         const simpleFields = foundry.utils.flattenObject(rest);
-
-        if(pageText !== undefined){
-            await game.journal.getName(bestiaryJournalEntry).pages.get(this.selected.monster.system.details.playerNotes.document).update({ 'text.content': pageText });
-        }
 
         for(var property in npcFields){
             await foundry.utils.setProperty(this.selected.monster, property, npcFields[property]);
         }
 
+        await this.selected.monster.update({system : system });
+
         for(var property in simpleFields){
             await foundry.utils.setProperty(this, property, simpleFields[property]);
         }
 
-        if(pageText !== undefined){
-            await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-                action: socketEvent.MonsterEditingUpdate,
-                data: { },
-            });
-        } else {
-            await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-                action: socketEvent.UpdateBestiary,
-                data: { },
-            });
-        }
-        
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: { },
+        });
         Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
 

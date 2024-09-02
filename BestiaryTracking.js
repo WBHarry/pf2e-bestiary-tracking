@@ -207,7 +207,7 @@ const getCreatureData = (actor) => {
                     revealed: false, 
                     type: immunity.type, 
                     exceptions:  immunity.exceptions.reduce((acc, exception) => {  
-                      acc[exception] = { type: exception };
+                      acc[exception] = { type: exception.label ?? exception };
                       return acc;
                     }, {}),
                 };
@@ -221,7 +221,7 @@ const getCreatureData = (actor) => {
                     type: weakness.type,
                     value: weakness.value, 
                     exceptions:  weakness.exceptions.reduce((acc, exception) => {  
-                      acc[exception] = { type: exception };
+                      acc[exception] = { type: exception.label ?? exception };
                       return acc;
                     }, {}),
                 };
@@ -235,11 +235,11 @@ const getCreatureData = (actor) => {
                     type: resistance.type,
                     value: resistance.value, 
                     exceptions:  resistance.exceptions.reduce((acc, exception) => {  
-                      acc[exception] = { type: exception };
+                      acc[exception] = { type: exception.label ?? exception };
                       return acc;
                     }, {}),
                     doubleVs: resistance.doubleVs.reduce((acc, doubleVs) => {  
-                      acc[doubleVs] = { type: doubleVs };
+                      acc[doubleVs] = { type: doubleVs.label ?? doubleVs };
                       return acc;
                     }, {}),
                 };
@@ -283,8 +283,12 @@ const getCreatureData = (actor) => {
             actions: Array.from(actor.items).reduce((acc, action) => {
               if(action.type === 'action' && action.system.actionType.value !== 'passive'){
                 acc[action.id] = {
-                  label: action.system.label,
-                  traits: action.system.traits.value.map(trait => ({ value: trait.value })),
+                  label: action.name,
+                  actions: action.system.actions.value ?? 'R',
+                  traits: action.system.traits.value.reduce((acc, trait) => {
+                    acc[trait] = { value: trait };
+                    return acc;
+                  }, {}),
                   description: action.system.description.value,
                 };
               }
@@ -294,15 +298,68 @@ const getCreatureData = (actor) => {
             passives: Array.from(actor.items).reduce((acc, action) => {
               if(action.type === 'action' && action.system.actionType.value === 'passive'){
                 acc[action.id] = {
-                  label: action.system.label,
-                  traits: action.system.traits.value.map(trait => ({ value: trait.value })),
+                  label: action.name,
+                  traits: action.system.traits.value.reduce((acc, trait) => {
+                    acc[trait] = { value: trait };
+                    return acc;
+                  }, {}),
                   description: action.system.description.value,
                 };
               }
 
               return acc;
             }, {}),
-            // spells: ,
+            spells: Array.from(actor.items).reduce((acc, entry) => {
+              if(entry.type === 'spellcastingEntry'){
+                const levels = {};
+                actor.items.forEach(spell => {
+                  if(spell.type === 'spell' && spell.system.location.value === entry.id){
+                    const levelValue = spell.system.traits.value.includes("cantrip") ? 'Cantrips' : spell.system.location.heightenedLevel ?? spell.system.cast.focusPoints ? Math.ceil(monster.system.details.level.value / 2) : spell.system.level.value;
+
+                    var level = Object.values(levels).find(x => x.value === levelValue);
+                    if(!level) {
+                        level = { value: levelValue, spells: {} };
+                    }
+
+                    level.spells[spell._id] = {
+                        label: spell.name,
+                        img: spell.img,
+                        actions: spell.actionGlyph,
+                        defense: spell.system.defense?.save?.statistic ? {
+                          statistic: spell.system.defense.save.statistic,
+                          basic: spell.system.defense.save.basic,
+                        } : null,
+                        range: spell.system.range.value,
+                        traits: {
+                          rarity: spell.system.traits.rarity,
+                          traditions: spell.system.traits.traditions,
+                          values: spell.system.traits.value.reduce((acc, trait ) => {
+                            acc[trait] = { value: trait };
+                            return acc;
+                          }, {})
+                        },
+                        description: {
+                            gm: spell.system.description.gm,
+                            value: spell.system.description.value,
+                        }
+                    };
+
+                    levels[levelValue] = level;
+                  }
+                }); 
+
+                acc[entry.id] = {
+                  tradition: entry.system.tradition.value,
+                  category: entry.category,
+                  dc: { value: entry.system.spelldc.dc },
+                  mod: { value: entry.system.spelldc.mod },
+                  attack: { value: entry.system.spelldc.value },
+                  levels: levels,
+                };
+              }
+
+              return acc;
+            }, {}),
             notes: {
               public: { value: actor.system.details.publicNotes },
               private: { value: actor.system.details.privateNotes },
@@ -535,7 +592,8 @@ class Creature extends foundry.abstract.TypeDataModel {
                 revealed: new fields.BooleanField({ required: true, initial: false }),
                 fake: new fields.BooleanField({}),
                 label: new fields.StringField({ required: true }),
-                traits: new fields.ArrayField(new fields.SchemaField({
+                actions: new fields.StringField({ required: true }),
+                traits: new MappingField(new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
                     value: new fields.StringField({ required: true })
                 })),
@@ -545,11 +603,52 @@ class Creature extends foundry.abstract.TypeDataModel {
                 revealed: new fields.BooleanField({ required: true, initial: false }),
                 fake: new fields.BooleanField({}),
                 label: new fields.StringField({ required: true }),
-                traits: new fields.ArrayField(new fields.SchemaField({
+                traits: new MappingField(new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
                     value: new fields.StringField({ required: true })
                 })),
                 description: new fields.HTMLField({ required: true, initial: '' }),
+            })),
+            spells: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                tradition: new fields.StringField({ required: true }),
+                category: new fields.StringField({ required: true }),
+                dc: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.NumberField({ required: true, integer: true }),
+                }),
+                attack: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.NumberField({ required: true, integer: true }),
+                }),
+                mod: new fields.SchemaField({
+                    value: new fields.NumberField({ required: true, integer: true }),
+                }),
+                levels: new MappingField(new fields.SchemaField({
+                    value: new fields.StringField({ required: true }),
+                    spells: new MappingField(new fields.SchemaField({
+                        revealed: new fields.BooleanField({ required: true, initial: false }),
+                        label: new fields.StringField({ required: true }),
+                        img: new fields.StringField({ required: true }),
+                        actions: new fields.StringField({ required: true }),
+                        defense: new fields.SchemaField({
+                            statistic: new fields.StringField({}),
+                            basic: new fields.BooleanField({}),
+                        }, { required: false, nullable: true, initial: null }),
+                        range: new fields.StringField({}),
+                        traits: new fields.SchemaField({
+                            rarity: new fields.StringField({ required: true }),
+                            traditions: new fields.ArrayField(new fields.StringField({})),
+                            values: new MappingField(new fields.SchemaField({
+                                value: new fields.StringField({ required: true }),
+                            })),
+                        }),
+                        description: new fields.SchemaField({
+                            gm: new fields.HTMLField({ required: true }),
+                            value: new fields.HTMLField({ required: true }),
+                        }),
+                    })),
+                })),
             })),
             senses: new fields.SchemaField({
                 perception: new fields.SchemaField({
@@ -620,6 +719,48 @@ class Creature extends foundry.abstract.TypeDataModel {
         }, {});
     }
 
+    get sortedSpells(){
+        return Object.keys(this.spells).reduce((acc, entry) => {
+            acc[entry] = { 
+                ...this.spells[entry],
+                label: `${game.i18n.localize(CONFIG.PF2E.magicTraditions[this.spells[entry].tradition])} ${game.i18n.localize(CONFIG.PF2E.preparationType[this.spells[entry].category])} ${game.i18n.localize("PF2E.Item.Spell.Plural")}`,
+                levels: Object.keys(this.spells[entry].levels).reduce((acc, levelKey) => {
+                    const level = this.spells[entry].levels[levelKey];
+                    acc.push({
+                        ...level,
+                        key: levelKey,
+                        revealed: Object.values(level.spells).some(x => x.revealed),
+                        label: levelKey === 'Cantrips' ? 
+                            game.i18n.localize('PF2E.Actor.Creature.Spellcasting.Cantrips') : 
+                            game.i18n.format('PF2E.Item.Spell.Rank.Ordinal', { rank: game.i18n.format("PF2E.OrdinalNumber", { value: level.value, suffix: levelKey === '1' ? 'st' : levelKey === '2' ? 'nd' : levelKey === '3' ? 'rd' : 'th' }) }),
+                        spells: Object.keys(level.spells).reduce((acc, spell) => {
+                            acc[spell] = {
+                                ...level.spells[spell],
+                                defense: !level.spells[spell].defense ? null : 
+                                    { ...level.spells[spell].defense, label: level.spells[spell].defense.basic ? 
+                                        game.i18n.format('PF2E.InlineCheck.BasicWithSave', { save: game.i18n.localize(CONFIG.PF2E.saves[level.spells[spell].defense.statistic]) }) : 
+                                        game.i18n.localize(CONFIG.PF2E.saves[level.spells[spell].defense.statistic]) 
+                                    }
+                            };
+
+                            return acc;
+                        }, {}),
+                    });
+
+                    return acc;
+                }, []).sort((a, b) => {
+                    if(a.key === 'Cantrips' && b.key !== 'Cantrips') return -1;
+                    else if(a.key !== 'Cantrips' && b.key === 'Cantrips') return 1;
+                    else if(a.key === 'Cantrips' && b.key === 'Cantrips') return 0;
+
+                    return a.key - b.key;
+                }), 
+            };
+
+            return acc;
+        }, {});
+    }
+
     prepareDerivedData() {
         this.immunities = Object.keys(this.immunities).reduce((acc, key) => {
             const exceptionKeys = Object.keys(this.immunities[key].exceptions);
@@ -669,10 +810,11 @@ class Creature extends foundry.abstract.TypeDataModel {
             return acc;
         }, {});
 
+        const detailedInformation = game.settings.get('pf2e-bestiary-tracking', 'detailed-information-toggles');
         this.resistances = Object.keys(this.resistances).reduce((acc, key) => {
             const exceptionKeys = Object.keys(this.resistances[key].exceptions);
             const doubleKeys = Object.keys(this.resistances[key].doubleVs);
-            const revealedDoubleKeys = doubleKeys.filter(dbKey => this.resistances[key].doubleVs[dbKey].revealed);
+            const revealedDoubleKeys = doubleKeys.filter(dbKey => detailedInformation.exceptionsDouble || this.resistances[key].doubleVs[dbKey].revealed);
             acc[key] = {
                 ...this.resistances[key],
                 label: CONFIG.PF2E.resistanceTypes[this.resistances[key].type] ?? this.resistances[key].type,
@@ -702,9 +844,10 @@ class Creature extends foundry.abstract.TypeDataModel {
             return acc;
         }, {});
 
+        const speedDetails = this.speeds.details.value ? { details: this.speeds.details } : {};
         this.speeds.values = { 
             ...this.speeds.values,
-            details: this.speeds.details,
+            ...speedDetails,
         };
 
         this.traits = Object.keys(this.traits).reduce((acc, key) => {
@@ -742,6 +885,44 @@ class Creature extends foundry.abstract.TypeDataModel {
                         description: CONFIG.PF2E.traitsDescriptions[this.attacks[key].traits[trait].description] ?? this.attacks[key].traits[trait].description,
                         suffix: index !== traitKeys.length-1 ? ',&nbsp;' : ')',
                     };
+                    return acc;
+                }, {}),
+            };
+
+            return acc;
+        }, {});
+
+        this.actions = Object.keys(this.actions).reduce((acc, key) => {
+            const traitKeys = Object.keys(this.actions[key].traits);
+            acc[key] = { 
+                ...this.actions[key], 
+                traits: traitKeys.reduce((acc, trait, index) => {
+                    acc[trait] = {  
+                        ...this.actions[key].traits[trait],
+                        label: CONFIG.PF2E.npcAttackTraits[this.actions[key].traits[trait].value] ?? this.actions[key].traits[trait].value,
+                        description: CONFIG.PF2E.traitsDescriptions[this.actions[key].traits[trait].value] ?? '',
+                        suffix: index !== traitKeys.length-1 ? ',&nbsp;' : ''
+                    };
+
+                    return acc;
+                }, {}),
+            };
+
+            return acc;
+        }, {});
+
+        this.passives = Object.keys(this.passives).reduce((acc, key) => {
+            const traitKeys = Object.keys(this.passives[key].traits);
+            acc[key] = { 
+                ...this.passives[key], 
+                traits: traitKeys.reduce((acc, trait, index) => {
+                    acc[trait] = {  
+                        ...this.passives[key].traits[trait],
+                        label: CONFIG.PF2E.npcAttackTraits[this.passives[key].traits[trait].value] ?? this.passives[key].traits[trait].value,
+                        description: CONFIG.PF2E.traitsDescriptions[this.passives[key].traits[trait].value] ?? '',
+                        suffix: index !== traitKeys.length-1 ? ',&nbsp;' : ''
+                    };
+
                     return acc;
                 }, {}),
             };
@@ -4728,7 +4909,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
         application: {
             id: "bestiary",
             template: "modules/pf2e-bestiary-tracking/templates/bestiary.hbs",
-            // scrollable: [".left-monster-container", ".right-monster-container-data", ".type-overview-container", ".spells-tab"]
+            scrollable: [".left-monster-container", ".right-monster-container-data", ".type-overview-container", ".spells-tab"]
         }
     }
 
@@ -5530,7 +5711,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
         if(!game.user.isGM) return;
 
         isNPC(this.selected.monster) ? 'npc' : 'monster';
-        var values = Object.values(this.selected.monster, button.dataset.path);
+        Object.values(this.selected.monster, button.dataset.path);
 
         const property = foundry.utils.getProperty(this.selected.monster, button.dataset.path);
         const keys = Object.keys(property);
@@ -5546,10 +5727,6 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                         }, {}),
                     }
                 });
-                break;
-            case 'passives':
-                values = values.filter(x => x.type === 'action' && x.system.actionType.value === 'passive');
-                allRevealed = values.every(x => x.revealed);
                 break;
             case 'senses':
                 allRevealed = Object.values(this.selected.monster.system.senses.senses).every(x => x.revealed) && this.selected.monster.system.senses.perception.revealed && this.selected.monster.system.senses.details.revealed;
@@ -5578,15 +5755,32 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                 });
                 break;
             case 'spell-level':
-                values = values.filter(spell => {
-                    const isSpellOfEntry = spell.type === 'spell' && spell.system.location.value === button.dataset.entryValue;
-                    if(isSpellOfEntry){
-                        const isCantrip = spell.system.traits.value.includes("cantrip");
-                        return button.dataset.spellLevel === 'Cantrips' ? isCantrip : !isCantrip && Number.parseInt(button.dataset.spellLevel) === spell.system.level.value;
-                    }
-
-                    return false;
-                }); 
+                allRevealed = Object.values(this.selected.monster.system.spells[button.dataset.entryValue].levels[button.dataset.spellLevel].spells).every(x => x.revealed);
+                const update = {
+                    system: {
+                        spells: Object.keys(this.selected.monster.system.spells).reduce((acc, entryKey) => {
+                            const entry = this.selected.monster.system.spells[entryKey];
+                            if(button.dataset.entryValue){
+                                acc[entryKey] = {
+                                    levels: Object.keys(entry.levels).reduce((acc, level) => {
+                                        if(level === button.dataset.spellLevel){
+                                            acc[level] = {
+                                                spells: Object.keys(entry.levels[level].spells).reduce((acc, spell) => {
+                                                    acc[spell] = { revealed: !allRevealed };
+                                                    return acc;
+                                                }, {})
+                                            };
+                                        }
+                                        return acc;
+                                    }, {})
+                                };
+                            }
+    
+                            return acc;
+                    }, {})} 
+                };
+                await this.selected.monster.update(update, { diff: true });
+                break;
             default:
                 allRevealed = keys.every(key => property[key].revealed);
                 await this.selected.monster.update({ [button.dataset.path]: keys.reduce((acc, key) => {
@@ -6084,28 +6278,19 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                             value: {
                                 revealed: false, 
                                 _id: id, 
-                                name: elements.misinformation.value, 
-                               
+                                label: elements.misinformation.value,
                                 type: 'action',
-                                system: {
-                                    description: { value: elements.description?.value },
-                                    traits: {
-                                        value: elements.traits.value ? JSON.parse(elements.traits.value).map(x => ({ 
-                                            revealed: false, 
-                                            value: x.value,
-                                        })) : []
-                                    }
-                                },
+                                description: elements.description?.value,
+                                traits: elements.traits.value ? JSON.parse(elements.traits.value).map(x => ({ 
+                                    revealed: false, 
+                                    value: x.value,
+                                })) : [],
                                 fake: true,
                             },
                         };
 
                         if(name === 'Action'){
-                            base.value.system.actions = { value : actionOptions[Number.parseInt(elements.actions.value)]?.value };
-                            base.value.system.actionType = { value: base.value.actions === 'R' ? 'reaction' : 'action' };
-                        }
-                        else {
-                            base.value.system.actionType = { value: 'passive' };
+                            base.value.actions = actionOptions[Number.parseInt(elements.actions.value)]?.value;
                         }
 
                         return { value: base, errors: [] };
@@ -6450,34 +6635,24 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
     }
 
     static async updateData(event, element, formData){
-        const { pageText, npc, ...rest } = foundry.utils.expandObject(formData.object);
+        const { npc, system, ...rest } = foundry.utils.expandObject(formData.object);
         const npcFields = npc ? foundry.utils.flattenObject(npc) : {};
         const simpleFields = foundry.utils.flattenObject(rest);
-
-        if(pageText !== undefined){
-            await game.journal.getName(bestiaryJournalEntry).pages.get(this.selected.monster.system.details.playerNotes.document).update({ 'text.content': pageText });
-        }
 
         for(var property in npcFields){
             await foundry.utils.setProperty(this.selected.monster, property, npcFields[property]);
         }
 
+        await this.selected.monster.update({system : system });
+
         for(var property in simpleFields){
             await foundry.utils.setProperty(this, property, simpleFields[property]);
         }
 
-        if(pageText !== undefined){
-            await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-                action: socketEvent.MonsterEditingUpdate,
-                data: { },
-            });
-        } else {
-            await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-                action: socketEvent.UpdateBestiary,
-                data: { },
-            });
-        }
-        
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: { },
+        });
         Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
 
@@ -6931,7 +7106,7 @@ class RegisterHandlebarsHelpers {
         
         if(op && !use){
             for(var i = 0; i < keys.length; i++){
-                ret = ret + options.fn({ ...context[keys[i]], last: i === keys.length-1, index: i, length: keys.length });
+                ret = ret + options.fn({ ...context[keys[i]], key: keys[i], last: i === keys.length-1, index: i, length: keys.length });
             }
           
             return ret; 
@@ -6949,7 +7124,7 @@ class RegisterHandlebarsHelpers {
         if(keys.length === 0) return `<div style="margin-left: ${leftMargin}px;">${fallback}</div>`;
 
         for(var i = 0; i < keys.length; i++){
-            ret = ret + options.fn({ ...context[keys[i]], last: i === keys.length-1, index: i, length: keys.length });
+            ret = ret + options.fn({ ...context[keys[i]], key: keys[i], last: i === keys.length-1, index: i, length: keys.length });
         }
       
         return ret;
