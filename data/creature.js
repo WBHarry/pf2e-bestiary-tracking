@@ -15,8 +15,17 @@ export class Creature extends foundry.abstract.TypeDataModel {
             size: new fields.StringField({ required: true }),
             skills: new MappingField(new fields.SchemaField({
                 revealed: new fields.BooleanField({ required: true, initial: false }),
-                value: new fields.NumberField({ required: true, integer: true }),
-                totalModifier: new fields.NumberField({ required: true, integer: true }),
+                empty: new fields.BooleanField({ initial: false }),
+                lore: new fields.BooleanField({}),
+                note: new fields.StringField({}),
+                modifiers: new fields.ArrayField(new fields.SchemaField({
+                    kind: new fields.StringField({}),
+                    label: new fields.StringField({}),
+                    modifier: new fields.NumberField({ integer: true }),
+                }), { initial: []}),
+                label: new fields.StringField({}),
+                value: new fields.StringField({ required: true }),
+                totalModifier: new fields.NumberField({ required: false, integer: true }),
             })),
             abilities: new MappingField(new fields.SchemaField({
                 revealed: new fields.BooleanField({ required: true, initial: false }),
@@ -43,6 +52,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
             immunities: new MappingField(new fields.SchemaField({
                 revealed: new fields.BooleanField({ required: true, initial: false }),
                 fake: new fields.BooleanField({}),
+                empty: new fields.BooleanField({ initial: false }),
                 type: new fields.StringField({ required: true }),
                 exceptions: new MappingField(new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
@@ -52,6 +62,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
             weaknesses: new MappingField(new fields.SchemaField({
                 revealed: new fields.BooleanField({ required: true, initial: false }),
                 fake: new fields.BooleanField({}),
+                empty: new fields.BooleanField({ initial: false }),
                 type: new fields.StringField({ required: true }),
                 value: new fields.NumberField({ required: true, integer: true }),
                 exceptions: new MappingField(new fields.SchemaField({
@@ -62,6 +73,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
             resistances: new MappingField(new fields.SchemaField({
                 revealed: new fields.BooleanField({ required: true, initial: false }),
                 fake: new fields.BooleanField({}),
+                empty: new fields.BooleanField({ initial: false }),
                 type: new fields.StringField({ required: true }),
                 value: new fields.NumberField({ required: true, integer: true }),
                 exceptions: new MappingField(new fields.SchemaField({
@@ -84,6 +96,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
             attacks: new MappingField(new fields.SchemaField({
                 revealed: new fields.BooleanField({ required: true, initial: false }),
                 fake: new fields.BooleanField({}),
+                empty: new fields.BooleanField({}),
                 damageStatsRevealed: new fields.BooleanField({ required: true, initial: false }),
                 label: new fields.StringField({ required: true }),
                 actions: new fields.StringField({ required: true }),
@@ -113,6 +126,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
             actions: new MappingField(new fields.SchemaField({
                 revealed: new fields.BooleanField({ required: true, initial: false }),
                 fake: new fields.BooleanField({}),
+                empty: new fields.BooleanField({}),
                 label: new fields.StringField({ required: true }),
                 actions: new fields.StringField({ required: true }),
                 traits: new MappingField(new fields.SchemaField({
@@ -124,6 +138,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
             passives: new MappingField(new fields.SchemaField({
                 revealed: new fields.BooleanField({ required: true, initial: false }),
                 fake: new fields.BooleanField({}),
+                empty: new fields.BooleanField({}),
                 label: new fields.StringField({ required: true }),
                 traits: new MappingField(new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
@@ -131,47 +146,52 @@ export class Creature extends foundry.abstract.TypeDataModel {
                 })),
                 description: new fields.HTMLField({ required: true, initial: '' }),
             })),
-            spells: new MappingField(new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                tradition: new fields.StringField({ required: true }),
-                category: new fields.StringField({ required: true }),
-                dc: new fields.SchemaField({
+            spells: new fields.SchemaField({
+                fake: new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
-                    value: new fields.NumberField({ required: true, integer: true }),
-                }),
-                attack: new fields.SchemaField({
+                }, { nullable: true, initial: null }),
+                entries: new MappingField(new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
-                    value: new fields.NumberField({ required: true, integer: true }),
-                }),
-                mod: new fields.SchemaField({
-                    value: new fields.NumberField({ required: true, integer: true }),
-                }),
-                levels: new MappingField(new fields.SchemaField({
-                    value: new fields.StringField({ required: true }),
-                    spells: new MappingField(new fields.SchemaField({
+                    tradition: new fields.StringField({ required: true }),
+                    category: new fields.StringField({ required: true }),
+                    dc: new fields.SchemaField({
                         revealed: new fields.BooleanField({ required: true, initial: false }),
-                        label: new fields.StringField({ required: true }),
-                        img: new fields.StringField({ required: true }),
-                        actions: new fields.StringField({ required: true }),
-                        defense: new fields.SchemaField({
-                            statistic: new fields.StringField({}),
-                            basic: new fields.BooleanField({}),
-                        }, { required: false, nullable: true, initial: null }),
-                        range: new fields.StringField({}),
-                        traits: new fields.SchemaField({
-                            rarity: new fields.StringField({ required: true }),
-                            traditions: new fields.ArrayField(new fields.StringField({})),
-                            values: new MappingField(new fields.SchemaField({
-                                value: new fields.StringField({ required: true }),
-                            })),
-                        }),
-                        description: new fields.SchemaField({
-                            gm: new fields.HTMLField({ required: true }),
-                            value: new fields.HTMLField({ required: true }),
-                        }),
+                        value: new fields.NumberField({ required: true, integer: true }),
+                    }),
+                    attack: new fields.SchemaField({
+                        revealed: new fields.BooleanField({ required: true, initial: false }),
+                        value: new fields.NumberField({ required: true, integer: true }),
+                    }),
+                    mod: new fields.SchemaField({
+                        value: new fields.NumberField({ required: true, integer: true }),
+                    }),
+                    levels: new MappingField(new fields.SchemaField({
+                        value: new fields.StringField({ required: true }),
+                        spells: new MappingField(new fields.SchemaField({
+                            revealed: new fields.BooleanField({ required: true, initial: false }),
+                            label: new fields.StringField({ required: true }),
+                            img: new fields.StringField({ required: true }),
+                            actions: new fields.StringField({ required: true }),
+                            defense: new fields.SchemaField({
+                                statistic: new fields.StringField({}),
+                                basic: new fields.BooleanField({}),
+                            }, { required: false, nullable: true, initial: null }),
+                            range: new fields.StringField({}),
+                            traits: new fields.SchemaField({
+                                rarity: new fields.StringField({ required: true }),
+                                traditions: new fields.ArrayField(new fields.StringField({})),
+                                values: new MappingField(new fields.SchemaField({
+                                    value: new fields.StringField({ required: true }),
+                                })),
+                            }),
+                            description: new fields.SchemaField({
+                                gm: new fields.HTMLField({ required: true }),
+                                value: new fields.HTMLField({ required: true }),
+                            }),
+                        })),
                     })),
-                })),
-            })),
+                }))
+            }),
             senses: new fields.SchemaField({
                 perception: new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
@@ -196,6 +216,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
                 values: new MappingField(new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
                     fake: new fields.BooleanField({}),
+                    empty: new fields.BooleanField({ initial: false }),
                     value: new fields.StringField({ required: true }),
                 })),
             }),
@@ -234,56 +255,69 @@ export class Creature extends foundry.abstract.TypeDataModel {
     }
 
     get allLanguages(){
-        return Object.keys(this.languages.values).reduce((acc, key) => {
-            acc[key] = { ...this.languages.values[key], label: CONFIG.PF2E.languages[this.languages.values[key].value] ?? this.languages.values[key].value };
-
-            return acc;
-        }, {});
+        const languageDetails = this.languages.details.value ? { details: { ...this.languages.details, label: this.languages.details.value, isDetails: true } } : {};
+        return {
+            ...Object.keys(this.languages.values).reduce((acc, key) => {
+                acc[`values.${key}`] = { ...this.languages.values[key], label: CONFIG.PF2E.languages[this.languages.values[key].value] ?? this.languages.values[key].value };
+    
+                return acc;
+            }, {}),
+            ...languageDetails,
+        };
     }
 
     get sortedSpells(){
-        return Object.keys(this.spells).reduce((acc, entry) => {
-            acc[entry] = { 
-                ...this.spells[entry],
-                label: `${game.i18n.localize(CONFIG.PF2E.magicTraditions[this.spells[entry].tradition])} ${game.i18n.localize(CONFIG.PF2E.preparationType[this.spells[entry].category])} ${game.i18n.localize("PF2E.Item.Spell.Plural")}`,
-                levels: Object.keys(this.spells[entry].levels).reduce((acc, levelKey) => {
-                    const level = this.spells[entry].levels[levelKey];
-                    acc.push({
-                        ...level,
-                        key: levelKey,
-                        revealed: Object.values(level.spells).some(x => x.revealed),
-                        label: levelKey === 'Cantrips' ? 
-                            game.i18n.localize('PF2E.Actor.Creature.Spellcasting.Cantrips') : 
-                            game.i18n.format('PF2E.Item.Spell.Rank.Ordinal', { rank: game.i18n.format("PF2E.OrdinalNumber", { value: level.value, suffix: levelKey === '1' ? 'st' : levelKey === '2' ? 'nd' : levelKey === '3' ? 'rd' : 'th' }) }),
-                        spells: Object.keys(level.spells).reduce((acc, spell) => {
-                            acc[spell] = {
-                                ...level.spells[spell],
-                                defense: !level.spells[spell].defense ? null : 
-                                    { ...level.spells[spell].defense, label: level.spells[spell].defense.basic ? 
-                                        game.i18n.format('PF2E.InlineCheck.BasicWithSave', { save: game.i18n.localize(CONFIG.PF2E.saves[level.spells[spell].defense.statistic]) }) : 
-                                        game.i18n.localize(CONFIG.PF2E.saves[level.spells[spell].defense.statistic]) 
-                                    }
-                            };
-
-                            return acc;
-                        }, {}),
-                    });
-
-                    return acc;
-                }, []).sort((a, b) => {
-                    if(a.key === 'Cantrips' && b.key !== 'Cantrips') return -1;
-                    else if(a.key !== 'Cantrips' && b.key === 'Cantrips') return 1;
-                    else if(a.key === 'Cantrips' && b.key === 'Cantrips') return 0;
-
-                    return a.key - b.key;
-                }), 
-            };
-
-            return acc;
-        }, {});
+        return {
+            fake: this.spells.fake,
+            entries: Object.keys(this.spells.entries).reduce((acc, entry) => {
+                acc[entry] = { 
+                    ...this.spells.entries[entry],
+                    label: `${game.i18n.localize(CONFIG.PF2E.magicTraditions[this.spells.entries[entry].tradition])} ${game.i18n.localize(CONFIG.PF2E.preparationType[this.spells.entries[entry].category])} ${game.i18n.localize("PF2E.Item.Spell.Plural")}`,
+                    levels: Object.keys(this.spells.entries[entry].levels).reduce((acc, levelKey) => {
+                        const level = this.spells.entries[entry].levels[levelKey];
+                        acc.push({
+                            ...level,
+                            key: levelKey,
+                            revealed: Object.values(level.spells).some(x => x.revealed),
+                            label: levelKey === 'Cantrips' ? 
+                                game.i18n.localize('PF2E.Actor.Creature.Spellcasting.Cantrips') : 
+                                game.i18n.format('PF2E.Item.Spell.Rank.Ordinal', { rank: game.i18n.format("PF2E.OrdinalNumber", { value: level.value, suffix: levelKey === '1' ? 'st' : levelKey === '2' ? 'nd' : levelKey === '3' ? 'rd' : 'th' }) }),
+                            spells: Object.keys(level.spells).reduce((acc, spell) => {
+                                acc[spell] = {
+                                    ...level.spells[spell],
+                                    defense: !level.spells[spell].defense ? null : 
+                                        { ...level.spells[spell].defense, label: level.spells[spell].defense.basic ? 
+                                            game.i18n.format('PF2E.InlineCheck.BasicWithSave', { save: game.i18n.localize(CONFIG.PF2E.saves[level.spells[spell].defense.statistic]) }) : 
+                                            game.i18n.localize(CONFIG.PF2E.saves[level.spells[spell].defense.statistic]) 
+                                        }
+                                };
+    
+                                return acc;
+                            }, {}),
+                        });
+    
+                        return acc;
+                    }, []).sort((a, b) => {
+                        if(a.key === 'Cantrips' && b.key !== 'Cantrips') return -1;
+                        else if(a.key !== 'Cantrips' && b.key === 'Cantrips') return 1;
+                        else if(a.key === 'Cantrips' && b.key === 'Cantrips') return 0;
+    
+                        return a.key - b.key;
+                    }), 
+                };
+    
+                return acc;
+            }, {})
+        };
     }
 
     prepareDerivedData() {
+        this.saves = {
+            fortitude: { ...this.saves.fortitude, label: `${this.saves.fortitude.value > 0 ? '+' : ''}${this.saves.fortitude.value}` },
+            reflex: { ...this.saves.reflex, label: `${this.saves.reflex.value > 0 ? '+' : ''}${this.saves.reflex.value}` },
+            will: { ...this.saves.will, label: `${this.saves.will.value > 0 ? '+' : ''}${this.saves.will.value}` },
+        };
+
         this.immunities = Object.keys(this.immunities).reduce((acc, key) => {
             const exceptionKeys = Object.keys(this.immunities[key].exceptions);
             acc[key] = {
@@ -388,8 +422,12 @@ export class Creature extends foundry.abstract.TypeDataModel {
         }, {});
 
         this.skills = Object.keys(this.skills).reduce((acc, key) => {
-            if(this.skills[key].value > 0){
-                acc[key] = { ...this.skills[key], label: CONFIG.PF2E.skills[key]?.label ?? key };
+            const skill = this.skills[key];
+            if(key === 'empty' || skill.value > 0){
+                acc[key] = { 
+                    ...skill, 
+                    label: skill.lore ? skill.label : CONFIG.PF2E.skills[key]?.label ?? (key === 'empty' ? skill.value : key)
+                };
             }
 
             return acc;

@@ -933,9 +933,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     static async toggleAllRevealed(_, button){
         if(!game.user.isGM) return;
 
-        const category = isNPC(this.selected.monster) ? 'npc' : 'monster';
-        var values = Object.values(this.selected.monster, button.dataset.path);
-
         const property = foundry.utils.getProperty(this.selected.monster, button.dataset.path);
         const keys = Object.keys(property);
         var allRevealed = false;
@@ -978,29 +975,31 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 });
                 break;
             case 'spell-level':
-                allRevealed = Object.values(this.selected.monster.system.spells[button.dataset.entryValue].levels[button.dataset.spellLevel].spells).every(x => x.revealed);
+                allRevealed = Object.values(this.selected.monster.system.spells.entries[button.dataset.entryValue].levels[button.dataset.spellLevel].spells).every(x => x.revealed);
                 const update = {
                     system: {
-                        spells: Object.keys(this.selected.monster.system.spells).reduce((acc, entryKey) => {
-                            const entry = this.selected.monster.system.spells[entryKey];
-                            if(button.dataset.entryValue){
-                                acc[entryKey] = {
-                                    levels: Object.keys(entry.levels).reduce((acc, level) => {
-                                        if(level === button.dataset.spellLevel){
-                                            acc[level] = {
-                                                spells: Object.keys(entry.levels[level].spells).reduce((acc, spell) => {
-                                                    acc[spell] = { revealed: !allRevealed };
-                                                    return acc;
-                                                }, {})
+                        spells: {
+                            entries: Object.keys(this.selected.monster.system.spells.entries).reduce((acc, entryKey) => {
+                                const entry = this.selected.monster.system.spells.entries[entryKey];
+                                if(button.dataset.entryValue){
+                                    acc[entryKey] = {
+                                        levels: Object.keys(entry.levels).reduce((acc, level) => {
+                                            if(level === button.dataset.spellLevel){
+                                                acc[level] = {
+                                                    spells: Object.keys(entry.levels[level].spells).reduce((acc, spell) => {
+                                                        acc[spell] = { revealed: !allRevealed };
+                                                        return acc;
+                                                    }, {})
+                                                }
                                             }
-                                        }
-                                        return acc;
-                                    }, {})
-                                };
-                            }
-    
-                            return acc;
-                    }, {})} 
+                                            return acc;
+                                        }, {})
+                                    };
+                                }
+        
+                                return acc;
+                            }, {})}
+                        } 
                 };
                 await this.selected.monster.update(update, { diff: true });
                 break;

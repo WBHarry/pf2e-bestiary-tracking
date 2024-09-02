@@ -434,13 +434,13 @@
                             <div class="data-chip-container flexrow">
                                 {{#if this.user.isGM}}
                                     {{#each this.system.allLanguages as |language key|}}
-                                        <div class="data-chip data-container secondary-container {{PF2EBTToggleContainer ../user language}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState language}}" data-action="toggleRevealed" data-path="{{concat 'system.languages.values.' key}}" data-fake="{{language.fake}}">
+                                        <div class="data-chip data-container secondary-container {{PF2EBTToggleContainer ../user language}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState language}}" data-action="toggleRevealed" data-path="{{concat 'system.languages.' key}}" data-fake="{{language.fake}}">
                                             {{localize language.label}}
                                         </div>
                                     {{/each}}
                                 {{else}}
                                     {{#PF2EBTFilter 'revealed' '?' 9 this.system.allLanguages}}
-                                        <div class="data-chip data-container secondary-container" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat 'system.languages.values.' @key}}">
+                                        <div class="data-chip data-container secondary-container" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}">
                                             {{localize this.value}}
                                         </div>
                                     {{/PF2EBTFilter}}
@@ -462,13 +462,13 @@
                             {{#if this.user.isGM}}
                                 {{#each this.system.skills as |skill key|}}
                                     <div class="data-chip data-container secondary-container {{PF2EBTToggleContainer ../user skill}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState skill}}" data-action="toggleRevealed" data-path="{{concat 'system.skills.' key}}" data-name="Skills" data-vague-property="skills">
-                                        {{localize skill.label}}&nbsp;{{PF2EBTMonsterValue skill ../vagueDescriptions.properties.skills "true" }}
+                                        {{localize skill.label}}&nbsp;{{#if (not (eq key 'empty'))}}{{PF2EBTMonsterValue skill ../vagueDescriptions.properties.skills "true" }}{{/if}}
                                     </div>
                                 {{/each}}
                             {{else}}
                                 {{#PF2EBTFilter 'revealed' '?' 9 this.system.skills}}
                                     <div class="data-chip data-container secondary-container" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat 'system.skills.' @key}}">
-                                        {{localize this.label}}&nbsp;{{PF2EBTMonsterValue this ../vagueDescriptions.properties.skills "true" }}
+                                        {{localize this.label}}&nbsp;{{#if (not (eq key 'empty'))}}{{PF2EBTMonsterValue this ../vagueDescriptions.properties.skills "true" }}{{/if}}
                                     </div>
                                 {{/PF2EBTFilter}}
                             {{/if}}
@@ -493,11 +493,11 @@
                                 <div class="attack-container">
                                     <div class="attack-inner-container">
                                         <div class="attack-header secondary-container {{PF2EBTToggleContainer ../user attack}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState attack}}" data-action="toggleRevealed" data-path="{{concat 'system.attacks.' key}}" data-fake="{{attack.fake}}">
-                                            {{#if (not (eq attack.label 'None'))}}
+                                            {{#if (not attack.empty)}}
                                                 <div>{{localize attack.range}}</div>
                                                 <span class="action-glyph">1</span>
                                             {{/if}}
-                                            <div>{{attack.label}}</div>
+                                            <div>{{localize attack.label}}</div>
                                             {{#if (gt (PF2EBTNrKeys attack.traits) 0)}}
                                                 <div class="attack-traits-container">(
                                                     {{#each attack.traits as |trait index|}}
@@ -543,7 +543,7 @@
                                 <div class="attack-container">
                                     <div class="attack-inner-container">
                                         <div class="attack-header secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat 'system.attacks.' key}}" data-fake="{{this.fake}}">
-                                            {{#if (not (eq this.label 'None'))}}
+                                            {{#if (not this.empty)}}
                                                 <div>{{localize this.range}}</div>
                                                 <span class="action-glyph">1</span>
                                             {{/if}}
@@ -608,7 +608,7 @@
                             {{#each this.system.actions as |action key|}}
                                 <div class="actions-container secondary-container {{PF2EBTToggleContainer ../user action}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState action}}" data-action="toggleRevealed" data-path="{{concat 'system.actions.' key}}" data-fake="{{action.fake}}">
                                     <div class="action-container">
-                                        <div class="pf2e-bestiary-bold {{#if (and (not (eq action.name 'None')) (gt action.description.length 0))}}primary-hover-container{{/if}}" data-action="toggleAbility" data-ability="{{key}}">{{action.label}}</div>
+                                        <div class="pf2e-bestiary-bold {{#if (and (not (eq action.name 'None')) (gt action.description.length 0))}}primary-hover-container{{/if}}" data-action="toggleAbility" data-ability="{{key}}">{{localize action.label}}</div>
                                         <span class="action-glyph">{{action.actions}}</span>
                                         {{#if (gt (PF2EBTNrKeys action.traits) 0)}}
                                             <div class="attack-traits-container">(
@@ -640,7 +640,7 @@
                                             {{#if (not ../hideAbilityDescriptions)}}data-action="toggleAbility"{{/if}}
                                             data-ability="{{this.key}}"
                                         >
-                                            {{this.label}}
+                                            {{localize this.label}}
                                         </div>
                                         <span class="action-glyph">{{this.actions}}</span>
                                         {{#if (gt (PF2EBTNrKeys this.traits) 0)}}
@@ -678,7 +678,7 @@
                             {{#each this.system.passives as |passive key|}}
                                 <div class="actions-container secondary-container {{PF2EBTToggleContainer ../user passive}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState passive}}" data-action="toggleRevealed" data-path="{{concat 'system.passives.' key}}" data-fake="{{passive.fake}}">
                                     <div class="action-container">
-                                        <div class="pf2e-bestiary-bold {{#if (and (not (eq passive.name 'None')) (gt passive.description.length 0))}}primary-hover-container{{/if}}" data-action="toggleAbility" data-ability="{{key}}">{{passive.label}}</div>
+                                        <div class="pf2e-bestiary-bold {{#if (and (not (eq passive.name 'None')) (gt passive.description.length 0))}}primary-hover-container{{/if}}" data-action="toggleAbility" data-ability="{{key}}">{{localize passive.label}}</div>
                                         {{#if (gt (PF2EBTNrKeys passive.traits) 0)}}
                                             <div class="attack-traits-container">(
                                                 {{#each passive.traits as |trait index|}}
@@ -709,7 +709,7 @@
                                             {{#if (not ../hideAbilityDescriptions)}}data-action="toggleAbility"{{/if}}
                                             data-ability="{{this.key}}"
                                         >
-                                            {{this.label}}
+                                            {{localize this.label}}
                                         </div>
                                         {{#if (gt (PF2EBTNrKeys this.traits) 0)}}
                                             <div class="attack-traits-container">
@@ -733,7 +733,7 @@
         </div>
 
         <div class="tab {{this.tabs.spells.cssClass}} spells-tab" data-group="primary" data-tab="spells">
-            {{#if (and (not this.user.isGM) this.system.sortedSpells.fake)}}
+            {{!-- {{#if (and (not this.user.isGM) this.system.sortedSpells.fake)}}
                 {{#if this.spells.fake.revealed}}
                     <div class="spells-unknown">{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
                 {{else}}
@@ -744,22 +744,37 @@
                 <div class="secondary-container {{PF2EBTToggleContainer this.user this.spells.fake}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.spells.fake}}" data-action="toggleRevealed" data-path="items.Spells-None">{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
             {{/if}}
             
-            {{#if (and (not this.user.isGM) (and (not this.system.sortedSpells.fake) (eq (PF2EBTNrKeys this.spells.entries 'revealed') 0)))}}<div class="spells-unknown">{{localize "PF2EBestiary.Bestiary.Miscellaneous.Unknown"}}</div>{{/if}}
+            {{#if (and (not this.user.isGM) (and (not this.system.sortedSpells.fake) (eq (PF2EBTNrKeys this.spells.entries 'revealed') 0)))}}<div class="spells-unknown">{{localize "PF2EBestiary.Bestiary.Miscellaneous.Unknown"}}</div>{{/if}} --}}
 
-            {{#if (not this.system.sortedSpells.fake)}}
-                {{#each this.system.sortedSpells as |entry entryKey|}}
+            {{#if this.system.spells.fake}}
+                {{#if this.user.isGM}}
+                    <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.spells.fake}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.spells.fake}}" data-action="toggleRevealed" data-path="system.spells.fake">{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
+                {{else}}
+                    {{#if this.system.spells.fake.revealed }}
+                        <div class="spells-unknown">{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
+                    {{else}}
+                        <div class="spells-unknown">{{localize "PF2EBestiary.Bestiary.Miscellaneous.Unknown"}}...</div>
+                    {{/if}}
+                {{/if}}
+            {{else}}
+                {{#if (and (not this.user.isGM) (eq (PF2EBTNrKeys this.system.spells.entries 'revealed') 0))}}
+                    <div class="spells-unknown">{{localize "PF2EBestiary.Bestiary.Miscellaneous.Unknown"}}...</div>
+                {{/if}}
+            {{/if}}
+            {{#if (not this.system.spells.fake)}}
+                {{#each this.system.sortedSpells.entries as |entry entryKey|}}
                     {{#if (or ../user.isGM entry.revealed)}}
                         <div class="data-section spell-section">
                             <div class="data-header primary-container">
                                 <div class="bestiary-fakable-container">
                                     <div class="data-header-label">
-                                        <div class="flex-value secondary-container {{PF2EBTToggleContainer ../user entry}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState entry}}" data-action="toggleRevealed" data-path="{{concat "system.spells." entryKey}}">{{entry.label}}</div>
+                                        <div class="flex-value secondary-container {{PF2EBTToggleContainer ../user entry}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState entry}}" data-action="toggleRevealed" data-path="{{concat "system.spells.entries." entryKey}}">{{entry.label}}</div>
                                         {{#if (or ../user.isGM entry.dc.revealed)}}
                                             <div 
                                                 class="secondary-container {{PF2EBTToggleContainer ../user entry.dc}}" 
                                                 style="{{PF2EBTToggleContainerOverride ../contrastRevealedState entry.dc}}" 
                                                 data-action="toggleRevealed" 
-                                                data-path="{{concat "system.spells." entryKey ".dc"}}">
+                                                data-path="{{concat "system.spells.entries." entryKey ".dc"}}">
                                                     {{localize "PF2E.NPC.Spells.DCLabel"}}:&nbsp;{{PF2EBTMonsterValue entry.dc ../vagueDescriptions.properties.spells}}
                                             </div>
                                         {{/if}}
@@ -768,7 +783,7 @@
                                                 class="secondary-container {{PF2EBTToggleContainer ../user entry.attack}}" 
                                                 style="{{PF2EBTToggleContainerOverride ../contrastRevealedState entry.attack}}" 
                                                 data-action="toggleRevealed"
-                                                data-path="{{concat "system.spells." entryKey ".attack"}}">
+                                                data-path="{{concat "system.spells.entries." entryKey ".attack"}}">
                                                 {{localize "PF2E.NPC.Spells.AttackLabel"}}:&nbsp;{{PF2EBTMonsterValue entry.attack ../vagueDescriptions.properties.spells}}
                                             </div>
                                         {{/if}}
@@ -779,14 +794,14 @@
                                 <table>
                                     {{#each entry.levels}}
                                         {{#if (or ../../user.isGM this.revealed)}}
-                                            <tr class="spell-header-row tertiary-container {{#if ../../user.isGM}}primary-hover-container{{/if}}" {{#if ../../user.isGM}}data-action="toggleAllRevealed"{{/if}} data-path="{{concat "system.spells." @../key ".levels." this.key}}" data-type="spell-level" data-entry-value="{{@../key}}" data-spell-level="{{this.value}}">
+                                            <tr class="spell-header-row tertiary-container {{#if ../../user.isGM}}primary-hover-container{{/if}}" {{#if ../../user.isGM}}data-action="toggleAllRevealed"{{/if}} data-path="{{concat "system.spells.entries." @../key ".levels." this.key}}" data-type="spell-level" data-entry-value="{{@../key}}" data-spell-level="{{this.value}}">
                                                 <th class="spell-name-cell">{{this.label}}</th>
                                                 <th class="spell-cell defense">{{localize "Defense"}}</th>
                                                 <th class="spell-cell range">{{localize "Range"}}</th>
                                             </tr>
                                             {{#each this.spells}}
                                                 {{#if (or ../../../user.isGM this.revealed)}}
-                                                    <tr class="spell-body-row spell-container {{PF2EBTToggleContainer ../../../user this}} {{#if (eq (PF2EBTEven @key) 0)}}even{{/if}}" style="{{PF2EBTToggleContainerOverride ../../../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.spells." @../../key ".levels." ../key ".spells." @key}}">
+                                                    <tr class="spell-body-row spell-container {{PF2EBTToggleContainer ../../../user this}} {{#if (eq (PF2EBTEven @key) 0)}}even{{/if}}" style="{{PF2EBTToggleContainerOverride ../../../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.spells.entries." @../../key ".levels." ../key ".spells." @key}}">
                                                         <td class="spell-name-cell body actions-container">
                                                             <div class="spell-data-container">
                                                                 <img src="{{this.img}}" />

@@ -15,6 +15,71 @@ export const toggleNumberField = () => new fields.SchemaField({
 }) 
 
 export const getCreatureData = (actor) => {
+    const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
+    const weaknessesKeys = Object.keys(actor.system.attributes.weaknesses);
+    const resistancesKeys = Object.keys(actor.system.attributes.resistances);
+    const attackKeys = Object.keys(actor.system.actions);
+    const itemKeys = Array.from(actor.items);
+
+    const spellEntries = itemKeys.reduce((acc, entry) => {
+      if(entry.type === 'spellcastingEntry'){
+        const levels = {};
+        actor.items.forEach(spell => {
+          if(spell.type === 'spell' && spell.system.location.value === entry.id){
+            const levelValue = spell.system.traits.value.includes("cantrip") ? 'Cantrips' : spell.system.location.heightenedLevel ?? spell.system.cast.focusPoints ? Math.ceil(monster.system.details.level.value / 2) : spell.system.level.value;
+            const label = levelValue === 'Cantrips' ? levelValue : levelValue === 1 ? '1st Rank' : levelValue === 2 ? '2nd Rank' : levelValue === 3 ? '3rd Rank' : `${levelValue}th Rank`;
+
+            var level = Object.values(levels).find(x => x.value === levelValue);
+            if(!level) {
+                level = { value: levelValue, spells: {} };
+            }
+
+            level.spells[spell._id] = {
+                label: spell.name,
+                img: spell.img,
+                actions: spell.actionGlyph,
+                defense: spell.system.defense?.save?.statistic ? {
+                  statistic: spell.system.defense.save.statistic,
+                  basic: spell.system.defense.save.basic,
+                } : null,
+                range: spell.system.range.value,
+                traits: {
+                  rarity: spell.system.traits.rarity,
+                  traditions: spell.system.traits.traditions,
+                  values: spell.system.traits.value.reduce((acc, trait ) => {
+                    acc[trait] = { value: trait };
+                    return acc;
+                  }, {})
+                },
+                description: {
+                    gm: spell.system.description.gm,
+                    value: spell.system.description.value,
+                }
+            };
+
+            levels[levelValue] = level;
+          }
+        }); 
+
+        acc[entry.id] = {
+          tradition: entry.system.tradition.value,
+          category: entry.category,
+          dc: { value: entry.system.spelldc.dc },
+          mod: { value: entry.system.spelldc.mod },
+          attack: { value: entry.system.spelldc.value },
+          levels: levels,
+        };
+      }
+
+      return acc;
+    }, {});
+
+    const hasSpells = Object.keys(spellEntries).length > 0;
+    const spells = {
+      ...(hasSpells ? {} : { fake: { revealed: false } }),
+      entries: hasSpells ? spellEntries : {},
+    };
+
     return {
         type: 'pf2e-bestiary-tracking.creature',
         name: actor.name,
@@ -32,10 +97,11 @@ export const getCreatureData = (actor) => {
               acc[trait] = { value: trait };
               return acc;
             }, {}),
-            skills: Object.keys(actor.system.skills).reduce((acc, key) => {
-              acc[key] = { value: Number.parseInt(actor.system.skills[key].base), totalModifier: Number.parseInt(actor.system.skills[key].totalModifier) };
+            skills: Object.values(actor.system.skills).some(x => x.base > 0) ? Object.keys(actor.system.skills).reduce((acc, key) => {
+              const skill = actor.system.skills[key];
+              acc[key] = { value: skill.base, lore: skill.lore, note: skill.note, modifiers: skill.modifiers.filter(x => x.slug !== 'base').map(x => ({ kind: x.kind, label: x.label, modifier: x.modifier })), label: skill.label, totalModifier: Number.parseInt(skill.totalModifier) };
               return acc;
-            }, {}),
+            }, {}) : { empty: { empty: true, value: 'PF2EBestiary.Miscellaneous.None' } },
             saves: {
               fortitude: { value: actor.system.saves.fortitude.value },
               reflex: { value: actor.system.saves.reflex.value },
@@ -65,12 +131,12 @@ export const getCreatureData = (actor) => {
             },
             languages: {
               details: { value: actor.system.details.languages.details },
-              values: actor.system.details.languages.value.reduce((acc, language) => {
+              values: (actor.system.details.languages.value.length > 0 || actor.system.details.languages.details) ? actor.system.details.languages.value.reduce((acc, language) => {
                 acc[language] = { value: language };
                 return acc;
-              }, {})
+              }, {}) : { empty: { empty: true, value: 'PF2EBestiary.Miscellaneous.None', exceptions: {} } }
             },
-            immunities: Object.keys(actor.system.attributes.immunities).reduce((acc, key) => {
+            immunities: immunitiesKeys.length > 0 ? immunitiesKeys.reduce((acc, key) => {
                 const immunity = actor.system.attributes.immunities[key];
                 acc[getIWRString(immunity)] = { 
                     revealed: false, 
@@ -82,8 +148,8 @@ export const getCreatureData = (actor) => {
                 };
 
                 return acc;
-            }, {}),
-            weaknesses: Object.keys(actor.system.attributes.weaknesses).reduce((acc, key) => {
+            }, {}) : { empty: { empty: true, type: 'PF2EBestiary.Miscellaneous.None', exceptions: {} } },
+            weaknesses: weaknessesKeys.length > 0 ? weaknessesKeys.reduce((acc, key) => {
                 const weakness = actor.system.attributes.weaknesses[key];
                 acc[getIWRString(weakness)] = { 
                     revealed: false, 
@@ -96,8 +162,8 @@ export const getCreatureData = (actor) => {
                 };
 
                 return acc;
-            }, {}),
-            resistances: Object.keys(actor.system.attributes.resistances).reduce((acc, key) => {
+            }, {}) : { empty: { empty: true, type: 'PF2EBestiary.Miscellaneous.None', exceptions: {} } },
+            resistances: resistancesKeys.length > 0 ? resistancesKeys.reduce((acc, key) => {
                 const resistance = actor.system.attributes.resistances[key];
                 acc[getIWRString(resistance)] = { 
                     revealed: false, 
@@ -114,8 +180,8 @@ export const getCreatureData = (actor) => {
                 };
 
                 return acc;
-            }, {}),
-            attacks: Object.keys(actor.system.actions).reduce((acc, actionKey) => {
+            }, {}) : { empty: { empty: true, type: 'PF2EBestiary.Miscellaneous.None', exceptions: {} } },
+            attacks: attackKeys.length > 0 ? attackKeys.reduce((acc, actionKey) => {
               const attack = actor.system.actions[actionKey];
               const item = actor.items.get(attack.item.id);
               
@@ -148,8 +214,8 @@ export const getCreatureData = (actor) => {
               }
 
               return acc;
-            }, {}),
-            actions: Array.from(actor.items).reduce((acc, action) => {
+            }, {}) : { empty: { empty: true, label: 'PF2EBestiary.Miscellaneous.None', totalModifier: 0, isMelee: false, damageInstances: {}, traits: {}, variants: {}, rules: {} } },
+            actions: itemKeys.filter(action => action.type === 'action' && action.system.actionType.value !== 'passive').length > 0 ? itemKeys.reduce((acc, action) => {
               if(action.type === 'action' && action.system.actionType.value !== 'passive'){
                 acc[action.id] = {
                   label: action.name,
@@ -163,8 +229,8 @@ export const getCreatureData = (actor) => {
               }
 
               return acc;
-            }, {}),
-            passives: Array.from(actor.items).reduce((acc, action) => {
+            }, {}) : { empty: { empty: true, label: 'PF2EBestiary.Miscellaneous.None', actions: '', traits: {}, description: '' } },
+            passives: itemKeys.filter(action => action.type === 'action' && action.system.actionType.value === 'passive').length > 0 ? itemKeys.reduce((acc, action) => {
               if(action.type === 'action' && action.system.actionType.value === 'passive'){
                 acc[action.id] = {
                   label: action.name,
@@ -177,59 +243,8 @@ export const getCreatureData = (actor) => {
               }
 
               return acc;
-            }, {}),
-            spells: Array.from(actor.items).reduce((acc, entry) => {
-              if(entry.type === 'spellcastingEntry'){
-                const levels = {};
-                actor.items.forEach(spell => {
-                  if(spell.type === 'spell' && spell.system.location.value === entry.id){
-                    const levelValue = spell.system.traits.value.includes("cantrip") ? 'Cantrips' : spell.system.location.heightenedLevel ?? spell.system.cast.focusPoints ? Math.ceil(monster.system.details.level.value / 2) : spell.system.level.value;
-                    const label = levelValue === 'Cantrips' ? levelValue : levelValue === 1 ? '1st Rank' : levelValue === 2 ? '2nd Rank' : levelValue === 3 ? '3rd Rank' : `${levelValue}th Rank`;
-
-                    var level = Object.values(levels).find(x => x.value === levelValue);
-                    if(!level) {
-                        level = { value: levelValue, spells: {} };
-                    }
-
-                    level.spells[spell._id] = {
-                        label: spell.name,
-                        img: spell.img,
-                        actions: spell.actionGlyph,
-                        defense: spell.system.defense?.save?.statistic ? {
-                          statistic: spell.system.defense.save.statistic,
-                          basic: spell.system.defense.save.basic,
-                        } : null,
-                        range: spell.system.range.value,
-                        traits: {
-                          rarity: spell.system.traits.rarity,
-                          traditions: spell.system.traits.traditions,
-                          values: spell.system.traits.value.reduce((acc, trait ) => {
-                            acc[trait] = { value: trait };
-                            return acc;
-                          }, {})
-                        },
-                        description: {
-                            gm: spell.system.description.gm,
-                            value: spell.system.description.value,
-                        }
-                    };
-
-                    levels[levelValue] = level;
-                  }
-                }); 
-
-                acc[entry.id] = {
-                  tradition: entry.system.tradition.value,
-                  category: entry.category,
-                  dc: { value: entry.system.spelldc.dc },
-                  mod: { value: entry.system.spelldc.mod },
-                  attack: { value: entry.system.spelldc.value },
-                  levels: levels,
-                };
-              }
-
-              return acc;
-            }, {}),
+            }, {}) : { empty: { empty: true, label: 'PF2EBestiary.Miscellaneous.None', traits: {}, description: '' } },
+            spells: spells,
             notes: {
               public: { value: actor.system.details.publicNotes },
               private: { value: actor.system.details.privateNotes },
