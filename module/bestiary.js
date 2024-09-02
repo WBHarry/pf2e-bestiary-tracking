@@ -51,7 +51,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }
 
         Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
-        Hooks.on(socketEvent.MonsterEditingUpdate, this.onEditingUpdate.bind(this));
     }
 
     get title(){
@@ -1022,239 +1021,26 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
     static async revealEverything(){
         await this.toggleEverythingRevealed(true);
-        this.toggleControls(false);
     }
 
     static async hideEverything(){
         await this.toggleEverythingRevealed(false);
-        this.toggleControls(false);
     }
 
     async toggleEverythingRevealed(revealed){
-        if(!game.user.isGM) return;
+        if(!game.user.isGM || !this.selected.monster) return;
 
-        const actorIsNPC = isNPC(this.selected.monster);
-        const monster = actorIsNPC ? this.bestiary.npc[this.selected.monster.uuid] : this.bestiary.monster[this.selected.monster.uuid];
-
-        monster.name.revealed = revealed;
-        monster.system.details.level.revealed = revealed;
-        monster.system.attributes.ac.revealed = revealed;
-        monster.system.attributes.hp.revealed = revealed;
-        Object.values(monster.system.skills).forEach(skill => skill.revealed = revealed);
-
-        Object.values(monster.system.attributes.immunities).forEach(immunity => {
-            immunity.revealed = revealed;
-            immunity.exceptions?.forEach(exception => exception.revealed = revealed);
-        });
-        Object.values(monster.system.attributes.weaknesses).forEach(weakness => {
-            weakness.revealed = revealed;
-            weakness.exceptions?.forEach(exception => exception.revealed = revealed);
-        });
-        Object.values(monster.system.attributes.resistances).forEach(resistance => {
-            resistance.revealed = revealed;
-            resistance.exceptions?.forEach(exception => exception.revealed = revealed);
-            resistance.doubleVs?.forEach(double => double.revealed = revealed);
-        });
-
-        Object.values(monster.system.saves).forEach(save => save.revealed = revealed);
-
-        monster.system.attributes.speed.revealed = revealed;
-        Object.values(monster.system.attributes.speed.otherSpeeds).forEach(speed => speed.revealed = revealed);
-        
-        Object.values(monster.system.traits.value).forEach(trait => trait.revealed = revealed);
-
-        Object.values(monster.system.abilities).forEach(ability => ability.revealed = revealed);
-
-        monster.system.perception.revealed = revealed;
-        Object.values(monster.system.perception.senses).forEach(sense => sense.revealed = revealed);
-
-        Object.values(monster.system.details.languages.value).forEach(language => language.revealed = revealed);
-
-        Object.keys(monster.system.actions).forEach(attackKey => {
-            monster.system.actions[attackKey].revealed = revealed;
-            monster.system.actions[attackKey].damageStatsRevealed = revealed;
-            monster.items[attackKey].system.traits.value.forEach(trait => trait.revealed = revealed);
-            Object.values(monster.items[attackKey].system.damageRolls).forEach(damage => damage.damageType.revealed = revealed)
-        });
-
-        Object.values(monster.items).forEach(item => {
-            item.revealed = revealed;
-            if(item.type === 'action'){
-                item.system.traits.value.forEach(trait => trait.revealed = revealed);
-            }
-            if(item.type === 'spellcastingEntry'){
-                item.system.spelldc.dc.revealed = revealed;
-                item.system.spelldc.value.revealed = revealed;
-            }
-        })
-
-        monster.system.details.publicNotes.revealed = revealed;
-        monster.system.details.privateNotes.revealed = revealed;
-
-        if(actorIsNPC){
-            monster.npcData.general.background.revealed = revealed;
-            monster.npcData.general.appearance.revealed = revealed;
-            monster.npcData.general.personality.revealed = revealed;
-            monster.npcData.general.height.revealed = revealed;
-            monster.npcData.general.weight.revealed = revealed;
-            monster.npcData.general.birthplace.revealed = revealed;
-        }
+        await this.selected.monster.system.toggleEverything(revealed);
 
         await PF2EBestiary.handleTokenNames(this.selected.monster);
 
-        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
             data: { },
         });
 
+        this.toggleControls(false);
         Hooks.callAll(socketEvent.UpdateBestiary, {});
-    }
-
-    static getUpdatedCreature(creature, data){
-        data.hidden = creature.hidden;
-        data.system.details.playerNotes = creature.system.details.playerNotes;
-        data.name = { ...data.name, revealed: creature.name.revealed, custom: creature.name.custom };
-        data.system.details.level = { ...data.system.details.level, revealed: creature.system.details.level.revealed, custom: creature.system.details.level.custom };
-        data.system.attributes.ac = { ...data.system.attributes.ac, revealed: creature.system.attributes.ac.revealed, custom: creature.system.attributes.ac.custom};
-        data.system.attributes.hp = { ...data.system.attributes.hp, revealed: creature.system.attributes.hp.revealed, custom: creature.system.attributes.hp.custom};
-
-        Object.keys(data.system.attributes.immunities).forEach(immunityKey => {
-            const newImmunity = data.system.attributes.immunities[immunityKey];
-            const oldImmunityKey = Object.keys(creature.system.attributes.immunities).find(x => x === immunityKey);
-            if(oldImmunityKey) {
-                const oldImmunity = creature.system.attributes.immunities[oldImmunityKey];
-                newImmunity.revealed = oldImmunity.revealed;
-                newImmunity.exceptions?.forEach(exception => {
-                    const oldException = oldImmunity.exceptions.find(x => x.value === exception.value);
-                    if(oldException) exception.revealed = oldException.revealed;
-                });
-            }
-        });
-        Object.keys(creature.system.attributes.immunities).forEach(immunityKey => {
-            const immunity = creature.system.attributes.immunities[immunityKey];
-            if(immunity.fake) data.system.attributes.immunities[immunityKey] = immunity;
-        });
-
-        Object.keys(data.system.attributes.weaknesses).forEach(weaknessKey => {
-            const newWeakness = data.system.attributes.weaknesses[weaknessKey];
-            const oldWeaknessKey = Object.keys(creature.system.attributes.weaknesses).find(x => x === weaknessKey);
-            if(oldWeaknessKey) {
-                const oldWeakness = creature.system.attributes.weaknesses[oldWeaknessKey];
-                newWeakness.revealed = oldWeakness.revealed;
-                newWeakness.exceptions?.forEach(exception => {
-                    const oldException = oldWeakness.exceptions.find(x => x.value === exception.value);
-                    if(oldException) exception.revealed = oldException.revealed;
-                });
-            }
-        });
-        Object.keys(creature.system.attributes.weaknesses).forEach(weaknessKey => {
-            const weakness = creature.system.attributes.weaknesses[weaknessKey];
-            if(weakness.fake) data.system.attributes.weaknesses[weaknessKey] = weakness;
-        });
-
-        Object.keys(data.system.attributes.resistances).forEach(resistanceKey => {
-            const newResistance = data.system.attributes.resistances[resistanceKey];
-            const oldResistanceKey = Object.keys(creature.system.attributes.resistances).find(x => x === resistanceKey);
-            if(oldResistanceKey) {
-                const oldResistance = creature.system.attributes.resistances[oldResistanceKey];
-                newResistance.revealed = oldResistance.revealed;
-                newResistance.exceptions?.forEach(exception => {
-                    const oldException = oldResistance.exceptions.find(x => x.value === exception.value);
-                    if(oldException) exception.revealed = oldException.revealed;
-                });
-                newResistance.doubleVs?.forEach(double => {
-                    const oldDouble = oldResistance.doubleVs.find(x => x.value === double.value);
-                    if(oldDouble) double.revealed = oldDouble.revealed;
-                });
-            }
-        });
-        Object.keys(creature.system.attributes.resistances).forEach(resistanceKey => {
-            const resistance = creature.system.attributes.resistances[resistanceKey];
-            if(resistance.fake) data.system.attributes.resistances[resistanceKey] = resistance;
-        });
-
-        data.system.saves.fortitude = { ...data.system.saves.fortitude, revealed: creature.system.saves.fortitude.revealed, custom: creature.system.saves.fortitude.custom };
-        data.system.saves.reflex = { ...data.system.saves.reflex, revealed: creature.system.saves.reflex.revealed, custom: creature.system.saves.reflex.custom };
-        data.system.saves.will = { ...data.system.saves.will, revealed: creature.system.saves.will.revealed, custom: creature.system.saves.will.custom };
-        
-        data.system.attributes.speed = { ...data.system.attributes.speed, revealed: creature.system.attributes.speed.revealed };
-        data.system.attributes.speed.otherSpeeds.forEach(speed => speed.revealed = creature.system.attributes.speed.otherSpeeds.find(x => speed.label === x.label)?.revealed);
-        
-        Object.keys(data.system.traits.value).forEach(traitKey => data.system.traits.value[traitKey].revealed = creature.system.traits.value[traitKey]?.revealed);
-        Object.keys(data.system.abilities).forEach(abilityKey => {
-            const oldAbility = creature.system.abilities[abilityKey];
-            data.system.abilities[abilityKey] = { ...data.system.abilities[abilityKey], revealed: oldAbility.revealed, custom: oldAbility.custom };
-        });
-        
-        data.system.perception = { ...data.system.perception, revealed: creature.system.perception.revealed, custom: creature.system.perception.custom };
-        data.system.perception.senses.forEach(sense => sense.revealed = creature.system.perception.senses.find(x => x.value === sense.value)?.revealed);
-        data.system.perception.senses.push(...creature.system.perception.senses.filter(x => x.fake));
-        data.system.perception.details.revealed = creature.system.perception.details.revealed;
-        
-        data.system.details.languages.details.revealed = creature.system.details.languages.details.revealed;
-        data.system.details.languages.value.forEach(lang => lang.revealed = creature.system.details.languages.value.find(x => x.value === lang.value)?.revealed);
-
-        Object.keys(data.system.actions).forEach(actionKey => {
-            const creatureAction = Object.values(creature.system.actions).find(x => x.weapon._id === actionKey);
-            if(creatureAction){
-                const action = data.system.actions[actionKey];
-                action.revealed = creatureAction.revealed;
-                action.damageStatsRevealed = creatureAction.damageStatsRevealed;
-            }
-        });
-        Object.keys(creature.system.actions).forEach(actionKey => {
-            const action = creature.system.actions[actionKey];
-            if(action.fake) data.system.actions[action.item._id] = action;
-        });
-        
-        Object.keys(data.items).forEach(itemKey => {
-            const creatureItem = Object.values(creature.items).find(x => x._id === itemKey);
-            if(creatureItem){
-                const item = data.items[itemKey];
-                item.revealed = creatureItem.revealed;
-
-                if(item.type === 'spellcastingEntry'){
-                    item.system.spelldc.dc.revealed = creatureItem.system.spelldc.dc.revealed;
-                    item.system.spelldc.value.revealed = creatureItem.system.spelldc.value.revealed;
-                }
-
-                if(item.type === 'melee'){
-                    item.system.traits.value = item.system.traits.value.map(trait => {
-                        const oldTrait = creatureItem.system.traits.value.find(x => x.value === trait.value);
-                        if(oldTrait) trait.revealed = oldTrait.revealed;
-
-                        return trait;
-                    });
-
-                    Object.keys(item.system.damageRolls).forEach(damageKey => {
-                        if(creatureItem.system.damageRolls[damageKey]){
-                            item.system.damageRolls[damageKey].damageType = { ...item.system.damageRolls[damageKey].damageType, revealed: creatureItem.system.damageRolls[damageKey].damageType.revealed };
-                        }
-                    });
-                }
-
-                if(item.type === 'action'){
-                    Object.values(item.system.traits.value).forEach(trait => {
-                        const oldTrait = creatureItem.system.traits.value.find(x => x.value === trait.value);
-                        if(oldTrait) trait.revealed = oldTrait.revealed;
-                    });
-                }
-            }
-        });
-        Object.keys(creature.items).forEach(itemKey => {
-            const item = creature.items[itemKey];
-            if(item.fake){
-                data.items[itemKey] = item;
-            }
-        });
-
-        data.system.details.publicNotes.revealed = creature.system.details.publicNotes.revealed;
-        data.system.details.privateNotes.revealed = creature.system.details.privateNotes.revealed;
-
-        data.npcData = creature.npcData;
-
-        return data;
     }
 
     static async refreshBestiary(){
@@ -1867,7 +1653,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             await foundry.utils.setProperty(this.selected.monster, property, npcFields[property]);
         }
 
-        await this.selected.monster.update({system : system });
+        if(system && this.selected.monster){
+            await this.selected.monster.update({system : system });
+        }
 
         for(var property in simpleFields){
             await foundry.utils.setProperty(this, property, simpleFields[property]);
@@ -2234,10 +2022,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     onBestiaryUpdate = async () => {        
-        // if(this.selected.monster?.uuid){
-        //     this.selected.monster = this.bestiary[this.selected.category][this.selected.monster.uuid];
-        // }
         this.bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
+        const entityExists = this.selected.monster ? this.bestiary.pages.get(this.selected.monster.id) : false;
+        if(!entityExists) this.selected.monster = null;
 
         const saveButton = $(this.element).find('.prosemirror[collaborate="true"] *[data-action="save"]');
         if(saveButton.length === 0){
@@ -2245,16 +2032,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         }
     };
 
-    onEditingUpdate = async () => {
-        const saveButton = $(this.element).find('.prosemirror[collaborate="true"] *[data-action="save"]');
-        if(saveButton.length === 0){
-            this.render();
-        }
-    };
-
     close = async (options) => {
         Hooks.off(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
-        Hooks.off(socketEvent.MonsterEditingUpdate, this.onEditingUpdate);
 
         return super.close(options);
     }

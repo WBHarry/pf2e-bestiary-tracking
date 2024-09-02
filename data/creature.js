@@ -1,3 +1,4 @@
+import { currentVersion } from "../scripts/setup";
 import { MappingField, toggleNumberField, toggleStringField } from "./modelHelpers";
 
 export class Creature extends foundry.abstract.TypeDataModel {
@@ -6,6 +7,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
         return {
             hidden: new fields.BooleanField({ required: true, initial: false }),
             uuid: new fields.StringField({ required: true }),
+            version: new fields.StringField({ required: true }),
             img: new fields.StringField({ required: true }),
             texture: new fields.StringField({ required: true }),
             name: toggleStringField(),
@@ -309,6 +311,156 @@ export class Creature extends foundry.abstract.TypeDataModel {
                 return acc;
             }, {})
         };
+    }
+
+    async toggleEverything(state){
+        const spells = 
+            this.spells.fake ? { "spells.fake.revealed": state } :
+            { "spells.entries": Object.keys(this.spells.entries).reduce((acc, key) => {
+                const entry = this.spells.entries[key];
+                acc[key] = {
+                    revealed: state,
+                    dc: { revealed: state },
+                    attack: { revealed: state },
+                    levels: Object.keys(entry.levels).reduce((acc, level) => {
+                        acc[level] = {
+                            spells: Object.keys(entry.levels[level].spells).reduce((acc, level) => {
+                                acc[level] = { revealed: state };
+                                return acc;
+                            }, {}),
+                        }
+                        return acc;
+                    }, {})
+                };
+                return acc;
+            }, {})}
+
+
+        await this.parent.update({
+            system: {
+                "name.revealed": state,
+                "ac.revealed": state,
+                "hp.revealed": state,
+                "level.revealed": state,
+                "skills": Object.keys(this.skills).reduce((acc, key) => {
+                    acc[key] = { revealed: state };
+                    return acc;
+                }, {}),
+                "abilities": Object.keys(this.abilities).reduce((acc, key) => {
+                    acc[key] = { revealed: state };
+                    return acc;
+                }, {}),
+                "saves": {
+                    "fortitude.revealed": state,
+                    "reflex.revealed": state,
+                    "will.revealed": state,
+                },
+                "speeds": {
+                    "details.revealed": state,
+                    "values": Object.keys(this.speeds.values).reduce((acc, key) => {
+                        acc[key] = { revealed: state };
+                        return acc;
+                    }, {}),
+                },
+                "immunities": Object.keys(this.immunities).reduce((acc, key) => {
+                    acc[key] = {
+                        revealed: state,
+                        exceptions: Object.keys(this.immunities[key].exceptions).reduce((acc, ex) => {
+                            acc[ex] = { revealed: state };
+                            return acc;
+                        }, {}),
+                    }
+                    
+                    return acc;
+                }, {}),
+                "weaknesses": Object.keys(this.weaknesses).reduce((acc, key) => {
+                    acc[key] = {
+                        revealed: state,
+                        exceptions: Object.keys(this.weaknesses[key].exceptions).reduce((acc, ex) => {
+                            acc[ex] = { revealed: state };
+                            return acc;
+                        }, {}),
+                    }
+                    
+                    return acc;
+                }, {}),
+                "resistances": Object.keys(this.resistances).reduce((acc, key) => {
+                    acc[key] = {
+                        revealed: state,
+                        exceptions: Object.keys(this.resistances[key].exceptions).reduce((acc, ex) => {
+                            acc[ex] = { revealed: state };
+                            return acc;
+                        }, {}),
+                        doubleVs: Object.keys(this.resistances[key].doubleVs).reduce((acc, ex) => {
+                            acc[ex] = { revealed: state };
+                            return acc;
+                        }, {}),
+                    }
+                    
+                    return acc;
+                }, {}),
+                "rarity.revealed": state,
+                "traits": Object.keys(this.traits).reduce((acc, key) => {
+                    acc[key] = { revealed: state };
+                    return acc;
+                }, {}),
+                "attacks": Object.keys(this.attacks).reduce((acc, key) => {
+                    acc[key] = {
+                        revealed: state,
+                        damageStatsRevealed: state,
+                        traits: Object.keys(this.attacks[key].traits).reduce((acc, trait) => {
+                            acc[trait] = { revealed: state };
+                            return acc;
+                        }, {}),
+                        damageInstances: Object.keys(this.attacks[key].damageInstances).reduce((acc, damage) => {
+                            acc[damage] = { damageType: { revealed: state } };
+                            return acc;
+                        }, {}),
+                    };
+                    return acc;
+                }, {}),
+                "actions": Object.keys(this.actions).reduce((acc, key) => {
+                    acc[key] = { 
+                        revealed: state,
+                        traits: Object.keys(this.actions[key].traits).reduce((acc, trait) => {
+                            acc[trait] = { revealed: state };
+                            return acc;
+                        }, {}), 
+                    };
+                    return acc;
+                }, {}),
+                "passives": Object.keys(this.passives).reduce((acc, key) => {
+                    acc[key] = { 
+                        revealed: state,
+                        traits: Object.keys(this.passives[key].traits).reduce((acc, trait) => {
+                            acc[trait] = { revealed: state };
+                            return acc;
+                        }, {}), 
+                    };
+                    return acc;
+                }, {}),
+                ...spells,
+                "senses": {
+                    "perception.revealed": state,
+                    "details.revealed": state,
+                    "senses": Object.keys(this.senses.senses).reduce((acc, key) => {
+                        acc[key] = { revealed: state };
+                        return acc;
+                    }, {}),
+                },
+                "languages": {
+                    "details.revealed": state,
+                    "values": Object.keys(this.languages.values).reduce((acc, key) => {
+                        acc[key] = { revealed: state };
+                        return acc;
+                    }, {})
+                },
+                "notes": {
+                    "public.revealed": state,
+                    "private.revealed": state,
+                }
+            }
+        });
     }
 
     prepareDerivedData() {

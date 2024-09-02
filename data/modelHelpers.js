@@ -1,4 +1,5 @@
 import { getIWRString, slugify } from "../scripts/helpers";
+import { currentVersion } from "../scripts/setup";
 
 const fields = foundry.data.fields;
 
@@ -85,6 +86,7 @@ export const getCreatureData = (actor) => {
         name: actor.name,
         system: {
             uuid: actor.uuid,
+            version: currentVersion,
             img: actor.img,
             texture: actor.prototypeToken.texture.src,
             name: { value: actor.name },
