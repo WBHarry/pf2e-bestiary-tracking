@@ -3,6 +3,7 @@ export default class RegisterHandlebarsHelpers {
         Handlebars.registerHelper({
             PF2EBTNrKeys: this.nrKeys,
             PF2EBTMonsterValue: this.monsterValue,
+            PF2EBTSlice: this.slice,
             PF2EBTCategoryClassTitle: this.categoryClassTitle,
             PF2EBTToggleContainer: this.toggleContainer,
             PF2EBTToggleContainerOverride: this.toggleContainerOverride,
@@ -18,8 +19,12 @@ export default class RegisterHandlebarsHelpers {
         return obj ? (prop && context) ? Object.keys(obj).filter(x => obj[x][prop]).length : Object.keys(obj).length : 0;
     }
 
-    static monsterValue(prop, flag){
-        return prop.custom ?? (flag && !game.user.isGM && prop.category ? prop.category : prop.value);
+    static monsterValue(prop, flag, ignoreLabel, context){
+        return prop.custom ?? (flag && !game.user.isGM && prop.category ? prop.category : (ignoreLabel && context ? prop.value : game.i18n.localize(prop.label) ?? prop.value));
+    }
+
+    static slice(value, length){
+        return value.slice(0, length);
     }
 
     static categoryClassTitle(classValue, type, useTitle){
@@ -56,13 +61,23 @@ export default class RegisterHandlebarsHelpers {
         else return `background: ${contrastRevealedState.hidden}`;
     }
 
-    static filter(prop, fallback, leftMargin, context, options) {
+    static filter(prop, fallback, leftMargin, context, use, op) {
+        const options = op ?? use;
         var ret = "";
-      
         var keys = Object.keys(context);
+        
+        if(op && !use){
+            for(var i = 0; i < keys.length; i++){
+                ret = ret + options.fn({ ...context[keys[i]], last: i === keys.length-1, index: i, length: keys.length });
+            }
+          
+            return ret; 
+        }
+
+
         var filteredContext = {};
         for (var i = 0; i < keys.length; i++) {
-            if(foundry.utils.getProperty(context[keys[i]], prop)){
+            if(!prop || foundry.utils.getProperty(context[keys[i]], prop)){
                 filteredContext[keys[i]] = context[keys[i]];
             }
         }

@@ -1,17 +1,17 @@
-import { getIWRString } from "../scripts/helpers";
+import { getIWRString, slugify } from "../scripts/helpers";
 
 const fields = foundry.data.fields;
 
 export const toggleStringField = () => new fields.SchemaField({
     revealed: new fields.BooleanField({ required: true, initial: false }),
     value: new fields.StringField({ required: true }),
-    custom: new fields.StringField({}),
+    custom: new fields.StringField({ nullable: true }),
 }) 
 
 export const toggleNumberField = () => new fields.SchemaField({
     revealed: new fields.BooleanField({ required: true, initial: false }),
     value: new fields.NumberField({ required: true, integer: true }),
-    custom: new fields.StringField({}),
+    custom: new fields.StringField({ nullable: true }),
 }) 
 
 export const getCreatureData = (actor) => {
@@ -28,47 +28,57 @@ export const getCreatureData = (actor) => {
             level: { value: Number.parseInt(actor.system.details.level.value) },
             size: actor.system.traits.size.value,
             rarity: { value: actor.system.traits.rarity },
-            traits: actor.system.traits.value.map(trait => ({ value: trait })),
-            skills: Object.keys(actor.system.skills).map(key => ({
-              value: Number.parseInt(actor.system.skills[key].base),
-              totalModifier: Number.parseInt(actor.system.skills[key].totalModifier), 
-            })),
+            traits: actor.system.traits.value.reduce((acc, trait) => {
+              acc[trait] = { value: trait };
+              return acc;
+            }, {}),
+            skills: Object.keys(actor.system.skills).reduce((acc, key) => {
+              acc[key] = { value: Number.parseInt(actor.system.skills[key].base), totalModifier: Number.parseInt(actor.system.skills[key].totalModifier) };
+              return acc;
+            }, {}),
             saves: {
               fortitude: { value: actor.system.saves.fortitude.value },
               reflex: { value: actor.system.saves.reflex.value },
               will: { value: actor.system.saves.will.value },
             },
             speeds: {
-              details: { },
-              values: [
-                { name: 'Land', value: actor.system.attributes.speed.value },
-                ...actor.system.attributes.speed.otherSpeeds.map(speed => ({
-                  name: speed.label,
-                  value: speed.value
-                }))
-              ],  
+              details: { name: actor.system.attributes.speed.details },
+              values: {
+                land: { name: 'Land', value: actor.system.attributes.speed.value },
+                ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
+                  acc[speed.label] = { name: speed.label, value: speed.value }
+                  return acc;
+                }, {})
+              },  
             },
-            abilities: Object.keys(actor.system.abilities).map(key => ({
-              key: key,
-              mod: actor.system.abilities[key].mod,
-            })),
+            abilities: Object.keys(actor.system.abilities).reduce((acc, key) => {
+              acc[key] = { key: key, mod: actor.system.abilities[key].mod };
+              return acc;
+            }, {}),
             senses: {
               perception: { value: actor.system.perception.value },
-              details: { value: actor.system.perception.details.value },
-              senses: actor.system.perception.senses.map(sense => ({ value: sense.type }))
+              details: { value: actor.system.perception.details },
+              senses: actor.system.perception.senses.reduce((acc, sense) => {
+                acc[sense.type] = { type: sense.type };
+                return acc;
+              }, {})
             },
             languages: {
               details: { value: actor.system.details.languages.details },
-              values: actor.system.details.languages.value.map(language => ({
-                value: language,
-              }))
+              values: actor.system.details.languages.value.reduce((acc, language) => {
+                acc[language] = { value: language };
+                return acc;
+              }, {})
             },
             immunities: Object.keys(actor.system.attributes.immunities).reduce((acc, key) => {
                 const immunity = actor.system.attributes.immunities[key];
                 acc[getIWRString(immunity)] = { 
                     revealed: false, 
-                    value: immunity.value, 
-                    exceptions:  immunity.exceptions.map(exception => ({ value: exception })),
+                    type: immunity.type, 
+                    exceptions:  immunity.exceptions.reduce((acc, exception) => {  
+                      acc[exception] = { type: exception }
+                      return acc;
+                    }, {}),
                 };
 
                 return acc;
@@ -77,8 +87,12 @@ export const getCreatureData = (actor) => {
                 const weakness = actor.system.attributes.weaknesses[key];
                 acc[getIWRString(weakness)] = { 
                     revealed: false, 
+                    type: weakness.type,
                     value: weakness.value, 
-                    exceptions:  weakness.exceptions.map(exception => ({ value: exception })),
+                    exceptions:  weakness.exceptions.reduce((acc, exception) => {  
+                      acc[exception] = { type: exception }
+                      return acc;
+                    }, {}),
                 };
 
                 return acc;
@@ -87,8 +101,16 @@ export const getCreatureData = (actor) => {
                 const resistance = actor.system.attributes.resistances[key];
                 acc[getIWRString(resistance)] = { 
                     revealed: false, 
+                    type: resistance.type,
                     value: resistance.value, 
-                    exceptions:  resistance.exceptions.map(exception => ({ value: exception })),
+                    exceptions:  resistance.exceptions.reduce((acc, exception) => {  
+                      acc[exception] = { type: exception }
+                      return acc;
+                    }, {}),
+                    doubleVs: resistance.doubleVs.reduce((acc, doubleVs) => {  
+                      acc[doubleVs] = { type: doubleVs }
+                      return acc;
+                    }, {}),
                 };
 
                 return acc;
@@ -96,18 +118,31 @@ export const getCreatureData = (actor) => {
             attacks: Object.keys(actor.system.actions).reduce((acc, actionKey) => {
               const attack = actor.system.actions[actionKey];
               const item = actor.items.get(attack.item.id);
-              const traits = item.system.traits.value.map(trait => ({ value: trait }));
               
               if(item.type === 'melee' || item.type === 'equipment'){
                 acc[attack.item.id] = {
-                  name: attack.label,
+                  label: attack.label,
                   actions: attack.glyph,
                   totalModifier: attack.totalModifier,
                   isMelee: attack.weapon.isMelee,
-                  damageRolls: Object.keys(item.system.damageRolls).map(damage => ({ 
-                    damageType: { value: item.system.damageRolls[damage].damageType } 
-                  })),
-                  traits: traits,
+                  damageInstances: Object.keys(item.system.damageRolls).reduce((acc, damage) => {
+                    acc[damage] = { 
+                      category: item.system.damageRolls[damage].category,
+                      damage: { value: item.system.damageRolls[damage].damage },
+                      damageType: { value: item.system.damageRolls[damage].damageType } 
+                    };
+
+                    return acc;
+                  }, {}),
+                  traits: item.system.traits.value.reduce((acc, trait) => {
+                    acc[trait] = { value: trait, description: trait };
+                    return acc;
+                  }, {}),
+                  variants: attack.variants.reduce((acc, variant) => {
+                    acc[slugify(variant.label)] = { label: variant.label };
+
+                    return acc;
+                  }, {}),
                   rules: item.system.rules,
                 };
               }

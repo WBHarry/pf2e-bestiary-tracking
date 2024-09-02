@@ -380,7 +380,7 @@
 .pf2e-bestiary-tracking.bestiary .monster-container .toggle-container {
   cursor: pointer;
 }
-.pf2e-bestiary-tracking.bestiary .monster-container .toggle-container.inner:not(.revealed) {
+.pf2e-bestiary-tracking.bestiary .monster-container .toggle-container.inner.detailed:not(.revealed) {
   text-decoration: line-through;
   text-decoration-thickness: 2px;
 }
@@ -1027,9 +1027,6 @@
   opacity: 0.5;
 }
 /* REMOVE ME. Temporary as a stopgap for Dorako */
-.theme-dark .pf2e-bestiary-tracking[data-dorako-ui-scope].bestiary.application {
-  background-color: inherit;
-}
 .theme-dark .pf2e-bestiary-tracking.bestiary.application {
   background-color: rgba(11, 10, 19, 0.9);
 }

@@ -102,31 +102,35 @@ export const resetBestiary = async () => {
 
     if(!confirmed) return;
 
-    await game.journal.getName(bestiaryJournalEntry)?.delete();
-    await game.folders.getName(bestiaryFolder)?.delete();
+    for(var page of game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking')).pages){
+        await page.delete();
+    }
+
+    // await game.journal.getName(bestiaryJournalEntry)?.delete();
+    // await game.folders.getName(bestiaryFolder)?.delete();
     
-    await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', {
-        monster: {},
-        npc: {},
-        npcCategories: {},
-        metadata: {
-            version: currentVersion
-        }
-    });
+    // await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', {
+    //     monster: {},
+    //     npc: {},
+    //     npcCategories: {},
+    //     metadata: {
+    //         version: currentVersion
+    //     }
+    // });
     
-    const folder = await Folder.create(
-    { 
-       "name": bestiaryFolder, 
-       "type": "JournalEntry" 
-    });
+    // const folder = await Folder.create(
+    // { 
+    //    "name": bestiaryFolder, 
+    //    "type": "JournalEntry" 
+    // });
             
-    const journal = await JournalEntry.create({
-                name: bestiaryJournalEntry,
-                pages: [],
-                folder: folder.id
-    });
+    // const journal = await JournalEntry.create({
+    //             name: bestiaryJournalEntry,
+    //             pages: [],
+    //             folder: folder.id
+    // });
         
-    await journal.update({ "ownership.default": 3 });
+    // await journal.update({ "ownership.default": 3 });
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
         action: socketEvent.UpdateBestiary,

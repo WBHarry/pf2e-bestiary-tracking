@@ -33,7 +33,7 @@ export const getIWRString = (base, isResistance) => { // Mangled. Wtf.
 
 export const getCreaturesTypes = (traits, onlyActive) => {
     const creatureTypes = getExpandedCreatureTypes();
-    const types = traits.reduce((acc, trait) => {
+    const types = Object.values(traits).reduce((acc, trait) => {
         const typeMatch = creatureTypes.find(x => x.value === trait.value);
         if(typeMatch) acc.push({key: typeMatch.value, revealed: trait.revealed, name: typeMatch.name});
 
@@ -67,6 +67,9 @@ export const getBaseActor = (actor) => {
 };
 
 export const isNPC = (data) => {
+    if(data.type === 'pf2e-bestiary-tracking.npc') return true;
+    if(data.type === 'pf2e-bestiary-tracking.creature' || data.type === 'pf2e-bestiary-tracking.hazard') return false;
+
     const npcRegistration = game.settings.get('pf2e-bestiary-tracking', 'npc-registration');
     return npcRegistration === 0 ? data.system.traits.rarity === 'unique' : Object.values(data.system.traits.value).find(x => x.value ? x.value === 'npc' : x === 'npc');
 };
