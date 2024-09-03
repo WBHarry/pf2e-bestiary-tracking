@@ -705,7 +705,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
     prepareDerivedData() {
         const vagueDescriptions = game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
         const playerLevel = game.user.character ? game.user.character.system.details.level.value : null;
-        const contextLevel = vagueDescriptions.playerBased && playerLevel ? playerLevel : this.level.value;
+        const contextLevel = vagueDescriptions.settings.playerBased && playerLevel ? playerLevel : this.level.value;
 
         this.ac.category = getCategoryLabel(acTable, contextLevel, this.ac.value);
         this.hp.category = getCategoryFromIntervals(hpTable, contextLevel, this.hp.value);

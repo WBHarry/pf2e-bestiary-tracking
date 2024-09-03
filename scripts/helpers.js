@@ -73,3 +73,7 @@ export const isNPC = (data) => {
     const npcRegistration = game.settings.get('pf2e-bestiary-tracking', 'npc-registration');
     return npcRegistration === 0 ? data.system.traits.rarity === 'unique' : Object.values(data.system.traits.value).find(x => x.value ? x.value === 'npc' : x === 'npc');
 };
+
+export const getSpellLevel = (spell, creatureLevel) => {
+    return spell.system.traits.value.includes("cantrip") ? 'Cantrips' : spell.system.location.heightenedLevel ?? spell.system.cast.focusPoints ? Math.ceil(creatureLevel / 2) : spell.system.level.value;
+}

@@ -1,5 +1,5 @@
 
-import { getBaseActor, getCreatureSize, getCreaturesTypes, getExpandedCreatureTypes, getIWRString, isNPC, slugify } from "../scripts/helpers.js";
+import { getCreatureSize, getCreaturesTypes, getExpandedCreatureTypes, getIWRString, isNPC, slugify } from "../scripts/helpers.js";
 import { resetBestiary } from "../scripts/macros.js";
 import { bestiaryJournalEntry } from "../scripts/setup.js";
 import { socketEvent } from "../scripts/socket.js";
@@ -13,26 +13,25 @@ import { getCreatureData } from "../data/modelHelpers.js";
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
 export default class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
-    constructor({category = null, monsterUuid = null, actorIsNPC} = {category: 'monster', monsterUuid: null}){
+    constructor(page){
         super({});
 
         this.bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
 
-        const entity = monsterUuid ? this.bestiary.pages.find(x => x.system.uuid === monsterUuid) : null;
         var monsterCreatureTypes = [];
-        if(category && monsterUuid) {
-            if(actorIsNPC){
+        if(page) {
+            if(page.type === 'pf2e-bestiary-tracking.npc'){
                 monsterCreatureTypes = this.bestiary[category][monsterUuid].npcData.categories.length > 0 ? this.bestiary[category][monsterUuid].npcData.categories[0] : ['unaffiliated'];
             }
             else {
-                monsterCreatureTypes = getCreaturesTypes(entity.traits).map(x => x.key);
+                monsterCreatureTypes = getCreaturesTypes(page.system.traits).map(x => x.key);
             }
         } 
         
         this.selected = {
-            category,
+            category: page?.type ?? 'pf2e-bestiary-tracking.creature',
             type: monsterCreatureTypes.length > 0 ? monsterCreatureTypes[0] : null,
-            monster: entity,
+            monster: page,
             abilities: [],
         };
 
@@ -44,7 +43,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         this.npcData = {
             editMode: false,
-            npcView: actorIsNPC ? true : false,
+            npcView: page?.type === 'npc' ? true : false,
             newCategory: {
                 text: null,
             }
@@ -621,7 +620,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     getBookmarks(){
-        if(this.selected.category === 'monster'){
+        if(this.selected.category === 'pf2e-bestiary-tracking.creature'){
             return this.bestiary.pages.filter(creature => {
                 const isCreature = creature.type === 'pf2e-bestiary-tracking.creature';
                 if(!isCreature || (!game.user.isGM && creature.system.hidden)) return false;
@@ -688,7 +687,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         context.bookmarks = this.getBookmarks();
         context.bookmarkEntities = this.selected.type ? context.bookmarks.find(x => x.value === this.selected.type).values : [];
 
-        if(this.selected.category === 'npc'){
+        if(this.selected.category === 'pf2e-bestiary-tracking.npc'){
             context = await this.npcPreparation(context);
         }
         else {
@@ -717,8 +716,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         // await this.enrichTexts(context.selected);
         // context.bestiary = this.prepareBestiary(foundry.utils.deepClone(this.bestiary));
         context.typeTitle = this.selected.type ? 
-            this.selected.category === 'monster' ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyText", { category: getExpandedCreatureTypes().find(x => x.value === this.selected.type).name }) : 
-            this.selected.category === 'npc' ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyCategoryText", { category: context.bestiary.npcCategories[this.selected.type]}) : '' : '';
+            this.selected.category === 'pf2e-bestiary-tracking.monster' ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyText", { category: getExpandedCreatureTypes().find(x => x.value === this.selected.type).name }) : 
+            this.selected.category === 'pf2e-bestiary-tracking.npc' ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyCategoryText", { category: context.bestiary.npcCategories[this.selected.type]}) : '' : '';
         
         // context.openType = (context.selected.type ? Object.keys(context.bestiary[context.selected.category][context.selected.type].values).reduce((acc, monsterKey) => { 
         //     const monster = context.bestiary[this.selected.category][context.selected.type].values[monsterKey];
@@ -904,6 +903,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                 for(var token of canvas.tokens.placeables.filter(x => x.document?.baseActor?.uuid === monster.system.uuid)){
                     await token.document.update({ name });
                 }
+
+                if(game.combat){
+                    await game.combat.combatants.find(x => x.token.baseActor.uuid === monster.system.uuid).update({ name: name });
+                }
             }
         }
     }
@@ -917,7 +920,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         const newValue = !foundry.utils.getProperty(this.selected.monster, `${path}.${button.dataset.key ?? 'revealed'}`);
         await this.selected.monster.update({ [`${path}.${button.dataset.key ?? 'revealed'}`]: newValue });
 
-        if(path === 'name'){
+        if(path === 'system.name'){
             await PF2EBestiary.handleTokenNames(this.selected.monster);
         }
 
@@ -1512,7 +1515,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             if(value){
                 await this.selected.monster.update({ [`${event.currentTarget.dataset.path}.custom`]: value });
 
-                if(event.currentTarget.dataset.path === 'name'){
+                if(event.currentTarget.dataset.path === 'system.name'){
                     await PF2EBestiary.handleTokenNames(this.selected.monster);
                 }
 
@@ -1594,7 +1597,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         else {
             await this.selected.monster.update({ [`${event.currentTarget.dataset.path}.custom`]: null });
 
-            if(event.currentTarget.dataset.path === 'name'){
+            if(event.currentTarget.dataset.path === 'system.name'){
                 await PF2EBestiary.handleTokenNames(this.selected.monster);
             }
         }
@@ -1645,38 +1648,18 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
     }
 
     static async addMonster(item){
-        const monster = await PF2EBestiary.getMonsterData(getBaseActor(item));
-        if (!monster) return null;
-
-        const actorIsNPC = isNPC(monster);
-        const bestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
+        const bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
 
         // We do not currently refresh already present creatures in the Bestiary.
-        if(actorIsNPC ? bestiary.npc[monster.uuid] : bestiary.monster[monster.uuid]) return false;
+        if(bestiary.pages.some(x => x.system.uuid === item.uuid)) return false;
 
-
-        const journalEntry = game.journal.getName(bestiaryJournalEntry);
-        const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
-            name: monster.name.value,
-            text: {
-                content: ""
-            }
-        }]);
-        monster.system.details.playerNotes = { document: page[0].id };
-
-        if(actorIsNPC) bestiary.npc[monster.uuid] = monster;
-        else bestiary.monster[monster.uuid] = monster;
+        await bestiary.createEmbeddedDocuments("JournalEntryPage", [getCreatureData(item)]);
         
         const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
-        if(doubleClickOpenActivated){
-            const ownership = item.ownership.default > 1 ? item.ownership.default : 1;
-            const baseItem = await fromUuid(monster.uuid);
-            
-            await item.update({ "ownership.default": ownership });
-            await baseItem.update({ "ownership.default": ownership });
+        if(doubleClickOpenActivated && item.ownership.default < 1){
+            await item.update({ "ownership.default": 1 });
         }
 
-        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
             data: { },
@@ -1943,6 +1926,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         } else {
             await bestiary.createEmbeddedDocuments("JournalEntryPage", [getCreatureData(baseItem)]);
         }
+
+        const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
+        if(doubleClickOpenActivated){
+            const ownership = item.ownership.default > 1 ? item.ownership.default : 1;
+            await item.update({ "ownership.default": ownership });
+        }
   
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
@@ -1950,46 +1939,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         });
 
         Hooks.callAll(socketEvent.UpdateBestiary, {});
-
-        // const item = baseItem.pack ? await Actor.implementation.create(baseItem.toObject()) : baseItem;
-        // const actorIsNPC = isNPC(item);
-
-        // // Creature already in Bestiary.
-        // if(actorIsNPC ? this.bestiary.npc[item.uuid] : this.bestiary.monster[item.uuid]){
-        //     await this.refreshCreature(item.uuid, actorIsNPC);
-        //     return;
-        // }
-
-        // const monster = await PF2EBestiary.getMonsterData(item);
-        // const updatedBestiary = await game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-
-        // const journalEntry = game.journal.getName(bestiaryJournalEntry);
-        // const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
-        //     name: monster.name.value,
-        //     text: {
-        //         content: ""
-        //     }
-        // }]);
-        // monster.system.details.playerNotes = { document: page[0].id };
-
-        // if(actorIsNPC){
-        //     updatedBestiary.npc[item.uuid] = monster;
-        // }
-        // else {
-        //     updatedBestiary.monster[item.uuid] = monster;
-        // }
-        
-        // const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
-        // if(doubleClickOpenActivated){
-        //     const ownership = item.ownership.default > 1 ? item.ownership.default : 1;
-        //     await item.update({ "ownership.default": ownership });
-
-        //     const baseItem = await fromUuid(item.uuid);
-        //     await baseItem.update({ "ownership.default": ownership });
-        // }
-        
-        // this.bestiary = updatedBestiary;
-        // await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
     }
 
     onBestiaryUpdate = async () => {        

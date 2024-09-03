@@ -92,17 +92,33 @@ const configSettings = () => {
             for(var token of canvas.tokens.placeables){
                 var name = token.document.baseActor.name;
                 if(value){
-                    const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-                    const category = isNPC(token.document.baseActor) ? 'npc' : 'monster';
-                    const monster = bestiary[category][token.document.baseActor.uuid];
-                    if(monster){
-                        name = monster.name.revealed && monster.name.custom ? monster.name.custom : 
-                            monster.name.revealed && !monster.name.custom ? monster.name.value :
-                            !monster.name.revealed ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown") : x.document.baseActor.name;
+                    const bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
+                    const page = bestiary.pages.find(x => x.system.uuid === token.document.baseActor.uuid);
+                    if(page){
+                        name = page.system.name.revealed && page.system.name.custom ? page.system.name.custom : 
+                        page.system.name.revealed && !page.system.name.custom ? page.system.name.value :
+                            !page.system.name.revealed ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown") : name;
                     }
                 }
 
                 await token.document.update({ name });
+            }
+
+            if(game.combat){
+                for(var combatant of game.combat.combatants){
+                    var name = combatant.token.baseActor.name;
+                    if(value){
+                        const bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
+                        const page = bestiary.pages.find(x => x.system.uuid === combatant.token.baseActor.uuid);
+                        if(page){
+                            name = page.system.name.revealed && page.system.name.custom ? page.system.name.custom : 
+                            page.system.name.revealed && !page.system.name.custom ? page.system.name.value :
+                                !page.system.name.revealed ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown") : name;
+                        }
+                    }
+
+                    await combatant.update({ name: name });
+                }
             }
         },
     });

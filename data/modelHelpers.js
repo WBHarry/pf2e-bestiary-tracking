@@ -1,4 +1,4 @@
-import { getIWRString, slugify } from "../scripts/helpers";
+import { getIWRString, getSpellLevel, slugify } from "../scripts/helpers";
 import { currentVersion } from "../scripts/setup";
 
 const fields = foundry.data.fields;
@@ -27,8 +27,7 @@ export const getCreatureData = (actor) => {
         const levels = {};
         actor.items.forEach(spell => {
           if(spell.type === 'spell' && spell.system.location.value === entry.id){
-            const levelValue = spell.system.traits.value.includes("cantrip") ? 'Cantrips' : spell.system.location.heightenedLevel ?? spell.system.cast.focusPoints ? Math.ceil(monster.system.details.level.value / 2) : spell.system.level.value;
-            const label = levelValue === 'Cantrips' ? levelValue : levelValue === 1 ? '1st Rank' : levelValue === 2 ? '2nd Rank' : levelValue === 3 ? '3rd Rank' : `${levelValue}th Rank`;
+            const levelValue = getSpellLevel(spell, actor.system.details.level.value);
 
             var level = Object.values(levels).find(x => x.value === levelValue);
             if(!level) {
@@ -86,6 +85,7 @@ export const getCreatureData = (actor) => {
         name: actor.name,
         ownership: { default: 3 },
         system: {
+            hidden: game.settings.get('pf2e-bestiary-tracking', 'hidden-settings').monster,
             uuid: actor.uuid,
             version: currentVersion,
             img: actor.img,
