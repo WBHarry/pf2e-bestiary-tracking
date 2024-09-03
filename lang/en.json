@@ -374,5 +374,14 @@
             "RevealAbility": "Reveal Ability In Bestiary",
             "RegisterInBestiary": "Add To Bestiary"
         }
+    },
+    "TYPES": {
+        "JournalEntryPage": {
+            "pf2e-bestiary-tracking": {
+                "creature": "Creature",
+                "npc": "NPC",
+                "hazard": "Hazard"
+            }
+        }
     }
 }

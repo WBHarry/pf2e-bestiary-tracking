@@ -1,4 +1,5 @@
-import { currentVersion } from "../scripts/setup";
+import { acTable, attackTable, attributeTable, damageTable, hpTable, savingThrowPerceptionTable, skillTable, spellAttackTable, spellDCTable, weaknessTable } from "../scripts/statisticsData";
+import { getCategoryFromIntervals, getCategoryLabel, getMixedCategoryLabel, getRollAverage } from "../scripts/statisticsHelper";
 import { getCreatureData, MappingField, toggleNumberField, toggleStringField } from "./modelHelpers";
 
 export class Creature extends foundry.abstract.TypeDataModel {
@@ -313,10 +314,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
         };
     }
 
-    async refreshData() {
-        const actor = await fromUuid(this.uuid);
-        if(!actor) return;
-        
+    #getRefreshData(actor){
         const data = getCreatureData(actor);
 
         const spells = data.system.spells.fake ? 
@@ -353,7 +351,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
                 }, {}), 
             };
 
-        const updateData = {
+        return {
             name: data.name,
             system: {
                 hidden: this.hidden,
@@ -542,11 +540,16 @@ export class Creature extends foundry.abstract.TypeDataModel {
                 }
             }
         };
-
-        await this.parent.update(updateData, { diff: false, recursive: false });
     }
 
-    async toggleEverything(state){
+    async refreshData() {
+        const actor = await fromUuid(this.uuid);
+        if(!actor) return;
+
+        await this.parent.update(this.#getRefreshData(actor), { diff: false, recursive: false });
+    }
+
+    #getToggleUpdate(state){
         const spells = 
             this.spells.fake ? { "spells.fake.revealed": state } :
             { "spells.entries": Object.keys(this.spells.entries).reduce((acc, key) => {
@@ -568,8 +571,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
                 return acc;
             }, {})}
 
-
-        await this.parent.update({
+        return {
             system: {
                 "name.revealed": state,
                 "ac.revealed": state,
@@ -693,14 +695,25 @@ export class Creature extends foundry.abstract.TypeDataModel {
                     "private.revealed": state,
                 }
             }
-        });
+        };
+    }
+
+    async toggleEverything(state){
+        await this.parent.update(this.#getToggleUpdate(state));
     }
 
     prepareDerivedData() {
+        const vagueDescriptions = game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
+        const playerLevel = game.user.character ? game.user.character.system.details.level.value : null;
+        const contextLevel = vagueDescriptions.playerBased && playerLevel ? playerLevel : this.level.value;
+
+        this.ac.category = getCategoryLabel(acTable, contextLevel, this.ac.value);
+        this.hp.category = getCategoryFromIntervals(hpTable, contextLevel, this.hp.value);
+
         this.saves = {
-            fortitude: { ...this.saves.fortitude, label: `${this.saves.fortitude.value > 0 ? '+' : ''}${this.saves.fortitude.value}` },
-            reflex: { ...this.saves.reflex, label: `${this.saves.reflex.value > 0 ? '+' : ''}${this.saves.reflex.value}` },
-            will: { ...this.saves.will, label: `${this.saves.will.value > 0 ? '+' : ''}${this.saves.will.value}` },
+            fortitude: { ...this.saves.fortitude, label: `${this.saves.fortitude.value > 0 ? '+' : ''}${this.saves.fortitude.value}`, category: getCategoryLabel(savingThrowPerceptionTable, contextLevel, this.saves.fortitude.value, true) },
+            reflex: { ...this.saves.reflex, label: `${this.saves.reflex.value > 0 ? '+' : ''}${this.saves.reflex.value}`, category: getCategoryLabel(savingThrowPerceptionTable, contextLevel, this.saves.reflex.value, true) },
+            will: { ...this.saves.will, label: `${this.saves.will.value > 0 ? '+' : ''}${this.saves.will.value}`, category: getCategoryLabel(savingThrowPerceptionTable, contextLevel, this.saves.will.value, true) },
         };
 
         this.immunities = Object.keys(this.immunities).reduce((acc, key) => {
@@ -732,6 +745,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
             acc[key] = {
                 ...this.weaknesses[key],
                 label: CONFIG.PF2E.weaknessTypes[this.weaknesses[key].type] ?? this.weaknesses[key].type,
+                category: getCategoryLabel(weaknessTable, contextLevel, this.weaknesses[key].value, true),
                 exceptions: exceptionKeys.reduce((acc, exKey, index) => {
                     const label = CONFIG.PF2E.weaknessTypes[this.weaknesses[key].exceptions[exKey].type];
                     const suffix = 
@@ -759,6 +773,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
             acc[key] = {
                 ...this.resistances[key],
                 label: CONFIG.PF2E.resistanceTypes[this.resistances[key].type] ?? this.resistances[key].type,
+                category: getCategoryLabel(weaknessTable, contextLevel, this.resistances[key].value, true),
                 exceptions: exceptionKeys.reduce((acc, exKey, index) => {
                     const label = CONFIG.PF2E.resistanceTypes[this.resistances[key].exceptions[exKey].type];
                     const suffix = 
@@ -801,7 +816,12 @@ export class Creature extends foundry.abstract.TypeDataModel {
         }, {});
 
         this.abilities = Object.keys(this.abilities).reduce((acc, key) => {
-            acc[key] = { ...this.abilities[key], value: `${this.abilities[key].mod >= 0 ? '+' : ''}${this.abilities[key].mod}`, label: CONFIG.PF2E.abilities[this.abilities[key].key] };
+            acc[key] = { 
+                ...this.abilities[key], 
+                value: `${this.abilities[key].mod >= 0 ? '+' : ''}${this.abilities[key].mod}`, 
+                label: CONFIG.PF2E.abilities[this.abilities[key].key],
+                category: getCategoryLabel(attributeTable, contextLevel, this.abilities[key].mod, true),
+            };
 
             return acc;
         }, {});
@@ -811,7 +831,8 @@ export class Creature extends foundry.abstract.TypeDataModel {
             if(key === 'empty' || skill.value > 0){
                 acc[key] = { 
                     ...skill, 
-                    label: skill.lore ? skill.label : CONFIG.PF2E.skills[key]?.label ?? (key === 'empty' ? skill.value : key)
+                    label: skill.lore ? skill.label : CONFIG.PF2E.skills[key]?.label ?? (key === 'empty' ? skill.value : key),
+                    category:  getMixedCategoryLabel(skillTable, contextLevel, skill.totalModifier),
                 };
             }
 
@@ -822,6 +843,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
             const traitKeys = Object.keys(this.attacks[key].traits);
             acc[key] = { 
                 ...this.attacks[key], 
+                category: getCategoryLabel(attackTable, contextLevel, this.attacks[key].totalModifier),
                 range: this.attacks[key].isMelee ? 'PF2E.NPCAttackMelee' : 'PF2E.NPCAttackRanged',
                 traits: traitKeys.reduce((acc, trait, index) => {
                     acc[trait] = { 
@@ -832,6 +854,16 @@ export class Creature extends foundry.abstract.TypeDataModel {
                     };
                     return acc;
                 }, {}),
+                damageInstances: Object.keys(this.attacks[key].damageInstances).reduce((acc, damage) => {
+                    const instance = this.attacks[key].damageInstances[damage];
+                    const average = getRollAverage(new Roll(instance.damage.value).terms);
+                    acc[damage] = {
+                        ...instance,
+                        damage: { ...instance.damage, category: getCategoryLabel(damageTable, contextLevel, average) }
+                    }
+
+                    return acc;
+                }, {})
             };
 
             return acc;
@@ -872,6 +904,17 @@ export class Creature extends foundry.abstract.TypeDataModel {
                 }, {}),
             };
 
+            return acc;
+        }, {});
+
+        this.senses.perception.category = getCategoryLabel(savingThrowPerceptionTable, contextLevel, this.senses.perception.value);
+
+        this.spells.entries = Object.keys(this.spells.entries).reduce((acc, key) => {
+            acc[key] = {
+                ...this.spells.entries[key],
+                dc: { ...this.spells.entries[key].dc, category: getCategoryLabel(spellDCTable, contextLevel, this.spells.entries[key].dc.value) },
+                attack: { ...this.spells.entries[key].attack, category: getCategoryLabel(spellAttackTable, contextLevel, this.spells.entries[key].attack.value) },
+            }
             return acc;
         }, {});
     }

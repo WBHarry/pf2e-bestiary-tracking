@@ -1,6 +1,8 @@
 import { acTable, attributeTable, hpTable, rangeOptions, savingThrowPerceptionTable, skillTable, weaknessTable } from "./statisticsData.js";
 
 export const getCategoryLabel = (statisticsTable, level, save, short) => {
+    if(!save) return save;
+
     const { range, values } = statisticsTable;
     const tableRow = values[level];
 
@@ -61,10 +63,10 @@ const derivedWeaknessTable = Object.keys(weaknessTable).reduce((acc, key) => {
     return acc;
 }, {});
 
-export const getWeaknessCategoryClass = (level, value) => {
+export const getIWRCategoryIcon = (level, value) => {
     const tableRow = derivedWeaknessTable[level];
-    if(value > tableRow.high) return getCategoryClass('high');
-    if(value < tableRow.low) return getCategoryClass('low');
+    if(value > tableRow.high) return 'fa-solid fa-angles-up';
+    if(value < tableRow.low) return 'fa-solid fa-angle-up';
 
     var tempValue = null;
     for(var category in tableRow) {
@@ -77,7 +79,7 @@ export const getWeaknessCategoryClass = (level, value) => {
         }
     }
 
-    return getCategoryClass(tempValue.category);
+    return tempValue.category === 'high' ? 'fa-solid fa-angles-up' : 'fa-solid fa-angle-up';
 };
 
 const getCategoryLabelValue = (range, category, short) => {

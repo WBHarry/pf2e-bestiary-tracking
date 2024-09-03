@@ -20,26 +20,11 @@ export default class RegisterHandlebarsHelpers {
     }
 
     static monsterValue(prop, flag, ignoreLabel, context){
-        return prop.custom ?? (flag && !game.user.isGM && prop.category ? prop.category : (ignoreLabel && context ? prop.value : game.i18n.localize(prop.label) ?? prop.value));
+        return prop.custom ?? (flag && !game.user.isGM && prop.category ? game.i18n.localize(prop.category) : (ignoreLabel && context ? prop.value : game.i18n.localize(prop.label) ?? prop.value));
     }
 
     static slice(value, length){
         return value.slice(0, length);
-    }
-
-    static categoryClassTitle(classValue, type, useTitle){
-        if(game.user.isGM || !useTitle) return '';
-
-        switch(classValue){
-            case 'category-high':
-                return `Large ${type}`;
-            case 'category-medium':
-                return `Medium ${type}`;
-            case 'category-low':
-                return `Small ${type}`;
-            default:
-                return '';
-        }
     }
 
     static toggleContainer(user, property){

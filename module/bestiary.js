@@ -4,7 +4,7 @@ import { resetBestiary } from "../scripts/macros.js";
 import { bestiaryJournalEntry } from "../scripts/setup.js";
 import { socketEvent } from "../scripts/socket.js";
 import { acTable, attackTable, attributeTable, damageTable, hpTable, savingThrowPerceptionTable, skillTable, spellAttackTable, spellDCTable } from "../scripts/statisticsData.js";
-import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getMixedCategoryLabel, getRollAverage, getWeaknessCategoryClass } from "../scripts/statisticsHelper.js";
+import { getCategoryFromIntervals, getCategoryLabel, getCategoryRange, getMixedCategoryLabel, getRollAverage, getIWRCategoryIcon } from "../scripts/statisticsHelper.js";
 import PF2EBestiarySavesHandler from "./savesHandler.js";
 import { dispositions } from '../data/constants.js';
 import Tagify from '@yaireo/tagify';
@@ -439,7 +439,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     acc.values[resistanceKey] = { 
                         ...resistance, 
                         value: resistance.fake || resistance.empty ? resistance.type : `${label} ${resistance.value}`, 
-                        class: getWeaknessCategoryClass(contextLevel, resistance.value), 
+                        class: getIWRCategoryIcon(contextLevel, resistance.value), 
                         category: label,
                         exceptions: resistance.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(x.value.label ?? resistance.typeLabels[x.value] )})) ?? [],
                         doubleVs: resistance.doubleVs?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(x.value.label ?? resistance.typeLabels[x.value] )})) ?? [],
@@ -453,7 +453,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     acc.values[weaknessKey] = { 
                         ...weakness, 
                         value: weakness.fake || weakness.empty ? weakness.type : `${label} ${weakness.value}`, 
-                        class: getWeaknessCategoryClass(contextLevel, weakness.value), 
+                        class: getIWRCategoryIcon(contextLevel, weakness.value), 
                         category: label,
                         exceptions: weakness.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(x.value.label ?? weakness.typeLabels[x.value] )})) ?? [],
                     };

@@ -51,7 +51,7 @@
                             data-action="toggleRevealed" 
                             data-path="{{concat 'system.immunities.' key}}" 
                             data-fake="{{immunity.fake}}">
-                            {{localize immunity.label}}
+                            {{PF2EBTCaptialize (localize immunity.label)}}
                             {{#if (gt (PF2EBTNrKeys immunity.exceptions) 0)}}
                                 <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                 {{#each immunity.exceptions as |exception index|}}
@@ -70,7 +70,7 @@
                 {{else}}
                     {{#PF2EBTFilter 'revealed' '?' 10 this.system.immunities }}
                         <div class="secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat 'immunities.' @key}}" data-fake="{{this.fake}}">
-                            {{localize this.label}}
+                            {{PF2EBTCaptialize (localize this.label)}}
                             {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
                                 <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                 {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
@@ -105,9 +105,9 @@
                                 data-action="toggleRevealed" 
                                 data-path="{{concat 'system.weaknesses.' key}}" 
                                 data-fake="{{weakness.fake}}"
-                                title="{{PF2EBTCategoryClassTitle weakness.class 'Weakness' ../vagueDescriptions.properties.weaknesses}}"
                             >
-                                {{localize weakness.label}}&nbsp;{{weakness.value}}
+                                <span>{{PF2EBTCaptialize (localize weakness.label)}}</span>
+                                <span>{{weakness.value}}</span>
                                 {{#if (gt (PF2EBTNrKeys weakness.exceptions) 0)}}
                                     <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                     {{#each weakness.exceptions as |exception index|}}
@@ -130,9 +130,10 @@
                             data-action="toggleRevealed" 
                             data-path="{{concat 'system.weaknesses.' @key}}" 
                             data-fake="{{this.fake}}"
-                            title="{{PF2EBTCategoryClassTitle this.class 'Weakness' ../vagueDescriptions.properties.weaknesses}}"
                         >
-                            {{localize this.label}} {{PF2EBTMonsterValue this ../vagueDescriptions.properties.weaknesses "true"}}
+                            {{#if this.category}}{{localize this.category}}{{/if}}
+                            <span>{{PF2EBTCaptialize (localize this.label)}}</span>
+                            {{#if (not this.category)}}{{this.value}}{{/if}}
                             {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
                                 <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                 {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
@@ -167,9 +168,9 @@
                                 data-action="toggleRevealed" 
                                 data-path="{{concat 'system.resistances.' key}}" 
                                 data-fake="{{resistance.fake}}"
-                                title="{{PF2EBTCategoryClassTitle resistance.class 'Resistance' ../vagueDescriptions.properties.resistances}}"
                             >
-                                {{localize resistance.label}} {{PF2EBTMonsterValue resistance ../vagueDescriptions.properties.resistances "true"}}
+                                <span>{{PF2EBTCaptialize (localize resistance.label)}}</span>
+                                <span>{{PF2EBTMonsterValue resistance ../vagueDescriptions.properties.resistances "true"}}</span>
                                 {{#if (gt (PF2EBTNrKeys resistance.exceptions) 0)}}
                                     <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                     {{#each resistance.exceptions as |exception index|}}
@@ -206,9 +207,10 @@
                             data-action="toggleRevealed" 
                             data-path="{{concat 'system.resistances.' @key}}" 
                             data-fake="{{this.fake}}"
-                            title="{{PF2EBTCategoryClassTitle this.class 'Resistance' ../vagueDescriptions.properties.resistances}}"
                         >
-                            {{localize this.label}} {{PF2EBTMonsterValue this ../vagueDescriptions.properties.resistances "true"}}
+                            {{#if this.category}}{{localize this.category}}{{/if}}
+                            <span>{{PF2EBTCaptialize (localize this.label)}}</span>
+                            {{#if (not this.category)}}{{this.value}}{{/if}}
                             {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
                                 <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                 {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
@@ -384,7 +386,6 @@
                                         {{#if sense.isDetails}}
                                             <div class="flexrow secondary-container {{PF2EBTToggleContainer ../user sense}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState sense}}" data-action="toggleRevealed" data-path="system.senses.details" data-name="details" data-vague-property="details">
                                                 <div class="pf2e-bestiary-bold">{{localize sense.label}}</div>
-                                                {{PF2EBTMonsterValue sense ../vagueDescriptions.properties.perception }}
                                             </div>
                                         {{else}}
                                             <div class="flexrow secondary-container {{PF2EBTToggleContainer ../user sense}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState sense}}" data-action="toggleRevealed" data-path="{{concat 'system.senses.senses.' key}}" data-fake="{{sense.fake}}">

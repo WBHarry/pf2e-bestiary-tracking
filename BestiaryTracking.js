@@ -131,1645 +131,6 @@ const getVagueDescriptionLabels = () => ({
     }
 });
 
-const fields = foundry.data.fields;
-
-const toggleStringField = () => new fields.SchemaField({
-    revealed: new fields.BooleanField({ required: true, initial: false }),
-    value: new fields.StringField({ required: true }),
-    custom: new fields.StringField({ nullable: true }),
-}); 
-
-const toggleNumberField = () => new fields.SchemaField({
-    revealed: new fields.BooleanField({ required: true, initial: false }),
-    value: new fields.NumberField({ required: true, integer: true }),
-    custom: new fields.StringField({ nullable: true }),
-}); 
-
-const getCreatureData = (actor) => {
-    const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
-    const weaknessesKeys = Object.keys(actor.system.attributes.weaknesses);
-    const resistancesKeys = Object.keys(actor.system.attributes.resistances);
-    const attackKeys = Object.keys(actor.system.actions);
-    const itemKeys = Array.from(actor.items);
-
-    const spellEntries = itemKeys.reduce((acc, entry) => {
-      if(entry.type === 'spellcastingEntry'){
-        const levels = {};
-        actor.items.forEach(spell => {
-          if(spell.type === 'spell' && spell.system.location.value === entry.id){
-            const levelValue = spell.system.traits.value.includes("cantrip") ? 'Cantrips' : spell.system.location.heightenedLevel ?? spell.system.cast.focusPoints ? Math.ceil(monster.system.details.level.value / 2) : spell.system.level.value;
-
-            var level = Object.values(levels).find(x => x.value === levelValue);
-            if(!level) {
-                level = { value: levelValue, spells: {} };
-            }
-
-            level.spells[spell._id] = {
-                label: spell.name,
-                img: spell.img,
-                actions: spell.actionGlyph,
-                defense: spell.system.defense?.save?.statistic ? {
-                  statistic: spell.system.defense.save.statistic,
-                  basic: spell.system.defense.save.basic,
-                } : null,
-                range: spell.system.range.value,
-                traits: {
-                  rarity: spell.system.traits.rarity,
-                  traditions: spell.system.traits.traditions,
-                  values: spell.system.traits.value.reduce((acc, trait ) => {
-                    acc[trait] = { value: trait };
-                    return acc;
-                  }, {})
-                },
-                description: {
-                    gm: spell.system.description.gm,
-                    value: spell.system.description.value,
-                }
-            };
-
-            levels[levelValue] = level;
-          }
-        }); 
-
-        acc[entry.id] = {
-          tradition: entry.system.tradition.value,
-          category: entry.category,
-          dc: { value: entry.system.spelldc.dc },
-          mod: { value: entry.system.spelldc.mod },
-          attack: { value: entry.system.spelldc.value },
-          levels: levels,
-        };
-      }
-
-      return acc;
-    }, {});
-
-    const hasSpells = Object.keys(spellEntries).length > 0;
-    const spells = {
-      ...(hasSpells ? {} : { fake: { revealed: false } }),
-      entries: hasSpells ? spellEntries : {},
-    };
-
-    return {
-        type: 'pf2e-bestiary-tracking.creature',
-        name: actor.name,
-        ownership: { default: 3 },
-        system: {
-            uuid: actor.uuid,
-            version: currentVersion,
-            img: actor.img,
-            texture: actor.prototypeToken.texture.src,
-            name: { value: actor.name },
-            ac: { value: Number.parseInt(actor.system.attributes.ac.value) },
-            hp: { value: Number.parseInt(actor.system.attributes.hp.max) },
-            level: { value: Number.parseInt(actor.system.details.level.value) },
-            size: actor.system.traits.size.value,
-            rarity: { value: actor.system.traits.rarity },
-            traits: actor.system.traits.value.reduce((acc, trait) => {
-              acc[trait] = { value: trait };
-              return acc;
-            }, {}),
-            skills: Object.values(actor.system.skills).some(x => x.base > 0) ? Object.keys(actor.system.skills).reduce((acc, key) => {
-              const skill = actor.system.skills[key];
-              acc[key] = { value: skill.base, lore: skill.lore, note: skill.note, modifiers: skill.modifiers.filter(x => x.slug !== 'base').map(x => ({ kind: x.kind, label: x.label, modifier: x.modifier })), label: skill.label, totalModifier: Number.parseInt(skill.totalModifier) };
-              return acc;
-            }, {}) : { empty: { empty: true, value: 'PF2EBestiary.Miscellaneous.None' } },
-            saves: {
-              fortitude: { value: actor.system.saves.fortitude.value },
-              reflex: { value: actor.system.saves.reflex.value },
-              will: { value: actor.system.saves.will.value },
-            },
-            speeds: {
-              details: { name: actor.system.attributes.speed.details },
-              values: {
-                land: { name: 'Land', value: actor.system.attributes.speed.value },
-                ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
-                  acc[speed.label] = { name: speed.label, value: speed.value };
-                  return acc;
-                }, {})
-              },  
-            },
-            abilities: Object.keys(actor.system.abilities).reduce((acc, key) => {
-              acc[key] = { key: key, mod: actor.system.abilities[key].mod };
-              return acc;
-            }, {}),
-            senses: {
-              perception: { value: actor.system.perception.value },
-              details: { value: actor.system.perception.details },
-              senses: actor.system.perception.senses.reduce((acc, sense) => {
-                acc[sense.type] = { type: sense.type };
-                return acc;
-              }, {})
-            },
-            languages: {
-              details: { value: actor.system.details.languages.details },
-              values: (actor.system.details.languages.value.length > 0 || actor.system.details.languages.details) ? actor.system.details.languages.value.reduce((acc, language) => {
-                acc[language] = { value: language };
-                return acc;
-              }, {}) : { empty: { empty: true, value: 'PF2EBestiary.Miscellaneous.None', exceptions: {} } }
-            },
-            immunities: immunitiesKeys.length > 0 ? immunitiesKeys.reduce((acc, key) => {
-                const immunity = actor.system.attributes.immunities[key];
-                acc[getIWRString(immunity)] = { 
-                    revealed: false, 
-                    type: immunity.type, 
-                    exceptions:  immunity.exceptions.reduce((acc, exception) => {  
-                      acc[exception] = { type: exception.label ?? exception };
-                      return acc;
-                    }, {}),
-                };
-
-                return acc;
-            }, {}) : { empty: { empty: true, type: 'PF2EBestiary.Miscellaneous.None', exceptions: {} } },
-            weaknesses: weaknessesKeys.length > 0 ? weaknessesKeys.reduce((acc, key) => {
-                const weakness = actor.system.attributes.weaknesses[key];
-                acc[getIWRString(weakness)] = { 
-                    revealed: false, 
-                    type: weakness.type,
-                    value: weakness.value, 
-                    exceptions:  weakness.exceptions.reduce((acc, exception) => {  
-                      acc[exception] = { type: exception.label ?? exception };
-                      return acc;
-                    }, {}),
-                };
-
-                return acc;
-            }, {}) : { empty: { empty: true, type: 'PF2EBestiary.Miscellaneous.None', exceptions: {} } },
-            resistances: resistancesKeys.length > 0 ? resistancesKeys.reduce((acc, key) => {
-                const resistance = actor.system.attributes.resistances[key];
-                acc[getIWRString(resistance)] = { 
-                    revealed: false, 
-                    type: resistance.type,
-                    value: resistance.value, 
-                    exceptions:  resistance.exceptions.reduce((acc, exception) => {  
-                      acc[exception] = { type: exception.label ?? exception };
-                      return acc;
-                    }, {}),
-                    doubleVs: resistance.doubleVs.reduce((acc, doubleVs) => {  
-                      acc[doubleVs] = { type: doubleVs.label ?? doubleVs };
-                      return acc;
-                    }, {}),
-                };
-
-                return acc;
-            }, {}) : { empty: { empty: true, type: 'PF2EBestiary.Miscellaneous.None', exceptions: {}, doubleVs: {} } },
-            attacks: attackKeys.length > 0 ? attackKeys.reduce((acc, actionKey) => {
-              const attack = actor.system.actions[actionKey];
-              const item = actor.items.get(attack.item.id);
-              
-              if(item.type === 'melee' || item.type === 'equipment'){
-                acc[attack.item.id] = {
-                  label: attack.label,
-                  actions: attack.glyph,
-                  totalModifier: attack.totalModifier,
-                  isMelee: attack.weapon.isMelee,
-                  damageInstances: Object.keys(item.system.damageRolls).reduce((acc, damage) => {
-                    acc[damage] = { 
-                      category: item.system.damageRolls[damage].category,
-                      damage: { value: item.system.damageRolls[damage].damage },
-                      damageType: { value: item.system.damageRolls[damage].damageType } 
-                    };
-
-                    return acc;
-                  }, {}),
-                  traits: item.system.traits.value.reduce((acc, trait) => {
-                    acc[trait] = { value: trait, description: trait };
-                    return acc;
-                  }, {}),
-                  variants: attack.variants.reduce((acc, variant) => {
-                    acc[slugify(variant.label)] = { label: variant.label };
-
-                    return acc;
-                  }, {}),
-                  rules: item.system.rules,
-                };
-              }
-
-              return acc;
-            }, {}) : { empty: { empty: true, label: 'PF2EBestiary.Miscellaneous.None', totalModifier: 0, isMelee: false, damageInstances: {}, traits: {}, variants: {}, rules: {} } },
-            actions: itemKeys.filter(action => action.type === 'action' && action.system.actionType.value !== 'passive').length > 0 ? itemKeys.reduce((acc, action) => {
-              if(action.type === 'action' && action.system.actionType.value !== 'passive'){
-                acc[action.id] = {
-                  label: action.name,
-                  actions: action.system.actions.value ?? 'R',
-                  traits: action.system.traits.value.reduce((acc, trait) => {
-                    acc[trait] = { value: trait };
-                    return acc;
-                  }, {}),
-                  description: action.system.description.value,
-                };
-              }
-
-              return acc;
-            }, {}) : { empty: { empty: true, label: 'PF2EBestiary.Miscellaneous.None', actions: '', traits: {}, description: '' } },
-            passives: itemKeys.filter(action => action.type === 'action' && action.system.actionType.value === 'passive').length > 0 ? itemKeys.reduce((acc, action) => {
-              if(action.type === 'action' && action.system.actionType.value === 'passive'){
-                acc[action.id] = {
-                  label: action.name,
-                  traits: action.system.traits.value.reduce((acc, trait) => {
-                    acc[trait] = { value: trait };
-                    return acc;
-                  }, {}),
-                  description: action.system.description.value,
-                };
-              }
-
-              return acc;
-            }, {}) : { empty: { empty: true, label: 'PF2EBestiary.Miscellaneous.None', traits: {}, description: '' } },
-            spells: spells,
-            notes: {
-              public: { value: actor.system.details.publicNotes },
-              private: { value: actor.system.details.privateNotes },
-            },
-        }
-    };
-};
-
-class MappingField extends foundry.data.fields.ObjectField {
-    constructor(model, options) {
-      if ( !(model instanceof foundry.data.fields.DataField) ) {
-        throw new Error("MappingField must have a DataField as its contained element");
-      }
-      super(options);
-  
-      /**
-       * The embedded DataField definition which is contained in this field.
-       * @type {DataField}
-       */
-      this.model = model;
-    }
-  
-    /* -------------------------------------------- */
-  
-    /** @inheritdoc */
-    static get _defaults() {
-      return foundry.utils.mergeObject(super._defaults, {
-        initialKeys: null,
-        initialValue: null,
-        initialKeysOnly: false
-      });
-    }
-  
-    /* -------------------------------------------- */
-  
-    /** @inheritdoc */
-    _cleanType(value, options) {
-      Object.entries(value).forEach(([k, v]) => value[k] = this.model.clean(v, options));
-      return value;
-    }
-  
-    /* -------------------------------------------- */
-  
-    /** @inheritdoc */
-    getInitialValue(data) {
-      let keys = this.initialKeys;
-      const initial = super.getInitialValue(data);
-      if ( !keys || !foundry.utils.isEmpty(initial) ) return initial;
-      if ( !(keys instanceof Array) ) keys = Object.keys(keys);
-      for ( const key of keys ) initial[key] = this._getInitialValueForKey(key);
-      return initial;
-    }
-  
-    /* -------------------------------------------- */
-  
-    /**
-     * Get the initial value for the provided key.
-     * @param {string} key       Key within the object being built.
-     * @param {object} [object]  Any existing mapping data.
-     * @returns {*}              Initial value based on provided field type.
-     */
-    _getInitialValueForKey(key, object) {
-      const initial = this.model.getInitialValue();
-      return this.initialValue?.(key, initial, object) ?? initial;
-    }
-  
-    /* -------------------------------------------- */
-  
-    /** @override */
-    _validateType(value, options={}) {
-      if ( foundry.utils.getType(value) !== "Object" ) throw new Error("must be an Object");
-      const errors = this._validateValues(value, options);
-      if ( !foundry.utils.isEmpty(errors) ) throw new foundry.data.fields.ModelValidationError(errors);
-    }
-  
-    /* -------------------------------------------- */
-  
-    /**
-     * Validate each value of the object.
-     * @param {object} value     The object to validate.
-     * @param {object} options   Validation options.
-     * @returns {Object<Error>}  An object of value-specific errors by key.
-     */
-    _validateValues(value, options) {
-      const errors = {};
-      for ( const [k, v] of Object.entries(value) ) {
-        const error = this.model.validate(v, options);
-        if ( error ) errors[k] = error;
-      }
-      return errors;
-    }
-  
-    /* -------------------------------------------- */
-  
-    /** @override */
-    initialize(value, model, options={}) {
-      if ( !value ) return value;
-      const obj = {};
-      const initialKeys = (this.initialKeys instanceof Array) ? this.initialKeys : Object.keys(this.initialKeys ?? {});
-      const keys = this.initialKeysOnly ? initialKeys : Object.keys(value);
-      for ( const key of keys ) {
-        const data = value[key] ?? this._getInitialValueForKey(key, value);
-        obj[key] = this.model.initialize(data, model, options);
-      }
-      return obj;
-    }
-  
-    /* -------------------------------------------- */
-  
-    /** @inheritdoc */
-    _getField(path) {
-      if ( path.length === 0 ) return this;
-      else if ( path.length === 1 ) return this.model;
-      path.shift();
-      return this.model._getField(path);
-    }
-  }
-
-class Creature extends foundry.abstract.TypeDataModel {
-    static defineSchema() {
-        const fields = foundry.data.fields;
-        return {
-            hidden: new fields.BooleanField({ required: true, initial: false }),
-            uuid: new fields.StringField({ required: true }),
-            version: new fields.StringField({ required: true }),
-            img: new fields.StringField({ required: true }),
-            texture: new fields.StringField({ required: true }),
-            name: toggleStringField(),
-            ac: toggleNumberField(),
-            hp: toggleNumberField(),
-            level: toggleNumberField(),
-            size: new fields.StringField({ required: true }),
-            skills: new MappingField(new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                empty: new fields.BooleanField({ initial: false }),
-                lore: new fields.BooleanField({}),
-                note: new fields.StringField({}),
-                modifiers: new fields.ArrayField(new fields.SchemaField({
-                    kind: new fields.StringField({}),
-                    label: new fields.StringField({}),
-                    modifier: new fields.NumberField({ integer: true }),
-                }), { initial: []}),
-                label: new fields.StringField({}),
-                value: new fields.StringField({ required: true }),
-                totalModifier: new fields.NumberField({ required: false, integer: true }),
-            })),
-            abilities: new MappingField(new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                custom: new fields.StringField({ nullable: true }),
-                mod: new fields.NumberField({ required: true, integer: true }),
-                key: new fields.StringField({ required: true }),
-            })),    
-            saves: new fields.SchemaField({
-                fortitude: toggleNumberField(),
-                reflex: toggleNumberField(),
-                will: toggleNumberField(),
-            }),
-            speeds: new fields.SchemaField({
-                details: new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    name: new fields.StringField({ required: true }),
-                }, { required: false }),
-                values: new MappingField(new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    name: new fields.StringField({ required: true }),
-                    value: new fields.NumberField({ required: true, integer: true })
-                }))
-            }),
-            immunities: new MappingField(new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                fake: new fields.BooleanField({}),
-                empty: new fields.BooleanField({ initial: false }),
-                type: new fields.StringField({ required: true }),
-                exceptions: new MappingField(new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    type: new fields.StringField({ required: true }) 
-                })),
-            })),
-            weaknesses: new MappingField(new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                fake: new fields.BooleanField({}),
-                empty: new fields.BooleanField({ initial: false }),
-                type: new fields.StringField({ required: true }),
-                value: new fields.NumberField({ required: true, integer: true }),
-                exceptions: new MappingField(new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    type: new fields.StringField({ required: true }) 
-                })),
-            })),
-            resistances: new MappingField(new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                fake: new fields.BooleanField({}),
-                empty: new fields.BooleanField({ initial: false }),
-                type: new fields.StringField({ required: true }),
-                value: new fields.NumberField({ required: true, integer: true }),
-                exceptions: new MappingField(new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    type: new fields.StringField({ required: true }) 
-                })),
-                doubleVs: new MappingField(new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    type: new fields.StringField({ required: true }) 
-                })),
-            })),
-            rarity: new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                value: new fields.StringField({ required: true }),
-            }),
-            traits: new MappingField(new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                value: new fields.StringField({ required: true }) 
-            })),
-            attacks: new MappingField(new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                fake: new fields.BooleanField({}),
-                empty: new fields.BooleanField({}),
-                damageStatsRevealed: new fields.BooleanField({ required: true, initial: false }),
-                label: new fields.StringField({ required: true }),
-                actions: new fields.StringField({ required: true }),
-                totalModifier: new fields.NumberField({ required: true }),
-                isMelee: new fields.BooleanField({ required: true }),
-                traits: new MappingField(new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    value: new fields.StringField({ required: true }),
-                    description: new fields.StringField({ required: true }),
-                })),
-                variants: new MappingField(new fields.SchemaField({
-                    label: new fields.StringField({}),
-                })),
-                damageInstances: new MappingField(new fields.SchemaField({
-                    revealed: new fields.BooleanField({  }),
-                    category: new fields.StringField({ nullable: true }),
-                    damage: new fields.SchemaField({
-                        value: new fields.StringField({ nullable: true }),
-                    }),
-                    damageType: new fields.SchemaField({
-                        revealed: new fields.BooleanField({ required: true, initial: false }),
-                        value: new fields.StringField({ required: true })
-                    })
-                })),
-                rules: new fields.ObjectField({}),
-            })),
-            actions: new MappingField(new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                fake: new fields.BooleanField({}),
-                empty: new fields.BooleanField({}),
-                label: new fields.StringField({ required: true }),
-                actions: new fields.StringField({ required: true }),
-                traits: new MappingField(new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    value: new fields.StringField({ required: true })
-                })),
-                description: new fields.HTMLField({ required: true, initial: '' }),
-            })),
-            passives: new MappingField(new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                fake: new fields.BooleanField({}),
-                empty: new fields.BooleanField({}),
-                label: new fields.StringField({ required: true }),
-                traits: new MappingField(new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    value: new fields.StringField({ required: true })
-                })),
-                description: new fields.HTMLField({ required: true, initial: '' }),
-            })),
-            spells: new fields.SchemaField({
-                fake: new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                }, { nullable: true, initial: null }),
-                entries: new MappingField(new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    tradition: new fields.StringField({ required: true }),
-                    category: new fields.StringField({ required: true }),
-                    dc: new fields.SchemaField({
-                        revealed: new fields.BooleanField({ required: true, initial: false }),
-                        value: new fields.NumberField({ required: true, integer: true }),
-                    }),
-                    attack: new fields.SchemaField({
-                        revealed: new fields.BooleanField({ required: true, initial: false }),
-                        value: new fields.NumberField({ required: true, integer: true }),
-                    }),
-                    mod: new fields.SchemaField({
-                        value: new fields.NumberField({ required: true, integer: true }),
-                    }),
-                    levels: new MappingField(new fields.SchemaField({
-                        value: new fields.StringField({ required: true }),
-                        spells: new MappingField(new fields.SchemaField({
-                            revealed: new fields.BooleanField({ required: true, initial: false }),
-                            label: new fields.StringField({ required: true }),
-                            img: new fields.StringField({ required: true }),
-                            actions: new fields.StringField({ required: true }),
-                            defense: new fields.SchemaField({
-                                statistic: new fields.StringField({}),
-                                basic: new fields.BooleanField({}),
-                            }, { required: false, nullable: true, initial: null }),
-                            range: new fields.StringField({}),
-                            traits: new fields.SchemaField({
-                                rarity: new fields.StringField({ required: true }),
-                                traditions: new fields.ArrayField(new fields.StringField({})),
-                                values: new MappingField(new fields.SchemaField({
-                                    value: new fields.StringField({ required: true }),
-                                })),
-                            }),
-                            description: new fields.SchemaField({
-                                gm: new fields.HTMLField({ required: true }),
-                                value: new fields.HTMLField({ required: true }),
-                            }),
-                        })),
-                    })),
-                }))
-            }),
-            senses: new fields.SchemaField({
-                perception: new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    custom: new fields.StringField({ nullable: true }),
-                    value: new fields.NumberField({ required: true, integer: true }),
-                }),
-                details: new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    value: new fields.StringField({ required: true }),
-                }),
-                senses: new MappingField(new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    fake: new fields.BooleanField({}),
-                    type: new fields.StringField({ required: true }),
-                })),
-            }),
-            languages: new fields.SchemaField({
-                details: new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    value: new fields.StringField({ required: true }),
-                }),
-                values: new MappingField(new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    fake: new fields.BooleanField({}),
-                    empty: new fields.BooleanField({ initial: false }),
-                    value: new fields.StringField({ required: true }),
-                })),
-            }),
-            notes: new fields.SchemaField({
-                public: new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    value: new fields.HTMLField({ required: true, initial: '' }),
-                }),
-                private: new fields.SchemaField({
-                    revealed: new fields.BooleanField({ required: true, initial: false }),
-                    value: new fields.HTMLField({ required: true, initial: '' }),
-                }),
-                player: new fields.HTMLField({ required: true, initial: '' })
-            }),
-        };
-    }
-
-    get displayImage(){
-        return game.settings.get('pf2e-bestiary-tracking', 'use-token-art') ? this.texture : this.img;
-    }
-
-    get sizeLabel(){
-        return game.i18n.localize(CONFIG.PF2E.actorSizes[this.size]);
-    }
-
-    get allSenses(){
-        const sensesDetails = this.senses.details.value ? { details: { ...this.senses.details, label: this.senses.details.value, isDetails: true }} : {};
-        return {
-            perception: { ...this.senses.perception, label: 'PF2E.PerceptionLabel', isPerception: true },
-            ...sensesDetails,
-            ...Object.keys(this.senses.senses).reduce((acc, sense) => {
-                acc[sense] = { ...this.senses.senses[sense], label: CONFIG.PF2E.senses[this.senses.senses[sense].type] ?? this.senses.senses[sense].type };
-                return acc;
-            }, {}),
-        };
-    }
-
-    get allLanguages(){
-        const languageDetails = this.languages.details.value ? { details: { ...this.languages.details, label: this.languages.details.value, isDetails: true } } : {};
-        return {
-            ...Object.keys(this.languages.values).reduce((acc, key) => {
-                acc[`values.${key}`] = { ...this.languages.values[key], label: CONFIG.PF2E.languages[this.languages.values[key].value] ?? this.languages.values[key].value };
-    
-                return acc;
-            }, {}),
-            ...languageDetails,
-        };
-    }
-
-    get sortedSpells(){
-        return {
-            fake: this.spells.fake,
-            entries: Object.keys(this.spells.entries).reduce((acc, entry) => {
-                acc[entry] = { 
-                    ...this.spells.entries[entry],
-                    label: `${game.i18n.localize(CONFIG.PF2E.magicTraditions[this.spells.entries[entry].tradition])} ${game.i18n.localize(CONFIG.PF2E.preparationType[this.spells.entries[entry].category])} ${game.i18n.localize("PF2E.Item.Spell.Plural")}`,
-                    levels: Object.keys(this.spells.entries[entry].levels).reduce((acc, levelKey) => {
-                        const level = this.spells.entries[entry].levels[levelKey];
-                        acc.push({
-                            ...level,
-                            key: levelKey,
-                            revealed: Object.values(level.spells).some(x => x.revealed),
-                            label: levelKey === 'Cantrips' ? 
-                                game.i18n.localize('PF2E.Actor.Creature.Spellcasting.Cantrips') : 
-                                game.i18n.format('PF2E.Item.Spell.Rank.Ordinal', { rank: game.i18n.format("PF2E.OrdinalNumber", { value: level.value, suffix: levelKey === '1' ? 'st' : levelKey === '2' ? 'nd' : levelKey === '3' ? 'rd' : 'th' }) }),
-                            spells: Object.keys(level.spells).reduce((acc, spell) => {
-                                acc[spell] = {
-                                    ...level.spells[spell],
-                                    defense: !level.spells[spell].defense ? null : 
-                                        { ...level.spells[spell].defense, label: level.spells[spell].defense.basic ? 
-                                            game.i18n.format('PF2E.InlineCheck.BasicWithSave', { save: game.i18n.localize(CONFIG.PF2E.saves[level.spells[spell].defense.statistic]) }) : 
-                                            game.i18n.localize(CONFIG.PF2E.saves[level.spells[spell].defense.statistic]) 
-                                        }
-                                };
-    
-                                return acc;
-                            }, {}),
-                        });
-    
-                        return acc;
-                    }, []).sort((a, b) => {
-                        if(a.key === 'Cantrips' && b.key !== 'Cantrips') return -1;
-                        else if(a.key !== 'Cantrips' && b.key === 'Cantrips') return 1;
-                        else if(a.key === 'Cantrips' && b.key === 'Cantrips') return 0;
-    
-                        return a.key - b.key;
-                    }), 
-                };
-    
-                return acc;
-            }, {})
-        };
-    }
-
-    async refreshData() {
-        const actor = await fromUuid(this.uuid);
-        if(!actor) return;
-        
-        const data = getCreatureData(actor);
-
-        const spells = data.system.spells.fake ? 
-            { fake: { ...data.system.spells.fake, revealed: this.spells.fake?.revealed ?? data.system.spells.fake.revealed }, entries: {} } : 
-            {
-                entries: Object.keys(data.system.spells.entries).reduce((acc, key) =>{
-                    const entry = data.system.spells.entries[key];
-                    const oldEntry = this.spells.entries[key];
-                    acc[key] = {
-                        ...entry,
-                        revealed: oldEntry?.revealed ?? entry.revealed,
-                        dc: { ...entry.dc, revealed: oldEntry?.dc?.revealed ?? entry.dc.revealed },
-                        attack: { ...entry.attack, revealed: oldEntry?.attack?.revealed ?? entry.attack.revealed },
-                        levels: Object.keys(entry.levels).reduce((acc, key) => {
-                            const { spells, ...rest } = entry.levels[key];
-                            acc[key] = {
-                                ...rest,
-                                spells: Object.keys(entry.levels[key].spells).reduce((acc, spell) => {
-                                    const oldSpell = oldEntry && oldEntry.levels[key] ? oldEntry.levels[key].spells[spell] : null;
-                                    acc[spell] = {
-                                        ...entry.levels[key].spells[spell],
-                                        revealed: oldSpell?.revealed ?? entry.levels[key].spells[spell].revealed,
-                                    };
-
-                                    return acc;
-                                }, {}),
-                            };
-
-                            return acc;
-                        }, {}),
-                    };
-
-                    return acc;
-                }, {}), 
-            };
-
-        const updateData = {
-            name: data.name,
-            system: {
-                hidden: this.hidden,
-                uuid: data.system.uuid,
-                version: data.system.version,
-                img: data.system.img,
-                texture: data.system.texture,
-                size: data.system.size,
-                name: { ...data.system.name, revealed: this.name.revealed, custom: this.name.custom },
-                ac: { ...data.system.ac, revealed: this.ac.revealed, custom: this.ac.custom },
-                hp: { ...data.system.hp, revealed: this.hp.revealed, custom: this.hp.custom },
-                level: { ...data.system.level, revealed: this.level.revealed, custom: this.level.custom },
-                skills: Object.keys(data.system.skills).reduce((acc, key) => {
-                    acc[key] = { ...data.system.skills[key], revealed: this.skills[key] ? this.skills[key].revealed : data.system.skills[key].revealed };
-                    return acc;
-                }, {}),
-                abilities: Object.keys(data.system.abilities).reduce((acc, key) => {
-                    acc[key] = { ...data.system.abilities[key], revealed: this.abilities[key] ? this.abilities[key].revealed : data.system.abilities[key].revealed };
-                    return acc;
-                }, {}),
-                saves: Object.keys(data.system.saves).reduce((acc, key) => {
-                    acc[key] = { ...data.system.saves[key], revealed: this.saves[key] ? this.saves[key].revealed : data.system.saves[key].revealed };
-                    return acc;
-                }, {}),
-                speeds: {
-                    details: { ...data.system.speeds.details, revealed: this.speeds.details.revealed },
-                    values: Object.keys(data.system.speeds.values).reduce((acc, key) => {
-                        acc[key] = { ...data.system.speeds.values[key], revealed: this.speeds.values[key] ? this.speeds.values[key].revealed : data.system.speeds.values[key].revealed };
-                        return acc;
-                    }, {})
-                },
-                immunities: Object.keys(data.system.immunities).reduce((acc, key) => {
-                    const immunity = data.system.immunities[key];
-                    const oldImmunity = this.immunities[key];
-                    acc[key] = {
-                        ...immunity,
-                        revealed: oldImmunity ? oldImmunity.revealed : immunity.revealed,
-                        exceptions: Object.keys(immunity.exceptions).reduce((acc, ex) => {
-                            acc[ex] = { ...immunity.exceptions[ex], revealed: oldImmunity?.exceptions[ex] ? oldImmunity.exceptions[ex].revealed : immunity.exceptions[ex].revealed };
-                            return acc;
-                        }, {}),
-                    };
-
-                    return acc;
-                }, Object.keys(this.immunities).reduce((acc, key) => {
-                    if(this.immunities[key].fake) acc[key] = this.immunities[key];
-                    return acc;
-                }, {})),
-                weaknesses: Object.keys(data.system.weaknesses).reduce((acc, key) => {
-                    const weakness = data.system.weaknesses[key];
-                    const oldWeakness = this.weaknesses[key];
-                    acc[key] = {
-                        ...weakness,
-                        revealed: oldWeakness ? oldWeakness.revealed : weakness.revealed,
-                        exceptions: Object.keys(weakness.exceptions).reduce((acc, ex) => {
-                            acc[ex] = { ...weakness.exceptions[ex], revealed: oldWeakness?.exceptions[ex] ? oldWeakness.exceptions[ex].revealed : weakness.exceptions[ex].revealed };
-                            return acc;
-                        }, {}),
-                    };
-
-                    return acc;
-                }, Object.keys(this.weaknesses).reduce((acc, key) => {
-                    if(this.weaknesses[key].fake) acc[key] = this.weaknesses[key];
-                    return acc;
-                }, {})),
-                resistances: Object.keys(data.system.resistances).reduce((acc, key) => {
-                    const resistance = data.system.resistances[key];
-                    const oldResistance = this.resistances[key];
-                    acc[key] = {
-                        ...resistance,
-                        revealed: oldResistance ? oldResistance.revealed : resistance.revealed,
-                        exceptions: Object.keys(resistance.exceptions).reduce((acc, ex) => {
-                            acc[ex] = { ...resistance.exceptions[ex], revealed: oldResistance?.exceptions[ex] ? oldResistance.exceptions[ex].revealed : resistance.exceptions[ex].revealed };
-                            return acc;
-                        }, {}),
-                        doubleVs: Object.keys(resistance.doubleVs).reduce((acc, ex) => {
-                            acc[ex] = { ...resistance.doubleVs[ex], revealed: oldResistance?.doubleVs[ex] ? oldResistance.doubleVs[ex].revealed : resistance.doubleVs[ex].revealed };
-                            return acc;
-                        }, {}),
-                    };
-
-                    return acc;
-                }, Object.keys(this.resistances).reduce((acc, key) => {
-                    if(this.resistances[key].fake) acc[key] = this.resistances[key];
-                    return acc;
-                }, {})),
-                rarity: { ...data.system.rarity, revealed: this.rarity.revealed },
-                traits: Object.keys(data.system.traits).reduce((acc, key) => {
-                    acc[key] = { ...data.system.traits[key], revealed: this.traits[key] ? this.traits[key].revealed : data.system.traits[key].revealed };
-                    return acc;
-                }, {}),
-                attacks: Object.keys(data.system.attacks).reduce((acc, key) => {
-                    const attack = data.system.attacks[key];
-                    const oldAttack = this.attacks[key];
-                    acc[key] = {
-                        ...attack,
-                        revealed: oldAttack?.revealed ?? attack.revealed,
-                        damageStatsRevealed: oldAttack?.damageStatsRevealed ?? attack.damageStatsRevealed,
-                        traits: Object.keys(attack.traits).reduce((acc, trait) => {
-                            acc[trait] = { ...attack.traits[trait], revealed: oldAttack.traits[trait]?.revealed ?? attack.traits[trait].revealed };
-                            return acc;
-                        }, {}),
-                        damageInstances: Object.keys(attack.damageInstances).reduce((acc, damage) => {
-                            acc[damage] = { 
-                                ...attack.damageInstances[damage], 
-                                revealed: oldAttack ? (oldAttack.damageInstances[damage]?.revealed ?? attack.damageInstances[damage].revealed) : attack.damageInstances[damage].revealed, 
-                                damageType: { ...attack.damageInstances[damage].damageType, revealed: oldAttack ? (oldAttack.damageInstances[damage]?.damageType?.revealed ?? attack.damageInstances[damage].damageType.revealed) : attack.damageInstances[damage].damageType.revealed } 
-                            };
-                            return acc;
-                        }, {}),
-                    };
-
-                    return acc;
-                }, Object.keys(this.attacks).reduce((acc, key) => {
-                    if(this.attacks[key].fake) acc[key] = this.attacks[key];
-                    return acc;
-                }, {})),
-                actions: Object.keys(data.system.actions).reduce((acc, key) => {
-                    const action = data.system.actions[key];
-                    const oldAction = this.actions[key];
-                    acc[key] = {
-                        ...action,
-                        revealed: oldAction?.revealed ?? action.revealed,
-                        traits: Object.keys(action.traits).reduce((acc, trait) => {
-                            const oldTrait = oldAction ? oldAction.traits[trait] : null;
-                            acc[trait] = { ...action.traits[trait], revealed: oldTrait?.revealed ?? action.traits[trait].revealed };
-                            return acc;
-                        }, {}),
-                    };
-
-                    return acc;
-                }, Object.keys(this.actions).reduce((acc, key) => {
-                    if(this.actions[key].fake) acc[key] = this.actions[key];
-                    return acc;
-                }, {})),
-                passives: Object.keys(data.system.passives).reduce((acc, key) => {
-                    const passive = data.system.passives[key];
-                    const oldPassive = this.passives[key];
-                    acc[key] = {
-                        ...passive,
-                        revealed: oldPassive?.revealed ?? passive.revealed,
-                        traits: Object.keys(passive.traits).reduce((acc, trait) => {
-                            const oldTrait = oldPassive ? oldPassive.traits[trait] : null;
-                            acc[trait] = { ...passive.traits[trait], revealed: oldTrait?.revealed ?? passive.traits[trait].revealed };
-                            return acc;
-                        }, {}),
-                    };
-
-                    return acc;
-                }, Object.keys(this.passives).reduce((acc, key) => {
-                    if(this.passives[key].fake) acc[key] = this.passives[key];
-                    return acc;
-                }, {})),
-                spells: spells,
-                senses: {
-                    perception: { ...data.system.senses.perception, revealed: this.senses.perception.revealed, custom: this.senses.perception.custom },
-                    details: { ...data.system.senses.details, revealed: this.senses.details.revealed },
-                    senses: Object.keys(data.system.senses.senses).reduce((acc, key) => {
-                        const sense = data.system.senses.senses[key];
-                        const oldSense = this.senses.senses[key];
-                        acc[key] = { ...sense, revealed: oldSense?.revealed ?? sense.revealed };
-
-                        return acc;
-                    }, Object.keys(this.senses.senses).reduce((acc, key) => {
-                        if(this.senses.senses[key].fake) acc[key] = this.senses.senses[key];
-                        return acc;
-                    }, {})),
-                },
-                languages: {
-                    details: { ...data.system.languages.details, revealed: this.languages.details.revealed },
-                    values: Object.keys(data.system.languages.values).reduce((acc, key) => {
-                        const language = data.system.languages.values[key];
-                        const oldLanguage = this.languages.values[key];
-                        acc[key] = { ...language, revealed: oldLanguage?.revealed ?? language.revealed };
-
-                        return acc;
-                    }, Object.keys(this.languages.values).reduce((acc, key) => {
-                        if(this.languages.values[key].fake) acc[key] = this.languages.values[key];
-                        return acc;
-                    }, {}))
-                },
-                notes: {
-                    public: { ...data.system.notes.public, revealed: this.notes.public.revealed },
-                    private: { ...data.system.notes.private, revealed: this.notes.private.revealed },
-                    player: this.notes.player,
-                }
-            }
-        };
-
-        await this.parent.update(updateData, { diff: false, recursive: false });
-    }
-
-    async toggleEverything(state){
-        const spells = 
-            this.spells.fake ? { "spells.fake.revealed": state } :
-            { "spells.entries": Object.keys(this.spells.entries).reduce((acc, key) => {
-                const entry = this.spells.entries[key];
-                acc[key] = {
-                    revealed: state,
-                    dc: { revealed: state },
-                    attack: { revealed: state },
-                    levels: Object.keys(entry.levels).reduce((acc, level) => {
-                        acc[level] = {
-                            spells: Object.keys(entry.levels[level].spells).reduce((acc, level) => {
-                                acc[level] = { revealed: state };
-                                return acc;
-                            }, {}),
-                        };
-                        return acc;
-                    }, {})
-                };
-                return acc;
-            }, {})};
-
-
-        await this.parent.update({
-            system: {
-                "name.revealed": state,
-                "ac.revealed": state,
-                "hp.revealed": state,
-                "level.revealed": state,
-                "skills": Object.keys(this.skills).reduce((acc, key) => {
-                    acc[key] = { revealed: state };
-                    return acc;
-                }, {}),
-                "abilities": Object.keys(this.abilities).reduce((acc, key) => {
-                    acc[key] = { revealed: state };
-                    return acc;
-                }, {}),
-                "saves": {
-                    "fortitude.revealed": state,
-                    "reflex.revealed": state,
-                    "will.revealed": state,
-                },
-                "speeds": {
-                    "details.revealed": state,
-                    "values": Object.keys(this.speeds.values).reduce((acc, key) => {
-                        acc[key] = { revealed: state };
-                        return acc;
-                    }, {}),
-                },
-                "immunities": Object.keys(this.immunities).reduce((acc, key) => {
-                    acc[key] = {
-                        revealed: state,
-                        exceptions: Object.keys(this.immunities[key].exceptions).reduce((acc, ex) => {
-                            acc[ex] = { revealed: state };
-                            return acc;
-                        }, {}),
-                    };
-                    
-                    return acc;
-                }, {}),
-                "weaknesses": Object.keys(this.weaknesses).reduce((acc, key) => {
-                    acc[key] = {
-                        revealed: state,
-                        exceptions: Object.keys(this.weaknesses[key].exceptions).reduce((acc, ex) => {
-                            acc[ex] = { revealed: state };
-                            return acc;
-                        }, {}),
-                    };
-                    
-                    return acc;
-                }, {}),
-                "resistances": Object.keys(this.resistances).reduce((acc, key) => {
-                    acc[key] = {
-                        revealed: state,
-                        exceptions: Object.keys(this.resistances[key].exceptions).reduce((acc, ex) => {
-                            acc[ex] = { revealed: state };
-                            return acc;
-                        }, {}),
-                        doubleVs: Object.keys(this.resistances[key].doubleVs).reduce((acc, ex) => {
-                            acc[ex] = { revealed: state };
-                            return acc;
-                        }, {}),
-                    };
-                    
-                    return acc;
-                }, {}),
-                "rarity.revealed": state,
-                "traits": Object.keys(this.traits).reduce((acc, key) => {
-                    acc[key] = { revealed: state };
-                    return acc;
-                }, {}),
-                "attacks": Object.keys(this.attacks).reduce((acc, key) => {
-                    acc[key] = {
-                        revealed: state,
-                        damageStatsRevealed: state,
-                        traits: Object.keys(this.attacks[key].traits).reduce((acc, trait) => {
-                            acc[trait] = { revealed: state };
-                            return acc;
-                        }, {}),
-                        damageInstances: Object.keys(this.attacks[key].damageInstances).reduce((acc, damage) => {
-                            acc[damage] = { damageType: { revealed: state } };
-                            return acc;
-                        }, {}),
-                    };
-                    return acc;
-                }, {}),
-                "actions": Object.keys(this.actions).reduce((acc, key) => {
-                    acc[key] = { 
-                        revealed: state,
-                        traits: Object.keys(this.actions[key].traits).reduce((acc, trait) => {
-                            acc[trait] = { revealed: state };
-                            return acc;
-                        }, {}), 
-                    };
-                    return acc;
-                }, {}),
-                "passives": Object.keys(this.passives).reduce((acc, key) => {
-                    acc[key] = { 
-                        revealed: state,
-                        traits: Object.keys(this.passives[key].traits).reduce((acc, trait) => {
-                            acc[trait] = { revealed: state };
-                            return acc;
-                        }, {}), 
-                    };
-                    return acc;
-                }, {}),
-                ...spells,
-                "senses": {
-                    "perception.revealed": state,
-                    "details.revealed": state,
-                    "senses": Object.keys(this.senses.senses).reduce((acc, key) => {
-                        acc[key] = { revealed: state };
-                        return acc;
-                    }, {}),
-                },
-                "languages": {
-                    "details.revealed": state,
-                    "values": Object.keys(this.languages.values).reduce((acc, key) => {
-                        acc[key] = { revealed: state };
-                        return acc;
-                    }, {})
-                },
-                "notes": {
-                    "public.revealed": state,
-                    "private.revealed": state,
-                }
-            }
-        });
-    }
-
-    prepareDerivedData() {
-        this.saves = {
-            fortitude: { ...this.saves.fortitude, label: `${this.saves.fortitude.value > 0 ? '+' : ''}${this.saves.fortitude.value}` },
-            reflex: { ...this.saves.reflex, label: `${this.saves.reflex.value > 0 ? '+' : ''}${this.saves.reflex.value}` },
-            will: { ...this.saves.will, label: `${this.saves.will.value > 0 ? '+' : ''}${this.saves.will.value}` },
-        };
-
-        this.immunities = Object.keys(this.immunities).reduce((acc, key) => {
-            const exceptionKeys = Object.keys(this.immunities[key].exceptions);
-            acc[key] = {
-                ...this.immunities[key],
-                label: CONFIG.PF2E.immunityTypes[this.immunities[key].type] ?? this.immunities[key].type,
-                exceptions: exceptionKeys.reduce((acc, exKey, index) => {
-                    const label = CONFIG.PF2E.immunityTypes[this.immunities[key].exceptions[exKey].type];
-                    const suffix = 
-                        index === exceptionKeys.length-2 ? game.i18n.localize("PF2EBestiary.Miscellaneous.Or") : 
-                        index < exceptionKeys.length-1 ? ',' : 
-                        index === exceptionKeys.length-1 ? ')' : '';
-
-                    acc[exKey] = { 
-                        ...this.immunities[key].exceptions[exKey], 
-                        label: label ?? this.immunities[key].exceptions[exKey].type,
-                        suffix: suffix,
-                    };
-                    return acc;
-                }, {}),
-            };
-
-            return acc;
-        }, {});
-
-        this.weaknesses = Object.keys(this.weaknesses).reduce((acc, key) => {
-            const exceptionKeys = Object.keys(this.weaknesses[key].exceptions);
-            acc[key] = {
-                ...this.weaknesses[key],
-                label: CONFIG.PF2E.weaknessTypes[this.weaknesses[key].type] ?? this.weaknesses[key].type,
-                exceptions: exceptionKeys.reduce((acc, exKey, index) => {
-                    const label = CONFIG.PF2E.weaknessTypes[this.weaknesses[key].exceptions[exKey].type];
-                    const suffix = 
-                        index === exceptionKeys.length-2 ? game.i18n.localize("PF2EBestiary.Miscellaneous.Or") : 
-                        index < exceptionKeys.length-1 ? ',' : 
-                        index === exceptionKeys.length-1 ? ')' : '';
-
-                    acc[exKey] = { 
-                        ...this.weaknesses[key].exceptions[exKey], 
-                        label: label ?? this.weaknesses[key].exceptions[exKey].type,
-                        suffix: suffix,
-                    };
-                    return acc;
-                }, {}),
-            };
-
-            return acc;
-        }, {});
-
-        const detailedInformation = game.settings.get('pf2e-bestiary-tracking', 'detailed-information-toggles');
-        this.resistances = Object.keys(this.resistances).reduce((acc, key) => {
-            const exceptionKeys = Object.keys(this.resistances[key].exceptions);
-            const doubleKeys = Object.keys(this.resistances[key].doubleVs);
-            const revealedDoubleKeys = doubleKeys.filter(dbKey => detailedInformation.exceptionsDouble || this.resistances[key].doubleVs[dbKey].revealed);
-            acc[key] = {
-                ...this.resistances[key],
-                label: CONFIG.PF2E.resistanceTypes[this.resistances[key].type] ?? this.resistances[key].type,
-                exceptions: exceptionKeys.reduce((acc, exKey, index) => {
-                    const label = CONFIG.PF2E.resistanceTypes[this.resistances[key].exceptions[exKey].type];
-                    const suffix = 
-                    index === exceptionKeys.length-2 ? game.i18n.localize("PF2EBestiary.Miscellaneous.Or") : 
-                    index < exceptionKeys.length-1 ? ',' : 
-                    (index === exceptionKeys.length-1 && revealedDoubleKeys.length === 0) ? ')' : 
-                    (index === exceptionKeys.length-1 && revealedDoubleKeys.length > 0) ? ';' : '';
-
-                    acc[exKey] = { ...this.resistances[key].exceptions[exKey], label: label ?? this.resistances[key].exceptions[exKey].type, suffix: suffix };
-                    return acc;
-                }, {}),
-                doubleVs: doubleKeys.reduce((acc, doubleKey, index) => {
-                    const label = CONFIG.PF2E.resistanceTypes[this.resistances[key].doubleVs[doubleKey].type];
-                    const suffix = 
-                    index === doubleKeys.length-2 ? game.i18n.localize("PF2EBestiary.Miscellaneous.Or") : 
-                    index < doubleKeys.length-1 ? ',' : 
-                    index === doubleKeys.length-1 ? ')' : '';
-
-                    acc[doubleKey] = { ...this.resistances[key].doubleVs[doubleKey], label: label ?? this.resistances[key].doubleVs[doubleKey].type, suffix: suffix };
-                    return acc;
-                }, {}),
-            };
-
-            return acc;
-        }, {});
-
-        const speedDetails = this.speeds.details.value ? { details: this.speeds.details } : {};
-        this.speeds.values = { 
-            ...this.speeds.values,
-            ...speedDetails,
-        };
-
-        this.traits = Object.keys(this.traits).reduce((acc, key) => {
-            const label = CONFIG.PF2E.creatureTraits[this.traits[key].value];
-            if(label){
-                acc[key] = { ...this.traits[key], label: CONFIG.PF2E.creatureTraits[this.traits[key].value] };
-            }
-
-            return acc;
-        }, {});
-
-        this.abilities = Object.keys(this.abilities).reduce((acc, key) => {
-            acc[key] = { ...this.abilities[key], value: `${this.abilities[key].mod >= 0 ? '+' : ''}${this.abilities[key].mod}`, label: CONFIG.PF2E.abilities[this.abilities[key].key] };
-
-            return acc;
-        }, {});
-
-        this.skills = Object.keys(this.skills).reduce((acc, key) => {
-            const skill = this.skills[key];
-            if(key === 'empty' || skill.value > 0){
-                acc[key] = { 
-                    ...skill, 
-                    label: skill.lore ? skill.label : CONFIG.PF2E.skills[key]?.label ?? (key === 'empty' ? skill.value : key)
-                };
-            }
-
-            return acc;
-        }, {});
-
-        this.attacks = Object.keys(this.attacks).reduce((acc, key) => {
-            const traitKeys = Object.keys(this.attacks[key].traits);
-            acc[key] = { 
-                ...this.attacks[key], 
-                range: this.attacks[key].isMelee ? 'PF2E.NPCAttackMelee' : 'PF2E.NPCAttackRanged',
-                traits: traitKeys.reduce((acc, trait, index) => {
-                    acc[trait] = { 
-                        ...this.attacks[key].traits[trait], 
-                        label: CONFIG.PF2E.npcAttackTraits[this.attacks[key].traits[trait].value] ?? this.attacks[key].traits[trait].value,
-                        description: CONFIG.PF2E.traitsDescriptions[this.attacks[key].traits[trait].description] ?? this.attacks[key].traits[trait].description,
-                        suffix: index !== traitKeys.length-1 ? ',&nbsp;' : ')',
-                    };
-                    return acc;
-                }, {}),
-            };
-
-            return acc;
-        }, {});
-
-        this.actions = Object.keys(this.actions).reduce((acc, key) => {
-            const traitKeys = Object.keys(this.actions[key].traits);
-            acc[key] = { 
-                ...this.actions[key], 
-                traits: traitKeys.reduce((acc, trait, index) => {
-                    acc[trait] = {  
-                        ...this.actions[key].traits[trait],
-                        label: CONFIG.PF2E.npcAttackTraits[this.actions[key].traits[trait].value] ?? this.actions[key].traits[trait].value,
-                        description: CONFIG.PF2E.traitsDescriptions[this.actions[key].traits[trait].value] ?? '',
-                        suffix: index !== traitKeys.length-1 ? ',&nbsp;' : ''
-                    };
-
-                    return acc;
-                }, {}),
-            };
-
-            return acc;
-        }, {});
-
-        this.passives = Object.keys(this.passives).reduce((acc, key) => {
-            const traitKeys = Object.keys(this.passives[key].traits);
-            acc[key] = { 
-                ...this.passives[key], 
-                traits: traitKeys.reduce((acc, trait, index) => {
-                    acc[trait] = {  
-                        ...this.passives[key].traits[trait],
-                        label: CONFIG.PF2E.npcAttackTraits[this.passives[key].traits[trait].value] ?? this.passives[key].traits[trait].value,
-                        description: CONFIG.PF2E.traitsDescriptions[this.passives[key].traits[trait].value] ?? '',
-                        suffix: index !== traitKeys.length-1 ? ',&nbsp;' : ''
-                    };
-
-                    return acc;
-                }, {}),
-            };
-
-            return acc;
-        }, {});
-    }
-}
-
-/*
-Tagify v4.27.0 - tags input component
-By: Yair Even-Or <vsync.design@gmail.com>
-https://github.com/yairEO/tagify
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-This Software may not be rebranded and sold as a library under any other name
-other than "Tagify" (by owner) or as part of another library.
-*/
-
-var t="&#8203;";function e(t,e){(null==e||e>t.length)&&(e=t.length);for(var i=0,n=new Array(e);i<e;i++)n[i]=t[i];return n}function i(t){return function(t){if(Array.isArray(t))return e(t)}(t)||function(t){if("undefined"!=typeof Symbol&&null!=t[Symbol.iterator]||null!=t["@@iterator"])return Array.from(t)}(t)||function(t,i){if(!t)return;if("string"==typeof t)return e(t,i);var n=Object.prototype.toString.call(t).slice(8,-1);"Object"===n&&t.constructor&&(n=t.constructor.name);if("Map"===n||"Set"===n)return Array.from(n);if("Arguments"===n||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))return e(t,i)}(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}var n={isEnabled:function(){var t;return null===(t=window.TAGIFY_DEBUG)||void 0===t||t},log:function(){for(var t=arguments.length,e=new Array(t),n=0;n<t;n++)e[n]=arguments[n];var s;this.isEnabled()&&(s=console).log.apply(s,["[Tagify]:"].concat(i(e)));},warn:function(){for(var t=arguments.length,e=new Array(t),n=0;n<t;n++)e[n]=arguments[n];var s;this.isEnabled()&&(s=console).warn.apply(s,["[Tagify]:"].concat(i(e)));}},s=function(t,e,i,n){return t=""+t,e=""+e,n&&(t=t.trim(),e=e.trim()),i?t==e:t.toLowerCase()==e.toLowerCase()},a=function(t,e){return t&&Array.isArray(t)&&t.map((function(t){return o(t,e)}))};function o(t,e){var i,n={};for(i in t)e.indexOf(i)<0&&(n[i]=t[i]);return n}function r(t){var e=document.createElement("div");return t.replace(/\&#?[0-9a-z]+;/gi,(function(t){return e.innerHTML=t,e.innerText}))}function l(t){return (new DOMParser).parseFromString(t.trim(),"text/html").body.firstElementChild}function d(t,e){for(e=e||"previous";t=t[e+"Sibling"];)if(3==t.nodeType)return t}function c(t){return "string"==typeof t?t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/`|'/g,"&#039;"):t}function u(t){var e=Object.prototype.toString.call(t).split(" ")[1].slice(0,-1);return t===Object(t)&&"Array"!=e&&"Function"!=e&&"RegExp"!=e&&"HTMLUnknownElement"!=e}function g(t,e,i){var n,s;function a(t,e){for(var i in e)if(e.hasOwnProperty(i)){if(u(e[i])){u(t[i])?a(t[i],e[i]):t[i]=Object.assign({},e[i]);continue}if(Array.isArray(e[i])){t[i]=Object.assign([],e[i]);continue}t[i]=e[i];}}return n=t,(null!=(s=Object)&&"undefined"!=typeof Symbol&&s[Symbol.hasInstance]?s[Symbol.hasInstance](n):n instanceof s)||(t={}),a(t,e),i&&a(t,i),t}function h(){var t=[],e={},i=!0,n=!1,s=void 0;try{for(var a,o=arguments[Symbol.iterator]();!(i=(a=o.next()).done);i=!0){var r=a.value,l=!0,d=!1,c=void 0;try{for(var g,h=r[Symbol.iterator]();!(l=(g=h.next()).done);l=!0){var p=g.value;u(p)?e[p.value]||(t.push(p),e[p.value]=1):t.includes(p)||t.push(p);}}catch(t){d=!0,c=t;}finally{try{l||null==h.return||h.return();}finally{if(d)throw c}}}}catch(t){n=!0,s=t;}finally{try{i||null==o.return||o.return();}finally{if(n)throw s}}return t}function p(t){return String.prototype.normalize?"string"==typeof t?t.normalize("NFD").replace(/[\u0300-\u036f]/g,""):void 0:t}var f=function(){return /(?=.*chrome)(?=.*android)/i.test(navigator.userAgent)};function m(){return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,(function(t){return (t^crypto.getRandomValues(new Uint8Array(1))[0]&15>>t/4).toString(16)}))}function v(t){return t&&t.classList&&t.classList.contains(this.settings.classNames.tag)}function b(t){return t&&t.closest(this.settings.classNames.tagSelector)}function w(t,e){var i=window.getSelection();return e=e||i.getRangeAt(0),"string"==typeof t&&(t=document.createTextNode(t)),e&&(e.deleteContents(),e.insertNode(t)),t}function y(t,e,i){return t?(e&&(t.__tagifyTagData=i?e:g({},t.__tagifyTagData||{},e)),t.__tagifyTagData):(n.warn("tag element doesn't exist",{tagElm:t,data:e}),e)}function T(t){if(t&&t.parentNode){var e=t,i=window.getSelection(),n=i.getRangeAt(0);i.rangeCount&&(n.setStartAfter(e),n.collapse(!0),i.removeAllRanges(),i.addRange(n));}}function O(t,e){t.forEach((function(t){if(y(t.previousSibling)||!t.previousSibling){var i=document.createTextNode("​");t.before(i),e&&T(i);}}));}var x$1={delimiters:",",pattern:null,tagTextProp:"value",maxTags:1/0,callbacks:{},addTagOnBlur:!0,addTagOn:["blur","tab","enter"],onChangeAfterBlur:!0,duplicates:!1,whitelist:[],blacklist:[],enforceWhitelist:!1,userInput:!0,focusable:!0,keepInvalidTags:!1,createInvalidTags:!0,mixTagsAllowedAfter:/,|\.|\:|\s/,mixTagsInterpolator:["[[","]]"],backspace:!0,skipInvalid:!1,pasteAsTags:!0,editTags:{clicks:2,keepInvalid:!0},transformTag:function(){},trim:!0,a11y:{focusableTags:!1},mixMode:{insertAfterTag:" "},autoComplete:{enabled:!0,rightKey:!1,tabKey:!1},classNames:{namespace:"tagify",mixMode:"tagify--mix",selectMode:"tagify--select",input:"tagify__input",focus:"tagify--focus",tagNoAnimation:"tagify--noAnim",tagInvalid:"tagify--invalid",tagNotAllowed:"tagify--notAllowed",scopeLoading:"tagify--loading",hasMaxTags:"tagify--hasMaxTags",hasNoTags:"tagify--noTags",empty:"tagify--empty",inputInvalid:"tagify__input--invalid",dropdown:"tagify__dropdown",dropdownWrapper:"tagify__dropdown__wrapper",dropdownHeader:"tagify__dropdown__header",dropdownFooter:"tagify__dropdown__footer",dropdownItem:"tagify__dropdown__item",dropdownItemActive:"tagify__dropdown__item--active",dropdownItemHidden:"tagify__dropdown__item--hidden",dropdownItemSelected:"tagify__dropdown__item--selected",dropdownInital:"tagify__dropdown--initial",tag:"tagify__tag",tagText:"tagify__tag-text",tagX:"tagify__tag__removeBtn",tagLoading:"tagify__tag--loading",tagEditing:"tagify__tag--editable",tagFlash:"tagify__tag--flash",tagHide:"tagify__tag--hide"},dropdown:{classname:"",enabled:2,maxItems:10,searchKeys:["value","searchBy"],fuzzySearch:!0,caseSensitive:!1,accentedSearch:!0,includeSelectedTags:!1,escapeHTML:!0,highlightFirst:!0,closeOnSelect:!0,clearOnSelect:!0,position:"all",appendTarget:null},hooks:{beforeRemoveTag:function(){return Promise.resolve()},beforePaste:function(){return Promise.resolve()},suggestionClick:function(){return Promise.resolve()},beforeKeyDown:function(){return Promise.resolve()}}};function D(t,e,i){return e in t?Object.defineProperty(t,e,{value:i,enumerable:!0,configurable:!0,writable:!0}):t[e]=i,t}function S(t){for(var e=1;e<arguments.length;e++){var i=null!=arguments[e]?arguments[e]:{},n=Object.keys(i);"function"==typeof Object.getOwnPropertySymbols&&(n=n.concat(Object.getOwnPropertySymbols(i).filter((function(t){return Object.getOwnPropertyDescriptor(i,t).enumerable})))),n.forEach((function(e){D(t,e,i[e]);}));}return t}function I(t,e){return e=null!=e?e:{},Object.getOwnPropertyDescriptors?Object.defineProperties(t,Object.getOwnPropertyDescriptors(e)):function(t,e){var i=Object.keys(t);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(t);e&&(n=n.filter((function(e){return Object.getOwnPropertyDescriptor(t,e).enumerable}))),i.push.apply(i,n);}return i}(Object(e)).forEach((function(i){Object.defineProperty(t,i,Object.getOwnPropertyDescriptor(e,i));})),t}function M(t,e){(null==e||e>t.length)&&(e=t.length);for(var i=0,n=new Array(e);i<e;i++)n[i]=t[i];return n}function E(t,e,i){return e in t?Object.defineProperty(t,e,{value:i,enumerable:!0,configurable:!0,writable:!0}):t[e]=i,t}function N(t){return function(t){if(Array.isArray(t))return M(t)}(t)||function(t){if("undefined"!=typeof Symbol&&null!=t[Symbol.iterator]||null!=t["@@iterator"])return Array.from(t)}(t)||function(t,e){if(!t)return;if("string"==typeof t)return M(t,e);var i=Object.prototype.toString.call(t).slice(8,-1);"Object"===i&&t.constructor&&(i=t.constructor.name);if("Map"===i||"Set"===i)return Array.from(i);if("Arguments"===i||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(i))return M(t,e)}(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function _(){for(var t in this.dropdown={},this._dropdown)this.dropdown[t]="function"==typeof this._dropdown[t]?this._dropdown[t].bind(this):this._dropdown[t];this.dropdown.refs(),this.DOM.dropdown.__tagify=this;}var A,C,k,L=(A=function(t){for(var e=1;e<arguments.length;e++){var i=null!=arguments[e]?arguments[e]:{},n=Object.keys(i);"function"==typeof Object.getOwnPropertySymbols&&(n=n.concat(Object.getOwnPropertySymbols(i).filter((function(t){return Object.getOwnPropertyDescriptor(i,t).enumerable})))),n.forEach((function(e){E(t,e,i[e]);}));}return t}({},{events:{binding:function(){var t=!(arguments.length>0&&void 0!==arguments[0])||arguments[0],e=this.dropdown.events.callbacks,i=this.listeners.dropdown=this.listeners.dropdown||{position:this.dropdown.position.bind(this,null),onKeyDown:e.onKeyDown.bind(this),onMouseOver:e.onMouseOver.bind(this),onMouseLeave:e.onMouseLeave.bind(this),onClick:e.onClick.bind(this),onScroll:e.onScroll.bind(this)},n=t?"addEventListener":"removeEventListener";"manual"!=this.settings.dropdown.position&&(document[n]("scroll",i.position,!0),window[n]("resize",i.position),window[n]("keydown",i.onKeyDown)),this.DOM.dropdown[n]("mouseover",i.onMouseOver),this.DOM.dropdown[n]("mouseleave",i.onMouseLeave),this.DOM.dropdown[n]("mousedown",i.onClick),this.DOM.dropdown.content[n]("scroll",i.onScroll);},callbacks:{onKeyDown:function(t){var e=this;if(this.state.hasFocus&&!this.state.composing){var i=this.settings,s=this.DOM.dropdown.querySelector(i.classNames.dropdownItemActiveSelector),a=this.dropdown.getSuggestionDataByNode(s),o="mix"==i.mode,r="select"==i.mode;i.hooks.beforeKeyDown(t,{tagify:this}).then((function(l){switch(t.key){case"ArrowDown":case"ArrowUp":case"Down":case"Up":t.preventDefault();var d=e.dropdown.getAllSuggestionsRefs(),c="ArrowUp"==t.key||"Up"==t.key;s&&(s=e.dropdown.getNextOrPrevOption(s,!c)),s&&s.matches(i.classNames.dropdownItemSelector)||(s=d[c?d.length-1:0]),e.dropdown.highlightOption(s,!0);break;case"Escape":case"Esc":e.dropdown.hide();break;case"ArrowRight":if(e.state.actions.ArrowLeft||i.autoComplete.rightKey)return;case"Tab":var u=!i.autoComplete.rightKey||!i.autoComplete.tabKey;if(!o&&!r&&s&&u&&!e.state.editing&&a){t.preventDefault();var g=e.dropdown.getMappedValue(a);return e.input.autocomplete.set.call(e,g),!1}return !0;case"Enter":t.preventDefault(),i.hooks.suggestionClick(t,{tagify:e,tagData:a,suggestionElm:s}).then((function(){if(s)return e.dropdown.selectOption(s),s=e.dropdown.getNextOrPrevOption(s,!c),void e.dropdown.highlightOption(s);e.dropdown.hide(),o||e.addTags(e.state.inputText.trim(),!0);})).catch((function(t){return n.warn(t)}));break;case"Backspace":if(o||e.state.editing.scope)return;var h=e.input.raw.call(e);""!=h&&8203!=h.charCodeAt(0)||(!0===i.backspace?e.removeTags():"edit"==i.backspace&&setTimeout(e.editTag.bind(e),0));}}));}},onMouseOver:function(t){var e=t.target.closest(this.settings.classNames.dropdownItemSelector);this.dropdown.highlightOption(e);},onMouseLeave:function(t){this.dropdown.highlightOption();},onClick:function(t){var e=this;if(0==t.button&&t.target!=this.DOM.dropdown&&t.target!=this.DOM.dropdown.content){var i=t.target.closest(this.settings.classNames.dropdownItemSelector),s=this.dropdown.getSuggestionDataByNode(i);this.state.actions.selectOption=!0,setTimeout((function(){return e.state.actions.selectOption=!1}),50),this.settings.hooks.suggestionClick(t,{tagify:this,tagData:s,suggestionElm:i}).then((function(){i?e.dropdown.selectOption(i,t):e.dropdown.hide();})).catch((function(t){return n.warn(t)}));}},onScroll:function(t){var e=t.target,i=e.scrollTop/(e.scrollHeight-e.parentNode.clientHeight)*100;this.trigger("dropdown:scroll",{percentage:Math.round(i)});}}},refilter:function(t){t=t||this.state.dropdown.query||"",this.suggestedListItems=this.dropdown.filterListItems(t),this.dropdown.fill(),this.suggestedListItems.length||this.dropdown.hide(),this.trigger("dropdown:updated",this.DOM.dropdown);},getSuggestionDataByNode:function(t){for(var e,i=t&&t.getAttribute("value"),n=this.suggestedListItems.length;n--;){if(u(e=this.suggestedListItems[n])&&e.value==i)return e;if(e==i)return {value:e}}},getNextOrPrevOption:function(t){var e=!(arguments.length>1&&void 0!==arguments[1])||arguments[1],i=this.dropdown.getAllSuggestionsRefs(),n=i.findIndex((function(e){return e===t}));return e?i[n+1]:i[n-1]},highlightOption:function(t,e){var i,n=this.settings.classNames.dropdownItemActive;if(this.state.ddItemElm&&(this.state.ddItemElm.classList.remove(n),this.state.ddItemElm.removeAttribute("aria-selected")),!t)return this.state.ddItemData=null,this.state.ddItemElm=null,void this.input.autocomplete.suggest.call(this);i=this.dropdown.getSuggestionDataByNode(t),this.state.ddItemData=i,this.state.ddItemElm=t,t.classList.add(n),t.setAttribute("aria-selected",!0),e&&(t.parentNode.scrollTop=t.clientHeight+t.offsetTop-t.parentNode.clientHeight),this.settings.autoComplete&&(this.input.autocomplete.suggest.call(this,i),this.dropdown.position());},selectOption:function(t,e){var i=this,n=this.settings,s=n.dropdown,a=s.clearOnSelect,o=s.closeOnSelect;if(!t)return this.addTags(this.state.inputText,!0),void(o&&this.dropdown.hide());e=e||{};var r=t.getAttribute("value"),l="noMatch"==r,d="mix"==n.mode,c=this.suggestedListItems.find((function(t){var e;return (null!==(e=t.value)&&void 0!==e?e:t)==r}));if(this.trigger("dropdown:select",{data:c,elm:t,event:e}),r&&(c||l)){if(this.state.editing){var u=this.normalizeTags([c])[0];c=n.transformTag.call(this,u)||u,this.onEditTagDone(null,g({__isValid:!0},c));}else this[d?"addMixTags":"addTags"]([c||this.input.raw.call(this)],a);(d||this.DOM.input.parentNode)&&(setTimeout((function(){i.DOM.input.focus(),i.toggleFocusClass(!0);})),o&&setTimeout(this.dropdown.hide.bind(this)),t.addEventListener("transitionend",(function(){i.dropdown.fillHeaderFooter(),setTimeout((function(){t.remove(),i.dropdown.refilter();}),100);}),{once:!0}),t.classList.add(this.settings.classNames.dropdownItemHidden));}else o&&setTimeout(this.dropdown.hide.bind(this));},selectAll:function(t){this.suggestedListItems.length=0,this.dropdown.hide(),this.dropdown.filterListItems("");var e=this.dropdown.filterListItems("");return t||(e=this.state.dropdown.suggestions),this.addTags(e,!0),this},filterListItems:function(t,e){var i,n,s,a,o,r,l=function(){var t,l,d=void 0,c=void 0;t=m[y],n=(null!=(l=Object)&&"undefined"!=typeof Symbol&&l[Symbol.hasInstance]?l[Symbol.hasInstance](t):t instanceof l)?m[y]:{value:m[y]};var v,b=!Object.keys(n).some((function(t){return w.includes(t)}))?["value"]:w;g.fuzzySearch&&!e.exact?(a=b.reduce((function(t,e){return t+" "+(n[e]||"")}),"").toLowerCase().trim(),g.accentedSearch&&(a=p(a),r=p(r)),d=0==a.indexOf(r),c=a===r,v=a,s=r.toLowerCase().split(" ").every((function(t){return v.includes(t.toLowerCase())}))):(d=!0,s=b.some((function(t){var i=""+(n[t]||"");return g.accentedSearch&&(i=p(i),r=p(r)),g.caseSensitive||(i=i.toLowerCase()),c=i===r,e.exact?i===r:0==i.indexOf(r)}))),o=!g.includeSelectedTags&&i.isTagDuplicate(u(n)?n.value:n),s&&!o&&(c&&d?f.push(n):"startsWith"==g.sortby&&d?h.unshift(n):h.push(n));},d=this,c=this.settings,g=c.dropdown,h=(e=e||{},[]),f=[],m=c.whitelist,v=g.maxItems>=0?g.maxItems:1/0,b=g.includeSelectedTags||"select"==c.mode,w=g.searchKeys,y=0;if(!(t="select"==c.mode&&this.value.length&&this.value[0][c.tagTextProp]==t?"":t)||!w.length)return h=b?m:m.filter((function(t){return !d.isTagDuplicate(u(t)?t.value:t)})),this.state.dropdown.suggestions=h,h.slice(0,v);for(r=g.caseSensitive?""+t:(""+t).toLowerCase();y<m.length;y++)i=this,l();return this.state.dropdown.suggestions=f.concat(h),"function"==typeof g.sortby?g.sortby(f.concat(h),r):f.concat(h).slice(0,v)},getMappedValue:function(t){var e=this.settings.dropdown.mapValueTo;return e?"function"==typeof e?e(t):t[e]||t.value:t.value},createListHTML:function(t){var e=this;return g([],t).map((function(t,i){"string"!=typeof t&&"number"!=typeof t||(t={value:t});var n=e.dropdown.getMappedValue(t);return n="string"==typeof n&&e.settings.dropdown.escapeHTML?c(n):n,e.settings.templates.dropdownItem.apply(e,[I(S({},t),{mappedValue:n}),e])})).join("")}}),C=null!=(C={refs:function(){this.DOM.dropdown=this.parseTemplate("dropdown",[this.settings]),this.DOM.dropdown.content=this.DOM.dropdown.querySelector("[data-selector='tagify-suggestions-wrapper']");},getHeaderRef:function(){return this.DOM.dropdown.querySelector("[data-selector='tagify-suggestions-header']")},getFooterRef:function(){return this.DOM.dropdown.querySelector("[data-selector='tagify-suggestions-footer']")},getAllSuggestionsRefs:function(){return N(this.DOM.dropdown.content.querySelectorAll(this.settings.classNames.dropdownItemSelector))},show:function(t){var e,i,n,a=this,o=this.settings,r="mix"==o.mode&&!o.enforceWhitelist,l=!o.whitelist||!o.whitelist.length,d="manual"==o.dropdown.position;if(t=void 0===t?this.state.inputText:t,!(l&&!r&&!o.templates.dropdownItemNoMatch||!1===o.dropdown.enable||this.state.isLoading||this.settings.readonly)){if(clearTimeout(this.dropdownHide__bindEventsTimeout),this.suggestedListItems=this.dropdown.filterListItems(t),t&&!this.suggestedListItems.length&&(this.trigger("dropdown:noMatch",t),o.templates.dropdownItemNoMatch&&(n=o.templates.dropdownItemNoMatch.call(this,{value:t}))),!n){if(this.suggestedListItems.length)t&&r&&!this.state.editing.scope&&!s(this.suggestedListItems[0].value,t)&&this.suggestedListItems.unshift({value:t});else {if(!t||!r||this.state.editing.scope)return this.input.autocomplete.suggest.call(this),void this.dropdown.hide();this.suggestedListItems=[{value:t}];}i=""+(u(e=this.suggestedListItems[0])?e.value:e),o.autoComplete&&i&&0==i.indexOf(t)&&this.input.autocomplete.suggest.call(this,e);}this.dropdown.fill(n),o.dropdown.highlightFirst&&this.dropdown.highlightOption(this.DOM.dropdown.content.querySelector(o.classNames.dropdownItemSelector)),this.state.dropdown.visible||setTimeout(this.dropdown.events.binding.bind(this)),this.state.dropdown.visible=t||!0,this.state.dropdown.query=t,this.setStateSelection(),d||setTimeout((function(){a.dropdown.position(),a.dropdown.render();})),setTimeout((function(){a.trigger("dropdown:show",a.DOM.dropdown);}));}},hide:function(t){var e=this,i=this.DOM,n=i.scope,s=i.dropdown,a="manual"==this.settings.dropdown.position&&!t;if(s&&document.body.contains(s)&&!a)return window.removeEventListener("resize",this.dropdown.position),this.dropdown.events.binding.call(this,!1),n.setAttribute("aria-expanded",!1),s.parentNode.removeChild(s),setTimeout((function(){e.state.dropdown.visible=!1;}),100),this.state.dropdown.query=this.state.ddItemData=this.state.ddItemElm=this.state.selection=null,this.state.tag&&this.state.tag.value.length&&(this.state.flaggedTags[this.state.tag.baseOffset]=this.state.tag),this.trigger("dropdown:hide",s),this},toggle:function(t){this.dropdown[this.state.dropdown.visible&&!t?"hide":"show"]();},getAppendTarget:function(){var t=this.settings.dropdown;return "function"==typeof t.appendTarget?t.appendTarget():t.appendTarget},render:function(){var t,e,i,n=this,s=(t=this.DOM.dropdown,(i=t.cloneNode(!0)).style.cssText="position:fixed; top:-9999px; opacity:0",document.body.appendChild(i),e=i.clientHeight,i.parentNode.removeChild(i),e),a=this.settings,o="number"==typeof a.dropdown.enabled&&a.dropdown.enabled>=0,r=this.dropdown.getAppendTarget();return o?(this.DOM.scope.setAttribute("aria-expanded",!0),document.body.contains(this.DOM.dropdown)||(this.DOM.dropdown.classList.add(a.classNames.dropdownInital),this.dropdown.position(s),r.appendChild(this.DOM.dropdown),setTimeout((function(){return n.DOM.dropdown.classList.remove(a.classNames.dropdownInital)}))),this):this},fill:function(t){t="string"==typeof t?t:this.dropdown.createListHTML(t||this.suggestedListItems);var e,i=this.settings.templates.dropdownContent.call(this,t);this.DOM.dropdown.content.innerHTML=(e=i)?e.replace(/\>[\r\n ]+\</g,"><").split(/>\s+</).join("><").trim():"";},fillHeaderFooter:function(){var t=this.dropdown.filterListItems(this.state.dropdown.query),e=this.parseTemplate("dropdownHeader",[t]),i=this.parseTemplate("dropdownFooter",[t]),n=this.dropdown.getHeaderRef(),s=this.dropdown.getFooterRef();e&&(null==n||n.parentNode.replaceChild(e,n)),i&&(null==s||s.parentNode.replaceChild(i,s));},position:function(t){var e=this.settings.dropdown,i=this.dropdown.getAppendTarget();if("manual"!=e.position&&i){var n,s,a,o,r,l,d,c,u,g=this.DOM.dropdown,h=e.RTL,p=i===document.body,f=i===this.DOM.scope,m=p?window.pageYOffset:i.scrollTop,v=document.fullscreenElement||document.webkitFullscreenElement||document.documentElement,b=v.clientHeight,w=Math.max(v.clientWidth||0,window.innerWidth||0)>480?e.position:"all",y=this.DOM["input"==w?"input":"scope"];if(t=t||g.clientHeight,this.state.dropdown.visible){if("text"==w?(a=(n=function(){var t=document.getSelection();if(t.rangeCount){var e,i,n=t.getRangeAt(0),s=n.startContainer,a=n.startOffset;if(a>0)return (i=document.createRange()).setStart(s,a-1),i.setEnd(s,a),{left:(e=i.getBoundingClientRect()).right,top:e.top,bottom:e.bottom};if(s.getBoundingClientRect)return s.getBoundingClientRect()}return {left:-9999,top:-9999}}()).bottom,s=n.top,o=n.left,r="auto"):(l=function(t){var e=0,i=0;for(t=t.parentNode;t&&t!=v;)e+=t.offsetTop||0,i+=t.offsetLeft||0,t=t.parentNode;return {top:e,left:i}}(i),n=y.getBoundingClientRect(),s=f?-1:n.top-l.top,a=(f?n.height:n.bottom-l.top)-1,o=f?-1:n.left-l.left,r=n.width+"px"),!p){var T=function(){for(var t=0,i=e.appendTarget.parentNode;i;)t+=i.scrollTop||0,i=i.parentNode;return t}();s+=T,a+=T;}var O;s=Math.floor(s),a=Math.ceil(a),c=((d=null!==(O=e.placeAbove)&&void 0!==O?O:b-n.bottom<t)?s:a)+m,u="left: ".concat(o+(h&&n.width||0)+window.pageXOffset,"px;"),g.style.cssText="".concat(u,"; top: ").concat(c,"px; min-width: ").concat(r,"; max-width: ").concat(r),g.setAttribute("placement",d?"top":"bottom"),g.setAttribute("position",w);}}}})?C:{},Object.getOwnPropertyDescriptors?Object.defineProperties(A,Object.getOwnPropertyDescriptors(C)):function(t,e){var i=Object.keys(t);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(t);e&&(n=n.filter((function(e){return Object.getOwnPropertyDescriptor(t,e).enumerable}))),i.push.apply(i,n);}return i}(Object(C)).forEach((function(t){Object.defineProperty(A,t,Object.getOwnPropertyDescriptor(C,t));})),A),j="@yaireo/tagify/",P={empty:"empty",exceed:"number of tags exceeded",pattern:"pattern mismatch",duplicate:"already exists",notAllowed:"not allowed"},V={wrapper:function(e,i){return '<tags class="'.concat(i.classNames.namespace," ").concat(i.mode?"".concat(i.classNames[i.mode+"Mode"]):""," ").concat(e.className,'"\n                    ').concat(i.readonly?"readonly":"","\n                    ").concat(i.disabled?"disabled":"","\n                    ").concat(i.required?"required":"","\n                    ").concat("select"===i.mode?"spellcheck='false'":"",'\n                    tabIndex="-1">\n                    ').concat(this.settings.templates.input.call(this),"\n                ").concat(t,"\n        </tags>")},input:function(){var e=this.settings,i=e.placeholder||t;return "<span ".concat(!e.readonly&&e.userInput?"contenteditable":"",' tabIndex="0" data-placeholder="').concat(i,'" aria-placeholder="').concat(e.placeholder||"",'"\n                    class="').concat(e.classNames.input,'"\n                    role="textbox"\n                    autocapitalize="false"\n                    autocorrect="off"\n                    spellcheck="false"\n                    aria-autocomplete="both"\n                    aria-multiline="').concat("mix"==e.mode,'"></span>')},tag:function(t,e){var i=e.settings;return '<tag title="'.concat(t.title||t.value,"\"\n                    contenteditable='false'\n                    tabIndex=\"").concat(i.a11y.focusableTags?0:-1,'"\n                    class="').concat(i.classNames.tag," ").concat(t.class||"",'"\n                    ').concat(this.getAttributes(t),">\n            <x title='' tabIndex=\"").concat(i.a11y.focusableTags?0:-1,'" class="').concat(i.classNames.tagX,"\" role='button' aria-label='remove tag'></x>\n            <div>\n                <span ").concat("select"===i.mode&&i.userInput?"contenteditable='true'":"",' autocapitalize="false" autocorrect="off" spellcheck=\'false\' class="').concat(i.classNames.tagText,'">').concat(t[i.tagTextProp]||t.value,"</span>\n            </div>\n        </tag>")},dropdown:function(t){var e=t.dropdown,i="manual"==e.position;return '<div class="'.concat(i?"":t.classNames.dropdown," ").concat(e.classname,'" role="listbox" aria-labelledby="dropdown" dir="').concat(e.RTL?"rtl":"","\">\n                    <div data-selector='tagify-suggestions-wrapper' class=\"").concat(t.classNames.dropdownWrapper,'"></div>\n                </div>')},dropdownContent:function(t){var e=this.settings.templates,i=this.state.dropdown.suggestions;return "\n            ".concat(e.dropdownHeader.call(this,i),"\n            ").concat(t,"\n            ").concat(e.dropdownFooter.call(this,i),"\n        ")},dropdownItem:function(t){return "<div ".concat(this.getAttributes(t),"\n                    class='").concat(this.settings.classNames.dropdownItem," ").concat(this.isTagDuplicate(t.value)?this.settings.classNames.dropdownItemSelected:""," ").concat(t.class||"",'\'\n                    tabindex="0"\n                    role="option">').concat(t.mappedValue||t.value,"</div>")},dropdownHeader:function(t){return "<header data-selector='tagify-suggestions-header' class=\"".concat(this.settings.classNames.dropdownHeader,'"></header>')},dropdownFooter:function(t){var e=t.length-this.settings.dropdown.maxItems;return e>0?"<footer data-selector='tagify-suggestions-footer' class=\"".concat(this.settings.classNames.dropdownFooter,'">\n                ').concat(e," more items. Refine your search.\n            </footer>"):""},dropdownItemNoMatch:null};function F(t,e){(null==e||e>t.length)&&(e=t.length);for(var i=0,n=new Array(e);i<e;i++)n[i]=t[i];return n}function R(t,e){return null!=e&&"undefined"!=typeof Symbol&&e[Symbol.hasInstance]?!!e[Symbol.hasInstance](t):t instanceof e}function H(t,e){return function(t){if(Array.isArray(t))return t}(t)||function(t,e){var i=null==t?null:"undefined"!=typeof Symbol&&t[Symbol.iterator]||t["@@iterator"];if(null!=i){var n,s,a=[],o=!0,r=!1;try{for(i=i.call(t);!(o=(n=i.next()).done)&&(a.push(n.value),!e||a.length!==e);o=!0);}catch(t){r=!0,s=t;}finally{try{o||null==i.return||i.return();}finally{if(r)throw s}}return a}}(t,e)||function(t,e){if(!t)return;if("string"==typeof t)return F(t,e);var i=Object.prototype.toString.call(t).slice(8,-1);"Object"===i&&t.constructor&&(i=t.constructor.name);if("Map"===i||"Set"===i)return Array.from(i);if("Arguments"===i||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(i))return F(t,e)}(t,e)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function B(t,e){(null==e||e>t.length)&&(e=t.length);for(var i=0,n=new Array(e);i<e;i++)n[i]=t[i];return n}function W(t,e,i){return e in t?Object.defineProperty(t,e,{value:i,enumerable:!0,configurable:!0,writable:!0}):t[e]=i,t}function K(t,e){return null!=e&&"undefined"!=typeof Symbol&&e[Symbol.hasInstance]?!!e[Symbol.hasInstance](t):t instanceof e}function U(t,e){return e=null!=e?e:{},Object.getOwnPropertyDescriptors?Object.defineProperties(t,Object.getOwnPropertyDescriptors(e)):function(t,e){var i=Object.keys(t);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(t);e&&(n=n.filter((function(e){return Object.getOwnPropertyDescriptor(t,e).enumerable}))),i.push.apply(i,n);}return i}(Object(e)).forEach((function(i){Object.defineProperty(t,i,Object.getOwnPropertyDescriptor(e,i));})),t}function q(t){return function(t){if(Array.isArray(t))return B(t)}(t)||function(t){if("undefined"!=typeof Symbol&&null!=t[Symbol.iterator]||null!=t["@@iterator"])return Array.from(t)}(t)||function(t,e){if(!t)return;if("string"==typeof t)return B(t,e);var i=Object.prototype.toString.call(t).slice(8,-1);"Object"===i&&t.constructor&&(i=t.constructor.name);if("Map"===i||"Set"===i)return Array.from(i);if("Arguments"===i||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(i))return B(t,e)}(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}var z={customBinding:function(){var t=this;this.customEventsList.forEach((function(e){t.on(e,t.settings.callbacks[e]);}));},binding:function(){var t,e=!(arguments.length>0&&void 0!==arguments[0])||arguments[0],i=this.settings,n=this.events.callbacks,s=e?"addEventListener":"removeEventListener";if(!this.state.mainEvents||!e){for(var a in this.state.mainEvents=e,e&&!this.listeners.main&&(this.events.bindGlobal.call(this),this.settings.isJQueryPlugin&&jQuery(this.DOM.originalInput).on("tagify.removeAllTags",this.removeAllTags.bind(this))),t=this.listeners.main=this.listeners.main||{keydown:["input",n.onKeydown.bind(this)],click:["scope",n.onClickScope.bind(this)],dblclick:"select"!=i.mode&&["scope",n.onDoubleClickScope.bind(this)],paste:["input",n.onPaste.bind(this)],drop:["input",n.onDrop.bind(this)],compositionstart:["input",n.onCompositionStart.bind(this)],compositionend:["input",n.onCompositionEnd.bind(this)]})t[a]&&this.DOM[t[a][0]][s](a,t[a][1]);var o=this.listeners.main.inputMutationObserver||new MutationObserver(n.onInputDOMChange.bind(this));o.disconnect(),"mix"==i.mode&&o.observe(this.DOM.input,{childList:!0}),this.events.bindOriginaInputListener.call(this);}},bindOriginaInputListener:function(t){var e=(t||0)+500;this.listeners.main&&(clearInterval(this.listeners.main.originalInputValueObserverInterval),this.listeners.main.originalInputValueObserverInterval=setInterval(this.events.callbacks.observeOriginalInputValue.bind(this),e));},bindGlobal:function(t){var e,i=this.events.callbacks,n=t?"removeEventListener":"addEventListener";if(this.listeners&&(t||!this.listeners.global)){this.listeners.global=this.listeners.global||[{type:this.isIE?"keydown":"input",target:this.DOM.input,cb:i[this.isIE?"onInputIE":"onInput"].bind(this)},{type:"keydown",target:window,cb:i.onWindowKeyDown.bind(this)},{type:"focusin",target:this.DOM.scope,cb:i.onFocusBlur.bind(this)},{type:"focusout",target:this.DOM.scope,cb:i.onFocusBlur.bind(this)},{type:"click",target:document,cb:i.onClickAnywhere.bind(this),useCapture:!0}];var s=!0,a=!1,o=void 0;try{for(var r,l=this.listeners.global[Symbol.iterator]();!(s=(r=l.next()).done);s=!0)(e=r.value).target[n](e.type,e.cb,!!e.useCapture);}catch(t){a=!0,o=t;}finally{try{s||null==l.return||l.return();}finally{if(a)throw o}}}},unbindGlobal:function(){this.events.bindGlobal.call(this,!0);},callbacks:{onFocusBlur:function(t){var e,i,n=this.settings,s=b.call(this,t.target),a=v.call(this,t.target),o=t.target.classList.contains(n.classNames.tagX),r="focusin"==t.type,l="focusout"==t.type;s&&r&&!a&&!o&&this.toggleFocusClass(this.state.hasFocus=+new Date);var d=t.target?this.trim(this.DOM.input.textContent):"",c=null===(i=this.value)||void 0===i||null===(e=i[0])||void 0===e?void 0:e[n.tagTextProp],u=n.dropdown.enabled>=0,g={relatedTarget:t.relatedTarget},h=this.state.actions.selectOption&&(u||!n.dropdown.closeOnSelect),p=this.state.actions.addNew&&u;if(l){if(t.relatedTarget===this.DOM.scope)return this.dropdown.hide(),void this.DOM.input.focus();this.postUpdate(),n.onChangeAfterBlur&&this.triggerChangeEvent();}if(!(h||p||o))if(r||s?(this.state.hasFocus=+new Date,this.toggleFocusClass(this.state.hasFocus)):this.state.hasFocus=!1,"mix"!=n.mode){if(r){if(!n.focusable)return;var f=0===n.dropdown.enabled&&!this.state.dropdown.visible;return this.toggleFocusClass(!0),this.trigger("focus",g),void(!f||a&&"select"!==n.mode||this.dropdown.show(this.value.length?"":void 0))}if(l){if(this.trigger("blur",g),this.loading(!1),"select"==n.mode){if(this.value.length){var m=this.getTagElms()[0];d=this.trim(m.textContent);}c===d&&(d="");}d&&!this.state.actions.selectOption&&n.addTagOnBlur&&n.addTagOn.includes("blur")&&this.addTags(d,!0);}s||(this.DOM.input.removeAttribute("style"),this.dropdown.hide());}else r?this.trigger("focus",g):l&&(this.trigger("blur",g),this.loading(!1),this.dropdown.hide(),this.state.dropdown.visible=void 0,this.setStateSelection());},onCompositionStart:function(t){this.state.composing=!0;},onCompositionEnd:function(t){this.state.composing=!1;},onWindowKeyDown:function(t){var e,i=this.settings,n=document.activeElement,s=b.call(this,n)&&this.DOM.scope.contains(document.activeElement),a=s&&n.hasAttribute("readonly");if(this.state.hasFocus||s&&!a){e=n.nextElementSibling;var o=t.target.classList.contains(i.classNames.tagX);switch(t.key){case"Backspace":i.readonly||this.state.editing||(this.removeTags(n),(e||this.DOM.input).focus());break;case"Enter":if(o)return void this.removeTags(t.target.parentNode);i.a11y.focusableTags&&v.call(this,n)&&setTimeout(this.editTag.bind(this),0,n);break;case"ArrowDown":this.state.dropdown.visible||"mix"==i.mode||this.dropdown.show();}}},onKeydown:function(t){var e=this,i=this.settings;if(!this.state.composing&&i.userInput){"select"==i.mode&&i.enforceWhitelist&&this.value.length&&"Tab"!=t.key&&t.preventDefault();var n=this.trim(t.target.textContent);this.trigger("keydown",{event:t}),i.hooks.beforeKeyDown(t,{tagify:this}).then((function(s){if("mix"==i.mode){switch(t.key){case"Left":case"ArrowLeft":e.state.actions.ArrowLeft=!0;break;case"Delete":case"Backspace":if(e.state.editing)return;var a=document.getSelection(),o="Delete"==t.key&&a.anchorOffset==(a.anchorNode.length||0),l=a.anchorNode.previousSibling,c=1==a.anchorNode.nodeType||!a.anchorOffset&&l&&1==l.nodeType&&a.anchorNode.previousSibling;r(e.DOM.input.innerHTML);var u,g,h,p=e.getTagElms(),m=1===a.anchorNode.length&&a.anchorNode.nodeValue==String.fromCharCode(8203);if("edit"==i.backspace&&c)return u=1==a.anchorNode.nodeType?null:a.anchorNode.previousElementSibling,setTimeout(e.editTag.bind(e),0,u),void t.preventDefault();if(f()&&K(c,Element))return h=d(c),c.hasAttribute("readonly")||c.remove(),e.DOM.input.focus(),void setTimeout((function(){T(h),e.DOM.input.click();}));if("BR"==a.anchorNode.nodeName)return;if((o||c)&&1==a.anchorNode.nodeType?g=0==a.anchorOffset?o?p[0]:null:p[Math.min(p.length,a.anchorOffset)-1]:o?g=a.anchorNode.nextElementSibling:K(c,Element)&&(g=c),3==a.anchorNode.nodeType&&!a.anchorNode.nodeValue&&a.anchorNode.previousElementSibling&&t.preventDefault(),(c||o)&&!i.backspace)return void t.preventDefault();if("Range"!=a.type&&!a.anchorOffset&&a.anchorNode==e.DOM.input&&"Delete"!=t.key)return void t.preventDefault();if("Range"!=a.type&&g&&g.hasAttribute("readonly"))return void T(d(g));"Delete"==t.key&&m&&y(a.anchorNode.nextSibling)&&e.removeTags(a.anchorNode.nextSibling),clearTimeout(k),k=setTimeout((function(){var t=document.getSelection();r(e.DOM.input.innerHTML),!o&&t.anchorNode.previousSibling,e.value=[].map.call(p,(function(t,i){var n=y(t);if(t.parentNode||n.readonly)return n;e.trigger("remove",{tag:t,index:i,data:n});})).filter((function(t){return t}));}),20);}return !0}var v="manual"==i.dropdown.position;switch(t.key){case"Backspace":"select"==i.mode&&i.enforceWhitelist&&e.value.length?e.removeTags():e.state.dropdown.visible&&"manual"!=i.dropdown.position||""!=t.target.textContent&&8203!=n.charCodeAt(0)||(!0===i.backspace?e.removeTags():"edit"==i.backspace&&setTimeout(e.editTag.bind(e),0));break;case"Esc":case"Escape":if(e.state.dropdown.visible)return;t.target.blur();break;case"Down":case"ArrowDown":e.state.dropdown.visible||e.dropdown.show();break;case"ArrowRight":var b=e.state.inputSuggestion||e.state.ddItemData;if(b&&i.autoComplete.rightKey)return void e.addTags([b],!0);break;case"Tab":var w="select"==i.mode;if(!n||w)return !0;t.preventDefault();case"Enter":if(e.state.dropdown.visible&&!v)return;t.preventDefault(),setTimeout((function(){e.state.dropdown.visible&&!v||e.state.actions.selectOption||!i.addTagOn.includes(t.key.toLowerCase())||e.addTags(n,!0);}));}})).catch((function(t){return t}));}},onInput:function(t){this.postUpdate();var e=this.settings;if("mix"==e.mode)return this.events.callbacks.onMixTagsInput.call(this,t);var i=this.input.normalize.call(this,void 0,{trim:!1}),n=i.length>=e.dropdown.enabled,s={value:i,inputElm:this.DOM.input},a=this.validateTag({value:i});"select"==e.mode&&this.toggleScopeValidation(a),s.isValid=a,this.state.inputText!=i&&(this.input.set.call(this,i,!1),-1!=i.search(e.delimiters)?this.addTags(i)&&this.input.set.call(this):e.dropdown.enabled>=0&&this.dropdown[n?"show":"hide"](i),this.trigger("input",s));},onMixTagsInput:function(t){var e,i,n,s,a,o,r,l,d=this,c=this.settings,u=this.value.length,h=this.getTagElms(),p=document.createDocumentFragment(),m=window.getSelection().getRangeAt(0),v=[].map.call(h,(function(t){return y(t).value}));if("deleteContentBackward"==t.inputType&&f()&&this.events.callbacks.onKeydown.call(this,{target:t.target,key:"Backspace"}),O(this.getTagElms()),this.value.slice().forEach((function(t){t.readonly&&!v.includes(t.value)&&p.appendChild(d.createTagElem(t));})),p.childNodes.length&&(m.insertNode(p),this.setRangeAtStartEnd(!1,p.lastChild)),h.length!=u)return this.value=[].map.call(this.getTagElms(),(function(t){return y(t)})),void this.update({withoutChangeEvent:!0});if(this.hasMaxTags())return !0;if(window.getSelection&&(o=window.getSelection()).rangeCount>0&&3==o.anchorNode.nodeType){if((m=o.getRangeAt(0).cloneRange()).collapse(!0),m.setStart(o.focusNode,0),n=(e=m.toString().slice(0,m.endOffset)).split(c.pattern).length-1,(i=e.match(c.pattern))&&(s=e.slice(e.lastIndexOf(i[i.length-1]))),s){if(this.state.actions.ArrowLeft=!1,this.state.tag={prefix:s.match(c.pattern)[0],value:s.replace(c.pattern,"")},this.state.tag.baseOffset=o.baseOffset-this.state.tag.value.length,l=this.state.tag.value.match(c.delimiters))return this.state.tag.value=this.state.tag.value.replace(c.delimiters,""),this.state.tag.delimiters=l[0],this.addTags(this.state.tag.value,c.dropdown.clearOnSelect),void this.dropdown.hide();a=this.state.tag.value.length>=c.dropdown.enabled;try{r=(r=this.state.flaggedTags[this.state.tag.baseOffset]).prefix==this.state.tag.prefix&&r.value[0]==this.state.tag.value[0],this.state.flaggedTags[this.state.tag.baseOffset]&&!this.state.tag.value&&delete this.state.flaggedTags[this.state.tag.baseOffset];}catch(t){}(r||n<this.state.mixMode.matchedPatternCount)&&(a=!1);}else this.state.flaggedTags={};this.state.mixMode.matchedPatternCount=n;}setTimeout((function(){d.update({withoutChangeEvent:!0}),d.trigger("input",g({},d.state.tag,{textContent:d.DOM.input.textContent})),d.state.tag&&d.dropdown[a?"show":"hide"](d.state.tag.value);}),10);},onInputIE:function(t){var e=this;setTimeout((function(){e.events.callbacks.onInput.call(e,t);}));},observeOriginalInputValue:function(){this.DOM.originalInput.parentNode||this.destroy(),this.DOM.originalInput.value!=this.DOM.originalInput.tagifyValue&&this.loadOriginalValues();},onClickAnywhere:function(t){t.target==this.DOM.scope||this.DOM.scope.contains(t.target)||(this.toggleFocusClass(!1),this.state.hasFocus=!1,t.target.closest(".tagify__dropdown")&&t.target.closest(".tagify__dropdown").__tagify!=this&&this.dropdown.hide());},onClickScope:function(t){var e=this.settings,i=t.target.closest("."+e.classNames.tag),n=t.target===this.DOM.scope,s=+new Date-this.state.hasFocus;if(n&&"select"!=e.mode)this.DOM.input.focus();else {if(!t.target.classList.contains(e.classNames.tagX))return i&&!this.state.editing?(this.trigger("click",{tag:i,index:this.getNodeIndex(i),data:y(i),event:t}),void(1!==e.editTags&&1!==e.editTags.clicks&&"select"!=e.mode||this.events.callbacks.onDoubleClickScope.call(this,t))):void(t.target==this.DOM.input&&("mix"==e.mode&&this.fixFirefoxLastTagNoCaret(),s>500||!e.focusable)?this.state.dropdown.visible?this.dropdown.hide():0===e.dropdown.enabled&&"mix"!=e.mode&&this.dropdown.show(this.value.length?"":void 0):"select"!=e.mode||0!==e.dropdown.enabled||this.state.dropdown.visible||(this.events.callbacks.onDoubleClickScope.call(this,U(function(t){for(var e=1;e<arguments.length;e++){var i=null!=arguments[e]?arguments[e]:{},n=Object.keys(i);"function"==typeof Object.getOwnPropertySymbols&&(n=n.concat(Object.getOwnPropertySymbols(i).filter((function(t){return Object.getOwnPropertyDescriptor(i,t).enumerable})))),n.forEach((function(e){W(t,e,i[e]);}));}return t}({},t),{target:this.getTagElms()[0]})),!e.userInput&&this.dropdown.show()));this.removeTags(t.target.parentNode);}},onPaste:function(t){var e=this;t.preventDefault();var i,n,s,a=this.settings;if("select"==a.mode&&a.enforceWhitelist||!a.userInput)return !1;a.readonly||(n=t.clipboardData||window.clipboardData,s=n.getData("Text"),a.hooks.beforePaste(t,{tagify:this,pastedText:s,clipboardData:n}).then((function(a){void 0===a&&(a=s),a&&(e.injectAtCaret(a,window.getSelection().getRangeAt(0)),"mix"==e.settings.mode?e.events.callbacks.onMixTagsInput.call(e,t):e.settings.pasteAsTags?i=e.addTags(e.state.inputText+a,!0):(e.state.inputText=a,e.dropdown.show(a))),e.trigger("paste",{event:t,pastedText:s,clipboardData:n,tagsElems:i});})).catch((function(t){return t})));},onDrop:function(t){t.preventDefault();},onEditTagInput:function(t,e){var i,n=t.closest("."+this.settings.classNames.tag),s=this.getNodeIndex(n),a=y(n),o=this.input.normalize.call(this,t),r=(W(i={},this.settings.tagTextProp,o),W(i,"__tagId",a.__tagId),i),l=this.validateTag(r);this.editTagChangeDetected(g(a,r))||!0!==t.originalIsValid||(l=!0),n.classList.toggle(this.settings.classNames.tagInvalid,!0!==l),a.__isValid=l,n.title=!0===l?a.title||a.value:l,o.length>=this.settings.dropdown.enabled&&(this.state.editing&&(this.state.editing.value=o),this.dropdown.show(o)),this.trigger("edit:input",{tag:n,index:s,data:g({},this.value[s],{newValue:o}),event:e});},onEditTagPaste:function(t,e){var i=(e.clipboardData||window.clipboardData).getData("Text");e.preventDefault();var n=w(i);this.setRangeAtStartEnd(!1,n);},onEditTagClick:function(t,e){this.events.callbacks.onClickScope.call(this,e);},onEditTagFocus:function(t){this.state.editing={scope:t,input:t.querySelector("[contenteditable]")};},onEditTagBlur:function(t,e){var i=v.call(this,e.relatedTarget);if("select"==this.settings.mode&&i&&e.relatedTarget.contains(e.target))this.dropdown.hide();else if(this.state.editing&&(this.state.hasFocus||this.toggleFocusClass(),this.DOM.scope.contains(t))){var n,s,a,o=this.settings,r=t.closest("."+o.classNames.tag),l=y(r),d=this.input.normalize.call(this,t),c=(W(n={},o.tagTextProp,d),W(n,"__tagId",l.__tagId),n),u=l.__originalData,h=this.editTagChangeDetected(g(l,c)),p=this.validateTag(c);if(d)if(h){var f;if(s=this.hasMaxTags(),a=g({},u,(W(f={},o.tagTextProp,this.trim(d)),W(f,"__isValid",p),f)),o.transformTag.call(this,a,u),!0!==(p=(!s||!0===u.__isValid)&&this.validateTag(a))){if(this.trigger("invalid",{data:a,tag:r,message:p}),o.editTags.keepInvalid)return;o.keepInvalidTags?a.__isValid=p:a=u;}else o.keepInvalidTags&&(delete a.title,delete a["aria-invalid"],delete a.class);this.onEditTagDone(r,a);}else this.onEditTagDone(r,u);else this.onEditTagDone(r);}},onEditTagkeydown:function(t,e){if(!this.state.composing)switch(this.trigger("edit:keydown",{event:t}),t.key){case"Esc":case"Escape":this.state.editing=!1,!!e.__tagifyTagData.__originalData.value?e.parentNode.replaceChild(e.__tagifyTagData.__originalHTML,e):e.remove();break;case"Enter":case"Tab":t.preventDefault();setTimeout((function(){return t.target.blur()}),0);}},onDoubleClickScope:function(t){var e,i,n=t.target.closest("."+this.settings.classNames.tag),s=y(n),a=this.settings;n&&!1!==s.editable&&(e=n.classList.contains(this.settings.classNames.tagEditing),i=n.hasAttribute("readonly"),a.readonly||e||i||!this.settings.editTags||!a.userInput||(this.events.callbacks.onEditTagFocus.call(this,n),this.editTag(n)),this.toggleFocusClass(!0),"select"!=a.mode&&this.trigger("dblclick",{tag:n,index:this.getNodeIndex(n),data:y(n)}));},onInputDOMChange:function(t){var e=this;t.forEach((function(t){t.addedNodes.forEach((function(t){if("<div><br></div>"==t.outerHTML)t.replaceWith(document.createElement("br"));else if(1==t.nodeType&&t.querySelector(e.settings.classNames.tagSelector)){var i,n=document.createTextNode("");3==t.childNodes[0].nodeType&&"BR"!=t.previousSibling.nodeName&&(n=document.createTextNode("\n")),(i=t).replaceWith.apply(i,q([n].concat(q(q(t.childNodes).slice(0,-1))))),T(n);}else if(v.call(e,t)){var s;if(3!=(null===(s=t.previousSibling)||void 0===s?void 0:s.nodeType)||t.previousSibling.textContent||t.previousSibling.remove(),t.previousSibling&&"BR"==t.previousSibling.nodeName){t.previousSibling.replaceWith("\n​");for(var a=t.nextSibling,o="";a;)o+=a.textContent,a=a.nextSibling;o.trim()&&T(t.previousSibling);}else t.previousSibling&&!y(t.previousSibling)||t.before("​");}})),t.removedNodes.forEach((function(t){t&&"BR"==t.nodeName&&v.call(e,i)&&(e.removeTags(i),e.fixFirefoxLastTagNoCaret());}));}));var i=this.DOM.input.lastChild;i&&""==i.nodeValue&&i.remove(),i&&"BR"==i.nodeName||this.DOM.input.appendChild(document.createElement("br"));}}};function X(t,e){(null==e||e>t.length)&&(e=t.length);for(var i=0,n=new Array(e);i<e;i++)n[i]=t[i];return n}function J(t,e,i){return e in t?Object.defineProperty(t,e,{value:i,enumerable:!0,configurable:!0,writable:!0}):t[e]=i,t}function G(t,e){return null!=e&&"undefined"!=typeof Symbol&&e[Symbol.hasInstance]?!!e[Symbol.hasInstance](t):t instanceof e}function $$1(t){for(var e=1;e<arguments.length;e++){var i=null!=arguments[e]?arguments[e]:{},n=Object.keys(i);"function"==typeof Object.getOwnPropertySymbols&&(n=n.concat(Object.getOwnPropertySymbols(i).filter((function(t){return Object.getOwnPropertyDescriptor(i,t).enumerable})))),n.forEach((function(e){J(t,e,i[e]);}));}return t}function Q(t){return function(t){if(Array.isArray(t))return X(t)}(t)||function(t){if("undefined"!=typeof Symbol&&null!=t[Symbol.iterator]||null!=t["@@iterator"])return Array.from(t)}(t)||function(t,e){if(!t)return;if("string"==typeof t)return X(t,e);var i=Object.prototype.toString.call(t).slice(8,-1);"Object"===i&&t.constructor&&(i=t.constructor.name);if("Map"===i||"Set"===i)return Array.from(i);if("Arguments"===i||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(i))return X(t,e)}(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function Y(t,e){if(!t){n.warn("input element not found",t);var i=new Proxy(this,{get:function(){return function(){return i}}});return i}if(t.__tagify)return n.warn("input element is already Tagified - Same instance is returned.",t),t.__tagify;var s;g(this,function(t){var e=document.createTextNode(""),i={};function s(t,i,n){n&&i.split(/\s+/g).forEach((function(i){return e[t+"EventListener"].call(e,i,n)}));}return {removeAllCustomListeners:function(){Object.entries(i).forEach((function(t){var e=H(t,2),i=e[0];e[1].forEach((function(t){return s("remove",i,t)}));})),i={};},off:function(t,e){return t&&(e?s("remove",t,e):t.split(/\s+/g).forEach((function(t){var e;null===(e=i[t])||void 0===e||e.forEach((function(e){return s("remove",t,e)})),delete i[t];}))),this},on:function(t,e){return e&&"function"==typeof e&&(t.split(/\s+/g).forEach((function(t){Array.isArray(i[t])?i[t].push(e):i[t]=[e];})),s("add",t,e)),this},trigger:function(i,s,a){var o;if(a=a||{cloneData:!0},i)if(t.settings.isJQueryPlugin)"remove"==i&&(i="removeTag"),jQuery(t.DOM.originalInput).triggerHandler(i,[s]);else {try{var r="object"==typeof s?s:{value:s};if((r=a.cloneData?g({},r):r).tagify=this,s.event&&(r.event=this.cloneEvent(s.event)),R(s,Object))for(var l in s)R(s[l],HTMLElement)&&(r[l]=s[l]);o=new CustomEvent(i,{detail:r});}catch(t){n.warn(t);}e.dispatchEvent(o);}}}}(this)),this.isFirefox=/firefox|fxios/i.test(navigator.userAgent)&&!/seamonkey/i.test(navigator.userAgent),this.isIE=window.document.documentMode,e=e||{},this.getPersistedData=(s=e.id,function(t){var e,i="/"+t;if(1==localStorage.getItem(j+s+"/v",1))try{e=JSON.parse(localStorage[j+s+i]);}catch(t){}return e}),this.setPersistedData=function(t){return t?(localStorage.setItem(j+t+"/v",1),function(e,i){var n="/"+i,s=JSON.stringify(e);e&&i&&(localStorage.setItem(j+t+n,s),dispatchEvent(new Event("storage")));}):function(){}}(e.id),this.clearPersistedData=function(t){return function(e){var i=j+"/"+t+"/";if(e)localStorage.removeItem(i+e);else for(var n in localStorage)n.includes(i)&&localStorage.removeItem(n);}}(e.id),this.applySettings(t,e),this.state={inputText:"",editing:!1,composing:!1,actions:{},mixMode:{},dropdown:{},flaggedTags:{}},this.value=[],this.listeners={},this.DOM={},this.build(t),_.call(this),this.getCSSVars(),this.loadOriginalValues(),this.events.customBinding.call(this),this.events.binding.call(this),t.autofocus&&this.DOM.input.focus(),t.__tagify=this;}Y.prototype={_dropdown:L,placeCaretAfterNode:T,getSetTagData:y,helpers:{sameStr:s,removeCollectionProp:a,omit:o,isObject:u,parseHTML:l,escapeHTML:c,extend:g,concatWithoutDups:h,getUID:m,isNodeTag:v},customEventsList:["change","add","remove","invalid","input","paste","click","keydown","focus","blur","edit:input","edit:beforeUpdate","edit:updated","edit:start","edit:keydown","dropdown:show","dropdown:hide","dropdown:select","dropdown:updated","dropdown:noMatch","dropdown:scroll"],dataProps:["__isValid","__removed","__originalData","__originalHTML","__tagId"],trim:function(t){return this.settings.trim&&t&&"string"==typeof t?t.trim():t},parseHTML:l,templates:V,parseTemplate:function(t,e){return l((t=this.settings.templates[t]||t).apply(this,e))},set whitelist(t){var e=t&&Array.isArray(t);this.settings.whitelist=e?t:[],this.setPersistedData(e?t:[],"whitelist");},get whitelist(){return this.settings.whitelist},set userInput(t){this.settings.userInput=!!t,this.setContentEditable(!!t);},get userInput(){return this.settings.userInput},generateClassSelectors:function(t){var e=function(e){var i=e;Object.defineProperty(t,i+"Selector",{get:function(){return "."+this[i].split(" ")[0]}});};for(var i in t)e(i);},applySettings:function(t,e){var i,n;x$1.templates=this.templates;var s=g({},x$1,"mix"==e.mode?{dropdown:{position:"text"}}:{}),a=this.settings=g({},s,e);if(a.disabled=t.hasAttribute("disabled"),a.readonly=a.readonly||t.hasAttribute("readonly"),a.placeholder=c(t.getAttribute("placeholder")||a.placeholder||""),a.required=t.hasAttribute("required"),this.generateClassSelectors(a.classNames),void 0===a.dropdown.includeSelectedTags&&(a.dropdown.includeSelectedTags=a.duplicates),this.isIE&&(a.autoComplete=!1),["whitelist","blacklist"].forEach((function(e){var i=t.getAttribute("data-"+e);i&&G(i=i.split(a.delimiters),Array)&&(a[e]=i);})),"autoComplete"in e&&!u(e.autoComplete)&&(a.autoComplete=x$1.autoComplete,a.autoComplete.enabled=e.autoComplete),"mix"==a.mode&&(a.pattern=a.pattern||/@/,a.autoComplete.rightKey=!0,a.delimiters=e.delimiters||null,a.tagTextProp&&!a.dropdown.searchKeys.includes(a.tagTextProp)&&a.dropdown.searchKeys.push(a.tagTextProp)),t.pattern)try{a.pattern=new RegExp(t.pattern);}catch(t){}if(a.delimiters){a._delimiters=a.delimiters;try{a.delimiters=new RegExp(this.settings.delimiters,"g");}catch(t){}}a.disabled&&(a.userInput=!1),this.TEXTS=$$1({},P,a.texts||{}),("select"!=a.mode||(null===(i=e.dropdown)||void 0===i?void 0:i.enabled))&&a.userInput||(a.dropdown.enabled=0),a.dropdown.appendTarget=(null===(n=e.dropdown)||void 0===n?void 0:n.appendTarget)||document.body;var o=this.getPersistedData("whitelist");Array.isArray(o)&&(this.whitelist=Array.isArray(a.whitelist)?h(a.whitelist,o):o);},getAttributes:function(t){var e,i=this.getCustomAttributes(t),n="";for(e in i)n+=" "+e+(void 0!==t[e]?'="'.concat(i[e],'"'):"");return n},getCustomAttributes:function(t){if(!u(t))return "";var e,i={};for(e in t)"__"!=e.slice(0,2)&&"class"!=e&&t.hasOwnProperty(e)&&void 0!==t[e]&&(i[e]=c(t[e]));return i},setStateSelection:function(){var t=window.getSelection(),e={anchorOffset:t.anchorOffset,anchorNode:t.anchorNode,range:t.getRangeAt&&t.rangeCount&&t.getRangeAt(0)};return this.state.selection=e,e},getCSSVars:function(){var t,e,i,n=getComputedStyle(this.DOM.scope,null);this.CSSVars={tagHideTransition:(t=function(t){if(!t)return {};var e=(t=t.trim().split(" ")[0]).split(/\d+/g).filter((function(t){return t})).pop().trim();return {value:+t.split(e).filter((function(t){return t}))[0].trim(),unit:e}}((i="tag-hide-transition",n.getPropertyValue("--"+i))),e=t.value,"s"==t.unit?1e3*e:e)};},build:function(t){var e=this.DOM,i=t.closest("label");this.settings.mixMode.integrated?(e.originalInput=null,e.scope=t,e.input=t):(e.originalInput=t,e.originalInput_tabIndex=t.tabIndex,e.scope=this.parseTemplate("wrapper",[t,this.settings]),e.input=e.scope.querySelector(this.settings.classNames.inputSelector),t.parentNode.insertBefore(e.scope,t),t.tabIndex=-1),i&&i.setAttribute("for","");},destroy:function(){this.events.unbindGlobal.call(this),this.DOM.scope.parentNode.removeChild(this.DOM.scope),this.DOM.originalInput.tabIndex=this.DOM.originalInput_tabIndex,delete this.DOM.originalInput.__tagify,this.dropdown.hide(!0),this.removeAllCustomListeners(),clearTimeout(this.dropdownHide__bindEventsTimeout),clearInterval(this.listeners.main.originalInputValueObserverInterval);},loadOriginalValues:function(t){var e,i=this.settings;if(this.state.blockChangeEvent=!0,void 0===t){var n=this.getPersistedData("value");t=n&&!this.DOM.originalInput.value?n:i.mixMode.integrated?this.DOM.input.textContent:this.DOM.originalInput.value;}if(this.removeAllTags(),t)if("mix"==i.mode)this.parseMixTags(t),(e=this.DOM.input.lastChild)&&"BR"==e.tagName||this.DOM.input.insertAdjacentHTML("beforeend","<br>");else {try{G(JSON.parse(t),Array)&&(t=JSON.parse(t));}catch(t){}this.addTags(t,!0).forEach((function(t){return t&&t.classList.add(i.classNames.tagNoAnimation)}));}else this.postUpdate();this.state.lastOriginalValueReported=i.mixMode.integrated?"":this.DOM.originalInput.value;},cloneEvent:function(t){var e={};for(var i in t)"path"!=i&&(e[i]=t[i]);return e},loading:function(t){return this.state.isLoading=t,this.DOM.scope.classList[t?"add":"remove"](this.settings.classNames.scopeLoading),this},tagLoading:function(t,e){return t&&t.classList[e?"add":"remove"](this.settings.classNames.tagLoading),this},toggleClass:function(t,e){"string"==typeof t&&this.DOM.scope.classList.toggle(t,e);},toggleScopeValidation:function(t){var e=!0===t||void 0===t;!this.settings.required&&t&&t===this.TEXTS.empty&&(e=!0),this.toggleClass(this.settings.classNames.tagInvalid,!e),this.DOM.scope.title=e?"":t;},toggleFocusClass:function(t){this.toggleClass(this.settings.classNames.focus,!!t);},setPlaceholder:function(t){var e=this;["data","aria"].forEach((function(i){return e.DOM.input.setAttribute("".concat(i,"-placeholder"),t)}));},triggerChangeEvent:function(){if(!this.settings.mixMode.integrated){var t=this.DOM.originalInput,e=this.state.lastOriginalValueReported!==t.value,i=new CustomEvent("change",{bubbles:!0});e&&(this.state.lastOriginalValueReported=t.value,i.simulated=!0,t._valueTracker&&t._valueTracker.setValue(Math.random()),t.dispatchEvent(i),this.trigger("change",this.state.lastOriginalValueReported),t.value=this.state.lastOriginalValueReported);}},events:z,fixFirefoxLastTagNoCaret:function(){},setRangeAtStartEnd:function(t,e){if(e){t="number"==typeof t?t:!!t,e=e.lastChild||e;var i=document.getSelection();if(G(i.focusNode,Element)&&!this.DOM.input.contains(i.focusNode))return !0;try{i.rangeCount>=1&&["Start","End"].forEach((function(n){return i.getRangeAt(0)["set"+n](e,t||e.length)}));}catch(t){console.warn(t);}}},insertAfterTag:function(t,e){if(e=e||this.settings.mixMode.insertAfterTag,t&&t.parentNode&&e)return e="string"==typeof e?document.createTextNode(e):e,t.parentNode.insertBefore(e,t.nextSibling),e},editTagChangeDetected:function(t){var e=t.__originalData;for(var i in e)if(!this.dataProps.includes(i)&&t[i]!=e[i])return !0;return !1},getTagTextNode:function(t){return t.querySelector(this.settings.classNames.tagTextSelector)},setTagTextNode:function(t,e){this.getTagTextNode(t).innerHTML=c(e);},editTag:function(t,e){var i=this;t=t||this.getLastTag(),e=e||{};var s=this.settings,a=this.getTagTextNode(t),o=this.getNodeIndex(t),r=y(t),l=this.events.callbacks,d=!0,c="select"==s.mode;if(!c&&this.dropdown.hide(),a){if(!G(r,Object)||!("editable"in r)||r.editable)return r=y(t,{__originalData:g({},r),__originalHTML:t.cloneNode(!0)}),y(r.__originalHTML,r.__originalData),a.setAttribute("contenteditable",!0),t.classList.add(s.classNames.tagEditing),a.addEventListener("click",l.onEditTagClick.bind(this,t)),a.addEventListener("blur",l.onEditTagBlur.bind(this,this.getTagTextNode(t))),a.addEventListener("input",l.onEditTagInput.bind(this,a)),a.addEventListener("paste",l.onEditTagPaste.bind(this,a)),a.addEventListener("keydown",(function(e){return l.onEditTagkeydown.call(i,e,t)})),a.addEventListener("compositionstart",l.onCompositionStart.bind(this)),a.addEventListener("compositionend",l.onCompositionEnd.bind(this)),e.skipValidation||(d=this.editTagToggleValidity(t)),a.originalIsValid=d,this.trigger("edit:start",{tag:t,index:o,data:r,isValid:d}),a.focus(),!c&&this.setRangeAtStartEnd(!1,a),0===s.dropdown.enabled&&!c&&this.dropdown.show(),this.state.hasFocus=!0,this}else n.warn("Cannot find element in Tag template: .",s.classNames.tagTextSelector);},editTagToggleValidity:function(t,e){var i;if(e=e||y(t))return (i=!("__isValid"in e)||!0===e.__isValid)||this.removeTagsFromValue(t),this.update(),t.classList.toggle(this.settings.classNames.tagNotAllowed,!i),e.__isValid=i,e.__isValid;n.warn("tag has no data: ",t,e);},onEditTagDone:function(t,e){t=t||this.state.editing.scope,e=e||{};var i,n,s={tag:t,index:this.getNodeIndex(t),previousData:y(t),data:e},a=this.settings;this.trigger("edit:beforeUpdate",s,{cloneData:!1}),this.state.editing=!1,delete e.__originalData,delete e.__originalHTML,t&&(void 0!==(n=e[a.tagTextProp])?null===(i=(n+="").trim)||void 0===i?void 0:i.call(n):a.tagTextProp in e?void 0:e.value)?(t=this.replaceTag(t,e),this.editTagToggleValidity(t,e),a.a11y.focusableTags?t.focus():"select"!=a.mode&&T(t)):t&&this.removeTags(t),this.trigger("edit:updated",s),this.dropdown.hide(),this.settings.keepInvalidTags&&this.reCheckInvalidTags();},replaceTag:function(t,e){e&&""!==e.value&&void 0!==e.value||(e=t.__tagifyTagData),e.__isValid&&1!=e.__isValid&&g(e,this.getInvalidTagAttrs(e,e.__isValid));var i=this.createTagElem(e);return t.parentNode.replaceChild(i,t),this.updateValueByDOMTags(),i},updateValueByDOMTags:function(){var t=this;this.value.length=0;var e=this.settings.classNames,i=[e.tagNotAllowed.split(" ")[0],e.tagHide];[].forEach.call(this.getTagElms(),(function(e){Q(e.classList).some((function(t){return i.includes(t)}))||t.value.push(y(e));})),this.update();},injectAtCaret:function(t,e){var i;if(!(e=e||(null===(i=this.state.selection)||void 0===i?void 0:i.range))&&t)return this.appendMixTags(t),this;var n=w(t,e);return this.setRangeAtStartEnd(!1,n),this.updateValueByDOMTags(),this.update(),this},input:{set:function(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"",e=!(arguments.length>1&&void 0!==arguments[1])||arguments[1],i=this.settings,n=i.dropdown.closeOnSelect;this.state.inputText=t,e&&(this.DOM.input.innerHTML=c(""+t),t&&this.toggleClass(i.classNames.empty,!this.DOM.input.innerHTML)),!t&&n&&this.dropdown.hide.bind(this),this.input.autocomplete.suggest.call(this),this.input.validate.call(this);},raw:function(){return this.DOM.input.textContent},validate:function(){var t=!this.state.inputText||!0===this.validateTag({value:this.state.inputText});return this.DOM.input.classList.toggle(this.settings.classNames.inputInvalid,!t),t},normalize:function(t,e){var i=t||this.DOM.input,n=[];i.childNodes.forEach((function(t){return 3==t.nodeType&&n.push(t.nodeValue)})),n=n.join("\n");try{n=n.replace(/(?:\r\n|\r|\n)/g,this.settings.delimiters.source.charAt(0));}catch(t){}return n=n.replace(/\s/g," "),(null==e?void 0:e.trim)?this.trim(n):n},autocomplete:{suggest:function(t){if(this.settings.autoComplete.enabled){"object"!=typeof(t=t||{value:""})&&(t={value:t});var e=this.dropdown.getMappedValue(t);if("number"!=typeof e){var i=this.state.inputText.toLowerCase(),n=e.substr(0,this.state.inputText.length).toLowerCase(),s=e.substring(this.state.inputText.length);e&&this.state.inputText&&n==i?(this.DOM.input.setAttribute("data-suggest",s),this.state.inputSuggestion=t):(this.DOM.input.removeAttribute("data-suggest"),delete this.state.inputSuggestion);}}},set:function(t){var e=this.DOM.input.getAttribute("data-suggest"),i=t||(e?this.state.inputText+e:null);return !!i&&("mix"==this.settings.mode?this.replaceTextWithNode(document.createTextNode(this.state.tag.prefix+i)):(this.input.set.call(this,i),this.setRangeAtStartEnd(!1,this.DOM.input)),this.input.autocomplete.suggest.call(this),this.dropdown.hide(),!0)}}},getTagIdx:function(t){return this.value.findIndex((function(e){return e.__tagId==(t||{}).__tagId}))},getNodeIndex:function(t){var e=0;if(t)for(;t=t.previousElementSibling;)e++;return e},getTagElms:function(){for(var t=arguments.length,e=new Array(t),i=0;i<t;i++)e[i]=arguments[i];var n="."+Q(this.settings.classNames.tag.split(" ")).concat(Q(e)).join(".");return [].slice.call(this.DOM.scope.querySelectorAll(n))},getLastTag:function(){var t=this.settings.classNames,e=this.DOM.scope.querySelectorAll("".concat(t.tagSelector,":not(.").concat(t.tagHide,"):not([readonly])"));return e[e.length-1]},isTagDuplicate:function(t,e,i){var n=0,a=!0,o=!1,r=void 0;try{for(var l,d=this.value[Symbol.iterator]();!(a=(l=d.next()).done);a=!0){var c=l.value;s(this.trim(""+t),c.value,e)&&i!=c.__tagId&&n++;}}catch(t){o=!0,r=t;}finally{try{a||null==d.return||d.return();}finally{if(o)throw r}}return n},getTagIndexByValue:function(t){var e=this,i=[],n=this.settings.dropdown.caseSensitive;return this.getTagElms().forEach((function(a,o){a.__tagifyTagData&&s(e.trim(a.__tagifyTagData.value),t,n)&&i.push(o);})),i},getTagElmByValue:function(t){var e=this.getTagIndexByValue(t)[0];return this.getTagElms()[e]},flashTag:function(t){var e=this;t&&(t.classList.add(this.settings.classNames.tagFlash),setTimeout((function(){t.classList.remove(e.settings.classNames.tagFlash);}),100));},isTagBlacklisted:function(t){return t=this.trim(t.toLowerCase()),this.settings.blacklist.filter((function(e){return (""+e).toLowerCase()==t})).length},isTagWhitelisted:function(t){return !!this.getWhitelistItem(t)},getWhitelistItem:function(t,e,i){e=e||"value";var n,a=this.settings;return (i=i||a.whitelist).some((function(i){var o="object"==typeof i?i[e]||i.value:i;if(s(o,t,a.dropdown.caseSensitive,a.trim))return n="object"==typeof i?i:{value:i},!0})),n||"value"!=e||"value"==a.tagTextProp||(n=this.getWhitelistItem(t,a.tagTextProp,i)),n},validateTag:function(t){var e=this.settings,i="value"in t?"value":e.tagTextProp,n=this.trim(t[i]+"");return (t[i]+"").trim()?"mix"!=e.mode&&e.pattern&&G(e.pattern,RegExp)&&!e.pattern.test(n)?this.TEXTS.pattern:!e.duplicates&&this.isTagDuplicate(n,e.dropdown.caseSensitive,t.__tagId)?this.TEXTS.duplicate:this.isTagBlacklisted(n)||e.enforceWhitelist&&!this.isTagWhitelisted(n)?this.TEXTS.notAllowed:!e.validate||e.validate(t):this.TEXTS.empty},getInvalidTagAttrs:function(t,e){return {"aria-invalid":!0,class:"".concat(t.class||""," ").concat(this.settings.classNames.tagNotAllowed).trim(),title:e}},hasMaxTags:function(){return this.value.length>=this.settings.maxTags&&this.TEXTS.exceed},setReadonly:function(t,e){var i=this.settings;this.DOM.scope.contains(document.activeElement)&&document.activeElement.blur(),i[e||"readonly"]=t,this.DOM.scope[(t?"set":"remove")+"Attribute"](e||"readonly",!0),this.settings.userInput=!0,this.setContentEditable(!t);},setContentEditable:function(t){this.DOM.input.contentEditable=t,this.DOM.input.tabIndex=t?0:-1;},setDisabled:function(t){this.setReadonly(t,"disabled");},normalizeTags:function(t){var e=this,i=this.settings,n=i.whitelist,s=i.delimiters,a=i.mode,o=i.tagTextProp,r=[],l=!!n&&G(n[0],Object),d=Array.isArray(t),c=d&&t[0].value,h=function(t){return (t+"").split(s).reduce((function(t,i){var n,s=e.trim(i);return s&&t.push((J(n={},o,s),J(n,"value",s),n)),t}),[])};if("number"==typeof t&&(t=t.toString()),"string"==typeof t){if(!t.trim())return [];t=h(t);}else d&&(t=t.reduce((function(t,i){if(u(i)){var n=g({},i);o in n||(o="value"),n[o]=e.trim(n[o]),n[o]&&t.push(n);}else if(i){var s;(s=t).push.apply(s,Q(h(i)));}return t}),[]));return l&&!c&&(t.forEach((function(t){var i=r.map((function(t){return t.value})),n=e.dropdown.filterListItems.call(e,t[o],{exact:!0});e.settings.duplicates||(n=n.filter((function(t){return !i.includes(t.value)})));var s=n.length>1?e.getWhitelistItem(t[o],o,n):n[0];s&&G(s,Object)?r.push(s):"mix"!=a&&(null==t.value&&(t.value=t[o]),r.push(t));})),r.length&&(t=r)),t},parseMixTags:function(t){var e=this,i=this.settings,n=i.mixTagsInterpolator,s=i.duplicates,a=i.transformTag,o=i.enforceWhitelist,r=i.maxTags,l=i.tagTextProp,d=[];t=t.split(n[0]).map((function(t,i){var c,u,g,h=t.split(n[1]),p=h[0],f=d.length==r;try{if(p==+p)throw Error;u=JSON.parse(p);}catch(t){u=e.normalizeTags(p)[0]||{value:p};}if(a.call(e,u),f||!(h.length>1)||o&&!e.isTagWhitelisted(u.value)||!s&&e.isTagDuplicate(u.value)){if(t)return i?n[0]+t:t}else u[c=u[l]?l:"value"]=e.trim(u[c]),g=e.createTagElem(u),d.push(u),g.classList.add(e.settings.classNames.tagNoAnimation),h[0]=g.outerHTML,e.value.push(u);return h.join("")})).join(""),this.DOM.input.innerHTML=t,this.DOM.input.appendChild(document.createTextNode("")),this.DOM.input.normalize();var c=this.getTagElms();return c.forEach((function(t,e){return y(t,d[e])})),this.update({withoutChangeEvent:!0}),O(c,this.state.hasFocus),t},replaceTextWithNode:function(t,e){if(this.state.tag||e){e=e||this.state.tag.prefix+this.state.tag.value;var i,n,s=this.state.selection||window.getSelection(),a=s.anchorNode,o=this.state.tag.delimiters?this.state.tag.delimiters.length:0;return a.splitText(s.anchorOffset-o),-1==(i=a.nodeValue.lastIndexOf(e))?!0:(n=a.splitText(i),t&&a.parentNode.replaceChild(t,n),!0)}},prepareNewTagNode:function(t,e){e=e||{};var i=this.settings,n=[],s={},a=Object.assign({},t,{value:t.value+""});if(t=Object.assign({},a),i.transformTag.call(this,t),t.__isValid=this.hasMaxTags()||this.validateTag(t),!0!==t.__isValid){if(e.skipInvalid)return;if(g(s,this.getInvalidTagAttrs(t,t.__isValid),{__preInvalidData:a}),t.__isValid==this.TEXTS.duplicate&&this.flashTag(this.getTagElmByValue(t.value)),!i.createInvalidTags)return void n.push(t.value)}return "readonly"in t&&(t.readonly?s["aria-readonly"]=!0:delete t.readonly),{tagElm:this.createTagElem(t,s),tagData:t,aggregatedInvalidInput:n}},postProcessNewTagNode:function(t,e){var i=this,n=this.settings,s=e.__isValid;s&&!0===s?(this.value.push(e),setTimeout((function(){i.trigger("add",{tag:t,index:i.value.length-1,data:e});}))):(this.trigger("invalid",{data:e,index:this.value.length,tag:t,message:s}),n.keepInvalidTags||setTimeout((function(){return i.removeTags(t,!0)}),1e3)),this.dropdown.position();},selectTag:function(t,e){var i=this;if(!this.settings.enforceWhitelist||this.isTagWhitelisted(e.value)){this.state.actions.selectOption&&setTimeout((function(){return i.setRangeAtStartEnd(!1,i.DOM.input)}));var n=this.getLastTag();return n?this.replaceTag(n,e):this.appendTag(t),this.value[0]=e,this.update(),this.trigger("add",{tag:t,data:e}),[t]}},addEmptyTag:function(t){var e=g({value:""},t||{}),i=this.createTagElem(e);y(i,e),this.appendTag(i),this.editTag(i,{skipValidation:!0}),this.toggleFocusClass(!0);},addTags:function(t,e,i){var n=this,s=[],a=this.settings,o=[],r=document.createDocumentFragment();if(!t||0==t.length)return s;switch(t=this.normalizeTags(t),a.mode){case"mix":return this.addMixTags(t);case"select":e=!1,this.removeAllTags();}return this.DOM.input.removeAttribute("style"),t.forEach((function(t){var e=n.prepareNewTagNode(t,{skipInvalid:i||a.skipInvalid});if(e){var l=e.tagElm;if(t=e.tagData,o=e.aggregatedInvalidInput,s.push(l),"select"==a.mode)return n.selectTag(l,t);r.appendChild(l),n.postProcessNewTagNode(l,t);}})),this.appendTag(r),this.update(),t.length&&e&&(this.input.set.call(this,a.createInvalidTags?"":o.join(a._delimiters)),this.setRangeAtStartEnd(!1,this.DOM.input)),this.dropdown.refilter(),s},addMixTags:function(t){var e=this;if((t=this.normalizeTags(t))[0].prefix||this.state.tag)return this.prefixedTextToTag(t[0]);var i=document.createDocumentFragment();return t.forEach((function(t){var n=e.prepareNewTagNode(t);i.appendChild(n.tagElm),e.insertAfterTag(n.tagElm),e.postProcessNewTagNode(n.tagElm,n.tagData);})),this.appendMixTags(i),i.children},appendMixTags:function(t){var e=!!this.state.selection;e?this.injectAtCaret(t):(this.DOM.input.focus(),(e=this.setStateSelection()).range.setStart(this.DOM.input,e.range.endOffset),e.range.setEnd(this.DOM.input,e.range.endOffset),this.DOM.input.appendChild(t),this.updateValueByDOMTags(),this.update());},prefixedTextToTag:function(t){var e,i,n,s=this,a=this.settings,o=null===(e=this.state.tag)||void 0===e?void 0:e.delimiters;if(t.prefix=t.prefix||this.state.tag?this.state.tag.prefix:(a.pattern.source||a.pattern)[0],n=this.prepareNewTagNode(t),i=n.tagElm,this.replaceTextWithNode(i)||this.DOM.input.appendChild(i),setTimeout((function(){return i.classList.add(s.settings.classNames.tagNoAnimation)}),300),this.value.push(n.tagData),this.update(),!o){var r=this.insertAfterTag(i)||i;setTimeout(T,0,r);}return this.state.tag=null,this.postProcessNewTagNode(i,n.tagData),i},appendTag:function(t){var e=this.DOM,i=e.input;e.scope.insertBefore(t,i);},createTagElem:function(t,e){t.__tagId=m();var i,n=g({},t,$$1({value:c(t.value+"")},e));return function(t){for(var e,i=document.createNodeIterator(t,NodeFilter.SHOW_TEXT,null,!1);e=i.nextNode();)e.textContent.trim()||e.parentNode.removeChild(e);}(i=this.parseTemplate("tag",[n,this])),y(i,t),i},reCheckInvalidTags:function(){var t=this,e=this.settings;this.getTagElms(e.classNames.tagNotAllowed).forEach((function(i,n){var s=y(i),a=t.hasMaxTags(),o=t.validateTag(s),r=!0===o&&!a;if("select"==e.mode&&t.toggleScopeValidation(o),r)return s=s.__preInvalidData?s.__preInvalidData:{value:s.value},t.replaceTag(i,s);i.title=a||o;}));},removeTags:function(t,e,i){var n,s=this,a=this.settings;if(t=t&&G(t,HTMLElement)?[t]:G(t,Array)?t:t?[t]:[this.getLastTag()].filter((function(t){return t})),n=t.reduce((function(t,e){e&&"string"==typeof e&&(e=s.getTagElmByValue(e));var i=y(e);return e&&i&&!i.readonly&&t.push({node:e,idx:s.getTagIdx(i),data:y(e,{__removed:!0})}),t}),[]),i="number"==typeof i?i:this.CSSVars.tagHideTransition,"select"==a.mode&&(i=0,this.input.set.call(this)),1==n.length&&"select"!=a.mode&&n[0].node.classList.contains(a.classNames.tagNotAllowed)&&(e=!0),n.length)return a.hooks.beforeRemoveTag(n,{tagify:this}).then((function(){var t=function(t){t.node.parentNode&&(t.node.parentNode.removeChild(t.node),e?a.keepInvalidTags&&this.trigger("remove",{tag:t.node,index:t.idx}):(this.trigger("remove",{tag:t.node,index:t.idx,data:t.data}),this.dropdown.refilter(),this.dropdown.position(),this.DOM.input.normalize(),a.keepInvalidTags&&this.reCheckInvalidTags()));};i&&i>10&&1==n.length?function(e){e.node.style.width=parseFloat(window.getComputedStyle(e.node).width)+"px",document.body.clientTop,e.node.classList.add(a.classNames.tagHide),setTimeout(t.bind(this),i,e);}.call(s,n[0]):n.forEach(t.bind(s)),e||(s.removeTagsFromValue(n.map((function(t){return t.node}))),s.update(),"select"==a.mode&&a.userInput&&s.setContentEditable(!0));})).catch((function(t){}))},removeTagsFromDOM:function(){this.getTagElms().forEach((function(t){return t.remove()}));},removeTagsFromValue:function(t){var e=this;(t=Array.isArray(t)?t:[t]).forEach((function(t){var i=y(t),n=e.getTagIdx(i);n>-1&&e.value.splice(n,1);}));},removeAllTags:function(t){var e=this;t=t||{},this.value=[],"mix"==this.settings.mode?this.DOM.input.innerHTML="":this.removeTagsFromDOM(),this.dropdown.refilter(),this.dropdown.position(),this.state.dropdown.visible&&setTimeout((function(){e.DOM.input.focus();})),"select"==this.settings.mode&&(this.input.set.call(this),this.settings.userInput&&this.setContentEditable(!0)),this.update(t);},postUpdate:function(){this.state.blockChangeEvent=!1;var t,e,i=this.settings,n=i.classNames,s="mix"==i.mode?i.mixMode.integrated?this.DOM.input.textContent:this.DOM.originalInput.value.trim():this.value.length+this.input.raw.call(this).length;(this.toggleClass(n.hasMaxTags,this.value.length>=i.maxTags),this.toggleClass(n.hasNoTags,!this.value.length),this.toggleClass(n.empty,!s),"select"==i.mode)&&this.toggleScopeValidation(null===(e=this.value)||void 0===e||null===(t=e[0])||void 0===t?void 0:t.__isValid);},setOriginalInputValue:function(t){var e=this.DOM.originalInput;this.settings.mixMode.integrated||(e.value=t,e.tagifyValue=e.value,this.setPersistedData(t,"value"));},update:function(t){clearTimeout(this.debouncedUpdateTimeout),this.debouncedUpdateTimeout=setTimeout(function(){var e=this.getInputValue();this.setOriginalInputValue(e),this.settings.onChangeAfterBlur&&(t||{}).withoutChangeEvent||this.state.blockChangeEvent||this.triggerChangeEvent();this.postUpdate();}.bind(this),100),this.events.bindOriginaInputListener.call(this,100);},getInputValue:function(){var t=this.getCleanValue();return "mix"==this.settings.mode?this.getMixedTagsAsString(t):t.length?this.settings.originalInputValueFormat?this.settings.originalInputValueFormat(t):JSON.stringify(t):""},getCleanValue:function(t){return a(t||this.value,this.dataProps)},getMixedTagsAsString:function(){var t="",e=this,i=this.settings,n=i.originalInputValueFormat||JSON.stringify,s=i.mixTagsInterpolator;return function i(a){a.childNodes.forEach((function(a){if(1==a.nodeType){var r=y(a);if("BR"==a.tagName&&(t+="\r\n"),r&&v.call(e,a)){if(r.__removed)return;t+=s[0]+n(o(r,e.dataProps))+s[1];}else a.getAttribute("style")||["B","I","U"].includes(a.tagName)?t+=a.textContent:"DIV"!=a.tagName&&"P"!=a.tagName||(t+="\r\n",i(a));}else t+=a.textContent;}));}(this.DOM.input),t}},Y.prototype.removeTag=Y.prototype.removeTags;
-
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$5, ApplicationV2: ApplicationV2$5 } = foundry.applications.api;
-
-class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$5(ApplicationV2$5) {
-    constructor(){
-        super({});
-
-        this.settings = {
-            useTokenArt: game.settings.get('pf2e-bestiary-tracking', 'use-token-art'),
-            hideAbilityDescriptions: game.settings.get('pf2e-bestiary-tracking', 'hide-ability-descriptions'),
-            additionalCreatureTypes: game.settings.get('pf2e-bestiary-tracking', 'additional-creature-types').map(x => ({ value: x.value, name: game.i18n.localize(x.name) })),
-            contrastRevealedState: game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state'),
-            optionalFields: game.settings.get('pf2e-bestiary-tracking', 'optional-fields'),
-            detailedInformation: game.settings.get('pf2e-bestiary-tracking', 'detailed-information-toggles'),
-        };
-    }
-
-    get title(){
-        return game.i18n.localize('PF2EBestiary.Menus.BestiaryAppearance.Name'); 
-    }
-
-    static DEFAULT_OPTIONS = {
-        tag: 'form',
-        id: 'pf2e-bestiary-tracking-appearance-menu',
-        classes: ["bestiary-settings-menu"],
-        position: { width: 680, height: 'auto' },
-        actions: {
-            resetContrastRevealedState: this.resetContrastRevealedState,
-            toggleOptionalFields: this.toggleOptionalFields,
-            toggleDetailedInformation: this.toggleDetailedInformation,
-            save: this.save,
-        },
-        form: { handler: this.updateData, submitOnChange: true },
-    };
-      
-    static PARTS = {
-        application: {
-            id: "bestiary-appearance-menu",
-            template: "modules/pf2e-bestiary-tracking/templates/bestiaryAppearanceMenu.hbs"
-        }
-    }
-
-    _attachPartListeners(partId, htmlElement, options) {
-        super._attachPartListeners(partId, htmlElement, options);
-  
-        const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
-        const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits).filter(x => !creatureTypes.includes(x));
-
-        const traitsInput = $(htmlElement).find('.traits-input')[0];
-        const traitsTagify = new Y(traitsInput, {
-          tagTextProp: "name",
-          enforceWhitelist: true,
-          whitelist : creatureTraits.map(key => { 
-            const label = CONFIG.PF2E.creatureTraits[key];
-            return { value: key, name: game.i18n.localize(label) };
-          }),
-          callbacks : { invalid: this.onAddTag }, 
-          dropdown : {
-            mapValueTo: 'name',
-            searchKeys: ['name'],
-            enabled: 0,              
-            maxItems: 20,    
-            closeOnSelect : true,
-            highlightFirst: false,
-          },
-        });
-        
-        traitsTagify.on('change', this.creatureTraitSelect.bind(this));
-    }
-
-    async _prepareContext(_options) {
-        const context = await super._prepareContext(_options);
-        context.settings = {
-            ...this.settings,
-            additionalCreatureTypes: this.settings.additionalCreatureTypes?.length ? this.settings.additionalCreatureTypes.map(x => x.name) : [],
-        };
-
-        return context;
-    }
-
-    static async updateData(event, element, formData){
-        const data = foundry.utils.expandObject(formData.object);
-        this.settings = {
-            additionalCreatureTypes: this.settings.additionalCreatureTypes,
-            useTokenArt: data.useTokenArt,
-            hideAbilityDescriptions: data.hideAbilityDescriptions,
-            contrastRevealedState: data.contrastRevealedState,
-            optionalFields: data.optionalFields,
-            detailedInformation: { ...data.detailedInformation }
-        };
-        this.render();
-    }
-
-    async creatureTraitSelect(event) {
-        this.settings.additionalCreatureTypes  = event.detail?.value ? JSON.parse(event.detail.value) : [];
-        this.render();
-    }
-
-    static async resetContrastRevealedState (){
-        this.settings.contrastRevealedState = { ...revealedState };
-        this.render();
-    };
-
-    static async toggleOptionalFields (){
-        const keys = Object.keys(this.settings.optionalFields);
-        const enable = Object.values(this.settings.optionalFields).some(x => !x);
-        this.settings.optionalFields = keys.reduce((acc, key) => {
-            acc[key] = enable;
-            return acc;
-        }, {});
-        
-        this.render();
-    };
-
-    static async toggleDetailedInformation (){
-        const keys = Object.keys(this.settings.detailedInformation);
-        const enable = Object.values(this.settings.detailedInformation).some(x => !x);
-        this.settings.detailedInformation = keys.reduce((acc, key) => {
-            acc[key] = enable;
-            return acc;
-        }, {});
-        
-        this.render();
-    };
-
-    static async save(_){
-        await game.settings.set('pf2e-bestiary-tracking', 'additional-creature-types', this.settings.additionalCreatureTypes.map(x => ({ value: x.value, name: CONFIG.PF2E.creatureTraits[x.value] })));
-        await game.settings.set('pf2e-bestiary-tracking', 'contrast-revealed-state', this.settings.contrastRevealedState);
-        await game.settings.set('pf2e-bestiary-tracking', 'use-token-art', this.settings.useTokenArt);
-        await game.settings.set('pf2e-bestiary-tracking', 'hide-ability-descriptions', this.settings.hideAbilityDescriptions);
-        await game.settings.set('pf2e-bestiary-tracking', 'optional-fields', this.settings.optionalFields);
-        await game.settings.set('pf2e-bestiary-tracking', 'detailed-information-toggles', this.settings.detailedInformation);
-        this.close();
-    };
-}
-
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$4, ApplicationV2: ApplicationV2$4 } = foundry.applications.api;
-
-class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
-    constructor(){
-        super({});
-
-        this.settings = {
-            creatureRegistration: {
-                automaticCombatRegistration: game.settings.get('pf2e-bestiary-tracking', 'automatic-combat-registration'),
-                doubleClickOpen: game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen'),
-            },
-            chatMessageHandling: game.settings.get('pf2e-bestiary-tracking', 'chat-message-handling'),
-            npcRegistration: game.settings.get('pf2e-bestiary-tracking', 'npc-registration'),
-            hiddenSettings: game.settings.get('pf2e-bestiary-tracking', 'hidden-settings'),
-        };
-
-        this.combatRegistrationOptions = [
-            { name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.Never'), value: 0 },
-            { name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.StartOfCombat'), value: 1 },
-            { name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.CreatureDefeated'), value: 2 }
-        ];
-
-        this.npcRegistrationOptions = [
-            { name: game.i18n.localize('PF2EBestiary.Settings.NPCRegistation.Choices.Unique'), value: 0 },
-            { name: game.i18n.localize('PF2EBestiary.Settings.NPCRegistation.Choices.Tag'), value: 1 },
-        ];
-    }
-
-    get title(){
-        return game.i18n.localize('PF2EBestiary.Menus.BestiaryIntegration.Name'); 
-    }
-
-    static DEFAULT_OPTIONS = {
-        tag: 'form',
-        id: 'pf2e-bestiary-tracking-integration-menu',
-        classes: ["bestiary-settings-menu"],
-        position: { width: 680, height: 'auto' },
-        actions: {
-            toggleChatMessageHandlingFields: this.toggleChatMessageHandlingFields,
-            toggleHiddenSettingsFields: this.toggleHiddenSettingsFields,
-            save: this.save,
-        },
-        form: { handler: this.updateData, submitOnChange: true },
-    };
-      
-    static PARTS = {
-        application: {
-            id: "bestiary-integration-menu",
-            template: "modules/pf2e-bestiary-tracking/templates/bestiaryIntegrationMenu.hbs"
-        }
-    }
-
-    async _prepareContext(_options) {
-        const context = await super._prepareContext(_options);
-
-        context.settings = this.settings;
-        context.combatRegistrationOptions = this.combatRegistrationOptions;
-        context.npcRegistrationOptions = this.npcRegistrationOptions;
-
-        return context;
-    }
-
-    static async updateData(event, element, formData){
-        const data = foundry.utils.expandObject(formData.object);
-        this.settings = data.settings;
-        this.render();
-    }
-
-    static async toggleChatMessageHandlingFields(){
-        const keys = Object.keys(this.settings.chatMessageHandling.automaticReveal);
-        const enable = Object.values(this.settings.chatMessageHandling.automaticReveal).some(x => !x);
-        this.settings.chatMessageHandling.automaticReveal = keys.reduce((acc, key) => {
-            acc[key] = enable;
-            return acc;
-        }, {});
-        
-        this.render();
-    };
-
-    static async toggleHiddenSettingsFields(){
-        const keys = Object.keys(this.settings.hiddenSettings);
-        const enable = Object.values(this.settings.hiddenSettings).some(x => !x);
-        this.settings.hiddenSettings = keys.reduce((acc, key) => {
-            acc[key] = enable;
-            return acc;
-        }, {});
-        
-        this.render();
-    };
-
-    static async save(_){
-        await game.settings.set('pf2e-bestiary-tracking', 'automatic-combat-registration', this.settings.creatureRegistration.automaticCombatRegistration);
-        await game.settings.set('pf2e-bestiary-tracking', 'doubleClickOpen', this.settings.creatureRegistration.doubleClickOpen);
-        await game.settings.set('pf2e-bestiary-tracking', 'chat-message-handling', this.settings.chatMessageHandling);
-        await game.settings.set('pf2e-bestiary-tracking', 'npc-registration', this.settings.npcRegistration);
-        await game.settings.set('pf2e-bestiary-tracking', 'hidden-settings', this.settings.hiddenSettings);
-        this.close();
-    };
-}
-
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$3, ApplicationV2: ApplicationV2$3 } = foundry.applications.api;
-
-class BestiaryLabelsMenu extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
-    constructor(){
-        super({});
-
-        this.settings = game.settings.get('pf2e-bestiary-tracking', 'bestiary-labels');
-    }
-
-    get title(){
-        return game.i18n.localize('PF2EBestiary.Menus.BestiaryLabels.Name'); 
-    }
-
-    static DEFAULT_OPTIONS = {
-        tag: 'form',
-        id: 'pf2e-bestiary-tracking-labels-menu',
-        classes: ["bestiary-settings-menu"],
-        position: { width: 'auto', height: 'auto' },
-        actions: {
-            resetSection: this.resetSection,
-            save: this.save,
-        },
-        form: { handler: this.updateData, submitOnChange: true },
-    };
-      
-    static PARTS = {
-        application: {
-            id: "bestiary-labels-menu",
-            template: "modules/pf2e-bestiary-tracking/templates/bestiaryLabelsMenu.hbs"
-        }
-    }
-
-    async _prepareContext(_options) {
-        const context = await super._prepareContext(_options);
-        context.settings = this.settings;
-
-        return context;
-    }
-
-    static async updateData(event, element, formData){
-        this.settings = foundry.utils.expandObject(formData.object);
-        this.render();
-    }
-
-    static async resetSection (_, button){
-        await foundry.utils.setProperty(this.settings, button.dataset.path, getVagueDescriptionLabels()[button.dataset.property]);
-        this.render();
-    };
-
-    static async save(options){
-        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-labels', this.settings);
-        this.close();
-    };
-}
-
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$2, ApplicationV2: ApplicationV2$2 } = foundry.applications.api;
-
-class VagueDescriptionsMenu extends HandlebarsApplicationMixin$2(ApplicationV2$2) {
-    constructor(){
-        super({});
-
-        this.settings = game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
-        this.helperSettings = {
-            properties: {
-                all: Object.keys(this.settings.properties).every(key => this.settings.properties[key]),
-            },
-            settings: {
-                all: Object.keys(this.settings.settings).every(key => this.settings.settings[key])
-            }
-        };
-    }
-
-    get title(){
-        return game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Name'); 
-    }
-
-    static DEFAULT_OPTIONS = {
-        tag: 'form',
-        id: 'pf2e-bestiary-tracking-vague-descriptions-menu',
-        classes: ["bestiary-settings-menu"],
-        position: { width: 'auto', height: 'auto' },
-        actions: {
-            toggleSection: this.toggleSection,
-            save: this.save,
-        },
-        form: { handler: this.updateData, submitOnChange: true },
-    };
-      
-    static PARTS = {
-        application: {
-            id: "vague-descriptions-menu",
-            template: "modules/pf2e-bestiary-tracking/templates/vagueDescriptionsMenu.hbs"
-        }
-    }
-
-    async _prepareContext(_options) {
-        const context = await super._prepareContext(_options);
-        context.settings = this.settings;
-        context.helperSettings = this.helperSettings;
-
-        return context;
-    }
-
-    static async updateData(event, element, formData){
-        const { settings } = foundry.utils.expandObject(formData.object);
-        this.settings = foundry.utils.mergeObject(this.settings, settings);
-
-        this.helperSettings = {
-            properties: {
-                all: Object.keys(this.settings.properties).every(key => this.settings.properties[key]),
-            },
-            settings: {
-                all: Object.keys(this.settings.settings).every(key => this.settings.settings[key]),
-            }
-        };
-
-        this.render();
-    }
-
-    static toggleSection(_, button){
-        this.helperSettings[button.dataset.section].all = !this.helperSettings[button.dataset.section].all; 
-        
-        for(var key in this.settings[button.dataset.section]){
-            this.settings[button.dataset.section][key] = this.helperSettings[button.dataset.section].all;
-        }
-
-        this.render();
-    }
-
-    static async save(options){
-        await game.settings.set('pf2e-bestiary-tracking', 'vague-descriptions', this.settings);
-        this.close();
-    };
-}
-
 const rangeOptions = ['extreme', 'high', 'moderate', 'low', 'terrible'];
 
 const savingThrowPerceptionTable = {
@@ -2661,109 +1022,112 @@ const skillTable = {
 };
 
 const weaknessTable = {
-    '-1': {
-        high: 1,
-        low: 1,
-    },
-    '0': {
-        high: 3,
-        low: 1,
-    },
-    '1': {
-        high: 3,
-        low: 2,
-    },
-    '2': {
-        high: 5,
-        low: 2,
-    },
-    '3': {
-        high: 6,
-        low: 3,
-    },
-    '4': {
-        high: 7,
-        low: 4,
-    },
-    '5': {
-        high: 8,
-        low: 4,
-    },
-    '6': {
-        high: 9,
-        low: 5,
-    },
-    '7': {
-        high: 10,
-        low: 5,
-    },
-    '8': {
-        high: 11,
-        low: 6,
-    },
-    '9': {
-        high: 12,
-        low: 6,
-    },
-    '10': {
-        high: 13,
-        low: 7,
-    },
-    '11': {
-        high: 14,
-        low: 7,
-    },
-    '12': {
-        high: 15,
-        low: 8,
-    },
-    '13': {
-        high: 16,
-        low: 8,
-    },
-    '14': {
-        high: 17,
-        low: 9,
-    },
-    '15': {
-        high: 18,
-        low: 9,
-    },
-    '16': {
-        high: 19,
-        low: 9,
-    },
-    '17': {
-        high: 19,
-        low: 10,
-    },
-    '18': {
-        high: 20,
-        low: 10,
-    },
-    '19': {
-        high: 21,
-        low: 11,
-    },
-    '20': {
-        high: 22,
-        low: 11,
-    },
-    '21': {
-        high: 23,
-        low: 12,
-    },
-    '22': {
-        high: 24,
-        low: 12,
-    },
-    '23': {
-        high: 25,
-        low: 13,
-    },
-    '24': {
-        high: 26,
-        low: 13,
+    range: ["high", "low"],
+    values: {
+        '-1': {
+            high: 1,
+            low: 1,
+        },
+        '0': {
+            high: 3,
+            low: 1,
+        },
+        '1': {
+            high: 3,
+            low: 2,
+        },
+        '2': {
+            high: 5,
+            low: 2,
+        },
+        '3': {
+            high: 6,
+            low: 3,
+        },
+        '4': {
+            high: 7,
+            low: 4,
+        },
+        '5': {
+            high: 8,
+            low: 4,
+        },
+        '6': {
+            high: 9,
+            low: 5,
+        },
+        '7': {
+            high: 10,
+            low: 5,
+        },
+        '8': {
+            high: 11,
+            low: 6,
+        },
+        '9': {
+            high: 12,
+            low: 6,
+        },
+        '10': {
+            high: 13,
+            low: 7,
+        },
+        '11': {
+            high: 14,
+            low: 7,
+        },
+        '12': {
+            high: 15,
+            low: 8,
+        },
+        '13': {
+            high: 16,
+            low: 8,
+        },
+        '14': {
+            high: 17,
+            low: 9,
+        },
+        '15': {
+            high: 18,
+            low: 9,
+        },
+        '16': {
+            high: 19,
+            low: 9,
+        },
+        '17': {
+            high: 19,
+            low: 10,
+        },
+        '18': {
+            high: 20,
+            low: 10,
+        },
+        '19': {
+            high: 21,
+            low: 11,
+        },
+        '20': {
+            high: 22,
+            low: 11,
+        },
+        '21': {
+            high: 23,
+            low: 12,
+        },
+        '22': {
+            high: 24,
+            low: 12,
+        },
+        '23': {
+            high: 25,
+            low: 13,
+        },
+        '24': {
+            high: 26,
+            low: 13,
+        }
     }
 };
 
@@ -3364,6 +1728,8 @@ const spellAttackTable = {
 };
 
 const getCategoryLabel = (statisticsTable, level, save, short) => {
+    if(!save) return save;
+
     const { range, values } = statisticsTable;
     const tableRow = values[level];
 
@@ -3424,10 +1790,10 @@ const derivedWeaknessTable = Object.keys(weaknessTable).reduce((acc, key) => {
     return acc;
 }, {});
 
-const getWeaknessCategoryClass = (level, value) => {
+const getIWRCategoryIcon = (level, value) => {
     const tableRow = derivedWeaknessTable[level];
-    if(value > tableRow.high) return getCategoryClass('high');
-    if(value < tableRow.low) return getCategoryClass('low');
+    if(value > tableRow.high) return 'fa-solid fa-angles-up';
+    if(value < tableRow.low) return 'fa-solid fa-angle-up';
 
     var tempValue = null;
     for(var category in tableRow) {
@@ -3440,7 +1806,7 @@ const getWeaknessCategoryClass = (level, value) => {
         }
     }
 
-    return getCategoryClass(tempValue.category);
+    return tempValue.category === 'high' ? 'fa-solid fa-angles-up' : 'fa-solid fa-angle-up';
 };
 
 const getCategoryLabelValue = (range, category, short) => {
@@ -3463,19 +1829,6 @@ const getCategoryLabelValue = (range, category, short) => {
             return short ? vagueDescriptions.short.low : vagueDescriptions.full.low;
         case 'terrible':
             return short ? vagueDescriptions.short.terrible : vagueDescriptions.full.terrible;
-    }
-};
-
-const getCategoryClass = (category) => {
-    switch(category){
-        case 'extreme':
-        case 'high':
-            return 'category-high';
-        case 'moderate':
-            return 'category-medium';
-        case 'low':
-        case 'terrible':
-            return 'category-low';
     }
 };
 
@@ -3550,6 +1903,1687 @@ const getDiceAverage = (faces, number) => {
 
     }
 };
+
+const fields = foundry.data.fields;
+
+const toggleStringField = () => new fields.SchemaField({
+    revealed: new fields.BooleanField({ required: true, initial: false }),
+    value: new fields.StringField({ required: true }),
+    custom: new fields.StringField({ nullable: true }),
+}); 
+
+const toggleNumberField = () => new fields.SchemaField({
+    revealed: new fields.BooleanField({ required: true, initial: false }),
+    value: new fields.NumberField({ required: true, integer: true }),
+    custom: new fields.StringField({ nullable: true }),
+}); 
+
+const getCreatureData = (actor) => {
+    const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
+    const weaknessesKeys = Object.keys(actor.system.attributes.weaknesses);
+    const resistancesKeys = Object.keys(actor.system.attributes.resistances);
+    const attackKeys = Object.keys(actor.system.actions);
+    const itemKeys = Array.from(actor.items);
+
+    const spellEntries = itemKeys.reduce((acc, entry) => {
+      if(entry.type === 'spellcastingEntry'){
+        const levels = {};
+        actor.items.forEach(spell => {
+          if(spell.type === 'spell' && spell.system.location.value === entry.id){
+            const levelValue = spell.system.traits.value.includes("cantrip") ? 'Cantrips' : spell.system.location.heightenedLevel ?? spell.system.cast.focusPoints ? Math.ceil(monster.system.details.level.value / 2) : spell.system.level.value;
+
+            var level = Object.values(levels).find(x => x.value === levelValue);
+            if(!level) {
+                level = { value: levelValue, spells: {} };
+            }
+
+            level.spells[spell._id] = {
+                label: spell.name,
+                img: spell.img,
+                actions: spell.actionGlyph,
+                defense: spell.system.defense?.save?.statistic ? {
+                  statistic: spell.system.defense.save.statistic,
+                  basic: spell.system.defense.save.basic,
+                } : null,
+                range: spell.system.range.value,
+                traits: {
+                  rarity: spell.system.traits.rarity,
+                  traditions: spell.system.traits.traditions,
+                  values: spell.system.traits.value.reduce((acc, trait ) => {
+                    acc[trait] = { value: trait };
+                    return acc;
+                  }, {})
+                },
+                description: {
+                    gm: spell.system.description.gm,
+                    value: spell.system.description.value,
+                }
+            };
+
+            levels[levelValue] = level;
+          }
+        }); 
+
+        acc[entry.id] = {
+          tradition: entry.system.tradition.value,
+          category: entry.category,
+          dc: { value: entry.system.spelldc.dc },
+          mod: { value: entry.system.spelldc.mod },
+          attack: { value: entry.system.spelldc.value },
+          levels: levels,
+        };
+      }
+
+      return acc;
+    }, {});
+
+    const hasSpells = Object.keys(spellEntries).length > 0;
+    const spells = {
+      ...(hasSpells ? {} : { fake: { revealed: false } }),
+      entries: hasSpells ? spellEntries : {},
+    };
+
+    return {
+        type: 'pf2e-bestiary-tracking.creature',
+        name: actor.name,
+        ownership: { default: 3 },
+        system: {
+            uuid: actor.uuid,
+            version: currentVersion,
+            img: actor.img,
+            texture: actor.prototypeToken.texture.src,
+            name: { value: actor.name },
+            ac: { value: Number.parseInt(actor.system.attributes.ac.value) },
+            hp: { value: Number.parseInt(actor.system.attributes.hp.max) },
+            level: { value: Number.parseInt(actor.system.details.level.value) },
+            size: actor.system.traits.size.value,
+            rarity: { value: actor.system.traits.rarity },
+            traits: actor.system.traits.value.reduce((acc, trait) => {
+              acc[trait] = { value: trait };
+              return acc;
+            }, {}),
+            skills: Object.values(actor.system.skills).some(x => x.base > 0) ? Object.keys(actor.system.skills).reduce((acc, key) => {
+              const skill = actor.system.skills[key];
+              acc[key] = { value: skill.base, lore: skill.lore, note: skill.note, modifiers: skill.modifiers.filter(x => x.slug !== 'base').map(x => ({ kind: x.kind, label: x.label, modifier: x.modifier })), label: skill.label, totalModifier: Number.parseInt(skill.totalModifier) };
+              return acc;
+            }, {}) : { empty: { empty: true, value: 'PF2EBestiary.Miscellaneous.None' } },
+            saves: {
+              fortitude: { value: actor.system.saves.fortitude.value },
+              reflex: { value: actor.system.saves.reflex.value },
+              will: { value: actor.system.saves.will.value },
+            },
+            speeds: {
+              details: { name: actor.system.attributes.speed.details },
+              values: {
+                land: { name: 'Land', value: actor.system.attributes.speed.value },
+                ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
+                  acc[speed.label] = { name: speed.label, value: speed.value };
+                  return acc;
+                }, {})
+              },  
+            },
+            abilities: Object.keys(actor.system.abilities).reduce((acc, key) => {
+              acc[key] = { key: key, mod: actor.system.abilities[key].mod };
+              return acc;
+            }, {}),
+            senses: {
+              perception: { value: actor.system.perception.value },
+              details: { value: actor.system.perception.details },
+              senses: actor.system.perception.senses.reduce((acc, sense) => {
+                acc[sense.type] = { type: sense.type };
+                return acc;
+              }, {})
+            },
+            languages: {
+              details: { value: actor.system.details.languages.details },
+              values: (actor.system.details.languages.value.length > 0 || actor.system.details.languages.details) ? actor.system.details.languages.value.reduce((acc, language) => {
+                acc[language] = { value: language };
+                return acc;
+              }, {}) : { empty: { empty: true, value: 'PF2EBestiary.Miscellaneous.None', exceptions: {} } }
+            },
+            immunities: immunitiesKeys.length > 0 ? immunitiesKeys.reduce((acc, key) => {
+                const immunity = actor.system.attributes.immunities[key];
+                acc[getIWRString(immunity)] = { 
+                    revealed: false, 
+                    type: immunity.type, 
+                    exceptions:  immunity.exceptions.reduce((acc, exception) => {  
+                      acc[exception] = { type: exception.label ?? exception };
+                      return acc;
+                    }, {}),
+                };
+
+                return acc;
+            }, {}) : { empty: { empty: true, type: 'PF2EBestiary.Miscellaneous.None', exceptions: {} } },
+            weaknesses: weaknessesKeys.length > 0 ? weaknessesKeys.reduce((acc, key) => {
+                const weakness = actor.system.attributes.weaknesses[key];
+                acc[getIWRString(weakness)] = { 
+                    revealed: false, 
+                    type: weakness.type,
+                    value: weakness.value, 
+                    exceptions:  weakness.exceptions.reduce((acc, exception) => {  
+                      acc[exception] = { type: exception.label ?? exception };
+                      return acc;
+                    }, {}),
+                };
+
+                return acc;
+            }, {}) : { empty: { empty: true, type: 'PF2EBestiary.Miscellaneous.None', exceptions: {} } },
+            resistances: resistancesKeys.length > 0 ? resistancesKeys.reduce((acc, key) => {
+                const resistance = actor.system.attributes.resistances[key];
+                acc[getIWRString(resistance)] = { 
+                    revealed: false, 
+                    type: resistance.type,
+                    value: resistance.value, 
+                    exceptions:  resistance.exceptions.reduce((acc, exception) => {  
+                      acc[exception] = { type: exception.label ?? exception };
+                      return acc;
+                    }, {}),
+                    doubleVs: resistance.doubleVs.reduce((acc, doubleVs) => {  
+                      acc[doubleVs] = { type: doubleVs.label ?? doubleVs };
+                      return acc;
+                    }, {}),
+                };
+
+                return acc;
+            }, {}) : { empty: { empty: true, type: 'PF2EBestiary.Miscellaneous.None', exceptions: {}, doubleVs: {} } },
+            attacks: attackKeys.length > 0 ? attackKeys.reduce((acc, actionKey) => {
+              const attack = actor.system.actions[actionKey];
+              const item = actor.items.get(attack.item.id);
+              
+              if(item.type === 'melee' || item.type === 'equipment'){
+                acc[attack.item.id] = {
+                  label: attack.label,
+                  actions: attack.glyph,
+                  totalModifier: attack.totalModifier,
+                  isMelee: attack.weapon.isMelee,
+                  damageInstances: Object.keys(item.system.damageRolls).reduce((acc, damage) => {
+                    acc[damage] = { 
+                      category: item.system.damageRolls[damage].category,
+                      damage: { value: item.system.damageRolls[damage].damage },
+                      damageType: { value: item.system.damageRolls[damage].damageType } 
+                    };
+
+                    return acc;
+                  }, {}),
+                  traits: item.system.traits.value.reduce((acc, trait) => {
+                    acc[trait] = { value: trait, description: trait };
+                    return acc;
+                  }, {}),
+                  variants: attack.variants.reduce((acc, variant) => {
+                    acc[slugify(variant.label)] = { label: variant.label };
+
+                    return acc;
+                  }, {}),
+                  rules: item.system.rules,
+                };
+              }
+
+              return acc;
+            }, {}) : { empty: { empty: true, label: 'PF2EBestiary.Miscellaneous.None', totalModifier: 0, isMelee: false, damageInstances: {}, traits: {}, variants: {}, rules: {} } },
+            actions: itemKeys.filter(action => action.type === 'action' && action.system.actionType.value !== 'passive').length > 0 ? itemKeys.reduce((acc, action) => {
+              if(action.type === 'action' && action.system.actionType.value !== 'passive'){
+                acc[action.id] = {
+                  label: action.name,
+                  actions: action.system.actions.value ?? 'R',
+                  traits: action.system.traits.value.reduce((acc, trait) => {
+                    acc[trait] = { value: trait };
+                    return acc;
+                  }, {}),
+                  description: action.system.description.value,
+                };
+              }
+
+              return acc;
+            }, {}) : { empty: { empty: true, label: 'PF2EBestiary.Miscellaneous.None', actions: '', traits: {}, description: '' } },
+            passives: itemKeys.filter(action => action.type === 'action' && action.system.actionType.value === 'passive').length > 0 ? itemKeys.reduce((acc, action) => {
+              if(action.type === 'action' && action.system.actionType.value === 'passive'){
+                acc[action.id] = {
+                  label: action.name,
+                  traits: action.system.traits.value.reduce((acc, trait) => {
+                    acc[trait] = { value: trait };
+                    return acc;
+                  }, {}),
+                  description: action.system.description.value,
+                };
+              }
+
+              return acc;
+            }, {}) : { empty: { empty: true, label: 'PF2EBestiary.Miscellaneous.None', traits: {}, description: '' } },
+            spells: spells,
+            notes: {
+              public: { value: actor.system.details.publicNotes },
+              private: { value: actor.system.details.privateNotes },
+            },
+        }
+    };
+};
+
+class MappingField extends foundry.data.fields.ObjectField {
+    constructor(model, options) {
+      if ( !(model instanceof foundry.data.fields.DataField) ) {
+        throw new Error("MappingField must have a DataField as its contained element");
+      }
+      super(options);
+  
+      /**
+       * The embedded DataField definition which is contained in this field.
+       * @type {DataField}
+       */
+      this.model = model;
+    }
+  
+    /* -------------------------------------------- */
+  
+    /** @inheritdoc */
+    static get _defaults() {
+      return foundry.utils.mergeObject(super._defaults, {
+        initialKeys: null,
+        initialValue: null,
+        initialKeysOnly: false
+      });
+    }
+  
+    /* -------------------------------------------- */
+  
+    /** @inheritdoc */
+    _cleanType(value, options) {
+      Object.entries(value).forEach(([k, v]) => value[k] = this.model.clean(v, options));
+      return value;
+    }
+  
+    /* -------------------------------------------- */
+  
+    /** @inheritdoc */
+    getInitialValue(data) {
+      let keys = this.initialKeys;
+      const initial = super.getInitialValue(data);
+      if ( !keys || !foundry.utils.isEmpty(initial) ) return initial;
+      if ( !(keys instanceof Array) ) keys = Object.keys(keys);
+      for ( const key of keys ) initial[key] = this._getInitialValueForKey(key);
+      return initial;
+    }
+  
+    /* -------------------------------------------- */
+  
+    /**
+     * Get the initial value for the provided key.
+     * @param {string} key       Key within the object being built.
+     * @param {object} [object]  Any existing mapping data.
+     * @returns {*}              Initial value based on provided field type.
+     */
+    _getInitialValueForKey(key, object) {
+      const initial = this.model.getInitialValue();
+      return this.initialValue?.(key, initial, object) ?? initial;
+    }
+  
+    /* -------------------------------------------- */
+  
+    /** @override */
+    _validateType(value, options={}) {
+      if ( foundry.utils.getType(value) !== "Object" ) throw new Error("must be an Object");
+      const errors = this._validateValues(value, options);
+      if ( !foundry.utils.isEmpty(errors) ) throw new foundry.data.fields.ModelValidationError(errors);
+    }
+  
+    /* -------------------------------------------- */
+  
+    /**
+     * Validate each value of the object.
+     * @param {object} value     The object to validate.
+     * @param {object} options   Validation options.
+     * @returns {Object<Error>}  An object of value-specific errors by key.
+     */
+    _validateValues(value, options) {
+      const errors = {};
+      for ( const [k, v] of Object.entries(value) ) {
+        const error = this.model.validate(v, options);
+        if ( error ) errors[k] = error;
+      }
+      return errors;
+    }
+  
+    /* -------------------------------------------- */
+  
+    /** @override */
+    initialize(value, model, options={}) {
+      if ( !value ) return value;
+      const obj = {};
+      const initialKeys = (this.initialKeys instanceof Array) ? this.initialKeys : Object.keys(this.initialKeys ?? {});
+      const keys = this.initialKeysOnly ? initialKeys : Object.keys(value);
+      for ( const key of keys ) {
+        const data = value[key] ?? this._getInitialValueForKey(key, value);
+        obj[key] = this.model.initialize(data, model, options);
+      }
+      return obj;
+    }
+  
+    /* -------------------------------------------- */
+  
+    /** @inheritdoc */
+    _getField(path) {
+      if ( path.length === 0 ) return this;
+      else if ( path.length === 1 ) return this.model;
+      path.shift();
+      return this.model._getField(path);
+    }
+  }
+
+class Creature extends foundry.abstract.TypeDataModel {
+    static defineSchema() {
+        const fields = foundry.data.fields;
+        return {
+            hidden: new fields.BooleanField({ required: true, initial: false }),
+            uuid: new fields.StringField({ required: true }),
+            version: new fields.StringField({ required: true }),
+            img: new fields.StringField({ required: true }),
+            texture: new fields.StringField({ required: true }),
+            name: toggleStringField(),
+            ac: toggleNumberField(),
+            hp: toggleNumberField(),
+            level: toggleNumberField(),
+            size: new fields.StringField({ required: true }),
+            skills: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                empty: new fields.BooleanField({ initial: false }),
+                lore: new fields.BooleanField({}),
+                note: new fields.StringField({}),
+                modifiers: new fields.ArrayField(new fields.SchemaField({
+                    kind: new fields.StringField({}),
+                    label: new fields.StringField({}),
+                    modifier: new fields.NumberField({ integer: true }),
+                }), { initial: []}),
+                label: new fields.StringField({}),
+                value: new fields.StringField({ required: true }),
+                totalModifier: new fields.NumberField({ required: false, integer: true }),
+            })),
+            abilities: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                custom: new fields.StringField({ nullable: true }),
+                mod: new fields.NumberField({ required: true, integer: true }),
+                key: new fields.StringField({ required: true }),
+            })),    
+            saves: new fields.SchemaField({
+                fortitude: toggleNumberField(),
+                reflex: toggleNumberField(),
+                will: toggleNumberField(),
+            }),
+            speeds: new fields.SchemaField({
+                details: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    name: new fields.StringField({ required: true }),
+                }, { required: false }),
+                values: new MappingField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    name: new fields.StringField({ required: true }),
+                    value: new fields.NumberField({ required: true, integer: true })
+                }))
+            }),
+            immunities: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                fake: new fields.BooleanField({}),
+                empty: new fields.BooleanField({ initial: false }),
+                type: new fields.StringField({ required: true }),
+                exceptions: new MappingField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    type: new fields.StringField({ required: true }) 
+                })),
+            })),
+            weaknesses: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                fake: new fields.BooleanField({}),
+                empty: new fields.BooleanField({ initial: false }),
+                type: new fields.StringField({ required: true }),
+                value: new fields.NumberField({ required: true, integer: true }),
+                exceptions: new MappingField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    type: new fields.StringField({ required: true }) 
+                })),
+            })),
+            resistances: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                fake: new fields.BooleanField({}),
+                empty: new fields.BooleanField({ initial: false }),
+                type: new fields.StringField({ required: true }),
+                value: new fields.NumberField({ required: true, integer: true }),
+                exceptions: new MappingField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    type: new fields.StringField({ required: true }) 
+                })),
+                doubleVs: new MappingField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    type: new fields.StringField({ required: true }) 
+                })),
+            })),
+            rarity: new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                value: new fields.StringField({ required: true }),
+            }),
+            traits: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                value: new fields.StringField({ required: true }) 
+            })),
+            attacks: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                fake: new fields.BooleanField({}),
+                empty: new fields.BooleanField({}),
+                damageStatsRevealed: new fields.BooleanField({ required: true, initial: false }),
+                label: new fields.StringField({ required: true }),
+                actions: new fields.StringField({ required: true }),
+                totalModifier: new fields.NumberField({ required: true }),
+                isMelee: new fields.BooleanField({ required: true }),
+                traits: new MappingField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.StringField({ required: true }),
+                    description: new fields.StringField({ required: true }),
+                })),
+                variants: new MappingField(new fields.SchemaField({
+                    label: new fields.StringField({}),
+                })),
+                damageInstances: new MappingField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({  }),
+                    category: new fields.StringField({ nullable: true }),
+                    damage: new fields.SchemaField({
+                        value: new fields.StringField({ nullable: true }),
+                    }),
+                    damageType: new fields.SchemaField({
+                        revealed: new fields.BooleanField({ required: true, initial: false }),
+                        value: new fields.StringField({ required: true })
+                    })
+                })),
+                rules: new fields.ObjectField({}),
+            })),
+            actions: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                fake: new fields.BooleanField({}),
+                empty: new fields.BooleanField({}),
+                label: new fields.StringField({ required: true }),
+                actions: new fields.StringField({ required: true }),
+                traits: new MappingField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.StringField({ required: true })
+                })),
+                description: new fields.HTMLField({ required: true, initial: '' }),
+            })),
+            passives: new MappingField(new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                fake: new fields.BooleanField({}),
+                empty: new fields.BooleanField({}),
+                label: new fields.StringField({ required: true }),
+                traits: new MappingField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.StringField({ required: true })
+                })),
+                description: new fields.HTMLField({ required: true, initial: '' }),
+            })),
+            spells: new fields.SchemaField({
+                fake: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                }, { nullable: true, initial: null }),
+                entries: new MappingField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    tradition: new fields.StringField({ required: true }),
+                    category: new fields.StringField({ required: true }),
+                    dc: new fields.SchemaField({
+                        revealed: new fields.BooleanField({ required: true, initial: false }),
+                        value: new fields.NumberField({ required: true, integer: true }),
+                    }),
+                    attack: new fields.SchemaField({
+                        revealed: new fields.BooleanField({ required: true, initial: false }),
+                        value: new fields.NumberField({ required: true, integer: true }),
+                    }),
+                    mod: new fields.SchemaField({
+                        value: new fields.NumberField({ required: true, integer: true }),
+                    }),
+                    levels: new MappingField(new fields.SchemaField({
+                        value: new fields.StringField({ required: true }),
+                        spells: new MappingField(new fields.SchemaField({
+                            revealed: new fields.BooleanField({ required: true, initial: false }),
+                            label: new fields.StringField({ required: true }),
+                            img: new fields.StringField({ required: true }),
+                            actions: new fields.StringField({ required: true }),
+                            defense: new fields.SchemaField({
+                                statistic: new fields.StringField({}),
+                                basic: new fields.BooleanField({}),
+                            }, { required: false, nullable: true, initial: null }),
+                            range: new fields.StringField({}),
+                            traits: new fields.SchemaField({
+                                rarity: new fields.StringField({ required: true }),
+                                traditions: new fields.ArrayField(new fields.StringField({})),
+                                values: new MappingField(new fields.SchemaField({
+                                    value: new fields.StringField({ required: true }),
+                                })),
+                            }),
+                            description: new fields.SchemaField({
+                                gm: new fields.HTMLField({ required: true }),
+                                value: new fields.HTMLField({ required: true }),
+                            }),
+                        })),
+                    })),
+                }))
+            }),
+            senses: new fields.SchemaField({
+                perception: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    custom: new fields.StringField({ nullable: true }),
+                    value: new fields.NumberField({ required: true, integer: true }),
+                }),
+                details: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.StringField({ required: true }),
+                }),
+                senses: new MappingField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    fake: new fields.BooleanField({}),
+                    type: new fields.StringField({ required: true }),
+                })),
+            }),
+            languages: new fields.SchemaField({
+                details: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.StringField({ required: true }),
+                }),
+                values: new MappingField(new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    fake: new fields.BooleanField({}),
+                    empty: new fields.BooleanField({ initial: false }),
+                    value: new fields.StringField({ required: true }),
+                })),
+            }),
+            notes: new fields.SchemaField({
+                public: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.HTMLField({ required: true, initial: '' }),
+                }),
+                private: new fields.SchemaField({
+                    revealed: new fields.BooleanField({ required: true, initial: false }),
+                    value: new fields.HTMLField({ required: true, initial: '' }),
+                }),
+                player: new fields.HTMLField({ required: true, initial: '' })
+            }),
+        };
+    }
+
+    get displayImage(){
+        return game.settings.get('pf2e-bestiary-tracking', 'use-token-art') ? this.texture : this.img;
+    }
+
+    get sizeLabel(){
+        return game.i18n.localize(CONFIG.PF2E.actorSizes[this.size]);
+    }
+
+    get allSenses(){
+        const sensesDetails = this.senses.details.value ? { details: { ...this.senses.details, label: this.senses.details.value, isDetails: true }} : {};
+        return {
+            perception: { ...this.senses.perception, label: 'PF2E.PerceptionLabel', isPerception: true },
+            ...sensesDetails,
+            ...Object.keys(this.senses.senses).reduce((acc, sense) => {
+                acc[sense] = { ...this.senses.senses[sense], label: CONFIG.PF2E.senses[this.senses.senses[sense].type] ?? this.senses.senses[sense].type };
+                return acc;
+            }, {}),
+        };
+    }
+
+    get allLanguages(){
+        const languageDetails = this.languages.details.value ? { details: { ...this.languages.details, label: this.languages.details.value, isDetails: true } } : {};
+        return {
+            ...Object.keys(this.languages.values).reduce((acc, key) => {
+                acc[`values.${key}`] = { ...this.languages.values[key], label: CONFIG.PF2E.languages[this.languages.values[key].value] ?? this.languages.values[key].value };
+    
+                return acc;
+            }, {}),
+            ...languageDetails,
+        };
+    }
+
+    get sortedSpells(){
+        return {
+            fake: this.spells.fake,
+            entries: Object.keys(this.spells.entries).reduce((acc, entry) => {
+                acc[entry] = { 
+                    ...this.spells.entries[entry],
+                    label: `${game.i18n.localize(CONFIG.PF2E.magicTraditions[this.spells.entries[entry].tradition])} ${game.i18n.localize(CONFIG.PF2E.preparationType[this.spells.entries[entry].category])} ${game.i18n.localize("PF2E.Item.Spell.Plural")}`,
+                    levels: Object.keys(this.spells.entries[entry].levels).reduce((acc, levelKey) => {
+                        const level = this.spells.entries[entry].levels[levelKey];
+                        acc.push({
+                            ...level,
+                            key: levelKey,
+                            revealed: Object.values(level.spells).some(x => x.revealed),
+                            label: levelKey === 'Cantrips' ? 
+                                game.i18n.localize('PF2E.Actor.Creature.Spellcasting.Cantrips') : 
+                                game.i18n.format('PF2E.Item.Spell.Rank.Ordinal', { rank: game.i18n.format("PF2E.OrdinalNumber", { value: level.value, suffix: levelKey === '1' ? 'st' : levelKey === '2' ? 'nd' : levelKey === '3' ? 'rd' : 'th' }) }),
+                            spells: Object.keys(level.spells).reduce((acc, spell) => {
+                                acc[spell] = {
+                                    ...level.spells[spell],
+                                    defense: !level.spells[spell].defense ? null : 
+                                        { ...level.spells[spell].defense, label: level.spells[spell].defense.basic ? 
+                                            game.i18n.format('PF2E.InlineCheck.BasicWithSave', { save: game.i18n.localize(CONFIG.PF2E.saves[level.spells[spell].defense.statistic]) }) : 
+                                            game.i18n.localize(CONFIG.PF2E.saves[level.spells[spell].defense.statistic]) 
+                                        }
+                                };
+    
+                                return acc;
+                            }, {}),
+                        });
+    
+                        return acc;
+                    }, []).sort((a, b) => {
+                        if(a.key === 'Cantrips' && b.key !== 'Cantrips') return -1;
+                        else if(a.key !== 'Cantrips' && b.key === 'Cantrips') return 1;
+                        else if(a.key === 'Cantrips' && b.key === 'Cantrips') return 0;
+    
+                        return a.key - b.key;
+                    }), 
+                };
+    
+                return acc;
+            }, {})
+        };
+    }
+
+    #getRefreshData(actor){
+        const data = getCreatureData(actor);
+
+        const spells = data.system.spells.fake ? 
+            { fake: { ...data.system.spells.fake, revealed: this.spells.fake?.revealed ?? data.system.spells.fake.revealed }, entries: {} } : 
+            {
+                entries: Object.keys(data.system.spells.entries).reduce((acc, key) =>{
+                    const entry = data.system.spells.entries[key];
+                    const oldEntry = this.spells.entries[key];
+                    acc[key] = {
+                        ...entry,
+                        revealed: oldEntry?.revealed ?? entry.revealed,
+                        dc: { ...entry.dc, revealed: oldEntry?.dc?.revealed ?? entry.dc.revealed },
+                        attack: { ...entry.attack, revealed: oldEntry?.attack?.revealed ?? entry.attack.revealed },
+                        levels: Object.keys(entry.levels).reduce((acc, key) => {
+                            const { spells, ...rest } = entry.levels[key];
+                            acc[key] = {
+                                ...rest,
+                                spells: Object.keys(entry.levels[key].spells).reduce((acc, spell) => {
+                                    const oldSpell = oldEntry && oldEntry.levels[key] ? oldEntry.levels[key].spells[spell] : null;
+                                    acc[spell] = {
+                                        ...entry.levels[key].spells[spell],
+                                        revealed: oldSpell?.revealed ?? entry.levels[key].spells[spell].revealed,
+                                    };
+
+                                    return acc;
+                                }, {}),
+                            };
+
+                            return acc;
+                        }, {}),
+                    };
+
+                    return acc;
+                }, {}), 
+            };
+
+        return {
+            name: data.name,
+            system: {
+                hidden: this.hidden,
+                uuid: data.system.uuid,
+                version: data.system.version,
+                img: data.system.img,
+                texture: data.system.texture,
+                size: data.system.size,
+                name: { ...data.system.name, revealed: this.name.revealed, custom: this.name.custom },
+                ac: { ...data.system.ac, revealed: this.ac.revealed, custom: this.ac.custom },
+                hp: { ...data.system.hp, revealed: this.hp.revealed, custom: this.hp.custom },
+                level: { ...data.system.level, revealed: this.level.revealed, custom: this.level.custom },
+                skills: Object.keys(data.system.skills).reduce((acc, key) => {
+                    acc[key] = { ...data.system.skills[key], revealed: this.skills[key] ? this.skills[key].revealed : data.system.skills[key].revealed };
+                    return acc;
+                }, {}),
+                abilities: Object.keys(data.system.abilities).reduce((acc, key) => {
+                    acc[key] = { ...data.system.abilities[key], revealed: this.abilities[key] ? this.abilities[key].revealed : data.system.abilities[key].revealed };
+                    return acc;
+                }, {}),
+                saves: Object.keys(data.system.saves).reduce((acc, key) => {
+                    acc[key] = { ...data.system.saves[key], revealed: this.saves[key] ? this.saves[key].revealed : data.system.saves[key].revealed };
+                    return acc;
+                }, {}),
+                speeds: {
+                    details: { ...data.system.speeds.details, revealed: this.speeds.details.revealed },
+                    values: Object.keys(data.system.speeds.values).reduce((acc, key) => {
+                        acc[key] = { ...data.system.speeds.values[key], revealed: this.speeds.values[key] ? this.speeds.values[key].revealed : data.system.speeds.values[key].revealed };
+                        return acc;
+                    }, {})
+                },
+                immunities: Object.keys(data.system.immunities).reduce((acc, key) => {
+                    const immunity = data.system.immunities[key];
+                    const oldImmunity = this.immunities[key];
+                    acc[key] = {
+                        ...immunity,
+                        revealed: oldImmunity ? oldImmunity.revealed : immunity.revealed,
+                        exceptions: Object.keys(immunity.exceptions).reduce((acc, ex) => {
+                            acc[ex] = { ...immunity.exceptions[ex], revealed: oldImmunity?.exceptions[ex] ? oldImmunity.exceptions[ex].revealed : immunity.exceptions[ex].revealed };
+                            return acc;
+                        }, {}),
+                    };
+
+                    return acc;
+                }, Object.keys(this.immunities).reduce((acc, key) => {
+                    if(this.immunities[key].fake) acc[key] = this.immunities[key];
+                    return acc;
+                }, {})),
+                weaknesses: Object.keys(data.system.weaknesses).reduce((acc, key) => {
+                    const weakness = data.system.weaknesses[key];
+                    const oldWeakness = this.weaknesses[key];
+                    acc[key] = {
+                        ...weakness,
+                        revealed: oldWeakness ? oldWeakness.revealed : weakness.revealed,
+                        exceptions: Object.keys(weakness.exceptions).reduce((acc, ex) => {
+                            acc[ex] = { ...weakness.exceptions[ex], revealed: oldWeakness?.exceptions[ex] ? oldWeakness.exceptions[ex].revealed : weakness.exceptions[ex].revealed };
+                            return acc;
+                        }, {}),
+                    };
+
+                    return acc;
+                }, Object.keys(this.weaknesses).reduce((acc, key) => {
+                    if(this.weaknesses[key].fake) acc[key] = this.weaknesses[key];
+                    return acc;
+                }, {})),
+                resistances: Object.keys(data.system.resistances).reduce((acc, key) => {
+                    const resistance = data.system.resistances[key];
+                    const oldResistance = this.resistances[key];
+                    acc[key] = {
+                        ...resistance,
+                        revealed: oldResistance ? oldResistance.revealed : resistance.revealed,
+                        exceptions: Object.keys(resistance.exceptions).reduce((acc, ex) => {
+                            acc[ex] = { ...resistance.exceptions[ex], revealed: oldResistance?.exceptions[ex] ? oldResistance.exceptions[ex].revealed : resistance.exceptions[ex].revealed };
+                            return acc;
+                        }, {}),
+                        doubleVs: Object.keys(resistance.doubleVs).reduce((acc, ex) => {
+                            acc[ex] = { ...resistance.doubleVs[ex], revealed: oldResistance?.doubleVs[ex] ? oldResistance.doubleVs[ex].revealed : resistance.doubleVs[ex].revealed };
+                            return acc;
+                        }, {}),
+                    };
+
+                    return acc;
+                }, Object.keys(this.resistances).reduce((acc, key) => {
+                    if(this.resistances[key].fake) acc[key] = this.resistances[key];
+                    return acc;
+                }, {})),
+                rarity: { ...data.system.rarity, revealed: this.rarity.revealed },
+                traits: Object.keys(data.system.traits).reduce((acc, key) => {
+                    acc[key] = { ...data.system.traits[key], revealed: this.traits[key] ? this.traits[key].revealed : data.system.traits[key].revealed };
+                    return acc;
+                }, {}),
+                attacks: Object.keys(data.system.attacks).reduce((acc, key) => {
+                    const attack = data.system.attacks[key];
+                    const oldAttack = this.attacks[key];
+                    acc[key] = {
+                        ...attack,
+                        revealed: oldAttack?.revealed ?? attack.revealed,
+                        damageStatsRevealed: oldAttack?.damageStatsRevealed ?? attack.damageStatsRevealed,
+                        traits: Object.keys(attack.traits).reduce((acc, trait) => {
+                            acc[trait] = { ...attack.traits[trait], revealed: oldAttack.traits[trait]?.revealed ?? attack.traits[trait].revealed };
+                            return acc;
+                        }, {}),
+                        damageInstances: Object.keys(attack.damageInstances).reduce((acc, damage) => {
+                            acc[damage] = { 
+                                ...attack.damageInstances[damage], 
+                                revealed: oldAttack ? (oldAttack.damageInstances[damage]?.revealed ?? attack.damageInstances[damage].revealed) : attack.damageInstances[damage].revealed, 
+                                damageType: { ...attack.damageInstances[damage].damageType, revealed: oldAttack ? (oldAttack.damageInstances[damage]?.damageType?.revealed ?? attack.damageInstances[damage].damageType.revealed) : attack.damageInstances[damage].damageType.revealed } 
+                            };
+                            return acc;
+                        }, {}),
+                    };
+
+                    return acc;
+                }, Object.keys(this.attacks).reduce((acc, key) => {
+                    if(this.attacks[key].fake) acc[key] = this.attacks[key];
+                    return acc;
+                }, {})),
+                actions: Object.keys(data.system.actions).reduce((acc, key) => {
+                    const action = data.system.actions[key];
+                    const oldAction = this.actions[key];
+                    acc[key] = {
+                        ...action,
+                        revealed: oldAction?.revealed ?? action.revealed,
+                        traits: Object.keys(action.traits).reduce((acc, trait) => {
+                            const oldTrait = oldAction ? oldAction.traits[trait] : null;
+                            acc[trait] = { ...action.traits[trait], revealed: oldTrait?.revealed ?? action.traits[trait].revealed };
+                            return acc;
+                        }, {}),
+                    };
+
+                    return acc;
+                }, Object.keys(this.actions).reduce((acc, key) => {
+                    if(this.actions[key].fake) acc[key] = this.actions[key];
+                    return acc;
+                }, {})),
+                passives: Object.keys(data.system.passives).reduce((acc, key) => {
+                    const passive = data.system.passives[key];
+                    const oldPassive = this.passives[key];
+                    acc[key] = {
+                        ...passive,
+                        revealed: oldPassive?.revealed ?? passive.revealed,
+                        traits: Object.keys(passive.traits).reduce((acc, trait) => {
+                            const oldTrait = oldPassive ? oldPassive.traits[trait] : null;
+                            acc[trait] = { ...passive.traits[trait], revealed: oldTrait?.revealed ?? passive.traits[trait].revealed };
+                            return acc;
+                        }, {}),
+                    };
+
+                    return acc;
+                }, Object.keys(this.passives).reduce((acc, key) => {
+                    if(this.passives[key].fake) acc[key] = this.passives[key];
+                    return acc;
+                }, {})),
+                spells: spells,
+                senses: {
+                    perception: { ...data.system.senses.perception, revealed: this.senses.perception.revealed, custom: this.senses.perception.custom },
+                    details: { ...data.system.senses.details, revealed: this.senses.details.revealed },
+                    senses: Object.keys(data.system.senses.senses).reduce((acc, key) => {
+                        const sense = data.system.senses.senses[key];
+                        const oldSense = this.senses.senses[key];
+                        acc[key] = { ...sense, revealed: oldSense?.revealed ?? sense.revealed };
+
+                        return acc;
+                    }, Object.keys(this.senses.senses).reduce((acc, key) => {
+                        if(this.senses.senses[key].fake) acc[key] = this.senses.senses[key];
+                        return acc;
+                    }, {})),
+                },
+                languages: {
+                    details: { ...data.system.languages.details, revealed: this.languages.details.revealed },
+                    values: Object.keys(data.system.languages.values).reduce((acc, key) => {
+                        const language = data.system.languages.values[key];
+                        const oldLanguage = this.languages.values[key];
+                        acc[key] = { ...language, revealed: oldLanguage?.revealed ?? language.revealed };
+
+                        return acc;
+                    }, Object.keys(this.languages.values).reduce((acc, key) => {
+                        if(this.languages.values[key].fake) acc[key] = this.languages.values[key];
+                        return acc;
+                    }, {}))
+                },
+                notes: {
+                    public: { ...data.system.notes.public, revealed: this.notes.public.revealed },
+                    private: { ...data.system.notes.private, revealed: this.notes.private.revealed },
+                    player: this.notes.player,
+                }
+            }
+        };
+    }
+
+    async refreshData() {
+        const actor = await fromUuid(this.uuid);
+        if(!actor) return;
+
+        await this.parent.update(this.#getRefreshData(actor), { diff: false, recursive: false });
+    }
+
+    #getToggleUpdate(state){
+        const spells = 
+            this.spells.fake ? { "spells.fake.revealed": state } :
+            { "spells.entries": Object.keys(this.spells.entries).reduce((acc, key) => {
+                const entry = this.spells.entries[key];
+                acc[key] = {
+                    revealed: state,
+                    dc: { revealed: state },
+                    attack: { revealed: state },
+                    levels: Object.keys(entry.levels).reduce((acc, level) => {
+                        acc[level] = {
+                            spells: Object.keys(entry.levels[level].spells).reduce((acc, level) => {
+                                acc[level] = { revealed: state };
+                                return acc;
+                            }, {}),
+                        };
+                        return acc;
+                    }, {})
+                };
+                return acc;
+            }, {})};
+
+        return {
+            system: {
+                "name.revealed": state,
+                "ac.revealed": state,
+                "hp.revealed": state,
+                "level.revealed": state,
+                "skills": Object.keys(this.skills).reduce((acc, key) => {
+                    acc[key] = { revealed: state };
+                    return acc;
+                }, {}),
+                "abilities": Object.keys(this.abilities).reduce((acc, key) => {
+                    acc[key] = { revealed: state };
+                    return acc;
+                }, {}),
+                "saves": {
+                    "fortitude.revealed": state,
+                    "reflex.revealed": state,
+                    "will.revealed": state,
+                },
+                "speeds": {
+                    "details.revealed": state,
+                    "values": Object.keys(this.speeds.values).reduce((acc, key) => {
+                        acc[key] = { revealed: state };
+                        return acc;
+                    }, {}),
+                },
+                "immunities": Object.keys(this.immunities).reduce((acc, key) => {
+                    acc[key] = {
+                        revealed: state,
+                        exceptions: Object.keys(this.immunities[key].exceptions).reduce((acc, ex) => {
+                            acc[ex] = { revealed: state };
+                            return acc;
+                        }, {}),
+                    };
+                    
+                    return acc;
+                }, {}),
+                "weaknesses": Object.keys(this.weaknesses).reduce((acc, key) => {
+                    acc[key] = {
+                        revealed: state,
+                        exceptions: Object.keys(this.weaknesses[key].exceptions).reduce((acc, ex) => {
+                            acc[ex] = { revealed: state };
+                            return acc;
+                        }, {}),
+                    };
+                    
+                    return acc;
+                }, {}),
+                "resistances": Object.keys(this.resistances).reduce((acc, key) => {
+                    acc[key] = {
+                        revealed: state,
+                        exceptions: Object.keys(this.resistances[key].exceptions).reduce((acc, ex) => {
+                            acc[ex] = { revealed: state };
+                            return acc;
+                        }, {}),
+                        doubleVs: Object.keys(this.resistances[key].doubleVs).reduce((acc, ex) => {
+                            acc[ex] = { revealed: state };
+                            return acc;
+                        }, {}),
+                    };
+                    
+                    return acc;
+                }, {}),
+                "rarity.revealed": state,
+                "traits": Object.keys(this.traits).reduce((acc, key) => {
+                    acc[key] = { revealed: state };
+                    return acc;
+                }, {}),
+                "attacks": Object.keys(this.attacks).reduce((acc, key) => {
+                    acc[key] = {
+                        revealed: state,
+                        damageStatsRevealed: state,
+                        traits: Object.keys(this.attacks[key].traits).reduce((acc, trait) => {
+                            acc[trait] = { revealed: state };
+                            return acc;
+                        }, {}),
+                        damageInstances: Object.keys(this.attacks[key].damageInstances).reduce((acc, damage) => {
+                            acc[damage] = { damageType: { revealed: state } };
+                            return acc;
+                        }, {}),
+                    };
+                    return acc;
+                }, {}),
+                "actions": Object.keys(this.actions).reduce((acc, key) => {
+                    acc[key] = { 
+                        revealed: state,
+                        traits: Object.keys(this.actions[key].traits).reduce((acc, trait) => {
+                            acc[trait] = { revealed: state };
+                            return acc;
+                        }, {}), 
+                    };
+                    return acc;
+                }, {}),
+                "passives": Object.keys(this.passives).reduce((acc, key) => {
+                    acc[key] = { 
+                        revealed: state,
+                        traits: Object.keys(this.passives[key].traits).reduce((acc, trait) => {
+                            acc[trait] = { revealed: state };
+                            return acc;
+                        }, {}), 
+                    };
+                    return acc;
+                }, {}),
+                ...spells,
+                "senses": {
+                    "perception.revealed": state,
+                    "details.revealed": state,
+                    "senses": Object.keys(this.senses.senses).reduce((acc, key) => {
+                        acc[key] = { revealed: state };
+                        return acc;
+                    }, {}),
+                },
+                "languages": {
+                    "details.revealed": state,
+                    "values": Object.keys(this.languages.values).reduce((acc, key) => {
+                        acc[key] = { revealed: state };
+                        return acc;
+                    }, {})
+                },
+                "notes": {
+                    "public.revealed": state,
+                    "private.revealed": state,
+                }
+            }
+        };
+    }
+
+    async toggleEverything(state){
+        await this.parent.update(this.#getToggleUpdate(state));
+    }
+
+    prepareDerivedData() {
+        const vagueDescriptions = game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
+        const playerLevel = game.user.character ? game.user.character.system.details.level.value : null;
+        const contextLevel = vagueDescriptions.playerBased && playerLevel ? playerLevel : this.level.value;
+
+        this.ac.category = getCategoryLabel(acTable, contextLevel, this.ac.value);
+        this.hp.category = getCategoryFromIntervals(hpTable, contextLevel, this.hp.value);
+
+        this.saves = {
+            fortitude: { ...this.saves.fortitude, label: `${this.saves.fortitude.value > 0 ? '+' : ''}${this.saves.fortitude.value}`, category: getCategoryLabel(savingThrowPerceptionTable, contextLevel, this.saves.fortitude.value, true) },
+            reflex: { ...this.saves.reflex, label: `${this.saves.reflex.value > 0 ? '+' : ''}${this.saves.reflex.value}`, category: getCategoryLabel(savingThrowPerceptionTable, contextLevel, this.saves.reflex.value, true) },
+            will: { ...this.saves.will, label: `${this.saves.will.value > 0 ? '+' : ''}${this.saves.will.value}`, category: getCategoryLabel(savingThrowPerceptionTable, contextLevel, this.saves.will.value, true) },
+        };
+
+        this.immunities = Object.keys(this.immunities).reduce((acc, key) => {
+            const exceptionKeys = Object.keys(this.immunities[key].exceptions);
+            acc[key] = {
+                ...this.immunities[key],
+                label: CONFIG.PF2E.immunityTypes[this.immunities[key].type] ?? this.immunities[key].type,
+                exceptions: exceptionKeys.reduce((acc, exKey, index) => {
+                    const label = CONFIG.PF2E.immunityTypes[this.immunities[key].exceptions[exKey].type];
+                    const suffix = 
+                        index === exceptionKeys.length-2 ? game.i18n.localize("PF2EBestiary.Miscellaneous.Or") : 
+                        index < exceptionKeys.length-1 ? ',' : 
+                        index === exceptionKeys.length-1 ? ')' : '';
+
+                    acc[exKey] = { 
+                        ...this.immunities[key].exceptions[exKey], 
+                        label: label ?? this.immunities[key].exceptions[exKey].type,
+                        suffix: suffix,
+                    };
+                    return acc;
+                }, {}),
+            };
+
+            return acc;
+        }, {});
+
+        this.weaknesses = Object.keys(this.weaknesses).reduce((acc, key) => {
+            const exceptionKeys = Object.keys(this.weaknesses[key].exceptions);
+            acc[key] = {
+                ...this.weaknesses[key],
+                label: CONFIG.PF2E.weaknessTypes[this.weaknesses[key].type] ?? this.weaknesses[key].type,
+                category: getCategoryLabel(weaknessTable, contextLevel, this.weaknesses[key].value, true),
+                exceptions: exceptionKeys.reduce((acc, exKey, index) => {
+                    const label = CONFIG.PF2E.weaknessTypes[this.weaknesses[key].exceptions[exKey].type];
+                    const suffix = 
+                        index === exceptionKeys.length-2 ? game.i18n.localize("PF2EBestiary.Miscellaneous.Or") : 
+                        index < exceptionKeys.length-1 ? ',' : 
+                        index === exceptionKeys.length-1 ? ')' : '';
+
+                    acc[exKey] = { 
+                        ...this.weaknesses[key].exceptions[exKey], 
+                        label: label ?? this.weaknesses[key].exceptions[exKey].type,
+                        suffix: suffix,
+                    };
+                    return acc;
+                }, {}),
+            };
+
+            return acc;
+        }, {});
+
+        const detailedInformation = game.settings.get('pf2e-bestiary-tracking', 'detailed-information-toggles');
+        this.resistances = Object.keys(this.resistances).reduce((acc, key) => {
+            const exceptionKeys = Object.keys(this.resistances[key].exceptions);
+            const doubleKeys = Object.keys(this.resistances[key].doubleVs);
+            const revealedDoubleKeys = doubleKeys.filter(dbKey => detailedInformation.exceptionsDouble || this.resistances[key].doubleVs[dbKey].revealed);
+            acc[key] = {
+                ...this.resistances[key],
+                label: CONFIG.PF2E.resistanceTypes[this.resistances[key].type] ?? this.resistances[key].type,
+                category: getCategoryLabel(weaknessTable, contextLevel, this.resistances[key].value, true),
+                exceptions: exceptionKeys.reduce((acc, exKey, index) => {
+                    const label = CONFIG.PF2E.resistanceTypes[this.resistances[key].exceptions[exKey].type];
+                    const suffix = 
+                    index === exceptionKeys.length-2 ? game.i18n.localize("PF2EBestiary.Miscellaneous.Or") : 
+                    index < exceptionKeys.length-1 ? ',' : 
+                    (index === exceptionKeys.length-1 && revealedDoubleKeys.length === 0) ? ')' : 
+                    (index === exceptionKeys.length-1 && revealedDoubleKeys.length > 0) ? ';' : '';
+
+                    acc[exKey] = { ...this.resistances[key].exceptions[exKey], label: label ?? this.resistances[key].exceptions[exKey].type, suffix: suffix };
+                    return acc;
+                }, {}),
+                doubleVs: doubleKeys.reduce((acc, doubleKey, index) => {
+                    const label = CONFIG.PF2E.resistanceTypes[this.resistances[key].doubleVs[doubleKey].type];
+                    const suffix = 
+                    index === doubleKeys.length-2 ? game.i18n.localize("PF2EBestiary.Miscellaneous.Or") : 
+                    index < doubleKeys.length-1 ? ',' : 
+                    index === doubleKeys.length-1 ? ')' : '';
+
+                    acc[doubleKey] = { ...this.resistances[key].doubleVs[doubleKey], label: label ?? this.resistances[key].doubleVs[doubleKey].type, suffix: suffix };
+                    return acc;
+                }, {}),
+            };
+
+            return acc;
+        }, {});
+
+        const speedDetails = this.speeds.details.value ? { details: this.speeds.details } : {};
+        this.speeds.values = { 
+            ...this.speeds.values,
+            ...speedDetails,
+        };
+
+        this.traits = Object.keys(this.traits).reduce((acc, key) => {
+            const label = CONFIG.PF2E.creatureTraits[this.traits[key].value];
+            if(label){
+                acc[key] = { ...this.traits[key], label: CONFIG.PF2E.creatureTraits[this.traits[key].value] };
+            }
+
+            return acc;
+        }, {});
+
+        this.abilities = Object.keys(this.abilities).reduce((acc, key) => {
+            acc[key] = { 
+                ...this.abilities[key], 
+                value: `${this.abilities[key].mod >= 0 ? '+' : ''}${this.abilities[key].mod}`, 
+                label: CONFIG.PF2E.abilities[this.abilities[key].key],
+                category: getCategoryLabel(attributeTable, contextLevel, this.abilities[key].mod, true),
+            };
+
+            return acc;
+        }, {});
+
+        this.skills = Object.keys(this.skills).reduce((acc, key) => {
+            const skill = this.skills[key];
+            if(key === 'empty' || skill.value > 0){
+                acc[key] = { 
+                    ...skill, 
+                    label: skill.lore ? skill.label : CONFIG.PF2E.skills[key]?.label ?? (key === 'empty' ? skill.value : key),
+                    category:  getMixedCategoryLabel(skillTable, contextLevel, skill.totalModifier),
+                };
+            }
+
+            return acc;
+        }, {});
+
+        this.attacks = Object.keys(this.attacks).reduce((acc, key) => {
+            const traitKeys = Object.keys(this.attacks[key].traits);
+            acc[key] = { 
+                ...this.attacks[key], 
+                category: getCategoryLabel(attackTable, contextLevel, this.attacks[key].totalModifier),
+                range: this.attacks[key].isMelee ? 'PF2E.NPCAttackMelee' : 'PF2E.NPCAttackRanged',
+                traits: traitKeys.reduce((acc, trait, index) => {
+                    acc[trait] = { 
+                        ...this.attacks[key].traits[trait], 
+                        label: CONFIG.PF2E.npcAttackTraits[this.attacks[key].traits[trait].value] ?? this.attacks[key].traits[trait].value,
+                        description: CONFIG.PF2E.traitsDescriptions[this.attacks[key].traits[trait].description] ?? this.attacks[key].traits[trait].description,
+                        suffix: index !== traitKeys.length-1 ? ',&nbsp;' : ')',
+                    };
+                    return acc;
+                }, {}),
+                damageInstances: Object.keys(this.attacks[key].damageInstances).reduce((acc, damage) => {
+                    const instance = this.attacks[key].damageInstances[damage];
+                    const average = getRollAverage(new Roll(instance.damage.value).terms);
+                    acc[damage] = {
+                        ...instance,
+                        damage: { ...instance.damage, category: getCategoryLabel(damageTable, contextLevel, average) }
+                    };
+
+                    return acc;
+                }, {})
+            };
+
+            return acc;
+        }, {});
+
+        this.actions = Object.keys(this.actions).reduce((acc, key) => {
+            const traitKeys = Object.keys(this.actions[key].traits);
+            acc[key] = { 
+                ...this.actions[key], 
+                traits: traitKeys.reduce((acc, trait, index) => {
+                    acc[trait] = {  
+                        ...this.actions[key].traits[trait],
+                        label: CONFIG.PF2E.npcAttackTraits[this.actions[key].traits[trait].value] ?? this.actions[key].traits[trait].value,
+                        description: CONFIG.PF2E.traitsDescriptions[this.actions[key].traits[trait].value] ?? '',
+                        suffix: index !== traitKeys.length-1 ? ',&nbsp;' : ''
+                    };
+
+                    return acc;
+                }, {}),
+            };
+
+            return acc;
+        }, {});
+
+        this.passives = Object.keys(this.passives).reduce((acc, key) => {
+            const traitKeys = Object.keys(this.passives[key].traits);
+            acc[key] = { 
+                ...this.passives[key], 
+                traits: traitKeys.reduce((acc, trait, index) => {
+                    acc[trait] = {  
+                        ...this.passives[key].traits[trait],
+                        label: CONFIG.PF2E.npcAttackTraits[this.passives[key].traits[trait].value] ?? this.passives[key].traits[trait].value,
+                        description: CONFIG.PF2E.traitsDescriptions[this.passives[key].traits[trait].value] ?? '',
+                        suffix: index !== traitKeys.length-1 ? ',&nbsp;' : ''
+                    };
+
+                    return acc;
+                }, {}),
+            };
+
+            return acc;
+        }, {});
+
+        this.senses.perception.category = getCategoryLabel(savingThrowPerceptionTable, contextLevel, this.senses.perception.value);
+
+        this.spells.entries = Object.keys(this.spells.entries).reduce((acc, key) => {
+            acc[key] = {
+                ...this.spells.entries[key],
+                dc: { ...this.spells.entries[key].dc, category: getCategoryLabel(spellDCTable, contextLevel, this.spells.entries[key].dc.value) },
+                attack: { ...this.spells.entries[key].attack, category: getCategoryLabel(spellAttackTable, contextLevel, this.spells.entries[key].attack.value) },
+            };
+            return acc;
+        }, {});
+    }
+}
+
+/*
+Tagify v4.27.0 - tags input component
+By: Yair Even-Or <vsync.design@gmail.com>
+https://github.com/yairEO/tagify
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+This Software may not be rebranded and sold as a library under any other name
+other than "Tagify" (by owner) or as part of another library.
+*/
+
+var t="&#8203;";function e(t,e){(null==e||e>t.length)&&(e=t.length);for(var i=0,n=new Array(e);i<e;i++)n[i]=t[i];return n}function i(t){return function(t){if(Array.isArray(t))return e(t)}(t)||function(t){if("undefined"!=typeof Symbol&&null!=t[Symbol.iterator]||null!=t["@@iterator"])return Array.from(t)}(t)||function(t,i){if(!t)return;if("string"==typeof t)return e(t,i);var n=Object.prototype.toString.call(t).slice(8,-1);"Object"===n&&t.constructor&&(n=t.constructor.name);if("Map"===n||"Set"===n)return Array.from(n);if("Arguments"===n||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))return e(t,i)}(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}var n={isEnabled:function(){var t;return null===(t=window.TAGIFY_DEBUG)||void 0===t||t},log:function(){for(var t=arguments.length,e=new Array(t),n=0;n<t;n++)e[n]=arguments[n];var s;this.isEnabled()&&(s=console).log.apply(s,["[Tagify]:"].concat(i(e)));},warn:function(){for(var t=arguments.length,e=new Array(t),n=0;n<t;n++)e[n]=arguments[n];var s;this.isEnabled()&&(s=console).warn.apply(s,["[Tagify]:"].concat(i(e)));}},s=function(t,e,i,n){return t=""+t,e=""+e,n&&(t=t.trim(),e=e.trim()),i?t==e:t.toLowerCase()==e.toLowerCase()},a=function(t,e){return t&&Array.isArray(t)&&t.map((function(t){return o(t,e)}))};function o(t,e){var i,n={};for(i in t)e.indexOf(i)<0&&(n[i]=t[i]);return n}function r(t){var e=document.createElement("div");return t.replace(/\&#?[0-9a-z]+;/gi,(function(t){return e.innerHTML=t,e.innerText}))}function l(t){return (new DOMParser).parseFromString(t.trim(),"text/html").body.firstElementChild}function d(t,e){for(e=e||"previous";t=t[e+"Sibling"];)if(3==t.nodeType)return t}function c(t){return "string"==typeof t?t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/`|'/g,"&#039;"):t}function u(t){var e=Object.prototype.toString.call(t).split(" ")[1].slice(0,-1);return t===Object(t)&&"Array"!=e&&"Function"!=e&&"RegExp"!=e&&"HTMLUnknownElement"!=e}function g(t,e,i){var n,s;function a(t,e){for(var i in e)if(e.hasOwnProperty(i)){if(u(e[i])){u(t[i])?a(t[i],e[i]):t[i]=Object.assign({},e[i]);continue}if(Array.isArray(e[i])){t[i]=Object.assign([],e[i]);continue}t[i]=e[i];}}return n=t,(null!=(s=Object)&&"undefined"!=typeof Symbol&&s[Symbol.hasInstance]?s[Symbol.hasInstance](n):n instanceof s)||(t={}),a(t,e),i&&a(t,i),t}function h(){var t=[],e={},i=!0,n=!1,s=void 0;try{for(var a,o=arguments[Symbol.iterator]();!(i=(a=o.next()).done);i=!0){var r=a.value,l=!0,d=!1,c=void 0;try{for(var g,h=r[Symbol.iterator]();!(l=(g=h.next()).done);l=!0){var p=g.value;u(p)?e[p.value]||(t.push(p),e[p.value]=1):t.includes(p)||t.push(p);}}catch(t){d=!0,c=t;}finally{try{l||null==h.return||h.return();}finally{if(d)throw c}}}}catch(t){n=!0,s=t;}finally{try{i||null==o.return||o.return();}finally{if(n)throw s}}return t}function p(t){return String.prototype.normalize?"string"==typeof t?t.normalize("NFD").replace(/[\u0300-\u036f]/g,""):void 0:t}var f=function(){return /(?=.*chrome)(?=.*android)/i.test(navigator.userAgent)};function m(){return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,(function(t){return (t^crypto.getRandomValues(new Uint8Array(1))[0]&15>>t/4).toString(16)}))}function v(t){return t&&t.classList&&t.classList.contains(this.settings.classNames.tag)}function b(t){return t&&t.closest(this.settings.classNames.tagSelector)}function w(t,e){var i=window.getSelection();return e=e||i.getRangeAt(0),"string"==typeof t&&(t=document.createTextNode(t)),e&&(e.deleteContents(),e.insertNode(t)),t}function y(t,e,i){return t?(e&&(t.__tagifyTagData=i?e:g({},t.__tagifyTagData||{},e)),t.__tagifyTagData):(n.warn("tag element doesn't exist",{tagElm:t,data:e}),e)}function T(t){if(t&&t.parentNode){var e=t,i=window.getSelection(),n=i.getRangeAt(0);i.rangeCount&&(n.setStartAfter(e),n.collapse(!0),i.removeAllRanges(),i.addRange(n));}}function O(t,e){t.forEach((function(t){if(y(t.previousSibling)||!t.previousSibling){var i=document.createTextNode("​");t.before(i),e&&T(i);}}));}var x$1={delimiters:",",pattern:null,tagTextProp:"value",maxTags:1/0,callbacks:{},addTagOnBlur:!0,addTagOn:["blur","tab","enter"],onChangeAfterBlur:!0,duplicates:!1,whitelist:[],blacklist:[],enforceWhitelist:!1,userInput:!0,focusable:!0,keepInvalidTags:!1,createInvalidTags:!0,mixTagsAllowedAfter:/,|\.|\:|\s/,mixTagsInterpolator:["[[","]]"],backspace:!0,skipInvalid:!1,pasteAsTags:!0,editTags:{clicks:2,keepInvalid:!0},transformTag:function(){},trim:!0,a11y:{focusableTags:!1},mixMode:{insertAfterTag:" "},autoComplete:{enabled:!0,rightKey:!1,tabKey:!1},classNames:{namespace:"tagify",mixMode:"tagify--mix",selectMode:"tagify--select",input:"tagify__input",focus:"tagify--focus",tagNoAnimation:"tagify--noAnim",tagInvalid:"tagify--invalid",tagNotAllowed:"tagify--notAllowed",scopeLoading:"tagify--loading",hasMaxTags:"tagify--hasMaxTags",hasNoTags:"tagify--noTags",empty:"tagify--empty",inputInvalid:"tagify__input--invalid",dropdown:"tagify__dropdown",dropdownWrapper:"tagify__dropdown__wrapper",dropdownHeader:"tagify__dropdown__header",dropdownFooter:"tagify__dropdown__footer",dropdownItem:"tagify__dropdown__item",dropdownItemActive:"tagify__dropdown__item--active",dropdownItemHidden:"tagify__dropdown__item--hidden",dropdownItemSelected:"tagify__dropdown__item--selected",dropdownInital:"tagify__dropdown--initial",tag:"tagify__tag",tagText:"tagify__tag-text",tagX:"tagify__tag__removeBtn",tagLoading:"tagify__tag--loading",tagEditing:"tagify__tag--editable",tagFlash:"tagify__tag--flash",tagHide:"tagify__tag--hide"},dropdown:{classname:"",enabled:2,maxItems:10,searchKeys:["value","searchBy"],fuzzySearch:!0,caseSensitive:!1,accentedSearch:!0,includeSelectedTags:!1,escapeHTML:!0,highlightFirst:!0,closeOnSelect:!0,clearOnSelect:!0,position:"all",appendTarget:null},hooks:{beforeRemoveTag:function(){return Promise.resolve()},beforePaste:function(){return Promise.resolve()},suggestionClick:function(){return Promise.resolve()},beforeKeyDown:function(){return Promise.resolve()}}};function D(t,e,i){return e in t?Object.defineProperty(t,e,{value:i,enumerable:!0,configurable:!0,writable:!0}):t[e]=i,t}function S(t){for(var e=1;e<arguments.length;e++){var i=null!=arguments[e]?arguments[e]:{},n=Object.keys(i);"function"==typeof Object.getOwnPropertySymbols&&(n=n.concat(Object.getOwnPropertySymbols(i).filter((function(t){return Object.getOwnPropertyDescriptor(i,t).enumerable})))),n.forEach((function(e){D(t,e,i[e]);}));}return t}function I(t,e){return e=null!=e?e:{},Object.getOwnPropertyDescriptors?Object.defineProperties(t,Object.getOwnPropertyDescriptors(e)):function(t,e){var i=Object.keys(t);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(t);e&&(n=n.filter((function(e){return Object.getOwnPropertyDescriptor(t,e).enumerable}))),i.push.apply(i,n);}return i}(Object(e)).forEach((function(i){Object.defineProperty(t,i,Object.getOwnPropertyDescriptor(e,i));})),t}function M(t,e){(null==e||e>t.length)&&(e=t.length);for(var i=0,n=new Array(e);i<e;i++)n[i]=t[i];return n}function E(t,e,i){return e in t?Object.defineProperty(t,e,{value:i,enumerable:!0,configurable:!0,writable:!0}):t[e]=i,t}function N(t){return function(t){if(Array.isArray(t))return M(t)}(t)||function(t){if("undefined"!=typeof Symbol&&null!=t[Symbol.iterator]||null!=t["@@iterator"])return Array.from(t)}(t)||function(t,e){if(!t)return;if("string"==typeof t)return M(t,e);var i=Object.prototype.toString.call(t).slice(8,-1);"Object"===i&&t.constructor&&(i=t.constructor.name);if("Map"===i||"Set"===i)return Array.from(i);if("Arguments"===i||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(i))return M(t,e)}(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function _(){for(var t in this.dropdown={},this._dropdown)this.dropdown[t]="function"==typeof this._dropdown[t]?this._dropdown[t].bind(this):this._dropdown[t];this.dropdown.refs(),this.DOM.dropdown.__tagify=this;}var A,C,k,L=(A=function(t){for(var e=1;e<arguments.length;e++){var i=null!=arguments[e]?arguments[e]:{},n=Object.keys(i);"function"==typeof Object.getOwnPropertySymbols&&(n=n.concat(Object.getOwnPropertySymbols(i).filter((function(t){return Object.getOwnPropertyDescriptor(i,t).enumerable})))),n.forEach((function(e){E(t,e,i[e]);}));}return t}({},{events:{binding:function(){var t=!(arguments.length>0&&void 0!==arguments[0])||arguments[0],e=this.dropdown.events.callbacks,i=this.listeners.dropdown=this.listeners.dropdown||{position:this.dropdown.position.bind(this,null),onKeyDown:e.onKeyDown.bind(this),onMouseOver:e.onMouseOver.bind(this),onMouseLeave:e.onMouseLeave.bind(this),onClick:e.onClick.bind(this),onScroll:e.onScroll.bind(this)},n=t?"addEventListener":"removeEventListener";"manual"!=this.settings.dropdown.position&&(document[n]("scroll",i.position,!0),window[n]("resize",i.position),window[n]("keydown",i.onKeyDown)),this.DOM.dropdown[n]("mouseover",i.onMouseOver),this.DOM.dropdown[n]("mouseleave",i.onMouseLeave),this.DOM.dropdown[n]("mousedown",i.onClick),this.DOM.dropdown.content[n]("scroll",i.onScroll);},callbacks:{onKeyDown:function(t){var e=this;if(this.state.hasFocus&&!this.state.composing){var i=this.settings,s=this.DOM.dropdown.querySelector(i.classNames.dropdownItemActiveSelector),a=this.dropdown.getSuggestionDataByNode(s),o="mix"==i.mode,r="select"==i.mode;i.hooks.beforeKeyDown(t,{tagify:this}).then((function(l){switch(t.key){case"ArrowDown":case"ArrowUp":case"Down":case"Up":t.preventDefault();var d=e.dropdown.getAllSuggestionsRefs(),c="ArrowUp"==t.key||"Up"==t.key;s&&(s=e.dropdown.getNextOrPrevOption(s,!c)),s&&s.matches(i.classNames.dropdownItemSelector)||(s=d[c?d.length-1:0]),e.dropdown.highlightOption(s,!0);break;case"Escape":case"Esc":e.dropdown.hide();break;case"ArrowRight":if(e.state.actions.ArrowLeft||i.autoComplete.rightKey)return;case"Tab":var u=!i.autoComplete.rightKey||!i.autoComplete.tabKey;if(!o&&!r&&s&&u&&!e.state.editing&&a){t.preventDefault();var g=e.dropdown.getMappedValue(a);return e.input.autocomplete.set.call(e,g),!1}return !0;case"Enter":t.preventDefault(),i.hooks.suggestionClick(t,{tagify:e,tagData:a,suggestionElm:s}).then((function(){if(s)return e.dropdown.selectOption(s),s=e.dropdown.getNextOrPrevOption(s,!c),void e.dropdown.highlightOption(s);e.dropdown.hide(),o||e.addTags(e.state.inputText.trim(),!0);})).catch((function(t){return n.warn(t)}));break;case"Backspace":if(o||e.state.editing.scope)return;var h=e.input.raw.call(e);""!=h&&8203!=h.charCodeAt(0)||(!0===i.backspace?e.removeTags():"edit"==i.backspace&&setTimeout(e.editTag.bind(e),0));}}));}},onMouseOver:function(t){var e=t.target.closest(this.settings.classNames.dropdownItemSelector);this.dropdown.highlightOption(e);},onMouseLeave:function(t){this.dropdown.highlightOption();},onClick:function(t){var e=this;if(0==t.button&&t.target!=this.DOM.dropdown&&t.target!=this.DOM.dropdown.content){var i=t.target.closest(this.settings.classNames.dropdownItemSelector),s=this.dropdown.getSuggestionDataByNode(i);this.state.actions.selectOption=!0,setTimeout((function(){return e.state.actions.selectOption=!1}),50),this.settings.hooks.suggestionClick(t,{tagify:this,tagData:s,suggestionElm:i}).then((function(){i?e.dropdown.selectOption(i,t):e.dropdown.hide();})).catch((function(t){return n.warn(t)}));}},onScroll:function(t){var e=t.target,i=e.scrollTop/(e.scrollHeight-e.parentNode.clientHeight)*100;this.trigger("dropdown:scroll",{percentage:Math.round(i)});}}},refilter:function(t){t=t||this.state.dropdown.query||"",this.suggestedListItems=this.dropdown.filterListItems(t),this.dropdown.fill(),this.suggestedListItems.length||this.dropdown.hide(),this.trigger("dropdown:updated",this.DOM.dropdown);},getSuggestionDataByNode:function(t){for(var e,i=t&&t.getAttribute("value"),n=this.suggestedListItems.length;n--;){if(u(e=this.suggestedListItems[n])&&e.value==i)return e;if(e==i)return {value:e}}},getNextOrPrevOption:function(t){var e=!(arguments.length>1&&void 0!==arguments[1])||arguments[1],i=this.dropdown.getAllSuggestionsRefs(),n=i.findIndex((function(e){return e===t}));return e?i[n+1]:i[n-1]},highlightOption:function(t,e){var i,n=this.settings.classNames.dropdownItemActive;if(this.state.ddItemElm&&(this.state.ddItemElm.classList.remove(n),this.state.ddItemElm.removeAttribute("aria-selected")),!t)return this.state.ddItemData=null,this.state.ddItemElm=null,void this.input.autocomplete.suggest.call(this);i=this.dropdown.getSuggestionDataByNode(t),this.state.ddItemData=i,this.state.ddItemElm=t,t.classList.add(n),t.setAttribute("aria-selected",!0),e&&(t.parentNode.scrollTop=t.clientHeight+t.offsetTop-t.parentNode.clientHeight),this.settings.autoComplete&&(this.input.autocomplete.suggest.call(this,i),this.dropdown.position());},selectOption:function(t,e){var i=this,n=this.settings,s=n.dropdown,a=s.clearOnSelect,o=s.closeOnSelect;if(!t)return this.addTags(this.state.inputText,!0),void(o&&this.dropdown.hide());e=e||{};var r=t.getAttribute("value"),l="noMatch"==r,d="mix"==n.mode,c=this.suggestedListItems.find((function(t){var e;return (null!==(e=t.value)&&void 0!==e?e:t)==r}));if(this.trigger("dropdown:select",{data:c,elm:t,event:e}),r&&(c||l)){if(this.state.editing){var u=this.normalizeTags([c])[0];c=n.transformTag.call(this,u)||u,this.onEditTagDone(null,g({__isValid:!0},c));}else this[d?"addMixTags":"addTags"]([c||this.input.raw.call(this)],a);(d||this.DOM.input.parentNode)&&(setTimeout((function(){i.DOM.input.focus(),i.toggleFocusClass(!0);})),o&&setTimeout(this.dropdown.hide.bind(this)),t.addEventListener("transitionend",(function(){i.dropdown.fillHeaderFooter(),setTimeout((function(){t.remove(),i.dropdown.refilter();}),100);}),{once:!0}),t.classList.add(this.settings.classNames.dropdownItemHidden));}else o&&setTimeout(this.dropdown.hide.bind(this));},selectAll:function(t){this.suggestedListItems.length=0,this.dropdown.hide(),this.dropdown.filterListItems("");var e=this.dropdown.filterListItems("");return t||(e=this.state.dropdown.suggestions),this.addTags(e,!0),this},filterListItems:function(t,e){var i,n,s,a,o,r,l=function(){var t,l,d=void 0,c=void 0;t=m[y],n=(null!=(l=Object)&&"undefined"!=typeof Symbol&&l[Symbol.hasInstance]?l[Symbol.hasInstance](t):t instanceof l)?m[y]:{value:m[y]};var v,b=!Object.keys(n).some((function(t){return w.includes(t)}))?["value"]:w;g.fuzzySearch&&!e.exact?(a=b.reduce((function(t,e){return t+" "+(n[e]||"")}),"").toLowerCase().trim(),g.accentedSearch&&(a=p(a),r=p(r)),d=0==a.indexOf(r),c=a===r,v=a,s=r.toLowerCase().split(" ").every((function(t){return v.includes(t.toLowerCase())}))):(d=!0,s=b.some((function(t){var i=""+(n[t]||"");return g.accentedSearch&&(i=p(i),r=p(r)),g.caseSensitive||(i=i.toLowerCase()),c=i===r,e.exact?i===r:0==i.indexOf(r)}))),o=!g.includeSelectedTags&&i.isTagDuplicate(u(n)?n.value:n),s&&!o&&(c&&d?f.push(n):"startsWith"==g.sortby&&d?h.unshift(n):h.push(n));},d=this,c=this.settings,g=c.dropdown,h=(e=e||{},[]),f=[],m=c.whitelist,v=g.maxItems>=0?g.maxItems:1/0,b=g.includeSelectedTags||"select"==c.mode,w=g.searchKeys,y=0;if(!(t="select"==c.mode&&this.value.length&&this.value[0][c.tagTextProp]==t?"":t)||!w.length)return h=b?m:m.filter((function(t){return !d.isTagDuplicate(u(t)?t.value:t)})),this.state.dropdown.suggestions=h,h.slice(0,v);for(r=g.caseSensitive?""+t:(""+t).toLowerCase();y<m.length;y++)i=this,l();return this.state.dropdown.suggestions=f.concat(h),"function"==typeof g.sortby?g.sortby(f.concat(h),r):f.concat(h).slice(0,v)},getMappedValue:function(t){var e=this.settings.dropdown.mapValueTo;return e?"function"==typeof e?e(t):t[e]||t.value:t.value},createListHTML:function(t){var e=this;return g([],t).map((function(t,i){"string"!=typeof t&&"number"!=typeof t||(t={value:t});var n=e.dropdown.getMappedValue(t);return n="string"==typeof n&&e.settings.dropdown.escapeHTML?c(n):n,e.settings.templates.dropdownItem.apply(e,[I(S({},t),{mappedValue:n}),e])})).join("")}}),C=null!=(C={refs:function(){this.DOM.dropdown=this.parseTemplate("dropdown",[this.settings]),this.DOM.dropdown.content=this.DOM.dropdown.querySelector("[data-selector='tagify-suggestions-wrapper']");},getHeaderRef:function(){return this.DOM.dropdown.querySelector("[data-selector='tagify-suggestions-header']")},getFooterRef:function(){return this.DOM.dropdown.querySelector("[data-selector='tagify-suggestions-footer']")},getAllSuggestionsRefs:function(){return N(this.DOM.dropdown.content.querySelectorAll(this.settings.classNames.dropdownItemSelector))},show:function(t){var e,i,n,a=this,o=this.settings,r="mix"==o.mode&&!o.enforceWhitelist,l=!o.whitelist||!o.whitelist.length,d="manual"==o.dropdown.position;if(t=void 0===t?this.state.inputText:t,!(l&&!r&&!o.templates.dropdownItemNoMatch||!1===o.dropdown.enable||this.state.isLoading||this.settings.readonly)){if(clearTimeout(this.dropdownHide__bindEventsTimeout),this.suggestedListItems=this.dropdown.filterListItems(t),t&&!this.suggestedListItems.length&&(this.trigger("dropdown:noMatch",t),o.templates.dropdownItemNoMatch&&(n=o.templates.dropdownItemNoMatch.call(this,{value:t}))),!n){if(this.suggestedListItems.length)t&&r&&!this.state.editing.scope&&!s(this.suggestedListItems[0].value,t)&&this.suggestedListItems.unshift({value:t});else {if(!t||!r||this.state.editing.scope)return this.input.autocomplete.suggest.call(this),void this.dropdown.hide();this.suggestedListItems=[{value:t}];}i=""+(u(e=this.suggestedListItems[0])?e.value:e),o.autoComplete&&i&&0==i.indexOf(t)&&this.input.autocomplete.suggest.call(this,e);}this.dropdown.fill(n),o.dropdown.highlightFirst&&this.dropdown.highlightOption(this.DOM.dropdown.content.querySelector(o.classNames.dropdownItemSelector)),this.state.dropdown.visible||setTimeout(this.dropdown.events.binding.bind(this)),this.state.dropdown.visible=t||!0,this.state.dropdown.query=t,this.setStateSelection(),d||setTimeout((function(){a.dropdown.position(),a.dropdown.render();})),setTimeout((function(){a.trigger("dropdown:show",a.DOM.dropdown);}));}},hide:function(t){var e=this,i=this.DOM,n=i.scope,s=i.dropdown,a="manual"==this.settings.dropdown.position&&!t;if(s&&document.body.contains(s)&&!a)return window.removeEventListener("resize",this.dropdown.position),this.dropdown.events.binding.call(this,!1),n.setAttribute("aria-expanded",!1),s.parentNode.removeChild(s),setTimeout((function(){e.state.dropdown.visible=!1;}),100),this.state.dropdown.query=this.state.ddItemData=this.state.ddItemElm=this.state.selection=null,this.state.tag&&this.state.tag.value.length&&(this.state.flaggedTags[this.state.tag.baseOffset]=this.state.tag),this.trigger("dropdown:hide",s),this},toggle:function(t){this.dropdown[this.state.dropdown.visible&&!t?"hide":"show"]();},getAppendTarget:function(){var t=this.settings.dropdown;return "function"==typeof t.appendTarget?t.appendTarget():t.appendTarget},render:function(){var t,e,i,n=this,s=(t=this.DOM.dropdown,(i=t.cloneNode(!0)).style.cssText="position:fixed; top:-9999px; opacity:0",document.body.appendChild(i),e=i.clientHeight,i.parentNode.removeChild(i),e),a=this.settings,o="number"==typeof a.dropdown.enabled&&a.dropdown.enabled>=0,r=this.dropdown.getAppendTarget();return o?(this.DOM.scope.setAttribute("aria-expanded",!0),document.body.contains(this.DOM.dropdown)||(this.DOM.dropdown.classList.add(a.classNames.dropdownInital),this.dropdown.position(s),r.appendChild(this.DOM.dropdown),setTimeout((function(){return n.DOM.dropdown.classList.remove(a.classNames.dropdownInital)}))),this):this},fill:function(t){t="string"==typeof t?t:this.dropdown.createListHTML(t||this.suggestedListItems);var e,i=this.settings.templates.dropdownContent.call(this,t);this.DOM.dropdown.content.innerHTML=(e=i)?e.replace(/\>[\r\n ]+\</g,"><").split(/>\s+</).join("><").trim():"";},fillHeaderFooter:function(){var t=this.dropdown.filterListItems(this.state.dropdown.query),e=this.parseTemplate("dropdownHeader",[t]),i=this.parseTemplate("dropdownFooter",[t]),n=this.dropdown.getHeaderRef(),s=this.dropdown.getFooterRef();e&&(null==n||n.parentNode.replaceChild(e,n)),i&&(null==s||s.parentNode.replaceChild(i,s));},position:function(t){var e=this.settings.dropdown,i=this.dropdown.getAppendTarget();if("manual"!=e.position&&i){var n,s,a,o,r,l,d,c,u,g=this.DOM.dropdown,h=e.RTL,p=i===document.body,f=i===this.DOM.scope,m=p?window.pageYOffset:i.scrollTop,v=document.fullscreenElement||document.webkitFullscreenElement||document.documentElement,b=v.clientHeight,w=Math.max(v.clientWidth||0,window.innerWidth||0)>480?e.position:"all",y=this.DOM["input"==w?"input":"scope"];if(t=t||g.clientHeight,this.state.dropdown.visible){if("text"==w?(a=(n=function(){var t=document.getSelection();if(t.rangeCount){var e,i,n=t.getRangeAt(0),s=n.startContainer,a=n.startOffset;if(a>0)return (i=document.createRange()).setStart(s,a-1),i.setEnd(s,a),{left:(e=i.getBoundingClientRect()).right,top:e.top,bottom:e.bottom};if(s.getBoundingClientRect)return s.getBoundingClientRect()}return {left:-9999,top:-9999}}()).bottom,s=n.top,o=n.left,r="auto"):(l=function(t){var e=0,i=0;for(t=t.parentNode;t&&t!=v;)e+=t.offsetTop||0,i+=t.offsetLeft||0,t=t.parentNode;return {top:e,left:i}}(i),n=y.getBoundingClientRect(),s=f?-1:n.top-l.top,a=(f?n.height:n.bottom-l.top)-1,o=f?-1:n.left-l.left,r=n.width+"px"),!p){var T=function(){for(var t=0,i=e.appendTarget.parentNode;i;)t+=i.scrollTop||0,i=i.parentNode;return t}();s+=T,a+=T;}var O;s=Math.floor(s),a=Math.ceil(a),c=((d=null!==(O=e.placeAbove)&&void 0!==O?O:b-n.bottom<t)?s:a)+m,u="left: ".concat(o+(h&&n.width||0)+window.pageXOffset,"px;"),g.style.cssText="".concat(u,"; top: ").concat(c,"px; min-width: ").concat(r,"; max-width: ").concat(r),g.setAttribute("placement",d?"top":"bottom"),g.setAttribute("position",w);}}}})?C:{},Object.getOwnPropertyDescriptors?Object.defineProperties(A,Object.getOwnPropertyDescriptors(C)):function(t,e){var i=Object.keys(t);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(t);e&&(n=n.filter((function(e){return Object.getOwnPropertyDescriptor(t,e).enumerable}))),i.push.apply(i,n);}return i}(Object(C)).forEach((function(t){Object.defineProperty(A,t,Object.getOwnPropertyDescriptor(C,t));})),A),j="@yaireo/tagify/",P={empty:"empty",exceed:"number of tags exceeded",pattern:"pattern mismatch",duplicate:"already exists",notAllowed:"not allowed"},V={wrapper:function(e,i){return '<tags class="'.concat(i.classNames.namespace," ").concat(i.mode?"".concat(i.classNames[i.mode+"Mode"]):""," ").concat(e.className,'"\n                    ').concat(i.readonly?"readonly":"","\n                    ").concat(i.disabled?"disabled":"","\n                    ").concat(i.required?"required":"","\n                    ").concat("select"===i.mode?"spellcheck='false'":"",'\n                    tabIndex="-1">\n                    ').concat(this.settings.templates.input.call(this),"\n                ").concat(t,"\n        </tags>")},input:function(){var e=this.settings,i=e.placeholder||t;return "<span ".concat(!e.readonly&&e.userInput?"contenteditable":"",' tabIndex="0" data-placeholder="').concat(i,'" aria-placeholder="').concat(e.placeholder||"",'"\n                    class="').concat(e.classNames.input,'"\n                    role="textbox"\n                    autocapitalize="false"\n                    autocorrect="off"\n                    spellcheck="false"\n                    aria-autocomplete="both"\n                    aria-multiline="').concat("mix"==e.mode,'"></span>')},tag:function(t,e){var i=e.settings;return '<tag title="'.concat(t.title||t.value,"\"\n                    contenteditable='false'\n                    tabIndex=\"").concat(i.a11y.focusableTags?0:-1,'"\n                    class="').concat(i.classNames.tag," ").concat(t.class||"",'"\n                    ').concat(this.getAttributes(t),">\n            <x title='' tabIndex=\"").concat(i.a11y.focusableTags?0:-1,'" class="').concat(i.classNames.tagX,"\" role='button' aria-label='remove tag'></x>\n            <div>\n                <span ").concat("select"===i.mode&&i.userInput?"contenteditable='true'":"",' autocapitalize="false" autocorrect="off" spellcheck=\'false\' class="').concat(i.classNames.tagText,'">').concat(t[i.tagTextProp]||t.value,"</span>\n            </div>\n        </tag>")},dropdown:function(t){var e=t.dropdown,i="manual"==e.position;return '<div class="'.concat(i?"":t.classNames.dropdown," ").concat(e.classname,'" role="listbox" aria-labelledby="dropdown" dir="').concat(e.RTL?"rtl":"","\">\n                    <div data-selector='tagify-suggestions-wrapper' class=\"").concat(t.classNames.dropdownWrapper,'"></div>\n                </div>')},dropdownContent:function(t){var e=this.settings.templates,i=this.state.dropdown.suggestions;return "\n            ".concat(e.dropdownHeader.call(this,i),"\n            ").concat(t,"\n            ").concat(e.dropdownFooter.call(this,i),"\n        ")},dropdownItem:function(t){return "<div ".concat(this.getAttributes(t),"\n                    class='").concat(this.settings.classNames.dropdownItem," ").concat(this.isTagDuplicate(t.value)?this.settings.classNames.dropdownItemSelected:""," ").concat(t.class||"",'\'\n                    tabindex="0"\n                    role="option">').concat(t.mappedValue||t.value,"</div>")},dropdownHeader:function(t){return "<header data-selector='tagify-suggestions-header' class=\"".concat(this.settings.classNames.dropdownHeader,'"></header>')},dropdownFooter:function(t){var e=t.length-this.settings.dropdown.maxItems;return e>0?"<footer data-selector='tagify-suggestions-footer' class=\"".concat(this.settings.classNames.dropdownFooter,'">\n                ').concat(e," more items. Refine your search.\n            </footer>"):""},dropdownItemNoMatch:null};function F(t,e){(null==e||e>t.length)&&(e=t.length);for(var i=0,n=new Array(e);i<e;i++)n[i]=t[i];return n}function R(t,e){return null!=e&&"undefined"!=typeof Symbol&&e[Symbol.hasInstance]?!!e[Symbol.hasInstance](t):t instanceof e}function H(t,e){return function(t){if(Array.isArray(t))return t}(t)||function(t,e){var i=null==t?null:"undefined"!=typeof Symbol&&t[Symbol.iterator]||t["@@iterator"];if(null!=i){var n,s,a=[],o=!0,r=!1;try{for(i=i.call(t);!(o=(n=i.next()).done)&&(a.push(n.value),!e||a.length!==e);o=!0);}catch(t){r=!0,s=t;}finally{try{o||null==i.return||i.return();}finally{if(r)throw s}}return a}}(t,e)||function(t,e){if(!t)return;if("string"==typeof t)return F(t,e);var i=Object.prototype.toString.call(t).slice(8,-1);"Object"===i&&t.constructor&&(i=t.constructor.name);if("Map"===i||"Set"===i)return Array.from(i);if("Arguments"===i||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(i))return F(t,e)}(t,e)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function B(t,e){(null==e||e>t.length)&&(e=t.length);for(var i=0,n=new Array(e);i<e;i++)n[i]=t[i];return n}function W(t,e,i){return e in t?Object.defineProperty(t,e,{value:i,enumerable:!0,configurable:!0,writable:!0}):t[e]=i,t}function K(t,e){return null!=e&&"undefined"!=typeof Symbol&&e[Symbol.hasInstance]?!!e[Symbol.hasInstance](t):t instanceof e}function U(t,e){return e=null!=e?e:{},Object.getOwnPropertyDescriptors?Object.defineProperties(t,Object.getOwnPropertyDescriptors(e)):function(t,e){var i=Object.keys(t);if(Object.getOwnPropertySymbols){var n=Object.getOwnPropertySymbols(t);e&&(n=n.filter((function(e){return Object.getOwnPropertyDescriptor(t,e).enumerable}))),i.push.apply(i,n);}return i}(Object(e)).forEach((function(i){Object.defineProperty(t,i,Object.getOwnPropertyDescriptor(e,i));})),t}function q(t){return function(t){if(Array.isArray(t))return B(t)}(t)||function(t){if("undefined"!=typeof Symbol&&null!=t[Symbol.iterator]||null!=t["@@iterator"])return Array.from(t)}(t)||function(t,e){if(!t)return;if("string"==typeof t)return B(t,e);var i=Object.prototype.toString.call(t).slice(8,-1);"Object"===i&&t.constructor&&(i=t.constructor.name);if("Map"===i||"Set"===i)return Array.from(i);if("Arguments"===i||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(i))return B(t,e)}(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}var z={customBinding:function(){var t=this;this.customEventsList.forEach((function(e){t.on(e,t.settings.callbacks[e]);}));},binding:function(){var t,e=!(arguments.length>0&&void 0!==arguments[0])||arguments[0],i=this.settings,n=this.events.callbacks,s=e?"addEventListener":"removeEventListener";if(!this.state.mainEvents||!e){for(var a in this.state.mainEvents=e,e&&!this.listeners.main&&(this.events.bindGlobal.call(this),this.settings.isJQueryPlugin&&jQuery(this.DOM.originalInput).on("tagify.removeAllTags",this.removeAllTags.bind(this))),t=this.listeners.main=this.listeners.main||{keydown:["input",n.onKeydown.bind(this)],click:["scope",n.onClickScope.bind(this)],dblclick:"select"!=i.mode&&["scope",n.onDoubleClickScope.bind(this)],paste:["input",n.onPaste.bind(this)],drop:["input",n.onDrop.bind(this)],compositionstart:["input",n.onCompositionStart.bind(this)],compositionend:["input",n.onCompositionEnd.bind(this)]})t[a]&&this.DOM[t[a][0]][s](a,t[a][1]);var o=this.listeners.main.inputMutationObserver||new MutationObserver(n.onInputDOMChange.bind(this));o.disconnect(),"mix"==i.mode&&o.observe(this.DOM.input,{childList:!0}),this.events.bindOriginaInputListener.call(this);}},bindOriginaInputListener:function(t){var e=(t||0)+500;this.listeners.main&&(clearInterval(this.listeners.main.originalInputValueObserverInterval),this.listeners.main.originalInputValueObserverInterval=setInterval(this.events.callbacks.observeOriginalInputValue.bind(this),e));},bindGlobal:function(t){var e,i=this.events.callbacks,n=t?"removeEventListener":"addEventListener";if(this.listeners&&(t||!this.listeners.global)){this.listeners.global=this.listeners.global||[{type:this.isIE?"keydown":"input",target:this.DOM.input,cb:i[this.isIE?"onInputIE":"onInput"].bind(this)},{type:"keydown",target:window,cb:i.onWindowKeyDown.bind(this)},{type:"focusin",target:this.DOM.scope,cb:i.onFocusBlur.bind(this)},{type:"focusout",target:this.DOM.scope,cb:i.onFocusBlur.bind(this)},{type:"click",target:document,cb:i.onClickAnywhere.bind(this),useCapture:!0}];var s=!0,a=!1,o=void 0;try{for(var r,l=this.listeners.global[Symbol.iterator]();!(s=(r=l.next()).done);s=!0)(e=r.value).target[n](e.type,e.cb,!!e.useCapture);}catch(t){a=!0,o=t;}finally{try{s||null==l.return||l.return();}finally{if(a)throw o}}}},unbindGlobal:function(){this.events.bindGlobal.call(this,!0);},callbacks:{onFocusBlur:function(t){var e,i,n=this.settings,s=b.call(this,t.target),a=v.call(this,t.target),o=t.target.classList.contains(n.classNames.tagX),r="focusin"==t.type,l="focusout"==t.type;s&&r&&!a&&!o&&this.toggleFocusClass(this.state.hasFocus=+new Date);var d=t.target?this.trim(this.DOM.input.textContent):"",c=null===(i=this.value)||void 0===i||null===(e=i[0])||void 0===e?void 0:e[n.tagTextProp],u=n.dropdown.enabled>=0,g={relatedTarget:t.relatedTarget},h=this.state.actions.selectOption&&(u||!n.dropdown.closeOnSelect),p=this.state.actions.addNew&&u;if(l){if(t.relatedTarget===this.DOM.scope)return this.dropdown.hide(),void this.DOM.input.focus();this.postUpdate(),n.onChangeAfterBlur&&this.triggerChangeEvent();}if(!(h||p||o))if(r||s?(this.state.hasFocus=+new Date,this.toggleFocusClass(this.state.hasFocus)):this.state.hasFocus=!1,"mix"!=n.mode){if(r){if(!n.focusable)return;var f=0===n.dropdown.enabled&&!this.state.dropdown.visible;return this.toggleFocusClass(!0),this.trigger("focus",g),void(!f||a&&"select"!==n.mode||this.dropdown.show(this.value.length?"":void 0))}if(l){if(this.trigger("blur",g),this.loading(!1),"select"==n.mode){if(this.value.length){var m=this.getTagElms()[0];d=this.trim(m.textContent);}c===d&&(d="");}d&&!this.state.actions.selectOption&&n.addTagOnBlur&&n.addTagOn.includes("blur")&&this.addTags(d,!0);}s||(this.DOM.input.removeAttribute("style"),this.dropdown.hide());}else r?this.trigger("focus",g):l&&(this.trigger("blur",g),this.loading(!1),this.dropdown.hide(),this.state.dropdown.visible=void 0,this.setStateSelection());},onCompositionStart:function(t){this.state.composing=!0;},onCompositionEnd:function(t){this.state.composing=!1;},onWindowKeyDown:function(t){var e,i=this.settings,n=document.activeElement,s=b.call(this,n)&&this.DOM.scope.contains(document.activeElement),a=s&&n.hasAttribute("readonly");if(this.state.hasFocus||s&&!a){e=n.nextElementSibling;var o=t.target.classList.contains(i.classNames.tagX);switch(t.key){case"Backspace":i.readonly||this.state.editing||(this.removeTags(n),(e||this.DOM.input).focus());break;case"Enter":if(o)return void this.removeTags(t.target.parentNode);i.a11y.focusableTags&&v.call(this,n)&&setTimeout(this.editTag.bind(this),0,n);break;case"ArrowDown":this.state.dropdown.visible||"mix"==i.mode||this.dropdown.show();}}},onKeydown:function(t){var e=this,i=this.settings;if(!this.state.composing&&i.userInput){"select"==i.mode&&i.enforceWhitelist&&this.value.length&&"Tab"!=t.key&&t.preventDefault();var n=this.trim(t.target.textContent);this.trigger("keydown",{event:t}),i.hooks.beforeKeyDown(t,{tagify:this}).then((function(s){if("mix"==i.mode){switch(t.key){case"Left":case"ArrowLeft":e.state.actions.ArrowLeft=!0;break;case"Delete":case"Backspace":if(e.state.editing)return;var a=document.getSelection(),o="Delete"==t.key&&a.anchorOffset==(a.anchorNode.length||0),l=a.anchorNode.previousSibling,c=1==a.anchorNode.nodeType||!a.anchorOffset&&l&&1==l.nodeType&&a.anchorNode.previousSibling;r(e.DOM.input.innerHTML);var u,g,h,p=e.getTagElms(),m=1===a.anchorNode.length&&a.anchorNode.nodeValue==String.fromCharCode(8203);if("edit"==i.backspace&&c)return u=1==a.anchorNode.nodeType?null:a.anchorNode.previousElementSibling,setTimeout(e.editTag.bind(e),0,u),void t.preventDefault();if(f()&&K(c,Element))return h=d(c),c.hasAttribute("readonly")||c.remove(),e.DOM.input.focus(),void setTimeout((function(){T(h),e.DOM.input.click();}));if("BR"==a.anchorNode.nodeName)return;if((o||c)&&1==a.anchorNode.nodeType?g=0==a.anchorOffset?o?p[0]:null:p[Math.min(p.length,a.anchorOffset)-1]:o?g=a.anchorNode.nextElementSibling:K(c,Element)&&(g=c),3==a.anchorNode.nodeType&&!a.anchorNode.nodeValue&&a.anchorNode.previousElementSibling&&t.preventDefault(),(c||o)&&!i.backspace)return void t.preventDefault();if("Range"!=a.type&&!a.anchorOffset&&a.anchorNode==e.DOM.input&&"Delete"!=t.key)return void t.preventDefault();if("Range"!=a.type&&g&&g.hasAttribute("readonly"))return void T(d(g));"Delete"==t.key&&m&&y(a.anchorNode.nextSibling)&&e.removeTags(a.anchorNode.nextSibling),clearTimeout(k),k=setTimeout((function(){var t=document.getSelection();r(e.DOM.input.innerHTML),!o&&t.anchorNode.previousSibling,e.value=[].map.call(p,(function(t,i){var n=y(t);if(t.parentNode||n.readonly)return n;e.trigger("remove",{tag:t,index:i,data:n});})).filter((function(t){return t}));}),20);}return !0}var v="manual"==i.dropdown.position;switch(t.key){case"Backspace":"select"==i.mode&&i.enforceWhitelist&&e.value.length?e.removeTags():e.state.dropdown.visible&&"manual"!=i.dropdown.position||""!=t.target.textContent&&8203!=n.charCodeAt(0)||(!0===i.backspace?e.removeTags():"edit"==i.backspace&&setTimeout(e.editTag.bind(e),0));break;case"Esc":case"Escape":if(e.state.dropdown.visible)return;t.target.blur();break;case"Down":case"ArrowDown":e.state.dropdown.visible||e.dropdown.show();break;case"ArrowRight":var b=e.state.inputSuggestion||e.state.ddItemData;if(b&&i.autoComplete.rightKey)return void e.addTags([b],!0);break;case"Tab":var w="select"==i.mode;if(!n||w)return !0;t.preventDefault();case"Enter":if(e.state.dropdown.visible&&!v)return;t.preventDefault(),setTimeout((function(){e.state.dropdown.visible&&!v||e.state.actions.selectOption||!i.addTagOn.includes(t.key.toLowerCase())||e.addTags(n,!0);}));}})).catch((function(t){return t}));}},onInput:function(t){this.postUpdate();var e=this.settings;if("mix"==e.mode)return this.events.callbacks.onMixTagsInput.call(this,t);var i=this.input.normalize.call(this,void 0,{trim:!1}),n=i.length>=e.dropdown.enabled,s={value:i,inputElm:this.DOM.input},a=this.validateTag({value:i});"select"==e.mode&&this.toggleScopeValidation(a),s.isValid=a,this.state.inputText!=i&&(this.input.set.call(this,i,!1),-1!=i.search(e.delimiters)?this.addTags(i)&&this.input.set.call(this):e.dropdown.enabled>=0&&this.dropdown[n?"show":"hide"](i),this.trigger("input",s));},onMixTagsInput:function(t){var e,i,n,s,a,o,r,l,d=this,c=this.settings,u=this.value.length,h=this.getTagElms(),p=document.createDocumentFragment(),m=window.getSelection().getRangeAt(0),v=[].map.call(h,(function(t){return y(t).value}));if("deleteContentBackward"==t.inputType&&f()&&this.events.callbacks.onKeydown.call(this,{target:t.target,key:"Backspace"}),O(this.getTagElms()),this.value.slice().forEach((function(t){t.readonly&&!v.includes(t.value)&&p.appendChild(d.createTagElem(t));})),p.childNodes.length&&(m.insertNode(p),this.setRangeAtStartEnd(!1,p.lastChild)),h.length!=u)return this.value=[].map.call(this.getTagElms(),(function(t){return y(t)})),void this.update({withoutChangeEvent:!0});if(this.hasMaxTags())return !0;if(window.getSelection&&(o=window.getSelection()).rangeCount>0&&3==o.anchorNode.nodeType){if((m=o.getRangeAt(0).cloneRange()).collapse(!0),m.setStart(o.focusNode,0),n=(e=m.toString().slice(0,m.endOffset)).split(c.pattern).length-1,(i=e.match(c.pattern))&&(s=e.slice(e.lastIndexOf(i[i.length-1]))),s){if(this.state.actions.ArrowLeft=!1,this.state.tag={prefix:s.match(c.pattern)[0],value:s.replace(c.pattern,"")},this.state.tag.baseOffset=o.baseOffset-this.state.tag.value.length,l=this.state.tag.value.match(c.delimiters))return this.state.tag.value=this.state.tag.value.replace(c.delimiters,""),this.state.tag.delimiters=l[0],this.addTags(this.state.tag.value,c.dropdown.clearOnSelect),void this.dropdown.hide();a=this.state.tag.value.length>=c.dropdown.enabled;try{r=(r=this.state.flaggedTags[this.state.tag.baseOffset]).prefix==this.state.tag.prefix&&r.value[0]==this.state.tag.value[0],this.state.flaggedTags[this.state.tag.baseOffset]&&!this.state.tag.value&&delete this.state.flaggedTags[this.state.tag.baseOffset];}catch(t){}(r||n<this.state.mixMode.matchedPatternCount)&&(a=!1);}else this.state.flaggedTags={};this.state.mixMode.matchedPatternCount=n;}setTimeout((function(){d.update({withoutChangeEvent:!0}),d.trigger("input",g({},d.state.tag,{textContent:d.DOM.input.textContent})),d.state.tag&&d.dropdown[a?"show":"hide"](d.state.tag.value);}),10);},onInputIE:function(t){var e=this;setTimeout((function(){e.events.callbacks.onInput.call(e,t);}));},observeOriginalInputValue:function(){this.DOM.originalInput.parentNode||this.destroy(),this.DOM.originalInput.value!=this.DOM.originalInput.tagifyValue&&this.loadOriginalValues();},onClickAnywhere:function(t){t.target==this.DOM.scope||this.DOM.scope.contains(t.target)||(this.toggleFocusClass(!1),this.state.hasFocus=!1,t.target.closest(".tagify__dropdown")&&t.target.closest(".tagify__dropdown").__tagify!=this&&this.dropdown.hide());},onClickScope:function(t){var e=this.settings,i=t.target.closest("."+e.classNames.tag),n=t.target===this.DOM.scope,s=+new Date-this.state.hasFocus;if(n&&"select"!=e.mode)this.DOM.input.focus();else {if(!t.target.classList.contains(e.classNames.tagX))return i&&!this.state.editing?(this.trigger("click",{tag:i,index:this.getNodeIndex(i),data:y(i),event:t}),void(1!==e.editTags&&1!==e.editTags.clicks&&"select"!=e.mode||this.events.callbacks.onDoubleClickScope.call(this,t))):void(t.target==this.DOM.input&&("mix"==e.mode&&this.fixFirefoxLastTagNoCaret(),s>500||!e.focusable)?this.state.dropdown.visible?this.dropdown.hide():0===e.dropdown.enabled&&"mix"!=e.mode&&this.dropdown.show(this.value.length?"":void 0):"select"!=e.mode||0!==e.dropdown.enabled||this.state.dropdown.visible||(this.events.callbacks.onDoubleClickScope.call(this,U(function(t){for(var e=1;e<arguments.length;e++){var i=null!=arguments[e]?arguments[e]:{},n=Object.keys(i);"function"==typeof Object.getOwnPropertySymbols&&(n=n.concat(Object.getOwnPropertySymbols(i).filter((function(t){return Object.getOwnPropertyDescriptor(i,t).enumerable})))),n.forEach((function(e){W(t,e,i[e]);}));}return t}({},t),{target:this.getTagElms()[0]})),!e.userInput&&this.dropdown.show()));this.removeTags(t.target.parentNode);}},onPaste:function(t){var e=this;t.preventDefault();var i,n,s,a=this.settings;if("select"==a.mode&&a.enforceWhitelist||!a.userInput)return !1;a.readonly||(n=t.clipboardData||window.clipboardData,s=n.getData("Text"),a.hooks.beforePaste(t,{tagify:this,pastedText:s,clipboardData:n}).then((function(a){void 0===a&&(a=s),a&&(e.injectAtCaret(a,window.getSelection().getRangeAt(0)),"mix"==e.settings.mode?e.events.callbacks.onMixTagsInput.call(e,t):e.settings.pasteAsTags?i=e.addTags(e.state.inputText+a,!0):(e.state.inputText=a,e.dropdown.show(a))),e.trigger("paste",{event:t,pastedText:s,clipboardData:n,tagsElems:i});})).catch((function(t){return t})));},onDrop:function(t){t.preventDefault();},onEditTagInput:function(t,e){var i,n=t.closest("."+this.settings.classNames.tag),s=this.getNodeIndex(n),a=y(n),o=this.input.normalize.call(this,t),r=(W(i={},this.settings.tagTextProp,o),W(i,"__tagId",a.__tagId),i),l=this.validateTag(r);this.editTagChangeDetected(g(a,r))||!0!==t.originalIsValid||(l=!0),n.classList.toggle(this.settings.classNames.tagInvalid,!0!==l),a.__isValid=l,n.title=!0===l?a.title||a.value:l,o.length>=this.settings.dropdown.enabled&&(this.state.editing&&(this.state.editing.value=o),this.dropdown.show(o)),this.trigger("edit:input",{tag:n,index:s,data:g({},this.value[s],{newValue:o}),event:e});},onEditTagPaste:function(t,e){var i=(e.clipboardData||window.clipboardData).getData("Text");e.preventDefault();var n=w(i);this.setRangeAtStartEnd(!1,n);},onEditTagClick:function(t,e){this.events.callbacks.onClickScope.call(this,e);},onEditTagFocus:function(t){this.state.editing={scope:t,input:t.querySelector("[contenteditable]")};},onEditTagBlur:function(t,e){var i=v.call(this,e.relatedTarget);if("select"==this.settings.mode&&i&&e.relatedTarget.contains(e.target))this.dropdown.hide();else if(this.state.editing&&(this.state.hasFocus||this.toggleFocusClass(),this.DOM.scope.contains(t))){var n,s,a,o=this.settings,r=t.closest("."+o.classNames.tag),l=y(r),d=this.input.normalize.call(this,t),c=(W(n={},o.tagTextProp,d),W(n,"__tagId",l.__tagId),n),u=l.__originalData,h=this.editTagChangeDetected(g(l,c)),p=this.validateTag(c);if(d)if(h){var f;if(s=this.hasMaxTags(),a=g({},u,(W(f={},o.tagTextProp,this.trim(d)),W(f,"__isValid",p),f)),o.transformTag.call(this,a,u),!0!==(p=(!s||!0===u.__isValid)&&this.validateTag(a))){if(this.trigger("invalid",{data:a,tag:r,message:p}),o.editTags.keepInvalid)return;o.keepInvalidTags?a.__isValid=p:a=u;}else o.keepInvalidTags&&(delete a.title,delete a["aria-invalid"],delete a.class);this.onEditTagDone(r,a);}else this.onEditTagDone(r,u);else this.onEditTagDone(r);}},onEditTagkeydown:function(t,e){if(!this.state.composing)switch(this.trigger("edit:keydown",{event:t}),t.key){case"Esc":case"Escape":this.state.editing=!1,!!e.__tagifyTagData.__originalData.value?e.parentNode.replaceChild(e.__tagifyTagData.__originalHTML,e):e.remove();break;case"Enter":case"Tab":t.preventDefault();setTimeout((function(){return t.target.blur()}),0);}},onDoubleClickScope:function(t){var e,i,n=t.target.closest("."+this.settings.classNames.tag),s=y(n),a=this.settings;n&&!1!==s.editable&&(e=n.classList.contains(this.settings.classNames.tagEditing),i=n.hasAttribute("readonly"),a.readonly||e||i||!this.settings.editTags||!a.userInput||(this.events.callbacks.onEditTagFocus.call(this,n),this.editTag(n)),this.toggleFocusClass(!0),"select"!=a.mode&&this.trigger("dblclick",{tag:n,index:this.getNodeIndex(n),data:y(n)}));},onInputDOMChange:function(t){var e=this;t.forEach((function(t){t.addedNodes.forEach((function(t){if("<div><br></div>"==t.outerHTML)t.replaceWith(document.createElement("br"));else if(1==t.nodeType&&t.querySelector(e.settings.classNames.tagSelector)){var i,n=document.createTextNode("");3==t.childNodes[0].nodeType&&"BR"!=t.previousSibling.nodeName&&(n=document.createTextNode("\n")),(i=t).replaceWith.apply(i,q([n].concat(q(q(t.childNodes).slice(0,-1))))),T(n);}else if(v.call(e,t)){var s;if(3!=(null===(s=t.previousSibling)||void 0===s?void 0:s.nodeType)||t.previousSibling.textContent||t.previousSibling.remove(),t.previousSibling&&"BR"==t.previousSibling.nodeName){t.previousSibling.replaceWith("\n​");for(var a=t.nextSibling,o="";a;)o+=a.textContent,a=a.nextSibling;o.trim()&&T(t.previousSibling);}else t.previousSibling&&!y(t.previousSibling)||t.before("​");}})),t.removedNodes.forEach((function(t){t&&"BR"==t.nodeName&&v.call(e,i)&&(e.removeTags(i),e.fixFirefoxLastTagNoCaret());}));}));var i=this.DOM.input.lastChild;i&&""==i.nodeValue&&i.remove(),i&&"BR"==i.nodeName||this.DOM.input.appendChild(document.createElement("br"));}}};function X(t,e){(null==e||e>t.length)&&(e=t.length);for(var i=0,n=new Array(e);i<e;i++)n[i]=t[i];return n}function J(t,e,i){return e in t?Object.defineProperty(t,e,{value:i,enumerable:!0,configurable:!0,writable:!0}):t[e]=i,t}function G(t,e){return null!=e&&"undefined"!=typeof Symbol&&e[Symbol.hasInstance]?!!e[Symbol.hasInstance](t):t instanceof e}function $$1(t){for(var e=1;e<arguments.length;e++){var i=null!=arguments[e]?arguments[e]:{},n=Object.keys(i);"function"==typeof Object.getOwnPropertySymbols&&(n=n.concat(Object.getOwnPropertySymbols(i).filter((function(t){return Object.getOwnPropertyDescriptor(i,t).enumerable})))),n.forEach((function(e){J(t,e,i[e]);}));}return t}function Q(t){return function(t){if(Array.isArray(t))return X(t)}(t)||function(t){if("undefined"!=typeof Symbol&&null!=t[Symbol.iterator]||null!=t["@@iterator"])return Array.from(t)}(t)||function(t,e){if(!t)return;if("string"==typeof t)return X(t,e);var i=Object.prototype.toString.call(t).slice(8,-1);"Object"===i&&t.constructor&&(i=t.constructor.name);if("Map"===i||"Set"===i)return Array.from(i);if("Arguments"===i||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(i))return X(t,e)}(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function Y(t,e){if(!t){n.warn("input element not found",t);var i=new Proxy(this,{get:function(){return function(){return i}}});return i}if(t.__tagify)return n.warn("input element is already Tagified - Same instance is returned.",t),t.__tagify;var s;g(this,function(t){var e=document.createTextNode(""),i={};function s(t,i,n){n&&i.split(/\s+/g).forEach((function(i){return e[t+"EventListener"].call(e,i,n)}));}return {removeAllCustomListeners:function(){Object.entries(i).forEach((function(t){var e=H(t,2),i=e[0];e[1].forEach((function(t){return s("remove",i,t)}));})),i={};},off:function(t,e){return t&&(e?s("remove",t,e):t.split(/\s+/g).forEach((function(t){var e;null===(e=i[t])||void 0===e||e.forEach((function(e){return s("remove",t,e)})),delete i[t];}))),this},on:function(t,e){return e&&"function"==typeof e&&(t.split(/\s+/g).forEach((function(t){Array.isArray(i[t])?i[t].push(e):i[t]=[e];})),s("add",t,e)),this},trigger:function(i,s,a){var o;if(a=a||{cloneData:!0},i)if(t.settings.isJQueryPlugin)"remove"==i&&(i="removeTag"),jQuery(t.DOM.originalInput).triggerHandler(i,[s]);else {try{var r="object"==typeof s?s:{value:s};if((r=a.cloneData?g({},r):r).tagify=this,s.event&&(r.event=this.cloneEvent(s.event)),R(s,Object))for(var l in s)R(s[l],HTMLElement)&&(r[l]=s[l]);o=new CustomEvent(i,{detail:r});}catch(t){n.warn(t);}e.dispatchEvent(o);}}}}(this)),this.isFirefox=/firefox|fxios/i.test(navigator.userAgent)&&!/seamonkey/i.test(navigator.userAgent),this.isIE=window.document.documentMode,e=e||{},this.getPersistedData=(s=e.id,function(t){var e,i="/"+t;if(1==localStorage.getItem(j+s+"/v",1))try{e=JSON.parse(localStorage[j+s+i]);}catch(t){}return e}),this.setPersistedData=function(t){return t?(localStorage.setItem(j+t+"/v",1),function(e,i){var n="/"+i,s=JSON.stringify(e);e&&i&&(localStorage.setItem(j+t+n,s),dispatchEvent(new Event("storage")));}):function(){}}(e.id),this.clearPersistedData=function(t){return function(e){var i=j+"/"+t+"/";if(e)localStorage.removeItem(i+e);else for(var n in localStorage)n.includes(i)&&localStorage.removeItem(n);}}(e.id),this.applySettings(t,e),this.state={inputText:"",editing:!1,composing:!1,actions:{},mixMode:{},dropdown:{},flaggedTags:{}},this.value=[],this.listeners={},this.DOM={},this.build(t),_.call(this),this.getCSSVars(),this.loadOriginalValues(),this.events.customBinding.call(this),this.events.binding.call(this),t.autofocus&&this.DOM.input.focus(),t.__tagify=this;}Y.prototype={_dropdown:L,placeCaretAfterNode:T,getSetTagData:y,helpers:{sameStr:s,removeCollectionProp:a,omit:o,isObject:u,parseHTML:l,escapeHTML:c,extend:g,concatWithoutDups:h,getUID:m,isNodeTag:v},customEventsList:["change","add","remove","invalid","input","paste","click","keydown","focus","blur","edit:input","edit:beforeUpdate","edit:updated","edit:start","edit:keydown","dropdown:show","dropdown:hide","dropdown:select","dropdown:updated","dropdown:noMatch","dropdown:scroll"],dataProps:["__isValid","__removed","__originalData","__originalHTML","__tagId"],trim:function(t){return this.settings.trim&&t&&"string"==typeof t?t.trim():t},parseHTML:l,templates:V,parseTemplate:function(t,e){return l((t=this.settings.templates[t]||t).apply(this,e))},set whitelist(t){var e=t&&Array.isArray(t);this.settings.whitelist=e?t:[],this.setPersistedData(e?t:[],"whitelist");},get whitelist(){return this.settings.whitelist},set userInput(t){this.settings.userInput=!!t,this.setContentEditable(!!t);},get userInput(){return this.settings.userInput},generateClassSelectors:function(t){var e=function(e){var i=e;Object.defineProperty(t,i+"Selector",{get:function(){return "."+this[i].split(" ")[0]}});};for(var i in t)e(i);},applySettings:function(t,e){var i,n;x$1.templates=this.templates;var s=g({},x$1,"mix"==e.mode?{dropdown:{position:"text"}}:{}),a=this.settings=g({},s,e);if(a.disabled=t.hasAttribute("disabled"),a.readonly=a.readonly||t.hasAttribute("readonly"),a.placeholder=c(t.getAttribute("placeholder")||a.placeholder||""),a.required=t.hasAttribute("required"),this.generateClassSelectors(a.classNames),void 0===a.dropdown.includeSelectedTags&&(a.dropdown.includeSelectedTags=a.duplicates),this.isIE&&(a.autoComplete=!1),["whitelist","blacklist"].forEach((function(e){var i=t.getAttribute("data-"+e);i&&G(i=i.split(a.delimiters),Array)&&(a[e]=i);})),"autoComplete"in e&&!u(e.autoComplete)&&(a.autoComplete=x$1.autoComplete,a.autoComplete.enabled=e.autoComplete),"mix"==a.mode&&(a.pattern=a.pattern||/@/,a.autoComplete.rightKey=!0,a.delimiters=e.delimiters||null,a.tagTextProp&&!a.dropdown.searchKeys.includes(a.tagTextProp)&&a.dropdown.searchKeys.push(a.tagTextProp)),t.pattern)try{a.pattern=new RegExp(t.pattern);}catch(t){}if(a.delimiters){a._delimiters=a.delimiters;try{a.delimiters=new RegExp(this.settings.delimiters,"g");}catch(t){}}a.disabled&&(a.userInput=!1),this.TEXTS=$$1({},P,a.texts||{}),("select"!=a.mode||(null===(i=e.dropdown)||void 0===i?void 0:i.enabled))&&a.userInput||(a.dropdown.enabled=0),a.dropdown.appendTarget=(null===(n=e.dropdown)||void 0===n?void 0:n.appendTarget)||document.body;var o=this.getPersistedData("whitelist");Array.isArray(o)&&(this.whitelist=Array.isArray(a.whitelist)?h(a.whitelist,o):o);},getAttributes:function(t){var e,i=this.getCustomAttributes(t),n="";for(e in i)n+=" "+e+(void 0!==t[e]?'="'.concat(i[e],'"'):"");return n},getCustomAttributes:function(t){if(!u(t))return "";var e,i={};for(e in t)"__"!=e.slice(0,2)&&"class"!=e&&t.hasOwnProperty(e)&&void 0!==t[e]&&(i[e]=c(t[e]));return i},setStateSelection:function(){var t=window.getSelection(),e={anchorOffset:t.anchorOffset,anchorNode:t.anchorNode,range:t.getRangeAt&&t.rangeCount&&t.getRangeAt(0)};return this.state.selection=e,e},getCSSVars:function(){var t,e,i,n=getComputedStyle(this.DOM.scope,null);this.CSSVars={tagHideTransition:(t=function(t){if(!t)return {};var e=(t=t.trim().split(" ")[0]).split(/\d+/g).filter((function(t){return t})).pop().trim();return {value:+t.split(e).filter((function(t){return t}))[0].trim(),unit:e}}((i="tag-hide-transition",n.getPropertyValue("--"+i))),e=t.value,"s"==t.unit?1e3*e:e)};},build:function(t){var e=this.DOM,i=t.closest("label");this.settings.mixMode.integrated?(e.originalInput=null,e.scope=t,e.input=t):(e.originalInput=t,e.originalInput_tabIndex=t.tabIndex,e.scope=this.parseTemplate("wrapper",[t,this.settings]),e.input=e.scope.querySelector(this.settings.classNames.inputSelector),t.parentNode.insertBefore(e.scope,t),t.tabIndex=-1),i&&i.setAttribute("for","");},destroy:function(){this.events.unbindGlobal.call(this),this.DOM.scope.parentNode.removeChild(this.DOM.scope),this.DOM.originalInput.tabIndex=this.DOM.originalInput_tabIndex,delete this.DOM.originalInput.__tagify,this.dropdown.hide(!0),this.removeAllCustomListeners(),clearTimeout(this.dropdownHide__bindEventsTimeout),clearInterval(this.listeners.main.originalInputValueObserverInterval);},loadOriginalValues:function(t){var e,i=this.settings;if(this.state.blockChangeEvent=!0,void 0===t){var n=this.getPersistedData("value");t=n&&!this.DOM.originalInput.value?n:i.mixMode.integrated?this.DOM.input.textContent:this.DOM.originalInput.value;}if(this.removeAllTags(),t)if("mix"==i.mode)this.parseMixTags(t),(e=this.DOM.input.lastChild)&&"BR"==e.tagName||this.DOM.input.insertAdjacentHTML("beforeend","<br>");else {try{G(JSON.parse(t),Array)&&(t=JSON.parse(t));}catch(t){}this.addTags(t,!0).forEach((function(t){return t&&t.classList.add(i.classNames.tagNoAnimation)}));}else this.postUpdate();this.state.lastOriginalValueReported=i.mixMode.integrated?"":this.DOM.originalInput.value;},cloneEvent:function(t){var e={};for(var i in t)"path"!=i&&(e[i]=t[i]);return e},loading:function(t){return this.state.isLoading=t,this.DOM.scope.classList[t?"add":"remove"](this.settings.classNames.scopeLoading),this},tagLoading:function(t,e){return t&&t.classList[e?"add":"remove"](this.settings.classNames.tagLoading),this},toggleClass:function(t,e){"string"==typeof t&&this.DOM.scope.classList.toggle(t,e);},toggleScopeValidation:function(t){var e=!0===t||void 0===t;!this.settings.required&&t&&t===this.TEXTS.empty&&(e=!0),this.toggleClass(this.settings.classNames.tagInvalid,!e),this.DOM.scope.title=e?"":t;},toggleFocusClass:function(t){this.toggleClass(this.settings.classNames.focus,!!t);},setPlaceholder:function(t){var e=this;["data","aria"].forEach((function(i){return e.DOM.input.setAttribute("".concat(i,"-placeholder"),t)}));},triggerChangeEvent:function(){if(!this.settings.mixMode.integrated){var t=this.DOM.originalInput,e=this.state.lastOriginalValueReported!==t.value,i=new CustomEvent("change",{bubbles:!0});e&&(this.state.lastOriginalValueReported=t.value,i.simulated=!0,t._valueTracker&&t._valueTracker.setValue(Math.random()),t.dispatchEvent(i),this.trigger("change",this.state.lastOriginalValueReported),t.value=this.state.lastOriginalValueReported);}},events:z,fixFirefoxLastTagNoCaret:function(){},setRangeAtStartEnd:function(t,e){if(e){t="number"==typeof t?t:!!t,e=e.lastChild||e;var i=document.getSelection();if(G(i.focusNode,Element)&&!this.DOM.input.contains(i.focusNode))return !0;try{i.rangeCount>=1&&["Start","End"].forEach((function(n){return i.getRangeAt(0)["set"+n](e,t||e.length)}));}catch(t){console.warn(t);}}},insertAfterTag:function(t,e){if(e=e||this.settings.mixMode.insertAfterTag,t&&t.parentNode&&e)return e="string"==typeof e?document.createTextNode(e):e,t.parentNode.insertBefore(e,t.nextSibling),e},editTagChangeDetected:function(t){var e=t.__originalData;for(var i in e)if(!this.dataProps.includes(i)&&t[i]!=e[i])return !0;return !1},getTagTextNode:function(t){return t.querySelector(this.settings.classNames.tagTextSelector)},setTagTextNode:function(t,e){this.getTagTextNode(t).innerHTML=c(e);},editTag:function(t,e){var i=this;t=t||this.getLastTag(),e=e||{};var s=this.settings,a=this.getTagTextNode(t),o=this.getNodeIndex(t),r=y(t),l=this.events.callbacks,d=!0,c="select"==s.mode;if(!c&&this.dropdown.hide(),a){if(!G(r,Object)||!("editable"in r)||r.editable)return r=y(t,{__originalData:g({},r),__originalHTML:t.cloneNode(!0)}),y(r.__originalHTML,r.__originalData),a.setAttribute("contenteditable",!0),t.classList.add(s.classNames.tagEditing),a.addEventListener("click",l.onEditTagClick.bind(this,t)),a.addEventListener("blur",l.onEditTagBlur.bind(this,this.getTagTextNode(t))),a.addEventListener("input",l.onEditTagInput.bind(this,a)),a.addEventListener("paste",l.onEditTagPaste.bind(this,a)),a.addEventListener("keydown",(function(e){return l.onEditTagkeydown.call(i,e,t)})),a.addEventListener("compositionstart",l.onCompositionStart.bind(this)),a.addEventListener("compositionend",l.onCompositionEnd.bind(this)),e.skipValidation||(d=this.editTagToggleValidity(t)),a.originalIsValid=d,this.trigger("edit:start",{tag:t,index:o,data:r,isValid:d}),a.focus(),!c&&this.setRangeAtStartEnd(!1,a),0===s.dropdown.enabled&&!c&&this.dropdown.show(),this.state.hasFocus=!0,this}else n.warn("Cannot find element in Tag template: .",s.classNames.tagTextSelector);},editTagToggleValidity:function(t,e){var i;if(e=e||y(t))return (i=!("__isValid"in e)||!0===e.__isValid)||this.removeTagsFromValue(t),this.update(),t.classList.toggle(this.settings.classNames.tagNotAllowed,!i),e.__isValid=i,e.__isValid;n.warn("tag has no data: ",t,e);},onEditTagDone:function(t,e){t=t||this.state.editing.scope,e=e||{};var i,n,s={tag:t,index:this.getNodeIndex(t),previousData:y(t),data:e},a=this.settings;this.trigger("edit:beforeUpdate",s,{cloneData:!1}),this.state.editing=!1,delete e.__originalData,delete e.__originalHTML,t&&(void 0!==(n=e[a.tagTextProp])?null===(i=(n+="").trim)||void 0===i?void 0:i.call(n):a.tagTextProp in e?void 0:e.value)?(t=this.replaceTag(t,e),this.editTagToggleValidity(t,e),a.a11y.focusableTags?t.focus():"select"!=a.mode&&T(t)):t&&this.removeTags(t),this.trigger("edit:updated",s),this.dropdown.hide(),this.settings.keepInvalidTags&&this.reCheckInvalidTags();},replaceTag:function(t,e){e&&""!==e.value&&void 0!==e.value||(e=t.__tagifyTagData),e.__isValid&&1!=e.__isValid&&g(e,this.getInvalidTagAttrs(e,e.__isValid));var i=this.createTagElem(e);return t.parentNode.replaceChild(i,t),this.updateValueByDOMTags(),i},updateValueByDOMTags:function(){var t=this;this.value.length=0;var e=this.settings.classNames,i=[e.tagNotAllowed.split(" ")[0],e.tagHide];[].forEach.call(this.getTagElms(),(function(e){Q(e.classList).some((function(t){return i.includes(t)}))||t.value.push(y(e));})),this.update();},injectAtCaret:function(t,e){var i;if(!(e=e||(null===(i=this.state.selection)||void 0===i?void 0:i.range))&&t)return this.appendMixTags(t),this;var n=w(t,e);return this.setRangeAtStartEnd(!1,n),this.updateValueByDOMTags(),this.update(),this},input:{set:function(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"",e=!(arguments.length>1&&void 0!==arguments[1])||arguments[1],i=this.settings,n=i.dropdown.closeOnSelect;this.state.inputText=t,e&&(this.DOM.input.innerHTML=c(""+t),t&&this.toggleClass(i.classNames.empty,!this.DOM.input.innerHTML)),!t&&n&&this.dropdown.hide.bind(this),this.input.autocomplete.suggest.call(this),this.input.validate.call(this);},raw:function(){return this.DOM.input.textContent},validate:function(){var t=!this.state.inputText||!0===this.validateTag({value:this.state.inputText});return this.DOM.input.classList.toggle(this.settings.classNames.inputInvalid,!t),t},normalize:function(t,e){var i=t||this.DOM.input,n=[];i.childNodes.forEach((function(t){return 3==t.nodeType&&n.push(t.nodeValue)})),n=n.join("\n");try{n=n.replace(/(?:\r\n|\r|\n)/g,this.settings.delimiters.source.charAt(0));}catch(t){}return n=n.replace(/\s/g," "),(null==e?void 0:e.trim)?this.trim(n):n},autocomplete:{suggest:function(t){if(this.settings.autoComplete.enabled){"object"!=typeof(t=t||{value:""})&&(t={value:t});var e=this.dropdown.getMappedValue(t);if("number"!=typeof e){var i=this.state.inputText.toLowerCase(),n=e.substr(0,this.state.inputText.length).toLowerCase(),s=e.substring(this.state.inputText.length);e&&this.state.inputText&&n==i?(this.DOM.input.setAttribute("data-suggest",s),this.state.inputSuggestion=t):(this.DOM.input.removeAttribute("data-suggest"),delete this.state.inputSuggestion);}}},set:function(t){var e=this.DOM.input.getAttribute("data-suggest"),i=t||(e?this.state.inputText+e:null);return !!i&&("mix"==this.settings.mode?this.replaceTextWithNode(document.createTextNode(this.state.tag.prefix+i)):(this.input.set.call(this,i),this.setRangeAtStartEnd(!1,this.DOM.input)),this.input.autocomplete.suggest.call(this),this.dropdown.hide(),!0)}}},getTagIdx:function(t){return this.value.findIndex((function(e){return e.__tagId==(t||{}).__tagId}))},getNodeIndex:function(t){var e=0;if(t)for(;t=t.previousElementSibling;)e++;return e},getTagElms:function(){for(var t=arguments.length,e=new Array(t),i=0;i<t;i++)e[i]=arguments[i];var n="."+Q(this.settings.classNames.tag.split(" ")).concat(Q(e)).join(".");return [].slice.call(this.DOM.scope.querySelectorAll(n))},getLastTag:function(){var t=this.settings.classNames,e=this.DOM.scope.querySelectorAll("".concat(t.tagSelector,":not(.").concat(t.tagHide,"):not([readonly])"));return e[e.length-1]},isTagDuplicate:function(t,e,i){var n=0,a=!0,o=!1,r=void 0;try{for(var l,d=this.value[Symbol.iterator]();!(a=(l=d.next()).done);a=!0){var c=l.value;s(this.trim(""+t),c.value,e)&&i!=c.__tagId&&n++;}}catch(t){o=!0,r=t;}finally{try{a||null==d.return||d.return();}finally{if(o)throw r}}return n},getTagIndexByValue:function(t){var e=this,i=[],n=this.settings.dropdown.caseSensitive;return this.getTagElms().forEach((function(a,o){a.__tagifyTagData&&s(e.trim(a.__tagifyTagData.value),t,n)&&i.push(o);})),i},getTagElmByValue:function(t){var e=this.getTagIndexByValue(t)[0];return this.getTagElms()[e]},flashTag:function(t){var e=this;t&&(t.classList.add(this.settings.classNames.tagFlash),setTimeout((function(){t.classList.remove(e.settings.classNames.tagFlash);}),100));},isTagBlacklisted:function(t){return t=this.trim(t.toLowerCase()),this.settings.blacklist.filter((function(e){return (""+e).toLowerCase()==t})).length},isTagWhitelisted:function(t){return !!this.getWhitelistItem(t)},getWhitelistItem:function(t,e,i){e=e||"value";var n,a=this.settings;return (i=i||a.whitelist).some((function(i){var o="object"==typeof i?i[e]||i.value:i;if(s(o,t,a.dropdown.caseSensitive,a.trim))return n="object"==typeof i?i:{value:i},!0})),n||"value"!=e||"value"==a.tagTextProp||(n=this.getWhitelistItem(t,a.tagTextProp,i)),n},validateTag:function(t){var e=this.settings,i="value"in t?"value":e.tagTextProp,n=this.trim(t[i]+"");return (t[i]+"").trim()?"mix"!=e.mode&&e.pattern&&G(e.pattern,RegExp)&&!e.pattern.test(n)?this.TEXTS.pattern:!e.duplicates&&this.isTagDuplicate(n,e.dropdown.caseSensitive,t.__tagId)?this.TEXTS.duplicate:this.isTagBlacklisted(n)||e.enforceWhitelist&&!this.isTagWhitelisted(n)?this.TEXTS.notAllowed:!e.validate||e.validate(t):this.TEXTS.empty},getInvalidTagAttrs:function(t,e){return {"aria-invalid":!0,class:"".concat(t.class||""," ").concat(this.settings.classNames.tagNotAllowed).trim(),title:e}},hasMaxTags:function(){return this.value.length>=this.settings.maxTags&&this.TEXTS.exceed},setReadonly:function(t,e){var i=this.settings;this.DOM.scope.contains(document.activeElement)&&document.activeElement.blur(),i[e||"readonly"]=t,this.DOM.scope[(t?"set":"remove")+"Attribute"](e||"readonly",!0),this.settings.userInput=!0,this.setContentEditable(!t);},setContentEditable:function(t){this.DOM.input.contentEditable=t,this.DOM.input.tabIndex=t?0:-1;},setDisabled:function(t){this.setReadonly(t,"disabled");},normalizeTags:function(t){var e=this,i=this.settings,n=i.whitelist,s=i.delimiters,a=i.mode,o=i.tagTextProp,r=[],l=!!n&&G(n[0],Object),d=Array.isArray(t),c=d&&t[0].value,h=function(t){return (t+"").split(s).reduce((function(t,i){var n,s=e.trim(i);return s&&t.push((J(n={},o,s),J(n,"value",s),n)),t}),[])};if("number"==typeof t&&(t=t.toString()),"string"==typeof t){if(!t.trim())return [];t=h(t);}else d&&(t=t.reduce((function(t,i){if(u(i)){var n=g({},i);o in n||(o="value"),n[o]=e.trim(n[o]),n[o]&&t.push(n);}else if(i){var s;(s=t).push.apply(s,Q(h(i)));}return t}),[]));return l&&!c&&(t.forEach((function(t){var i=r.map((function(t){return t.value})),n=e.dropdown.filterListItems.call(e,t[o],{exact:!0});e.settings.duplicates||(n=n.filter((function(t){return !i.includes(t.value)})));var s=n.length>1?e.getWhitelistItem(t[o],o,n):n[0];s&&G(s,Object)?r.push(s):"mix"!=a&&(null==t.value&&(t.value=t[o]),r.push(t));})),r.length&&(t=r)),t},parseMixTags:function(t){var e=this,i=this.settings,n=i.mixTagsInterpolator,s=i.duplicates,a=i.transformTag,o=i.enforceWhitelist,r=i.maxTags,l=i.tagTextProp,d=[];t=t.split(n[0]).map((function(t,i){var c,u,g,h=t.split(n[1]),p=h[0],f=d.length==r;try{if(p==+p)throw Error;u=JSON.parse(p);}catch(t){u=e.normalizeTags(p)[0]||{value:p};}if(a.call(e,u),f||!(h.length>1)||o&&!e.isTagWhitelisted(u.value)||!s&&e.isTagDuplicate(u.value)){if(t)return i?n[0]+t:t}else u[c=u[l]?l:"value"]=e.trim(u[c]),g=e.createTagElem(u),d.push(u),g.classList.add(e.settings.classNames.tagNoAnimation),h[0]=g.outerHTML,e.value.push(u);return h.join("")})).join(""),this.DOM.input.innerHTML=t,this.DOM.input.appendChild(document.createTextNode("")),this.DOM.input.normalize();var c=this.getTagElms();return c.forEach((function(t,e){return y(t,d[e])})),this.update({withoutChangeEvent:!0}),O(c,this.state.hasFocus),t},replaceTextWithNode:function(t,e){if(this.state.tag||e){e=e||this.state.tag.prefix+this.state.tag.value;var i,n,s=this.state.selection||window.getSelection(),a=s.anchorNode,o=this.state.tag.delimiters?this.state.tag.delimiters.length:0;return a.splitText(s.anchorOffset-o),-1==(i=a.nodeValue.lastIndexOf(e))?!0:(n=a.splitText(i),t&&a.parentNode.replaceChild(t,n),!0)}},prepareNewTagNode:function(t,e){e=e||{};var i=this.settings,n=[],s={},a=Object.assign({},t,{value:t.value+""});if(t=Object.assign({},a),i.transformTag.call(this,t),t.__isValid=this.hasMaxTags()||this.validateTag(t),!0!==t.__isValid){if(e.skipInvalid)return;if(g(s,this.getInvalidTagAttrs(t,t.__isValid),{__preInvalidData:a}),t.__isValid==this.TEXTS.duplicate&&this.flashTag(this.getTagElmByValue(t.value)),!i.createInvalidTags)return void n.push(t.value)}return "readonly"in t&&(t.readonly?s["aria-readonly"]=!0:delete t.readonly),{tagElm:this.createTagElem(t,s),tagData:t,aggregatedInvalidInput:n}},postProcessNewTagNode:function(t,e){var i=this,n=this.settings,s=e.__isValid;s&&!0===s?(this.value.push(e),setTimeout((function(){i.trigger("add",{tag:t,index:i.value.length-1,data:e});}))):(this.trigger("invalid",{data:e,index:this.value.length,tag:t,message:s}),n.keepInvalidTags||setTimeout((function(){return i.removeTags(t,!0)}),1e3)),this.dropdown.position();},selectTag:function(t,e){var i=this;if(!this.settings.enforceWhitelist||this.isTagWhitelisted(e.value)){this.state.actions.selectOption&&setTimeout((function(){return i.setRangeAtStartEnd(!1,i.DOM.input)}));var n=this.getLastTag();return n?this.replaceTag(n,e):this.appendTag(t),this.value[0]=e,this.update(),this.trigger("add",{tag:t,data:e}),[t]}},addEmptyTag:function(t){var e=g({value:""},t||{}),i=this.createTagElem(e);y(i,e),this.appendTag(i),this.editTag(i,{skipValidation:!0}),this.toggleFocusClass(!0);},addTags:function(t,e,i){var n=this,s=[],a=this.settings,o=[],r=document.createDocumentFragment();if(!t||0==t.length)return s;switch(t=this.normalizeTags(t),a.mode){case"mix":return this.addMixTags(t);case"select":e=!1,this.removeAllTags();}return this.DOM.input.removeAttribute("style"),t.forEach((function(t){var e=n.prepareNewTagNode(t,{skipInvalid:i||a.skipInvalid});if(e){var l=e.tagElm;if(t=e.tagData,o=e.aggregatedInvalidInput,s.push(l),"select"==a.mode)return n.selectTag(l,t);r.appendChild(l),n.postProcessNewTagNode(l,t);}})),this.appendTag(r),this.update(),t.length&&e&&(this.input.set.call(this,a.createInvalidTags?"":o.join(a._delimiters)),this.setRangeAtStartEnd(!1,this.DOM.input)),this.dropdown.refilter(),s},addMixTags:function(t){var e=this;if((t=this.normalizeTags(t))[0].prefix||this.state.tag)return this.prefixedTextToTag(t[0]);var i=document.createDocumentFragment();return t.forEach((function(t){var n=e.prepareNewTagNode(t);i.appendChild(n.tagElm),e.insertAfterTag(n.tagElm),e.postProcessNewTagNode(n.tagElm,n.tagData);})),this.appendMixTags(i),i.children},appendMixTags:function(t){var e=!!this.state.selection;e?this.injectAtCaret(t):(this.DOM.input.focus(),(e=this.setStateSelection()).range.setStart(this.DOM.input,e.range.endOffset),e.range.setEnd(this.DOM.input,e.range.endOffset),this.DOM.input.appendChild(t),this.updateValueByDOMTags(),this.update());},prefixedTextToTag:function(t){var e,i,n,s=this,a=this.settings,o=null===(e=this.state.tag)||void 0===e?void 0:e.delimiters;if(t.prefix=t.prefix||this.state.tag?this.state.tag.prefix:(a.pattern.source||a.pattern)[0],n=this.prepareNewTagNode(t),i=n.tagElm,this.replaceTextWithNode(i)||this.DOM.input.appendChild(i),setTimeout((function(){return i.classList.add(s.settings.classNames.tagNoAnimation)}),300),this.value.push(n.tagData),this.update(),!o){var r=this.insertAfterTag(i)||i;setTimeout(T,0,r);}return this.state.tag=null,this.postProcessNewTagNode(i,n.tagData),i},appendTag:function(t){var e=this.DOM,i=e.input;e.scope.insertBefore(t,i);},createTagElem:function(t,e){t.__tagId=m();var i,n=g({},t,$$1({value:c(t.value+"")},e));return function(t){for(var e,i=document.createNodeIterator(t,NodeFilter.SHOW_TEXT,null,!1);e=i.nextNode();)e.textContent.trim()||e.parentNode.removeChild(e);}(i=this.parseTemplate("tag",[n,this])),y(i,t),i},reCheckInvalidTags:function(){var t=this,e=this.settings;this.getTagElms(e.classNames.tagNotAllowed).forEach((function(i,n){var s=y(i),a=t.hasMaxTags(),o=t.validateTag(s),r=!0===o&&!a;if("select"==e.mode&&t.toggleScopeValidation(o),r)return s=s.__preInvalidData?s.__preInvalidData:{value:s.value},t.replaceTag(i,s);i.title=a||o;}));},removeTags:function(t,e,i){var n,s=this,a=this.settings;if(t=t&&G(t,HTMLElement)?[t]:G(t,Array)?t:t?[t]:[this.getLastTag()].filter((function(t){return t})),n=t.reduce((function(t,e){e&&"string"==typeof e&&(e=s.getTagElmByValue(e));var i=y(e);return e&&i&&!i.readonly&&t.push({node:e,idx:s.getTagIdx(i),data:y(e,{__removed:!0})}),t}),[]),i="number"==typeof i?i:this.CSSVars.tagHideTransition,"select"==a.mode&&(i=0,this.input.set.call(this)),1==n.length&&"select"!=a.mode&&n[0].node.classList.contains(a.classNames.tagNotAllowed)&&(e=!0),n.length)return a.hooks.beforeRemoveTag(n,{tagify:this}).then((function(){var t=function(t){t.node.parentNode&&(t.node.parentNode.removeChild(t.node),e?a.keepInvalidTags&&this.trigger("remove",{tag:t.node,index:t.idx}):(this.trigger("remove",{tag:t.node,index:t.idx,data:t.data}),this.dropdown.refilter(),this.dropdown.position(),this.DOM.input.normalize(),a.keepInvalidTags&&this.reCheckInvalidTags()));};i&&i>10&&1==n.length?function(e){e.node.style.width=parseFloat(window.getComputedStyle(e.node).width)+"px",document.body.clientTop,e.node.classList.add(a.classNames.tagHide),setTimeout(t.bind(this),i,e);}.call(s,n[0]):n.forEach(t.bind(s)),e||(s.removeTagsFromValue(n.map((function(t){return t.node}))),s.update(),"select"==a.mode&&a.userInput&&s.setContentEditable(!0));})).catch((function(t){}))},removeTagsFromDOM:function(){this.getTagElms().forEach((function(t){return t.remove()}));},removeTagsFromValue:function(t){var e=this;(t=Array.isArray(t)?t:[t]).forEach((function(t){var i=y(t),n=e.getTagIdx(i);n>-1&&e.value.splice(n,1);}));},removeAllTags:function(t){var e=this;t=t||{},this.value=[],"mix"==this.settings.mode?this.DOM.input.innerHTML="":this.removeTagsFromDOM(),this.dropdown.refilter(),this.dropdown.position(),this.state.dropdown.visible&&setTimeout((function(){e.DOM.input.focus();})),"select"==this.settings.mode&&(this.input.set.call(this),this.settings.userInput&&this.setContentEditable(!0)),this.update(t);},postUpdate:function(){this.state.blockChangeEvent=!1;var t,e,i=this.settings,n=i.classNames,s="mix"==i.mode?i.mixMode.integrated?this.DOM.input.textContent:this.DOM.originalInput.value.trim():this.value.length+this.input.raw.call(this).length;(this.toggleClass(n.hasMaxTags,this.value.length>=i.maxTags),this.toggleClass(n.hasNoTags,!this.value.length),this.toggleClass(n.empty,!s),"select"==i.mode)&&this.toggleScopeValidation(null===(e=this.value)||void 0===e||null===(t=e[0])||void 0===t?void 0:t.__isValid);},setOriginalInputValue:function(t){var e=this.DOM.originalInput;this.settings.mixMode.integrated||(e.value=t,e.tagifyValue=e.value,this.setPersistedData(t,"value"));},update:function(t){clearTimeout(this.debouncedUpdateTimeout),this.debouncedUpdateTimeout=setTimeout(function(){var e=this.getInputValue();this.setOriginalInputValue(e),this.settings.onChangeAfterBlur&&(t||{}).withoutChangeEvent||this.state.blockChangeEvent||this.triggerChangeEvent();this.postUpdate();}.bind(this),100),this.events.bindOriginaInputListener.call(this,100);},getInputValue:function(){var t=this.getCleanValue();return "mix"==this.settings.mode?this.getMixedTagsAsString(t):t.length?this.settings.originalInputValueFormat?this.settings.originalInputValueFormat(t):JSON.stringify(t):""},getCleanValue:function(t){return a(t||this.value,this.dataProps)},getMixedTagsAsString:function(){var t="",e=this,i=this.settings,n=i.originalInputValueFormat||JSON.stringify,s=i.mixTagsInterpolator;return function i(a){a.childNodes.forEach((function(a){if(1==a.nodeType){var r=y(a);if("BR"==a.tagName&&(t+="\r\n"),r&&v.call(e,a)){if(r.__removed)return;t+=s[0]+n(o(r,e.dataProps))+s[1];}else a.getAttribute("style")||["B","I","U"].includes(a.tagName)?t+=a.textContent:"DIV"!=a.tagName&&"P"!=a.tagName||(t+="\r\n",i(a));}else t+=a.textContent;}));}(this.DOM.input),t}},Y.prototype.removeTag=Y.prototype.removeTags;
+
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$5, ApplicationV2: ApplicationV2$5 } = foundry.applications.api;
+
+class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$5(ApplicationV2$5) {
+    constructor(){
+        super({});
+
+        this.settings = {
+            useTokenArt: game.settings.get('pf2e-bestiary-tracking', 'use-token-art'),
+            hideAbilityDescriptions: game.settings.get('pf2e-bestiary-tracking', 'hide-ability-descriptions'),
+            additionalCreatureTypes: game.settings.get('pf2e-bestiary-tracking', 'additional-creature-types').map(x => ({ value: x.value, name: game.i18n.localize(x.name) })),
+            contrastRevealedState: game.settings.get('pf2e-bestiary-tracking', 'contrast-revealed-state'),
+            optionalFields: game.settings.get('pf2e-bestiary-tracking', 'optional-fields'),
+            detailedInformation: game.settings.get('pf2e-bestiary-tracking', 'detailed-information-toggles'),
+        };
+    }
+
+    get title(){
+        return game.i18n.localize('PF2EBestiary.Menus.BestiaryAppearance.Name'); 
+    }
+
+    static DEFAULT_OPTIONS = {
+        tag: 'form',
+        id: 'pf2e-bestiary-tracking-appearance-menu',
+        classes: ["bestiary-settings-menu"],
+        position: { width: 680, height: 'auto' },
+        actions: {
+            resetContrastRevealedState: this.resetContrastRevealedState,
+            toggleOptionalFields: this.toggleOptionalFields,
+            toggleDetailedInformation: this.toggleDetailedInformation,
+            save: this.save,
+        },
+        form: { handler: this.updateData, submitOnChange: true },
+    };
+      
+    static PARTS = {
+        application: {
+            id: "bestiary-appearance-menu",
+            template: "modules/pf2e-bestiary-tracking/templates/bestiaryAppearanceMenu.hbs"
+        }
+    }
+
+    _attachPartListeners(partId, htmlElement, options) {
+        super._attachPartListeners(partId, htmlElement, options);
+  
+        const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
+        const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits).filter(x => !creatureTypes.includes(x));
+
+        const traitsInput = $(htmlElement).find('.traits-input')[0];
+        const traitsTagify = new Y(traitsInput, {
+          tagTextProp: "name",
+          enforceWhitelist: true,
+          whitelist : creatureTraits.map(key => { 
+            const label = CONFIG.PF2E.creatureTraits[key];
+            return { value: key, name: game.i18n.localize(label) };
+          }),
+          callbacks : { invalid: this.onAddTag }, 
+          dropdown : {
+            mapValueTo: 'name',
+            searchKeys: ['name'],
+            enabled: 0,              
+            maxItems: 20,    
+            closeOnSelect : true,
+            highlightFirst: false,
+          },
+        });
+        
+        traitsTagify.on('change', this.creatureTraitSelect.bind(this));
+    }
+
+    async _prepareContext(_options) {
+        const context = await super._prepareContext(_options);
+        context.settings = {
+            ...this.settings,
+            additionalCreatureTypes: this.settings.additionalCreatureTypes?.length ? this.settings.additionalCreatureTypes.map(x => x.name) : [],
+        };
+
+        return context;
+    }
+
+    static async updateData(event, element, formData){
+        const data = foundry.utils.expandObject(formData.object);
+        this.settings = {
+            additionalCreatureTypes: this.settings.additionalCreatureTypes,
+            useTokenArt: data.useTokenArt,
+            hideAbilityDescriptions: data.hideAbilityDescriptions,
+            contrastRevealedState: data.contrastRevealedState,
+            optionalFields: data.optionalFields,
+            detailedInformation: { ...data.detailedInformation }
+        };
+        this.render();
+    }
+
+    async creatureTraitSelect(event) {
+        this.settings.additionalCreatureTypes  = event.detail?.value ? JSON.parse(event.detail.value) : [];
+        this.render();
+    }
+
+    static async resetContrastRevealedState (){
+        this.settings.contrastRevealedState = { ...revealedState };
+        this.render();
+    };
+
+    static async toggleOptionalFields (){
+        const keys = Object.keys(this.settings.optionalFields);
+        const enable = Object.values(this.settings.optionalFields).some(x => !x);
+        this.settings.optionalFields = keys.reduce((acc, key) => {
+            acc[key] = enable;
+            return acc;
+        }, {});
+        
+        this.render();
+    };
+
+    static async toggleDetailedInformation (){
+        const keys = Object.keys(this.settings.detailedInformation);
+        const enable = Object.values(this.settings.detailedInformation).some(x => !x);
+        this.settings.detailedInformation = keys.reduce((acc, key) => {
+            acc[key] = enable;
+            return acc;
+        }, {});
+        
+        this.render();
+    };
+
+    static async save(_){
+        await game.settings.set('pf2e-bestiary-tracking', 'additional-creature-types', this.settings.additionalCreatureTypes.map(x => ({ value: x.value, name: CONFIG.PF2E.creatureTraits[x.value] })));
+        await game.settings.set('pf2e-bestiary-tracking', 'contrast-revealed-state', this.settings.contrastRevealedState);
+        await game.settings.set('pf2e-bestiary-tracking', 'use-token-art', this.settings.useTokenArt);
+        await game.settings.set('pf2e-bestiary-tracking', 'hide-ability-descriptions', this.settings.hideAbilityDescriptions);
+        await game.settings.set('pf2e-bestiary-tracking', 'optional-fields', this.settings.optionalFields);
+        await game.settings.set('pf2e-bestiary-tracking', 'detailed-information-toggles', this.settings.detailedInformation);
+        this.close();
+    };
+}
+
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$4, ApplicationV2: ApplicationV2$4 } = foundry.applications.api;
+
+class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$4(ApplicationV2$4) {
+    constructor(){
+        super({});
+
+        this.settings = {
+            creatureRegistration: {
+                automaticCombatRegistration: game.settings.get('pf2e-bestiary-tracking', 'automatic-combat-registration'),
+                doubleClickOpen: game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen'),
+            },
+            chatMessageHandling: game.settings.get('pf2e-bestiary-tracking', 'chat-message-handling'),
+            npcRegistration: game.settings.get('pf2e-bestiary-tracking', 'npc-registration'),
+            hiddenSettings: game.settings.get('pf2e-bestiary-tracking', 'hidden-settings'),
+        };
+
+        this.combatRegistrationOptions = [
+            { name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.Never'), value: 0 },
+            { name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.StartOfCombat'), value: 1 },
+            { name: game.i18n.localize('PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.CreatureDefeated'), value: 2 }
+        ];
+
+        this.npcRegistrationOptions = [
+            { name: game.i18n.localize('PF2EBestiary.Settings.NPCRegistation.Choices.Unique'), value: 0 },
+            { name: game.i18n.localize('PF2EBestiary.Settings.NPCRegistation.Choices.Tag'), value: 1 },
+        ];
+    }
+
+    get title(){
+        return game.i18n.localize('PF2EBestiary.Menus.BestiaryIntegration.Name'); 
+    }
+
+    static DEFAULT_OPTIONS = {
+        tag: 'form',
+        id: 'pf2e-bestiary-tracking-integration-menu',
+        classes: ["bestiary-settings-menu"],
+        position: { width: 680, height: 'auto' },
+        actions: {
+            toggleChatMessageHandlingFields: this.toggleChatMessageHandlingFields,
+            toggleHiddenSettingsFields: this.toggleHiddenSettingsFields,
+            save: this.save,
+        },
+        form: { handler: this.updateData, submitOnChange: true },
+    };
+      
+    static PARTS = {
+        application: {
+            id: "bestiary-integration-menu",
+            template: "modules/pf2e-bestiary-tracking/templates/bestiaryIntegrationMenu.hbs"
+        }
+    }
+
+    async _prepareContext(_options) {
+        const context = await super._prepareContext(_options);
+
+        context.settings = this.settings;
+        context.combatRegistrationOptions = this.combatRegistrationOptions;
+        context.npcRegistrationOptions = this.npcRegistrationOptions;
+
+        return context;
+    }
+
+    static async updateData(event, element, formData){
+        const data = foundry.utils.expandObject(formData.object);
+        this.settings = data.settings;
+        this.render();
+    }
+
+    static async toggleChatMessageHandlingFields(){
+        const keys = Object.keys(this.settings.chatMessageHandling.automaticReveal);
+        const enable = Object.values(this.settings.chatMessageHandling.automaticReveal).some(x => !x);
+        this.settings.chatMessageHandling.automaticReveal = keys.reduce((acc, key) => {
+            acc[key] = enable;
+            return acc;
+        }, {});
+        
+        this.render();
+    };
+
+    static async toggleHiddenSettingsFields(){
+        const keys = Object.keys(this.settings.hiddenSettings);
+        const enable = Object.values(this.settings.hiddenSettings).some(x => !x);
+        this.settings.hiddenSettings = keys.reduce((acc, key) => {
+            acc[key] = enable;
+            return acc;
+        }, {});
+        
+        this.render();
+    };
+
+    static async save(_){
+        await game.settings.set('pf2e-bestiary-tracking', 'automatic-combat-registration', this.settings.creatureRegistration.automaticCombatRegistration);
+        await game.settings.set('pf2e-bestiary-tracking', 'doubleClickOpen', this.settings.creatureRegistration.doubleClickOpen);
+        await game.settings.set('pf2e-bestiary-tracking', 'chat-message-handling', this.settings.chatMessageHandling);
+        await game.settings.set('pf2e-bestiary-tracking', 'npc-registration', this.settings.npcRegistration);
+        await game.settings.set('pf2e-bestiary-tracking', 'hidden-settings', this.settings.hiddenSettings);
+        this.close();
+    };
+}
+
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$3, ApplicationV2: ApplicationV2$3 } = foundry.applications.api;
+
+class BestiaryLabelsMenu extends HandlebarsApplicationMixin$3(ApplicationV2$3) {
+    constructor(){
+        super({});
+
+        this.settings = game.settings.get('pf2e-bestiary-tracking', 'bestiary-labels');
+    }
+
+    get title(){
+        return game.i18n.localize('PF2EBestiary.Menus.BestiaryLabels.Name'); 
+    }
+
+    static DEFAULT_OPTIONS = {
+        tag: 'form',
+        id: 'pf2e-bestiary-tracking-labels-menu',
+        classes: ["bestiary-settings-menu"],
+        position: { width: 'auto', height: 'auto' },
+        actions: {
+            resetSection: this.resetSection,
+            save: this.save,
+        },
+        form: { handler: this.updateData, submitOnChange: true },
+    };
+      
+    static PARTS = {
+        application: {
+            id: "bestiary-labels-menu",
+            template: "modules/pf2e-bestiary-tracking/templates/bestiaryLabelsMenu.hbs"
+        }
+    }
+
+    async _prepareContext(_options) {
+        const context = await super._prepareContext(_options);
+        context.settings = this.settings;
+
+        return context;
+    }
+
+    static async updateData(event, element, formData){
+        this.settings = foundry.utils.expandObject(formData.object);
+        this.render();
+    }
+
+    static async resetSection (_, button){
+        await foundry.utils.setProperty(this.settings, button.dataset.path, getVagueDescriptionLabels()[button.dataset.property]);
+        this.render();
+    };
+
+    static async save(options){
+        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-labels', this.settings);
+        this.close();
+    };
+}
+
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$2, ApplicationV2: ApplicationV2$2 } = foundry.applications.api;
+
+class VagueDescriptionsMenu extends HandlebarsApplicationMixin$2(ApplicationV2$2) {
+    constructor(){
+        super({});
+
+        this.settings = game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions');
+        this.helperSettings = {
+            properties: {
+                all: Object.keys(this.settings.properties).every(key => this.settings.properties[key]),
+            },
+            settings: {
+                all: Object.keys(this.settings.settings).every(key => this.settings.settings[key])
+            }
+        };
+    }
+
+    get title(){
+        return game.i18n.localize('PF2EBestiary.Menus.VagueDescriptions.Name'); 
+    }
+
+    static DEFAULT_OPTIONS = {
+        tag: 'form',
+        id: 'pf2e-bestiary-tracking-vague-descriptions-menu',
+        classes: ["bestiary-settings-menu"],
+        position: { width: 'auto', height: 'auto' },
+        actions: {
+            toggleSection: this.toggleSection,
+            save: this.save,
+        },
+        form: { handler: this.updateData, submitOnChange: true },
+    };
+      
+    static PARTS = {
+        application: {
+            id: "vague-descriptions-menu",
+            template: "modules/pf2e-bestiary-tracking/templates/vagueDescriptionsMenu.hbs"
+        }
+    }
+
+    async _prepareContext(_options) {
+        const context = await super._prepareContext(_options);
+        context.settings = this.settings;
+        context.helperSettings = this.helperSettings;
+
+        return context;
+    }
+
+    static async updateData(event, element, formData){
+        const { settings } = foundry.utils.expandObject(formData.object);
+        this.settings = foundry.utils.mergeObject(this.settings, settings);
+
+        this.helperSettings = {
+            properties: {
+                all: Object.keys(this.settings.properties).every(key => this.settings.properties[key]),
+            },
+            settings: {
+                all: Object.keys(this.settings.settings).every(key => this.settings.settings[key]),
+            }
+        };
+
+        this.render();
+    }
+
+    static toggleSection(_, button){
+        this.helperSettings[button.dataset.section].all = !this.helperSettings[button.dataset.section].all; 
+        
+        for(var key in this.settings[button.dataset.section]){
+            this.settings[button.dataset.section][key] = this.helperSettings[button.dataset.section].all;
+        }
+
+        this.render();
+    }
+
+    static async save(options){
+        await game.settings.set('pf2e-bestiary-tracking', 'vague-descriptions', this.settings);
+        this.close();
+    };
+}
 
 const handleDataMigration = async () => {
     if(!game.user.isGM) return;
@@ -5653,7 +5687,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                     acc.values[resistanceKey] = { 
                         ...resistance, 
                         value: resistance.fake || resistance.empty ? resistance.type : `${label} ${resistance.value}`, 
-                        class: getWeaknessCategoryClass(contextLevel, resistance.value), 
+                        class: getIWRCategoryIcon(contextLevel, resistance.value), 
                         category: label,
                         exceptions: resistance.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(x.value.label ?? resistance.typeLabels[x.value] )})) ?? [],
                         doubleVs: resistance.doubleVs?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(x.value.label ?? resistance.typeLabels[x.value] )})) ?? [],
@@ -5667,7 +5701,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                     acc.values[weaknessKey] = { 
                         ...weakness, 
                         value: weakness.fake || weakness.empty ? weakness.type : `${label} ${weakness.value}`, 
-                        class: getWeaknessCategoryClass(contextLevel, weakness.value), 
+                        class: getIWRCategoryIcon(contextLevel, weakness.value), 
                         category: label,
                         exceptions: weakness.exceptions?.map(x => ({ ...x, revealed: detailedInformation.exceptionsDouble ? x.revealed : true, key: x.value, value: game.i18n.localize(x.value.label ?? weakness.typeLabels[x.value] )})) ?? [],
                     };
@@ -7242,26 +7276,11 @@ class RegisterHandlebarsHelpers {
     }
 
     static monsterValue(prop, flag, ignoreLabel, context){
-        return prop.custom ?? (flag && !game.user.isGM && prop.category ? prop.category : (ignoreLabel && context ? prop.value : game.i18n.localize(prop.label) ?? prop.value));
+        return prop.custom ?? (flag && !game.user.isGM && prop.category ? game.i18n.localize(prop.category) : (ignoreLabel && context ? prop.value : game.i18n.localize(prop.label) ?? prop.value));
     }
 
     static slice(value, length){
         return value.slice(0, length);
-    }
-
-    static categoryClassTitle(classValue, type, useTitle){
-        if(game.user.isGM || !useTitle) return '';
-
-        switch(classValue){
-            case 'category-high':
-                return `Large ${type}`;
-            case 'category-medium':
-                return `Medium ${type}`;
-            case 'category-low':
-                return `Small ${type}`;
-            default:
-                return '';
-        }
     }
 
     static toggleContainer(user, property){

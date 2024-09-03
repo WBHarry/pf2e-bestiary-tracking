@@ -126,15 +126,14 @@
                         {{/if}}
                     {{else}}
                         {{#each this.bookmarkEntities}}
-
                             <div class="type-container primary-container {{#if (eq ../layout.categories.layout 1)}}trio{{/if}}{{#if (eq ../layout.categories.layout 2)}}quarter{{/if}}" data-action="selectMonster" data-monster="{{this.id}}">
                                 <img src="{{this.img}}" />
                                 <div class="type-text-container">
                                     {{#if ../user.isGM}}
                                         {{this.name.value}}
                                     {{else}}
-                                        {{#if type.name.revealed}}
-                                            {{PF2EBTTertiary type.name.custom type.name.value}}
+                                        {{#if this.name.revealed}}
+                                            {{PF2EBTTertiary this.name.custom this.name.value}}
                                         {{else}}
                                             {{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}
                                         {{/if}}
