@@ -84,6 +84,7 @@ export const getCreatureData = (actor) => {
     return {
         type: 'pf2e-bestiary-tracking.creature',
         name: actor.name,
+        ownership: { default: 3 },
         system: {
             uuid: actor.uuid,
             version: currentVersion,
@@ -91,7 +92,7 @@ export const getCreatureData = (actor) => {
             texture: actor.prototypeToken.texture.src,
             name: { value: actor.name },
             ac: { value: Number.parseInt(actor.system.attributes.ac.value) },
-            hp: { value: Number.parseInt(actor.system.attributes.hp.value) },
+            hp: { value: Number.parseInt(actor.system.attributes.hp.max) },
             level: { value: Number.parseInt(actor.system.details.level.value) },
             size: actor.system.traits.size.value,
             rarity: { value: actor.system.traits.rarity },
@@ -182,7 +183,7 @@ export const getCreatureData = (actor) => {
                 };
 
                 return acc;
-            }, {}) : { empty: { empty: true, type: 'PF2EBestiary.Miscellaneous.None', exceptions: {} } },
+            }, {}) : { empty: { empty: true, type: 'PF2EBestiary.Miscellaneous.None', exceptions: {}, doubleVs: {} } },
             attacks: attackKeys.length > 0 ? attackKeys.reduce((acc, actionKey) => {
               const attack = actor.system.actions[actionKey];
               const item = actor.items.get(attack.item.id);

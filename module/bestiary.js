@@ -1047,27 +1047,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(!game.user.isGM) return;
         this.toggleControls(false);
 
-        for(var monsterKey in this.bestiary.monster){
-            const actor = await fromUuid(monsterKey);
-
-            if(actor){
-                const data = await PF2EBestiary.getMonsterData(actor);
-                const updatedData = PF2EBestiary.getUpdatedCreature(this.bestiary.monster[monsterKey], data);
-                this.bestiary.monster[monsterKey] = updatedData;
-            } 
+        for(var bestiaryPage of this.bestiary.pages){
+            await bestiaryPage.system.refreshData();
         }
 
-        for(var npcKey in this.bestiary.npc){
-            const actor = await fromUuid(npcKey);
-
-            if(actor){
-                const data = await PF2EBestiary.getMonsterData(actor);
-                const updatedData = PF2EBestiary.getUpdatedCreature(this.bestiary.npc[npcKey], data);
-                this.bestiary.npc[npcKey] = updatedData;
-            } 
-        }
-
-        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
             data: { },
@@ -1081,26 +1064,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         this.toggleControls(false);
 
         await new PF2EBestiarySavesHandler().render(true);
-    }
-
-    async refreshCreature(monsterUuid, actorIsNPC){
-        const actor = await fromUuid(monsterUuid);
-                
-        if(!actor) return;
-
-        const data = await PF2EBestiary.getMonsterData(actor);
-
-        if(actorIsNPC) this.bestiary.npc[monsterUuid] =  PF2EBestiary.getUpdatedCreature(this.bestiary.npc[monsterUuid], data);
-        else this.bestiary.monster[monsterUuid] =  PF2EBestiary.getUpdatedCreature(this.bestiary.monster[monsterUuid], data);
-        
-
-        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', this.bestiary);
-        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-            action: socketEvent.UpdateBestiary,
-            data: { },
-        });
-
-        Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
 
     static async resetBestiary(){
@@ -1954,7 +1917,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
         return dataObject;
     }
-  
+
     async _onDrop(event) {
         if(!game.user.isGM) return;
 
@@ -1971,14 +1934,22 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
             return;
         }
 
-        await game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking')).createEmbeddedDocuments("JournalEntryPage", [getCreatureData(baseItem)]);
-        
+        const item = baseItem.pack ? await Actor.implementation.create(baseItem.toObject()) : baseItem;
+
+        const bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
+        const existingPage = bestiary.pages.find(x => x.system.uuid === item.uuid);
+        if(existingPage){
+            await existingPage.system.refreshData(actor);
+        } else {
+            await bestiary.createEmbeddedDocuments("JournalEntryPage", [getCreatureData(baseItem)]);
+        }
+  
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
             action: socketEvent.UpdateBestiary,
             data: { },
         });
 
-        this.render();
+        Hooks.callAll(socketEvent.UpdateBestiary, {});
 
         // const item = baseItem.pack ? await Actor.implementation.create(baseItem.toObject()) : baseItem;
         // const actorIsNPC = isNPC(item);
@@ -2023,8 +1994,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
 
     onBestiaryUpdate = async () => {        
         this.bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
-        const entityExists = this.selected.monster ? this.bestiary.pages.get(this.selected.monster.id) : false;
-        if(!entityExists) this.selected.monster = null;
+        const existingEntity = this.selected.monster ? this.bestiary.pages.get(this.selected.monster.id) ?? this.bestiary.pages.find(x => x.system.uuid === this.selected.monster.system.uuid) ?? null : null;
+        if(!existingEntity) this.selected.monster = null;
 
         const saveButton = $(this.element).find('.prosemirror[collaborate="true"] *[data-action="save"]');
         if(saveButton.length === 0){

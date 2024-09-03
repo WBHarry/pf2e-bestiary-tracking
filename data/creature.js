@@ -1,5 +1,5 @@
 import { currentVersion } from "../scripts/setup";
-import { MappingField, toggleNumberField, toggleStringField } from "./modelHelpers";
+import { getCreatureData, MappingField, toggleNumberField, toggleStringField } from "./modelHelpers";
 
 export class Creature extends foundry.abstract.TypeDataModel {
     static defineSchema() {
@@ -311,6 +311,239 @@ export class Creature extends foundry.abstract.TypeDataModel {
                 return acc;
             }, {})
         };
+    }
+
+    async refreshData() {
+        const actor = await fromUuid(this.uuid);
+        if(!actor) return;
+        
+        const data = getCreatureData(actor);
+
+        const spells = data.system.spells.fake ? 
+            { fake: { ...data.system.spells.fake, revealed: this.spells.fake?.revealed ?? data.system.spells.fake.revealed }, entries: {} } : 
+            {
+                entries: Object.keys(data.system.spells.entries).reduce((acc, key) =>{
+                    const entry = data.system.spells.entries[key];
+                    const oldEntry = this.spells.entries[key];
+                    acc[key] = {
+                        ...entry,
+                        revealed: oldEntry?.revealed ?? entry.revealed,
+                        dc: { ...entry.dc, revealed: oldEntry?.dc?.revealed ?? entry.dc.revealed },
+                        attack: { ...entry.attack, revealed: oldEntry?.attack?.revealed ?? entry.attack.revealed },
+                        levels: Object.keys(entry.levels).reduce((acc, key) => {
+                            const { spells, ...rest } = entry.levels[key];
+                            acc[key] = {
+                                ...rest,
+                                spells: Object.keys(entry.levels[key].spells).reduce((acc, spell) => {
+                                    const oldSpell = oldEntry && oldEntry.levels[key] ? oldEntry.levels[key].spells[spell] : null;
+                                    acc[spell] = {
+                                        ...entry.levels[key].spells[spell],
+                                        revealed: oldSpell?.revealed ?? entry.levels[key].spells[spell].revealed,
+                                    };
+
+                                    return acc;
+                                }, {}),
+                            }
+
+                            return acc;
+                        }, {}),
+                    };
+
+                    return acc;
+                }, {}), 
+            };
+
+        const updateData = {
+            name: data.name,
+            system: {
+                hidden: this.hidden,
+                uuid: data.system.uuid,
+                version: data.system.version,
+                img: data.system.img,
+                texture: data.system.texture,
+                size: data.system.size,
+                name: { ...data.system.name, revealed: this.name.revealed, custom: this.name.custom },
+                ac: { ...data.system.ac, revealed: this.ac.revealed, custom: this.ac.custom },
+                hp: { ...data.system.hp, revealed: this.hp.revealed, custom: this.hp.custom },
+                level: { ...data.system.level, revealed: this.level.revealed, custom: this.level.custom },
+                skills: Object.keys(data.system.skills).reduce((acc, key) => {
+                    acc[key] = { ...data.system.skills[key], revealed: this.skills[key] ? this.skills[key].revealed : data.system.skills[key].revealed };
+                    return acc;
+                }, {}),
+                abilities: Object.keys(data.system.abilities).reduce((acc, key) => {
+                    acc[key] = { ...data.system.abilities[key], revealed: this.abilities[key] ? this.abilities[key].revealed : data.system.abilities[key].revealed };
+                    return acc;
+                }, {}),
+                saves: Object.keys(data.system.saves).reduce((acc, key) => {
+                    acc[key] = { ...data.system.saves[key], revealed: this.saves[key] ? this.saves[key].revealed : data.system.saves[key].revealed };
+                    return acc;
+                }, {}),
+                speeds: {
+                    details: { ...data.system.speeds.details, revealed: this.speeds.details.revealed },
+                    values: Object.keys(data.system.speeds.values).reduce((acc, key) => {
+                        acc[key] = { ...data.system.speeds.values[key], revealed: this.speeds.values[key] ? this.speeds.values[key].revealed : data.system.speeds.values[key].revealed };
+                        return acc;
+                    }, {})
+                },
+                immunities: Object.keys(data.system.immunities).reduce((acc, key) => {
+                    const immunity = data.system.immunities[key];
+                    const oldImmunity = this.immunities[key];
+                    acc[key] = {
+                        ...immunity,
+                        revealed: oldImmunity ? oldImmunity.revealed : immunity.revealed,
+                        exceptions: Object.keys(immunity.exceptions).reduce((acc, ex) => {
+                            acc[ex] = { ...immunity.exceptions[ex], revealed: oldImmunity?.exceptions[ex] ? oldImmunity.exceptions[ex].revealed : immunity.exceptions[ex].revealed };
+                            return acc;
+                        }, {}),
+                    };
+
+                    return acc;
+                }, Object.keys(this.immunities).reduce((acc, key) => {
+                    if(this.immunities[key].fake) acc[key] = this.immunities[key];
+                    return acc;
+                }, {})),
+                weaknesses: Object.keys(data.system.weaknesses).reduce((acc, key) => {
+                    const weakness = data.system.weaknesses[key];
+                    const oldWeakness = this.weaknesses[key];
+                    acc[key] = {
+                        ...weakness,
+                        revealed: oldWeakness ? oldWeakness.revealed : weakness.revealed,
+                        exceptions: Object.keys(weakness.exceptions).reduce((acc, ex) => {
+                            acc[ex] = { ...weakness.exceptions[ex], revealed: oldWeakness?.exceptions[ex] ? oldWeakness.exceptions[ex].revealed : weakness.exceptions[ex].revealed };
+                            return acc;
+                        }, {}),
+                    };
+
+                    return acc;
+                }, Object.keys(this.weaknesses).reduce((acc, key) => {
+                    if(this.weaknesses[key].fake) acc[key] = this.weaknesses[key];
+                    return acc;
+                }, {})),
+                resistances: Object.keys(data.system.resistances).reduce((acc, key) => {
+                    const resistance = data.system.resistances[key];
+                    const oldResistance = this.resistances[key];
+                    acc[key] = {
+                        ...resistance,
+                        revealed: oldResistance ? oldResistance.revealed : resistance.revealed,
+                        exceptions: Object.keys(resistance.exceptions).reduce((acc, ex) => {
+                            acc[ex] = { ...resistance.exceptions[ex], revealed: oldResistance?.exceptions[ex] ? oldResistance.exceptions[ex].revealed : resistance.exceptions[ex].revealed };
+                            return acc;
+                        }, {}),
+                        doubleVs: Object.keys(resistance.doubleVs).reduce((acc, ex) => {
+                            acc[ex] = { ...resistance.doubleVs[ex], revealed: oldResistance?.doubleVs[ex] ? oldResistance.doubleVs[ex].revealed : resistance.doubleVs[ex].revealed };
+                            return acc;
+                        }, {}),
+                    };
+
+                    return acc;
+                }, Object.keys(this.resistances).reduce((acc, key) => {
+                    if(this.resistances[key].fake) acc[key] = this.resistances[key];
+                    return acc;
+                }, {})),
+                rarity: { ...data.system.rarity, revealed: this.rarity.revealed },
+                traits: Object.keys(data.system.traits).reduce((acc, key) => {
+                    acc[key] = { ...data.system.traits[key], revealed: this.traits[key] ? this.traits[key].revealed : data.system.traits[key].revealed };
+                    return acc;
+                }, {}),
+                attacks: Object.keys(data.system.attacks).reduce((acc, key) => {
+                    const attack = data.system.attacks[key];
+                    const oldAttack = this.attacks[key];
+                    acc[key] = {
+                        ...attack,
+                        revealed: oldAttack?.revealed ?? attack.revealed,
+                        damageStatsRevealed: oldAttack?.damageStatsRevealed ?? attack.damageStatsRevealed,
+                        traits: Object.keys(attack.traits).reduce((acc, trait) => {
+                            acc[trait] = { ...attack.traits[trait], revealed: oldAttack.traits[trait]?.revealed ?? attack.traits[trait].revealed };
+                            return acc;
+                        }, {}),
+                        damageInstances: Object.keys(attack.damageInstances).reduce((acc, damage) => {
+                            acc[damage] = { 
+                                ...attack.damageInstances[damage], 
+                                revealed: oldAttack ? (oldAttack.damageInstances[damage]?.revealed ?? attack.damageInstances[damage].revealed) : attack.damageInstances[damage].revealed, 
+                                damageType: { ...attack.damageInstances[damage].damageType, revealed: oldAttack ? (oldAttack.damageInstances[damage]?.damageType?.revealed ?? attack.damageInstances[damage].damageType.revealed) : attack.damageInstances[damage].damageType.revealed } 
+                            };
+                            return acc;
+                        }, {}),
+                    }
+
+                    return acc;
+                }, Object.keys(this.attacks).reduce((acc, key) => {
+                    if(this.attacks[key].fake) acc[key] = this.attacks[key];
+                    return acc;
+                }, {})),
+                actions: Object.keys(data.system.actions).reduce((acc, key) => {
+                    const action = data.system.actions[key];
+                    const oldAction = this.actions[key];
+                    acc[key] = {
+                        ...action,
+                        revealed: oldAction?.revealed ?? action.revealed,
+                        traits: Object.keys(action.traits).reduce((acc, trait) => {
+                            const oldTrait = oldAction ? oldAction.traits[trait] : null;
+                            acc[trait] = { ...action.traits[trait], revealed: oldTrait?.revealed ?? action.traits[trait].revealed };
+                            return acc;
+                        }, {}),
+                    }
+
+                    return acc;
+                }, Object.keys(this.actions).reduce((acc, key) => {
+                    if(this.actions[key].fake) acc[key] = this.actions[key];
+                    return acc;
+                }, {})),
+                passives: Object.keys(data.system.passives).reduce((acc, key) => {
+                    const passive = data.system.passives[key];
+                    const oldPassive = this.passives[key];
+                    acc[key] = {
+                        ...passive,
+                        revealed: oldPassive?.revealed ?? passive.revealed,
+                        traits: Object.keys(passive.traits).reduce((acc, trait) => {
+                            const oldTrait = oldPassive ? oldPassive.traits[trait] : null;
+                            acc[trait] = { ...passive.traits[trait], revealed: oldTrait?.revealed ?? passive.traits[trait].revealed };
+                            return acc;
+                        }, {}),
+                    }
+
+                    return acc;
+                }, Object.keys(this.passives).reduce((acc, key) => {
+                    if(this.passives[key].fake) acc[key] = this.passives[key];
+                    return acc;
+                }, {})),
+                spells: spells,
+                senses: {
+                    perception: { ...data.system.senses.perception, revealed: this.senses.perception.revealed, custom: this.senses.perception.custom },
+                    details: { ...data.system.senses.details, revealed: this.senses.details.revealed },
+                    senses: Object.keys(data.system.senses.senses).reduce((acc, key) => {
+                        const sense = data.system.senses.senses[key];
+                        const oldSense = this.senses.senses[key];
+                        acc[key] = { ...sense, revealed: oldSense?.revealed ?? sense.revealed };
+
+                        return acc;
+                    }, Object.keys(this.senses.senses).reduce((acc, key) => {
+                        if(this.senses.senses[key].fake) acc[key] = this.senses.senses[key];
+                        return acc;
+                    }, {})),
+                },
+                languages: {
+                    details: { ...data.system.languages.details, revealed: this.languages.details.revealed },
+                    values: Object.keys(data.system.languages.values).reduce((acc, key) => {
+                        const language = data.system.languages.values[key];
+                        const oldLanguage = this.languages.values[key];
+                        acc[key] = { ...language, revealed: oldLanguage?.revealed ?? language.revealed };
+
+                        return acc;
+                    }, Object.keys(this.languages.values).reduce((acc, key) => {
+                        if(this.languages.values[key].fake) acc[key] = this.languages.values[key];
+                        return acc;
+                    }, {}))
+                },
+                notes: {
+                    public: { ...data.system.notes.public, revealed: this.notes.public.revealed },
+                    private: { ...data.system.notes.private, revealed: this.notes.private.revealed },
+                    player: this.notes.player,
+                }
+            }
+        };
+
+        await this.parent.update(updateData, { diff: false, recursive: false });
     }
 
     async toggleEverything(state){

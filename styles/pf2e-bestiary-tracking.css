@@ -471,7 +471,7 @@
 .pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .speeds-container .speed-container {
   padding: 2px;
   border-radius: 6px;
-  width: calc(50% - 2px);
+  min-width: calc(50% - 2px);
   display: flex;
   align-items: center;
   justify-content: center;
