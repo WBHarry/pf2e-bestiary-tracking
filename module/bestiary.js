@@ -1250,7 +1250,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         // We do not currently refresh already present creatures in the Bestiary.
         if(bestiary.pages.some(x => x.system.uuid === item.uuid)) return false;
 
-        await bestiary.createEmbeddedDocuments("JournalEntryPage", [getCreatureData(item)]);
+        const data = isNPC(item) ? getNPCData(item) : getCreatureData(item);
+        await bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
         
         const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
         if(doubleClickOpenActivated && item.ownership.default < 1){

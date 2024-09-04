@@ -1982,13 +1982,13 @@ const toggleStringField = () => new fields.SchemaField({
     revealed: new fields.BooleanField({ required: true, initial: false }),
     value: new fields.StringField({ required: true }),
     custom: new fields.StringField({ nullable: true }),
-}); 
+});
 
 const toggleNumberField = () => new fields.SchemaField({
     revealed: new fields.BooleanField({ required: true, initial: false }),
     value: new fields.NumberField({ required: true, integer: true }),
     custom: new fields.StringField({ nullable: true }),
-}); 
+}) ;
 
 const getCreatureData = (actor) => {
     const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
@@ -2066,8 +2066,9 @@ const getCreatureData = (actor) => {
             img: actor.img,
             texture: actor.prototypeToken.texture.src,
             name: { value: actor.name },
-            ac: { value: Number.parseInt(actor.system.attributes.ac.value) },
-            hp: { value: Number.parseInt(actor.system.attributes.hp.max) },
+            publication: actor.system.details.publication,
+            ac: { value: Number.parseInt(actor.system.attributes.ac.value), details: actor.system.attributes.ac.details },
+            hp: { value: Number.parseInt(actor.system.attributes.hp.max), temp: Number.parseInt(actor.system.attributes.hp.temp), details: actor.system.attributes.hp.details, negativeHealing: actor.system.attributes.hp.negativeHealing },
             level: { value: Number.parseInt(actor.system.details.level.value) },
             size: actor.system.traits.size.value,
             rarity: { value: actor.system.traits.rarity },
@@ -2088,9 +2089,9 @@ const getCreatureData = (actor) => {
             speeds: {
               details: { name: actor.system.attributes.speed.details },
               values: {
-                land: { name: 'Land', value: actor.system.attributes.speed.value },
+                land: { type: 'land', value: actor.system.attributes.speed.value },
                 ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
-                  acc[speed.label] = { name: speed.label, value: speed.value };
+                  acc[speed.label] = { type: speed.type, value: speed.value };
                   return acc;
                 }, {})
               },  
@@ -2169,6 +2170,11 @@ const getCreatureData = (actor) => {
                   actions: attack.glyph,
                   totalModifier: attack.totalModifier,
                   isMelee: attack.weapon.isMelee,
+                  additionalEffects: attack.additionalEffects.reduce((acc, effect) => {
+                    acc[effect.tag] = { label: effect.label, tag: effect.tag };
+
+                    return acc;
+                  }, {}),
                   damageInstances: Object.keys(item.system.damageRolls).reduce((acc, damage) => {
                     acc[damage] = { 
                       category: item.system.damageRolls[damage].category,
@@ -2197,6 +2203,8 @@ const getCreatureData = (actor) => {
               if(action.type === 'action' && action.system.actionType.value !== 'passive'){
                 acc[action.id] = {
                   label: action.name,
+                  category: action.system.category,
+                  deathNote: action.system.deathNote,
                   actions: action.system.actions.value ?? 'R',
                   traits: action.system.traits.value.reduce((acc, trait) => {
                     acc[trait] = { value: trait };
@@ -2212,6 +2220,8 @@ const getCreatureData = (actor) => {
               if(action.type === 'action' && action.system.actionType.value === 'passive'){
                 acc[action.id] = {
                   label: action.name,
+                  category: action.system.category,
+                  deathNote: action.system.deathNote,
                   traits: action.system.traits.value.reduce((acc, trait) => {
                     acc[trait] = { value: trait };
                     return acc;
@@ -2241,13 +2251,16 @@ const getNPCData = (actor) => {
       ...creatureData.system,
       hidden: game.settings.get('pf2e-bestiary-tracking', 'hidden-settings').npc,
       npcData: {
-        background: { value: '' },
-        appearance: { value: '' },
-        personality: { value: '' },
-        height: { value: '' },
-        weight: { value: '' },
-        birthplace: { value: '' },
-        disposition: {},
+        categories: [],
+        general: {
+          background: { value: '' },
+          appearance: { value: '' },
+          personality: { value: '' },
+          height: { value: '' },
+          weight: { value: '' },
+          birthplace: { value: '' },
+          disposition: {},
+        }
       }
     }
   }
@@ -2373,8 +2386,26 @@ class Creature extends foundry.abstract.TypeDataModel {
             img: new fields.StringField({ required: true }),
             texture: new fields.StringField({ required: true }),
             name: toggleStringField(),
-            ac: toggleNumberField(),
-            hp: toggleNumberField(),
+            publication: new fields.SchemaField({
+                authors: new fields.StringField({}),
+                license: new fields.StringField({}),
+                remaster: new fields.BooleanField({}),
+                title: new fields.StringField({}),
+            }),
+            ac: new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                value: new fields.NumberField({ required: true, integer: true }),
+                custom: new fields.StringField({ nullable: true }),
+                details: new fields.StringField({}),
+            }),
+            hp: new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                value: new fields.NumberField({ required: true, integer: true }),
+                custom: new fields.StringField({ nullable: true }),
+                temp: new fields.NumberField({ integer: true }),
+                details: new fields.StringField({}),
+                negativeHealing: new fields.BooleanField({}),
+            }),
             level: toggleNumberField(),
             size: new fields.StringField({ required: true }),
             skills: new MappingField(new fields.SchemaField({
@@ -2409,7 +2440,7 @@ class Creature extends foundry.abstract.TypeDataModel {
                 }, { required: false }),
                 values: new MappingField(new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
-                    name: new fields.StringField({ required: true }),
+                    type: new fields.StringField({ required: true }),
                     value: new fields.NumberField({ required: true, integer: true })
                 }))
             }),
@@ -2466,6 +2497,10 @@ class Creature extends foundry.abstract.TypeDataModel {
                 actions: new fields.StringField({ required: true }),
                 totalModifier: new fields.NumberField({ required: true }),
                 isMelee: new fields.BooleanField({ required: true }),
+                additionalEffects: new MappingField(new fields.SchemaField({
+                    label: new fields.StringField({ required: true}),
+                    tag: new fields.StringField({ required: true}), 
+                })),
                 traits: new MappingField(new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
                     value: new fields.StringField({ required: true }),
@@ -2492,6 +2527,8 @@ class Creature extends foundry.abstract.TypeDataModel {
                 fake: new fields.BooleanField({}),
                 empty: new fields.BooleanField({}),
                 label: new fields.StringField({ required: true }),
+                category: new fields.StringField({}),
+                deathNote: new fields.BooleanField({}),
                 actions: new fields.StringField({ required: true }),
                 traits: new MappingField(new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
@@ -2504,6 +2541,8 @@ class Creature extends foundry.abstract.TypeDataModel {
                 fake: new fields.BooleanField({}),
                 empty: new fields.BooleanField({}),
                 label: new fields.StringField({ required: true }),
+                category: new fields.StringField({}),
+                deathNote: new fields.BooleanField({}),
                 traits: new MappingField(new fields.SchemaField({
                     revealed: new fields.BooleanField({ required: true, initial: false }),
                     value: new fields.StringField({ required: true })
@@ -2570,6 +2609,8 @@ class Creature extends foundry.abstract.TypeDataModel {
                     revealed: new fields.BooleanField({ required: true, initial: false }),
                     fake: new fields.BooleanField({}),
                     type: new fields.StringField({ required: true }),
+                    acuity: new fields.StringField({ required: true }),
+                    range: new fields.NumberField({ required: true, integer: true }),
                 })),
             }),
             languages: new fields.SchemaField({
@@ -2629,6 +2670,18 @@ class Creature extends foundry.abstract.TypeDataModel {
                 return acc;
             }, {}),
             ...languageDetails,
+        };
+    }
+
+    get allSpeeds(){
+        const speedDetails = this.speeds.details.value ? { details: this.speeds.details } : {};
+        return { 
+            ...Object.keys(this.speeds.values).reduce((acc, speed) => {
+                acc[`values.${speed}`] = { ...this.speeds.values[speed], name: CONFIG.PF2E.speedTypes[this.speeds.values[speed].type] };
+
+                return acc;
+            }, {}),
+            ...speedDetails,
         };
     }
 
@@ -3151,12 +3204,6 @@ class Creature extends foundry.abstract.TypeDataModel {
 
             return acc;
         }, {});
-
-        const speedDetails = this.speeds.details.value ? { details: this.speeds.details } : {};
-        this.speeds.values = { 
-            ...this.speeds.values,
-            ...speedDetails,
-        };
 
         this.traits = Object.keys(this.traits).reduce((acc, key) => {
             const label = CONFIG.PF2E.creatureTraits[this.traits[key].value];
@@ -3793,7 +3840,7 @@ class VagueDescriptionsMenu extends HandlebarsApplicationMixin$2(ApplicationV2$2
     };
 }
 
-const currentVersion = '0.9.3';
+const currentVersion = '0.9.4';
 const bestiaryFolder = "pf2e-bestiary-tracking-folder";
 const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry"; // Make sure to migrate old player notes to the new journalEntries
 
@@ -4159,6 +4206,298 @@ const bestiaryIntegration = () => {
     });
 };
 
+const getCreatureDataFromOld = (actor) => {
+    const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
+    const weaknessesKeys = Object.keys(actor.system.attributes.weaknesses);
+    const resistancesKeys = Object.keys(actor.system.attributes.resistances);
+    const attackKeys = Object.keys(actor.system.actions);
+    const itemKeys = Object.values(actor.items);
+
+    const spells = !itemKeys.some(x => x._id === 'Spell-None') ? {
+        fake: null,
+        entries: itemKeys.reduce((acc, entry) => {
+            if(entry.type === 'spellcastingEntry'){
+                const levels = {};
+                Object.values(actor.items).forEach(spell => {
+                if(spell.type === 'spell' && spell.system.location.value === entry._id){
+                    const levelValue = getSpellLevel(spell, actor.system.details.level.value);
+
+                    var level = Object.values(levels).find(x => x.value === levelValue);
+                    if(!level) {
+                        level = { value: levelValue, spells: {} };
+                    }
+
+                    level.spells[spell._id] = {
+                        revealed: spell.revealed,
+                        label: spell.name,
+                        img: spell.img,
+                        actions: spell.system.time.value,
+                        defense: spell.system.defense?.save?.statistic ? {
+                        statistic: spell.system.defense.save.statistic,
+                        basic: spell.system.defense.save.basic,
+                        } : null,
+                        range: spell.system.range.value,
+                        traits: {
+                        rarity: spell.system.traits.rarity,
+                        traditions: spell.system.traits.traditions,
+                        values: spell.system.traits.value.reduce((acc, trait ) => {
+                            acc[trait] = { value: trait };
+                            return acc;
+                        }, {})
+                        },
+                        description: {
+                            gm: spell.system.description.gm,
+                            value: spell.system.description.value,
+                        }
+                    };
+
+                    levels[levelValue] = level;
+                }
+                }); 
+
+                acc[entry._id] = {
+                    revealed: entry.revealed,
+                    tradition: entry.system.tradition.value,
+                    category: entry.system.prepared.value,
+                    dc: entry.system.spelldc.dc,
+                    mod: { value: actor.system.abilities[entry.system.ability.value].mod },
+                    attack: entry.system.spelldc.value,
+                    levels: levels,
+                };
+            }
+
+            return acc;
+    }, {}) }: {
+        fake: { revealed: actor.items['Spells-None'].revealed },
+        entries: {},
+    };
+    
+    return {
+        type: 'pf2e-bestiary-tracking.creature',
+        name: actor.name.value,
+        ownership: { default: 3 },
+        system: {
+            hidden: actor.hidden,
+            uuid: actor.uuid,
+            version: currentVersion,
+            img: actor.img,
+            texture: actor.prototypeToken.texture.src,
+            name: actor.name,
+            publication: actor.system.details.publication,
+            ac: { value: Number.parseInt(actor.system.attributes.ac.value), revealed: Boolean(actor.system.attributes.ac), custom: actor.system.attributes.ac.custom, details: actor.system.attributes.ac.details },
+            hp: { value: Number.parseInt(actor.system.attributes.hp.max), revealed: Boolean(actor.system.attributes.hp.revealed), custom: actor.system.attributes.hp.custom, temp: Number.parseInt(actor.system.attributes.hp.temp), details: actor.system.attributes.hp.details, negativeHealing: actor.system.attributes.hp.negativeHealing },
+            level: { value: Number.parseInt(actor.system.details.level.value), revealed: actor.system.details.level.revealed, custom: actor.system.details.level.custom },
+            size: actor.system.traits.size.value,
+            rarity: { value: actor.system.traits.rarity },
+            traits: actor.system.traits.value,
+            skills: Object.values(actor.system.skills).some(x => x.base > 0) ? Object.keys(actor.system.skills).reduce((acc, key) => {
+              const skill = actor.system.skills[key];
+              acc[key] = { 
+                value: skill.base, 
+                revealed: skill.revealed, 
+                lore: skill.lore, 
+                note: skill.note, 
+                modifiers: skill.modifiers.filter(x => x.slug !== 'base').map(x => ({ kind: x.kind, label: x.label, modifier: x.modifier })), 
+                label: skill.label, 
+                totalModifier: Number.parseInt(skill.totalModifier)
+              };
+              return acc;
+            }, {}) : { empty: { empty: true, value: 'PF2EBestiary.Miscellaneous.None' } },
+            saves: {
+              fortitude: { value: actor.system.saves.fortitude.value, revealed: actor.system.saves.fortitude.revealed, custom: actor.system.saves.fortitude.custom },
+              reflex: { value: actor.system.saves.reflex.value, revealed: actor.system.saves.reflex.revealed, custom: actor.system.saves.reflex.custom },
+              will: { value: actor.system.saves.will.value, revealed: actor.system.saves.will.revealed, custom: actor.system.saves.will.custom },
+            },
+            speeds: {
+              details: { name: actor.system.attributes.speed.details },
+              values: {
+                land: { type: 'land', value: actor.system.attributes.speed.value, revealed: actor.system.attributes.speed.revealed },
+                ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
+                  acc[speed.label] = { type: speed.type, value: speed.value, revealed: speed.revealed };
+                  return acc;
+                }, {})
+              },  
+            },
+            abilities: Object.keys(actor.system.abilities).reduce((acc, key) => {
+              acc[key] = { key: key, revealed: actor.system.abilities[key].revealed, mod: actor.system.abilities[key].mod };
+              return acc;
+            }, {}),
+            senses: {
+              perception: { value: actor.system.perception.value, revealed: actor.system.perception.revealed, custom: actor.system.perception.custom },
+              details: actor.system.perception.details,
+              senses: actor.system.perception.senses.reduce((acc, sense) => {
+                acc[sense.type] = { type: sense.type, revealed: sense.revealed, acuity: sense.acuity, range: sense.range };
+                return acc;
+              }, {})
+            },
+            languages: {
+              details: actor.system.details.languages.details,
+              values: actor.system.details.languages.value.length > 0 ? actor.system.details.languages.value.reduce((acc, language) => {
+                acc[language.value] = language;
+                return acc;
+              }, {}) : { empty: { empty: true, value: 'PF2EBestiary.Miscellaneous.None', exceptions: {} }}
+            },
+            immunities: immunitiesKeys.reduce((acc, key) => {
+                const immunity = actor.system.attributes.immunities[key];
+                acc[key] = { 
+                    empty: Boolean(immunity.empty),
+                    revealed: immunity.revealed, 
+                    type: immunity.empty ? 'PF2EBestiary.Miscellaneous.None' : immunity.type, 
+                    exceptions:  immunity.exceptions?.reduce((acc, exception) => {  
+                      acc[exception.value] = { revealed: exception.revealed, type: exception.value };
+                      return acc;
+                    }, {}) ?? {},
+                };
+
+                return acc;
+            }, {}),
+            weaknesses: weaknessesKeys.reduce((acc, key) => {
+                const weakness = actor.system.attributes.weaknesses[key];
+                acc[key] = { 
+                    empty: Boolean(weakness.empty),
+                    revealed: weakness.revealed, 
+                    type: weakness.empty ? 'PF2EBestiary.Miscellaneous.None' : weakness.type,
+                    value: weakness.value, 
+                    exceptions:  weakness.exceptions?.reduce((acc, exception) => {  
+                      acc[exception.value] = { revealed: exception.revealed, type: exception.value };
+                      return acc;
+                    }, {}) ?? {},
+                };
+
+                return acc;
+            }, {}),
+            resistances: resistancesKeys.reduce((acc, key) => {
+                const resistance = actor.system.attributes.resistances[key];
+                acc[key] = { 
+                    empty: Boolean(resistance.empty),
+                    revealed: resistance.revealed, 
+                    type: resistance.empty ? 'PF2EBestiary.Miscellaneous.None' : resistance.type,
+                    value: resistance.value, 
+                    exceptions:  resistance.exceptions?.reduce((acc, exception) => {  
+                      acc[exception.value] = { revealed: exception.revealed, type: exception.value };
+                      return acc;
+                    }, {}) ?? {},
+                    doubleVs: resistance.doubleVs?.reduce((acc, doubleVs) => {  
+                      acc[doubleVs.value] = { revealed: doubleVs.revealed, type: doubleVs.value };
+                      return acc;
+                    }, {}) ?? {},
+                };
+
+                return acc;
+            }, {}),
+            attacks: attackKeys.reduce((acc, actionKey) => {
+              const attack = actor.system.actions[actionKey];
+              const item = actor.items[actionKey];
+              
+              if(item.type === 'melee' || item.type === 'equipment'){
+                acc[attack.empty ? 'empty' : attack.item._id] = {
+                  revealed: attack.revealed,
+                  empty: Boolean(attack.empty),
+                  label: attack.empty ? 'PF2EBestiary.Miscellaneous.None' : attack.label,
+                  actions: attack.glyph,
+                  totalModifier: attack.totalModifier,
+                  isMelee: attack.weapon.system.traits.value.find(x => x.startsWith('range-increment') || x.startsWith('range')) ? false : true,
+                  additionalEffects: attack.additionalEffects?.reduce((acc, effect) => {
+                    acc[effect.tag] = { label: effect.label, tag: effect.tag };
+
+                    return acc;
+                  }, {}) ?? {},
+                  damageInstances: Object.keys(item.system.damageRolls).reduce((acc, damage) => {
+                    acc[damage] = { 
+                      category: item.system.damageRolls[damage].category,
+                      damage: { value: item.system.damageRolls[damage].damage },
+                      damageType: item.system.damageRolls[damage].damageType, 
+                    };
+
+                    return acc;
+                  }, {}),
+                  traits: item.system.traits.value.reduce((acc, trait) => {
+                    acc[trait.value] = { revealed: trait.revealed, value: trait.value, description: trait.value };
+                    return acc;
+                  }, {}),
+                  variants: attack.variants.reduce((acc, variant) => {
+                    acc[slugify(variant.label)] = { label: variant.label };
+
+                    return acc;
+                  }, {}),
+                  rules: item.system.rules ?? {},
+                };
+              }
+
+              return acc;
+            }, {}),
+            actions: itemKeys.reduce((acc, action) => {
+              if(action.type === 'action' && action.system.actionType.value !== 'passive'){
+                acc[action.empty ? 'empty' : action._id] = {
+                  revealed: action.revealed,
+                  empty: Boolean(action.empty),
+                  label: action.empty ? 'PF2EBestiary.Miscellaneous.None' : action.name,
+                  category: action.system.category ?? '',
+                  deathNote: action.system.deathNote ?? false,
+                  actions: action.system.actions ? action.system.actions.value ?? 'R' : '1',
+                  traits: action.system.traits.value.reduce((acc, trait) => {
+                    acc[trait.value] = trait;
+                    return acc;
+                  }, {}),
+                  description: action.system.description.value ?? '',
+                };
+              }
+
+              return acc;
+            }, {}),
+            passives: itemKeys.reduce((acc, action) => {
+              if(action.type === 'action' && action.system.actionType.value === 'passive'){
+                acc[action.empty ? 'empty' : action._id] = {
+                  revealed: action.revealed,
+                  empty: Boolean(action.empty),
+                  label: action.empty ? 'PF2EBestiary.Miscellaneous.None' : action.name,
+                  category: action.system.category ?? '',
+                  deathNote: action.system.deathNote ?? false,
+                  traits: action.system.traits.value.reduce((acc, trait) => {
+                    acc[trait.value] = trait;
+                    return acc;
+                  }, {}),
+                  description: action.system.description.value ?? '',
+                };
+              }
+
+              return acc;
+            }, {}),
+            spells: spells,
+            notes: {
+              public: { value: actor.system.details.publicNotes.text, revealed: actor.system.details.publicNotes.revealed },
+              private: { value: actor.system.details.privateNotes.text, revealed: actor.system.details.privateNotes.revealed },
+              player: game.journal.getName(bestiaryJournalEntry).pages.get(actor.system.details.playerNotes.document)?.text?.content ?? '',
+            },
+        }
+    };
+};
+
+const getNPCDataFromOld = (actor) => {
+    const creatureData = getCreatureDataFromOld(actor);
+
+    return {
+        ...creatureData,
+        type: 'pf2e-bestiary-tracking.npc',
+        system: {
+            ...creatureData.system,
+            hidden: actor.hidden,
+            npcData: {
+                categories: [],
+                general: {
+                    background: actor.npcData.general.background,
+                    appearance: actor.npcData.general.appearance,
+                    personality: actor.npcData.general.personality,
+                    height: actor.npcData.general.height,
+                    weight: actor.npcData.general.weight,
+                    birthplace: actor.npcData.general.birthplace,
+                    disposition: actor.npcData.general.disposition,
+                }
+            }
+        }
+    }
+};
+
 const handleDataMigration = async () => {
     if(!game.user.isGM) return;
 
@@ -4166,23 +4505,6 @@ const handleDataMigration = async () => {
     if(!version){
         version = currentVersion;
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
-    }
-
-    const bestiary = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking');
-    const bestiaryObject = null;
-    try {
-        bestiaryObject = JSON.parse(bestiary);
-    } catch{}    if(!bestiary || bestiaryObject ){
-        const oldJournalEntry = game.journal.getName(bestiaryJournalEntry);
-        // Handle Migration of PlayerNotes
-        await oldJournalEntry.delete();
-        await game.folders.getName(bestiaryFolder).delete();
-
-        const journal = await JournalEntry.create({ name: game.i18n.localize('PF2EBestiary.Miscellaneous.FirstBestiary') });
-        await journal.setFlag('pf2e-bestiary-tracking', 'version', !bestiary ? currentVersion : '0.9.2');
-        await journal.setFlag('pf2e-bestiary-tracking', 'npcCategories', !bestiary ? [] : bestiaryObject.npcCategories);
-        // HAVE TO HANDLE MIGRATION OF OLD BESTIARIES BEFORE THIS POINT
-        await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', journal.id);
     }
 
     if(version === '0.8.1'){
@@ -4547,512 +4869,544 @@ const handleDataMigration = async () => {
         await game.settings.set('pf2e-bestiary-tracking', 'version', version);
     }
 
-    // const updatedBestiary = await handleBestiaryMigration(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
-    // await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', updatedBestiary);
+    await handleBestiaryMigration(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
 };
 
 const handleBestiaryMigration = async (bestiary) => {
-    const oldMonsterData = Object.keys(bestiary.monster).length > 0 && Object.keys(bestiary.monster).some(key => !bestiary.monster[key].system); 
-    bestiary.metadata.version = oldMonsterData ? '0.8.8.4' : !bestiary.metadata.version ? currentVersion : bestiary.metadata.version; 
-
-    if(bestiary.metadata.version === '0.8.8'){
-        bestiary = await newMigrateBestiary(async (_, monster) => {
-            const origin = await fromUuid(monster.uuid);
-            if(!origin) return true;
-            
-            // Add Total Modifier to attacks.
-            monster.attacks.values = Object.keys(monster.attacks.values).reduce((acc, attackKey) => {
-                const originAttack = origin.system.actions.find(x => x.weapon._id === attackKey);
-                const base = originAttack?.item;
-                if(base){
-                    const damageInstances = [];
-                    var damageLabel = '';
-                    for(var damageKey of Object.keys(base.system.damageRolls)){
-                        const damage = base.system.damageRolls[damageKey];
-                        damageLabel = damageLabel.concat(`${damageLabel ? ' + ' : ''}${damage.damage} ${damage.damageType}`);
-                        const damageRollHelper = new Roll(damage.damage);
-                        
-                        damageInstances.push({ label: damage.damage, average: getRollAverage(damageRollHelper.terms), type: damage.damageType, quality: damage.category  });
-                    }
-
-                    acc[base.id] = { 
-                        ...monster.attacks.values[attackKey], 
-                        range: base.isMelee ? 'Melee' : 'Ranged',
-                        value: base.system.bonus.value,
-                        damage: {
-                            instances: damageInstances,
-                            label: damageLabel,
-                            average: damageInstances.reduce((acc, instance) => acc+instance.average, 0),
-                        }
-                    };
-                }
-
-                return acc;
-            }, {});
-        }, bestiary);
-
-        bestiary.metadata.version = '0.8.8.4';
-    }
-
-    if(bestiary.metadata.version === '0.8.8.4'){
-        // Change to storing all of actor.toObject. Lots of improvement in data retention, shouldn't be too much data.
-        const uuids = Object.values(bestiary.monster).reduce((acc, monster) => {
-                if(monster.uuid && !monster.system) acc.push(monster.uuid);
-            
-                return acc;
-            }, []);
-        const newBestiary = { monster: Object.keys(bestiary.monster).reduce((acc, key) => {
-            if(Boolean(bestiary.monster[key].system)){
-                acc[key] = bestiary.monster[key];
-            }
-
-            return acc;
-        }, {}), npc: {}, metadata: {} };
-        for(var uuid of uuids){
-            const orig = await fromUuid(uuid);
-            const data = await PF2EBestiary.getMonsterData(orig);
-            const oldCreature = bestiary.monster[uuid];
-
-            if(!data){
-                continue;
-            }
-
-            /* Big Migration Block Oh-hoy */
-            data.name = { ...data.name, revealed: oldCreature.name.revealed, custom: oldCreature.name.custom };
-            data.system.details.level = { ...data.system.details.level, revealed: oldCreature.level.revealed, custom: oldCreature.level.custom };
-            data.system.attributes.ac = { ...data.system.attributes.ac, revealed: oldCreature.ac.revealed, custom: oldCreature.ac.custom };
-            data.system.attributes.hp = { ...data.system.attributes.hp, revealed: oldCreature.hp.revealed, custom: oldCreature.hp.custom };  
-
-            Object.keys(data.system.attributes.immunities).forEach(immunityKey => {
-                const oldImmunityKey = Object.keys(oldCreature.immunities).find(x => x === immunityKey);
-                if(oldImmunityKey) data.system.attributes.immunities[immunityKey].revealed = oldCreature.immunities[oldImmunityKey].revealed;
-            });
-
-            Object.keys(data.system.attributes.weaknesses).forEach(weaknessKey => {
-                const oldWeaknessKey = Object.keys(oldCreature.weaknesses).find(x => x === weaknessKey);
-                if(oldWeaknessKey) data.system.attributes.weaknesses[weaknessKey].revealed = oldCreature.weaknesses[oldWeaknessKey].revealed;
-            });
-
-            Object.keys(data.system.attributes.resistances).forEach(resistanceKey => {
-                const oldResistanceKey = Object.keys(oldCreature.resistances).find(x => x === resistanceKey);
-                if(oldResistanceKey) data.system.attributes.resistances[resistanceKey].revealed = oldCreature.resistances[oldResistanceKey].revealed;
-            });
-
-            data.system.saves.fortitude = { ...data.system.saves.fortitude, revealed: oldCreature.saves.fortitude.revealed, custom: oldCreature.saves.fortitude.custom };
-            data.system.saves.reflex = { ...data.system.saves.reflex, revealed: oldCreature.saves.reflex.revealed, custom: oldCreature.saves.reflex.custom };
-            data.system.saves.will = { ...data.system.saves.will, revealed: oldCreature.saves.will.revealed, custom: oldCreature.saves.will.custom };
-            
-            data.system.attributes.speed.revealed = oldCreature.speeds.values.land.revealed;
-            data.system.attributes.speed.otherSpeeds.forEach(speed => {
-                const oldSpeedKey = Object.keys(oldCreature.speeds.values).find(x => speed.label === x);
-                    speed.revealed = oldSpeedKey ? oldCreature.speeds.values[oldSpeedKey].revealed : false;
-            });
-            
-            Object.keys(data.system.traits.value).forEach(traitKey => data.system.traits.value[traitKey].revealed = oldCreature.traits.values[traitKey]?.revealed);
-            Object.keys(data.system.abilities).forEach(abilityKey => {
-                const oldAbility = Object.values(oldCreature.abilities.values).find(x => x.label.toLowerCase() === abilityKey);
-                data.system.abilities[abilityKey] = { ...data.system.abilities[abilityKey], revealed: oldAbility.revealed, custom: oldAbility.custom };
-            });
-            
-            data.system.perception = { ...data.system.perception, revealed: oldCreature.senses.values.perception.revealed, custom: oldCreature.senses.values.perception.custom };
-            data.system.perception.senses.forEach(sense => {
-                const oldKey = Object.keys(oldCreature.senses.values).find(x => x === sense.type);
-                const oldSense = oldKey ? oldCreature.senses.values[oldKey] : null;
-                if(oldSense){
-                    sense.revealed = oldSense.revealed;
-                }
-            });
-            data.system.perception.details = { ...data.system.perception.details, revealed: oldCreature.senses.values.other?.revealed ?? false, custom: oldCreature.senses.values.other?.custom ?? null };
-
-            Object.keys(data.system.actions).forEach(actionKey => {
-                const creatureKey = Object.keys(oldCreature.attacks.values).find(key => key === actionKey);
-                const creatureAction = creatureKey ? oldCreature.attacks.values[creatureKey] : null;
-                if(creatureAction){
-                    const action = data.system.actions[actionKey];
-                    action.revealed = creatureAction.revealed;
-                    action.damageStatsRevealed = creatureAction.damageStatsRevealed;
-                }
-            });
-            
-            Object.keys(data.items).forEach(itemKey => {
-                const item = data.items[itemKey];
-                if(item.type === 'action'){
-                    if(['action', 'reaction'].includes(item.system.actionType.value)){
-                        const oldKey = Object.keys(oldCreature.actions.values).find(key => key === item._id);
-                        item.revealed = oldKey ? oldCreature.actions.values[oldKey].revealed : false;
-                    } else {
-                        const oldKey = Object.keys(oldCreature.passives.values).find(key => key === item._id);
-                        item.revealed = oldKey ? oldCreature.passives.values[oldKey].revealed : false;
-                    }
-                }
-
-                if(item.type === 'spell') {
-                        const entry = oldCreature.spells.entries[item.system.location.value];
-                        if(entry){
-                            const levels = oldCreature.spells.entries[item.system.location.value].levels;
-                            const levelKeys = Object.keys(levels);
-                            const level = item.system.traits.value.includes("cantrip") ? 'Cantrips' : item.system.location.heightenedLevel ?? (levelKeys.length === 1 ? levelKeys[0] : item.system.level.value);
-                            if(oldCreature.spells.entries[item.system.location.value]){
-                                const oldSpell = levels[level][item._id];
-
-                                item.revealed = oldSpell.revealed;
-                            }
-                        }
-                } else if(item.type === 'spellcastingEntry'){
-                    const oldEntryKey = Object.keys(oldCreature.spells.entries).find(key => key === item._id);
-                    const entry = oldEntryKey ? oldCreature.spells.entries[oldEntryKey] : null;
-                    if(entry){
-                        item.revealed = entry.revealed;
-                        item.system.spelldc.dc.revealed =  entry.dc.revealed;
-                        item.system.spelldc.value.revealed = entry.attack.revealed;
-                    }
-                }
-            });
-
-            data.system.details.publicNotes.revealed = oldCreature.notes.public.revealed;
-            data.system.details.privateNotes.revealed = oldCreature.notes.private.revealed;
-            /* Big Migration Block Oh-hoy */
-
-            newBestiary.monster[uuid] = data;
-        }
-
-        bestiary = newBestiary;
-        bestiary.metadata.version = '0.8.9';
-    }
-
-    if(bestiary.metadata.version === '0.8.9'){
-        // Some creatures are missing None options for IWR and Actions/Passives/Attacks/Spells
-        bestiary = await newMigrateBestiary((_, monster) => {
-            const immunitiesKeys = Object.keys(monster.system.attributes.immunities);
-            const weaknessesKeys = Object.keys(monster.system.attributes.weaknesses);
-            const resistancesKeys = Object.keys(monster.system.attributes.resistances);
-
-            if(immunitiesKeys.length === 0){
-                monster.system.attributes.immunities['none'] = { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") };
-            }
-            if(weaknessesKeys.length === 0){
-                monster.system.attributes.weaknesses['none'] = { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") };
-            }
-            if(resistancesKeys.length === 0){
-                monster.system.attributes.resistances['none'] = { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") };
-            }
-
-            if(Object.keys(monster.system.actions).length === 0){
-                monster.system.actions['Attack-None'] = {
-                    revealed: false, 
-                    label: 'None', 
-                    empty: true,
-                    item: {
-                        system: {
-                            damageRolls: {}
-                        },
-                        _id: 'Attack-None',
-                    },
-                    weapon: {
-                        system: {
-                            traits: {
-                                value: []
-                            }
-                        },
-                    },
-                    variants: [],
-                    traits: [],
-                    totalModifier: 0,
-                };
-            }
-
-            var hasActions = false;
-            var hasPassives = false;
-            for(var item of Object.values(monster.items)){
-                if(item.type === 'action'){
-                    if(item.system.actionType.value === 'action' || item.system.actionType.value === 'reaction') hasActions = true;
-                    if(item.system.actionType.value === 'passive') hasPassives = true;
-                }
-            }
+    var bestiaryObject = null;
+    try {
+        bestiaryObject = JSON.parse(bestiary);
+    }catch{}
     
-            if(!hasActions) {
-                monster.items['Action-None'] = {
-                    _id: 'Action-None',
-                    empty: true,
-                    type: 'action',
-                    name: 'None',
-                    value: 'PF2E.Miscellaneous.None',
-                    system: {
-                        actionType: { value: 'action' },
-                        description: {
-                            value: null,
-                        }
-                    }
-                };
-            }
-            if(!hasPassives) {
-                monster.items['Passive-None'] = {
-                    _id: 'Passive-None',
-                    empty: true,
-                    type: 'action',
-                    name: 'None',
-                    value: 'PF2E.Miscellaneous.None',
-                    system: {
-                        actionType: { value: 'passive' },
-                        description: {
-                            value: null,
-                        }
-                    }
-                };
-            }     
+    if(bestiaryObject){
+        const dataBestiary = bestiaryObject?.monster ? bestiaryObject : bestiary;
 
-            const noSpells = !Object.keys(monster.items).find(x => {
-                const item = monster.items[x];
-                return item.type === 'spellcastingEntry'
-            });
-            if(noSpells) {
-                monster.items['Spells-None'] = {
-                    type: 'spellcastingEntry',
-                    _id: 'Spell-None',
-                    revealed: false,
-                    system: {
-                        spelldc: {
-                            dc: { value: 0 },
-                            value: { value: 0 },
-                        }
-                    }
-                };
-            }
+        const oldMonsterData = Object.keys(dataBestiary.monster).length > 0 && Object.keys(dataBestiary.monster).some(key => !dataBestiary.monster[key].system); 
+        dataBestiary.metadata.version = oldMonsterData ? '0.8.8.4' : !dataBestiary.metadata.version ? currentVersion : dataBestiary.metadata.version; 
 
-        }, bestiary);
-
-        bestiary.metadata.version = '0.8.9.2';
-    }
-
-    if(bestiary.metadata.version === '0.8.9.2'){
-        //Insert reveal properties on ability traits, and attack damage types
-        bestiary = await newMigrateBestiary((_, monster) => {
-            for(var actionKey of Object.keys(monster.items)) {
-                const action = monster.items[actionKey];
-                if(action.type === 'action'){
-                    // None-Actions
-                    if(!action.system.traits){
-                        action.system.traits = { value: [] };
-                    }
-                    else if (action.system.traits.value.length > 0 && !action.system.traits.value[0].value){
-                        action.system.traits.value = action.system.traits.value.map(trait => ({ revealed: false, value: trait }));
-                    }
-                }
-            }
-            Object.keys(monster.system.actions).forEach(attackKey => {
-                // Missing Attack-None item
-                if(attackKey === 'Attack-None'){
-                    monster.items['Attack-None'] = {
-                        _id: 'Attack-None',
-                        empty: true,
-                        type: 'melee',
-                        Name: 'None',
-                        value: 'PF2E.Miscellaneous.None',
-                        system: {
-                            damageRolls: [],
-                            traits: {
-                                value: []
-                            }
-                        }
-                    };
-                }
-                else if(monster.items[attackKey].system.damageRolls) {
-                    Object.values(monster.items[attackKey].system.damageRolls).forEach(damageRoll => {
-                        if(!damageRoll.damageType.value){
-                            damageRoll.damageType = { revealed: false, value: damageRoll.damageType };
-                        }
-                    });
-                }
-
-                monster.items[attackKey].system.traits.value = Object.keys(monster.items[attackKey].system.traits.value).map(traitKey => { 
-                    if(!monster.items[attackKey].system.traits.value[traitKey].value){
-                        const traitsWithoutAttack = Object.keys(monster.system.actions[attackKey].traits).reduce((acc, traitKey) => {
-                            if(monster.system.actions[attackKey].traits[traitKey].name !== 'attack'){
-                                acc.push(monster.system.actions[attackKey].traits[traitKey]);
-                            }
+        if(dataBestiary.metadata.version === '0.8.8'){
+            dataBestiary = await newMigrateBestiary(async (_, monster) => {
+                const origin = await fromUuid(monster.uuid);
+                if(!origin) return true;
+                
+                // Add Total Modifier to attacks.
+                monster.attacks.values = Object.keys(monster.attacks.values).reduce((acc, attackKey) => {
+                    const originAttack = origin.system.actions.find(x => x.weapon._id === attackKey);
+                    const base = originAttack?.item;
+                    if(base){
+                        const damageInstances = [];
+                        var damageLabel = '';
+                        for(var damageKey of Object.keys(base.system.damageRolls)){
+                            const damage = base.system.damageRolls[damageKey];
+                            damageLabel = damageLabel.concat(`${damageLabel ? ' + ' : ''}${damage.damage} ${damage.damageType}`);
+                            const damageRollHelper = new Roll(damage.damage);
                             
-                            return acc;
-                        }, []);
-                        return { revealed: traitsWithoutAttack[traitKey].revealed, value: monster.items[attackKey].system.traits.value[traitKey] };
-                    } else {
-                        return { ...monster.items[attackKey].system.traits.value[traitKey] };
-                    }
-                });
-            });
-        }, bestiary);
-
-        bestiary.metadata.version = '0.8.9.7';
-    }
-
-    if(bestiary.metadata.version === '0.8.9.7'){
-        bestiary = await newMigrateBestiary((_, monster) => {
-            const infiniteGrabber = (object, property) => {
-                if(object[property]){
-                    if(object[property][property]){
-                        return infiniteGrabber(object[property], property);
-                    }
-
-                    return object;
-                }
-            };
-
-            Object.values(monster.items).forEach(item => {
-                if(item.type === 'melee' || item.type === 'action'){
-                    Object.keys(item.system.traits.value).forEach(traitKey => {
-                        item.system.traits.value[traitKey] = infiniteGrabber(item.system.traits.value[traitKey], 'value'); 
-                    });
-                }
-
-                if(item.type === 'melee'){
-                    Object.values(item.system.damageRolls).forEach(damage => {
-                        damage.damageType = infiniteGrabber(damage.damageType, 'value');
-                    });
-                }
-            });
-
-        }, bestiary);
-
-        bestiary.metadata.version = '0.8.9.8.1';
-    }
-
-    if(bestiary.metadata.version === '0.8.9.8.1'){
-        bestiary = await newMigrateBestiary(async (_, monster) => {
-            Object.keys(monster.system.actions).forEach(actionKey => {
-                const item = monster.items[actionKey];
-                if(item.type === 'equipment'){
-                    item.system.damageRolls = Object.keys(monster.system.actions[actionKey].weapon.system.damageRolls).reduce((acc, damageKey) => {
-                        const damage = monster.system.actions[actionKey].weapon.system.damageRolls[damageKey];
-                        acc[damageKey] = { ...damage, damageType: { revealed: false, value: damage.damageType } };
-
-                        return acc;
-                    }, {});
-                    
-                    // If this crops up more, make a general helper method to extract all types of rules.
-                    item.system.rules.forEach(rule => {
-                        if(rule.key === 'FlatModifier'){
-                            item.system.damageRolls[`${rule.damageType}-${foundry.utils.randomID()}`] = {
-                                damageType : { revealed: false, value: rule.damageType },
-                                damage: rule.value.toString(),
-                                isFromRule: true,
-                            };
+                            damageInstances.push({ label: damage.damage, average: getRollAverage(damageRollHelper.terms), type: damage.damageType, quality: damage.category  });
                         }
-                    });
-                }
-            });
-        }, bestiary);
-        
-        bestiary.metadata.version = '0.8.9.8.2';
-    }   
 
-    if(bestiary.metadata.version === '0.8.9.8.2'){
-        const journalEntry = game.journal.getName(bestiaryJournalEntry);
-        bestiary = await newMigrateBestiary(async (_, monster) => {
-            if(!monster.system.details.playerNotes?.document){
-                const existingPage = journalEntry.pages.find(x => x.name === monster.name.value);
-                if(existingPage){
-                    await existingPage.delete();
-                }
-
-                const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
-                    name: monster.name.value,
-                    text: {
-                        content: ""
-                    }
-                }]);
-    
-                monster.system.details.playerNotes = { document: page[0].id };
-            }
-        }, bestiary);
-        
-        bestiary.metadata.version = '0.8.9.9';
-    }
-
-    if(bestiary.metadata.version === '0.8.9.9'){
-        bestiary = await newMigrateBestiary(async (_, monster) => {
-            const itemKeys = Object.keys(monster.items);
-            const actionKeys = itemKeys.filter(key => monster.items[key].type === 'action' && monster.items[key].system.actionType.value !== 'passive');
-            if(actionKeys.length > 1 && actionKeys.find(key => monster.items[key]._id === 'Action-None')){
-                monster.items = itemKeys.reduce((acc, key) => {
-                    if(monster.items[key]._id !== 'Action-None'){
-                        acc[key] = monster.items[key];
+                        acc[base.id] = { 
+                            ...monster.attacks.values[attackKey], 
+                            range: base.isMelee ? 'Melee' : 'Ranged',
+                            value: base.system.bonus.value,
+                            damage: {
+                                instances: damageInstances,
+                                label: damageLabel,
+                                average: damageInstances.reduce((acc, instance) => acc+instance.average, 0),
+                            }
+                        };
                     }
 
                     return acc;
                 }, {});
-            }
-        }, bestiary);
+            }, dataBestiary);
 
-        bestiary.metadata.version = '0.8.9.9.6';
-    }
+            dataBestiary.metadata.version = '0.8.8.4';
+        }
 
-    if(bestiary.metadata.version === '0.8.9.9.6'){
-        const journalEntry = game.journal.getName(bestiaryJournalEntry);
-        bestiary = await newMigrateBestiary(async (_, monster) => {
-            if(!monster.system.details.playerNotes?.document){
-                const existingPage = journalEntry.pages.find(x => x.name === monster.name.value);
-                if(existingPage){
-                    await existingPage.delete();
+        if(dataBestiary.metadata.version === '0.8.8.4'){
+            // Change to storing all of actor.toObject. Lots of improvement in data retention, shouldn't be too much data.
+            const uuids = Object.values(dataBestiary.monster).reduce((acc, monster) => {
+                    if(monster.uuid && !monster.system) acc.push(monster.uuid);
+                
+                    return acc;
+                }, []);
+            const newBestiary = { monster: Object.keys(dataBestiary.monster).reduce((acc, key) => {
+                if(Boolean(dataBestiary.monster[key].system)){
+                    acc[key] = dataBestiary.monster[key];
                 }
 
-                const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
-                    name: monster.name.value,
-                    text: {
-                        content: ""
+                return acc;
+            }, {}), npc: {}, metadata: {} };
+            for(var uuid of uuids){
+                const orig = await fromUuid(uuid);
+                const data = await PF2EBestiary.getMonsterData(orig);
+                const oldCreature = dataBestiary.monster[uuid];
+
+                if(!data){
+                    continue;
+                }
+
+                /* Big Migration Block Oh-hoy */
+                data.name = { ...data.name, revealed: oldCreature.name.revealed, custom: oldCreature.name.custom };
+                data.system.details.level = { ...data.system.details.level, revealed: oldCreature.level.revealed, custom: oldCreature.level.custom };
+                data.system.attributes.ac = { ...data.system.attributes.ac, revealed: oldCreature.ac.revealed, custom: oldCreature.ac.custom };
+                data.system.attributes.hp = { ...data.system.attributes.hp, revealed: oldCreature.hp.revealed, custom: oldCreature.hp.custom };  
+
+                Object.keys(data.system.attributes.immunities).forEach(immunityKey => {
+                    const oldImmunityKey = Object.keys(oldCreature.immunities).find(x => x === immunityKey);
+                    if(oldImmunityKey) data.system.attributes.immunities[immunityKey].revealed = oldCreature.immunities[oldImmunityKey].revealed;
+                });
+
+                Object.keys(data.system.attributes.weaknesses).forEach(weaknessKey => {
+                    const oldWeaknessKey = Object.keys(oldCreature.weaknesses).find(x => x === weaknessKey);
+                    if(oldWeaknessKey) data.system.attributes.weaknesses[weaknessKey].revealed = oldCreature.weaknesses[oldWeaknessKey].revealed;
+                });
+
+                Object.keys(data.system.attributes.resistances).forEach(resistanceKey => {
+                    const oldResistanceKey = Object.keys(oldCreature.resistances).find(x => x === resistanceKey);
+                    if(oldResistanceKey) data.system.attributes.resistances[resistanceKey].revealed = oldCreature.resistances[oldResistanceKey].revealed;
+                });
+
+                data.system.saves.fortitude = { ...data.system.saves.fortitude, revealed: oldCreature.saves.fortitude.revealed, custom: oldCreature.saves.fortitude.custom };
+                data.system.saves.reflex = { ...data.system.saves.reflex, revealed: oldCreature.saves.reflex.revealed, custom: oldCreature.saves.reflex.custom };
+                data.system.saves.will = { ...data.system.saves.will, revealed: oldCreature.saves.will.revealed, custom: oldCreature.saves.will.custom };
+                
+                data.system.attributes.speed.revealed = oldCreature.speeds.values.land.revealed;
+                data.system.attributes.speed.otherSpeeds.forEach(speed => {
+                    const oldSpeedKey = Object.keys(oldCreature.speeds.values).find(x => speed.label === x);
+                        speed.revealed = oldSpeedKey ? oldCreature.speeds.values[oldSpeedKey].revealed : false;
+                });
+                
+                Object.keys(data.system.traits.value).forEach(traitKey => data.system.traits.value[traitKey].revealed = oldCreature.traits.values[traitKey]?.revealed);
+                Object.keys(data.system.abilities).forEach(abilityKey => {
+                    const oldAbility = Object.values(oldCreature.abilities.values).find(x => x.label.toLowerCase() === abilityKey);
+                    data.system.abilities[abilityKey] = { ...data.system.abilities[abilityKey], revealed: oldAbility.revealed, custom: oldAbility.custom };
+                });
+                
+                data.system.perception = { ...data.system.perception, revealed: oldCreature.senses.values.perception.revealed, custom: oldCreature.senses.values.perception.custom };
+                data.system.perception.senses.forEach(sense => {
+                    const oldKey = Object.keys(oldCreature.senses.values).find(x => x === sense.type);
+                    const oldSense = oldKey ? oldCreature.senses.values[oldKey] : null;
+                    if(oldSense){
+                        sense.revealed = oldSense.revealed;
                     }
-                }]);
-    
-                monster.system.details.playerNotes = { document: page[0].id };
+                });
+                data.system.perception.details = { ...data.system.perception.details, revealed: oldCreature.senses.values.other?.revealed ?? false, custom: oldCreature.senses.values.other?.custom ?? null };
+
+                Object.keys(data.system.actions).forEach(actionKey => {
+                    const creatureKey = Object.keys(oldCreature.attacks.values).find(key => key === actionKey);
+                    const creatureAction = creatureKey ? oldCreature.attacks.values[creatureKey] : null;
+                    if(creatureAction){
+                        const action = data.system.actions[actionKey];
+                        action.revealed = creatureAction.revealed;
+                        action.damageStatsRevealed = creatureAction.damageStatsRevealed;
+                    }
+                });
+                
+                Object.keys(data.items).forEach(itemKey => {
+                    const item = data.items[itemKey];
+                    if(item.type === 'action'){
+                        if(['action', 'reaction'].includes(item.system.actionType.value)){
+                            const oldKey = Object.keys(oldCreature.actions.values).find(key => key === item._id);
+                            item.revealed = oldKey ? oldCreature.actions.values[oldKey].revealed : false;
+                        } else {
+                            const oldKey = Object.keys(oldCreature.passives.values).find(key => key === item._id);
+                            item.revealed = oldKey ? oldCreature.passives.values[oldKey].revealed : false;
+                        }
+                    }
+
+                    if(item.type === 'spell') {
+                            const entry = oldCreature.spells.entries[item.system.location.value];
+                            if(entry){
+                                const levels = oldCreature.spells.entries[item.system.location.value].levels;
+                                const levelKeys = Object.keys(levels);
+                                const level = item.system.traits.value.includes("cantrip") ? 'Cantrips' : item.system.location.heightenedLevel ?? (levelKeys.length === 1 ? levelKeys[0] : item.system.level.value);
+                                if(oldCreature.spells.entries[item.system.location.value]){
+                                    const oldSpell = levels[level][item._id];
+
+                                    item.revealed = oldSpell.revealed;
+                                }
+                            }
+                    } else if(item.type === 'spellcastingEntry'){
+                        const oldEntryKey = Object.keys(oldCreature.spells.entries).find(key => key === item._id);
+                        const entry = oldEntryKey ? oldCreature.spells.entries[oldEntryKey] : null;
+                        if(entry){
+                            item.revealed = entry.revealed;
+                            item.system.spelldc.dc.revealed =  entry.dc.revealed;
+                            item.system.spelldc.value.revealed = entry.attack.revealed;
+                        }
+                    }
+                });
+
+                data.system.details.publicNotes.revealed = oldCreature.notes.public.revealed;
+                data.system.details.privateNotes.revealed = oldCreature.notes.private.revealed;
+                /* Big Migration Block Oh-hoy */
+
+                newBestiary.monster[uuid] = data;
             }
-        }, bestiary);
 
-        bestiary.metadata.version = '0.8.11';
-    }
+            dataBestiary = newBestiary;
+            dataBestiary.metadata.version = '0.8.9';
+        }
 
-    if(bestiary.metadata.version === '0.8.11'){
-        const journalEntry = game.journal.getName(bestiaryJournalEntry);
-        if(journalEntry){
-            bestiary = await newMigrateBestiary(async (_, monster) => {
+        if(dataBestiary.metadata.version === '0.8.9'){
+            // Some creatures are missing None options for IWR and Actions/Passives/Attacks/Spells
+            dataBestiary = await newMigrateBestiary((_, monster) => {
+                const immunitiesKeys = Object.keys(monster.system.attributes.immunities);
+                const weaknessesKeys = Object.keys(monster.system.attributes.weaknesses);
+                const resistancesKeys = Object.keys(monster.system.attributes.resistances);
+
+                if(immunitiesKeys.length === 0){
+                    monster.system.attributes.immunities['none'] = { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") };
+                }
+                if(weaknessesKeys.length === 0){
+                    monster.system.attributes.weaknesses['none'] = { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") };
+                }
+                if(resistancesKeys.length === 0){
+                    monster.system.attributes.resistances['none'] = { revealed: false, empty: true, type: game.i18n.localize("PF2EBestiary.Miscellaneous.None") };
+                }
+
+                if(Object.keys(monster.system.actions).length === 0){
+                    monster.system.actions['Attack-None'] = {
+                        revealed: false, 
+                        label: 'None', 
+                        empty: true,
+                        item: {
+                            system: {
+                                damageRolls: {}
+                            },
+                            _id: 'Attack-None',
+                        },
+                        weapon: {
+                            system: {
+                                traits: {
+                                    value: []
+                                }
+                            },
+                        },
+                        variants: [],
+                        traits: [],
+                        totalModifier: 0,
+                    };
+                }
+
+                var hasActions = false;
+                var hasPassives = false;
+                for(var item of Object.values(monster.items)){
+                    if(item.type === 'action'){
+                        if(item.system.actionType.value === 'action' || item.system.actionType.value === 'reaction') hasActions = true;
+                        if(item.system.actionType.value === 'passive') hasPassives = true;
+                    }
+                }
+        
+                if(!hasActions) {
+                    monster.items['Action-None'] = {
+                        _id: 'Action-None',
+                        empty: true,
+                        type: 'action',
+                        name: 'None',
+                        value: 'PF2E.Miscellaneous.None',
+                        system: {
+                            actionType: { value: 'action' },
+                            description: {
+                                value: null,
+                            }
+                        }
+                    };
+                }
+                if(!hasPassives) {
+                    monster.items['Passive-None'] = {
+                        _id: 'Passive-None',
+                        empty: true,
+                        type: 'action',
+                        name: 'None',
+                        value: 'PF2E.Miscellaneous.None',
+                        system: {
+                            actionType: { value: 'passive' },
+                            description: {
+                                value: null,
+                            }
+                        }
+                    };
+                }     
+
+                const noSpells = !Object.keys(monster.items).find(x => {
+                    const item = monster.items[x];
+                    return item.type === 'spellcastingEntry'
+                });
+                if(noSpells) {
+                    monster.items['Spells-None'] = {
+                        type: 'spellcastingEntry',
+                        _id: 'Spell-None',
+                        revealed: false,
+                        system: {
+                            spelldc: {
+                                dc: { value: 0 },
+                                value: { value: 0 },
+                            }
+                        }
+                    };
+                }
+
+            }, dataBestiary);
+
+            dataBestiary.metadata.version = '0.8.9.2';
+        }
+
+        if(dataBestiary.metadata.version === '0.8.9.2'){
+            //Insert reveal properties on ability traits, and attack damage types
+            dataBestiary = await newMigrateBestiary((_, monster) => {
+                for(var actionKey of Object.keys(monster.items)) {
+                    const action = monster.items[actionKey];
+                    if(action.type === 'action'){
+                        // None-Actions
+                        if(!action.system.traits){
+                            action.system.traits = { value: [] };
+                        }
+                        else if (action.system.traits.value.length > 0 && !action.system.traits.value[0].value){
+                            action.system.traits.value = action.system.traits.value.map(trait => ({ revealed: false, value: trait }));
+                        }
+                    }
+                }
+                Object.keys(monster.system.actions).forEach(attackKey => {
+                    // Missing Attack-None item
+                    if(attackKey === 'Attack-None'){
+                        monster.items['Attack-None'] = {
+                            _id: 'Attack-None',
+                            empty: true,
+                            type: 'melee',
+                            Name: 'None',
+                            value: 'PF2E.Miscellaneous.None',
+                            system: {
+                                damageRolls: [],
+                                traits: {
+                                    value: []
+                                }
+                            }
+                        };
+                    }
+                    else if(monster.items[attackKey].system.damageRolls) {
+                        Object.values(monster.items[attackKey].system.damageRolls).forEach(damageRoll => {
+                            if(!damageRoll.damageType.value){
+                                damageRoll.damageType = { revealed: false, value: damageRoll.damageType };
+                            }
+                        });
+                    }
+
+                    monster.items[attackKey].system.traits.value = Object.keys(monster.items[attackKey].system.traits.value).map(traitKey => { 
+                        if(!monster.items[attackKey].system.traits.value[traitKey].value){
+                            const traitsWithoutAttack = Object.keys(monster.system.actions[attackKey].traits).reduce((acc, traitKey) => {
+                                if(monster.system.actions[attackKey].traits[traitKey].name !== 'attack'){
+                                    acc.push(monster.system.actions[attackKey].traits[traitKey]);
+                                }
+                                
+                                return acc;
+                            }, []);
+                            return { revealed: traitsWithoutAttack[traitKey].revealed, value: monster.items[attackKey].system.traits.value[traitKey] };
+                        } else {
+                            return { ...monster.items[attackKey].system.traits.value[traitKey] };
+                        }
+                    });
+                });
+            }, dataBestiary);
+
+            dataBestiary.metadata.version = '0.8.9.7';
+        }
+
+        if(dataBestiary.metadata.version === '0.8.9.7'){
+            dataBestiary = await newMigrateBestiary((_, monster) => {
+                const infiniteGrabber = (object, property) => {
+                    if(object[property]){
+                        if(object[property][property]){
+                            return infiniteGrabber(object[property], property);
+                        }
+
+                        return object;
+                    }
+                };
+
+                Object.values(monster.items).forEach(item => {
+                    if(item.type === 'melee' || item.type === 'action'){
+                        Object.keys(item.system.traits.value).forEach(traitKey => {
+                            item.system.traits.value[traitKey] = infiniteGrabber(item.system.traits.value[traitKey], 'value'); 
+                        });
+                    }
+
+                    if(item.type === 'melee'){
+                        Object.values(item.system.damageRolls).forEach(damage => {
+                            damage.damageType = infiniteGrabber(damage.damageType, 'value');
+                        });
+                    }
+                });
+
+            }, dataBestiary);
+
+            dataBestiary.metadata.version = '0.8.9.8.1';
+        }
+
+        if(dataBestiary.metadata.version === '0.8.9.8.1'){
+            dataBestiary = await newMigrateBestiary(async (_, monster) => {
+                Object.keys(monster.system.actions).forEach(actionKey => {
+                    const item = monster.items[actionKey];
+                    if(item.type === 'equipment'){
+                        item.system.damageRolls = Object.keys(monster.system.actions[actionKey].weapon.system.damageRolls).reduce((acc, damageKey) => {
+                            const damage = monster.system.actions[actionKey].weapon.system.damageRolls[damageKey];
+                            acc[damageKey] = { ...damage, damageType: { revealed: false, value: damage.damageType } };
+
+                            return acc;
+                        }, {});
+                        
+                        // If this crops up more, make a general helper method to extract all types of rules.
+                        item.system.rules.forEach(rule => {
+                            if(rule.key === 'FlatModifier'){
+                                item.system.damageRolls[`${rule.damageType}-${foundry.utils.randomID()}`] = {
+                                    damageType : { revealed: false, value: rule.damageType },
+                                    damage: rule.value.toString(),
+                                    isFromRule: true,
+                                };
+                            }
+                        });
+                    }
+                });
+            }, dataBestiary);
+            
+            dataBestiary.metadata.version = '0.8.9.8.2';
+        }   
+
+        if(dataBestiary.metadata.version === '0.8.9.8.2'){
+            const journalEntry = game.journal.getName(bestiaryJournalEntry);
+            dataBestiary = await newMigrateBestiary(async (_, monster) => {
                 if(!monster.system.details.playerNotes?.document){
-                    const page = journalEntry.pages.find(x => x.name === monster.name.value);
-                    if(page){
-                        monster.system.details.playerNotes = { document: page.id };
+                    const existingPage = journalEntry.pages.find(x => x.name === monster.name.value);
+                    if(existingPage){
+                        await existingPage.delete();
+                    }
+
+                    const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
+                        name: monster.name.value,
+                        text: {
+                            content: ""
+                        }
+                    }]);
+        
+                    monster.system.details.playerNotes = { document: page[0].id };
+                }
+            }, dataBestiary);
+            
+            dataBestiary.metadata.version = '0.8.9.9';
+        }
+
+        if(dataBestiary.metadata.version === '0.8.9.9'){
+            dataBestiary = await newMigrateBestiary(async (_, monster) => {
+                const itemKeys = Object.keys(monster.items);
+                const actionKeys = itemKeys.filter(key => monster.items[key].type === 'action' && monster.items[key].system.actionType.value !== 'passive');
+                if(actionKeys.length > 1 && actionKeys.find(key => monster.items[key]._id === 'Action-None')){
+                    monster.items = itemKeys.reduce((acc, key) => {
+                        if(monster.items[key]._id !== 'Action-None'){
+                            acc[key] = monster.items[key];
+                        }
+
+                        return acc;
+                    }, {});
+                }
+            }, dataBestiary);
+
+            dataBestiary.metadata.version = '0.8.9.9.6';
+        }
+
+        if(dataBestiary.metadata.version === '0.8.9.9.6'){
+            const journalEntry = game.journal.getName(bestiaryJournalEntry);
+            dataBestiary = await newMigrateBestiary(async (_, monster) => {
+                if(!monster.system.details.playerNotes?.document){
+                    const existingPage = journalEntry.pages.find(x => x.name === monster.name.value);
+                    if(existingPage){
+                        await existingPage.delete();
+                    }
+
+                    const page = await journalEntry.createEmbeddedDocuments("JournalEntryPage", [{
+                        name: monster.name.value,
+                        text: {
+                            content: ""
+                        }
+                    }]);
+        
+                    monster.system.details.playerNotes = { document: page[0].id };
+                }
+            }, dataBestiary);
+
+            dataBestiary.metadata.version = '0.8.11';
+        }
+
+        if(dataBestiary.metadata.version === '0.8.11'){
+            const journalEntry = game.journal.getName(bestiaryJournalEntry);
+            if(journalEntry){
+                dataBestiary = await newMigrateBestiary(async (_, monster) => {
+                    if(!monster.system.details.playerNotes?.document){
+                        const page = journalEntry.pages.find(x => x.name === monster.name.value);
+                        if(page){
+                            monster.system.details.playerNotes = { document: page.id };
+                        }
+                    }
+                }, dataBestiary);
+            }
+
+            dataBestiary.metadata.version = '0.8.12';
+        }
+
+        if(dataBestiary.metadata.version < '0.9.0'){
+            dataBestiary.npcCategories = {};
+            
+            dataBestiary.metadata.version = '0.9.0';
+        }
+
+        if(dataBestiary.metadata.version === '0.9.0'){
+            if(!dataBestiary.npcCategories){
+                dataBestiary.npcCategories = {};
+            }
+            
+            dataBestiary.metadata.version = '0.9.1';
+        }
+
+        if(dataBestiary.metadata.version === '0.9.1'){
+            for(var npcKey in dataBestiary.npc){
+                var npc = dataBestiary.npc[npcKey];
+
+                for(var category of npc.npcData.categories){
+                    if(!dataBestiary.npcCategories[category.key]){
+                        dataBestiary.npcCategories[category.key] = category.name;
                     }
                 }
-            }, bestiary);
+            } 
+
+            dataBestiary.metadata.version = '0.9.2';
         }
 
-        bestiary.metadata.version = '0.8.12';
-    }
+        if(dataBestiary.metadata.version === '0.9.2' || dataBestiary.metadata.version === '0.9.3'){
+            const journal = await JournalEntry.create({ name: 'PF2E_Bestiary' });
+            await journal.setFlag('pf2e-bestiary-tracking', 'npcCategories', !bestiary ? [] : Object.keys(bestiaryObject.npcCategories).reduce((acc, key) => {
+                acc.push({ name: bestiaryObject.npcCategories[key], value: key });
 
-    if(bestiary.metadata.version < '0.9.0'){
-        bestiary.npcCategories = {};
-        
-        bestiary.metadata.version = '0.9.0';
-    }
+                return acc;
+            }, []));
 
-    if(bestiary.metadata.version === '0.9.0'){
-        if(!bestiary.npcCategories){
-            bestiary.npcCategories = {};
-        }
-        
-        bestiary.metadata.version = '0.9.1';
-    }
-
-    if(bestiary.metadata.version === '0.9.1'){
-        for(var npcKey in bestiary.npc){
-            var npc = bestiary.npc[npcKey];
-
-            for(var category of npc.npcData.categories){
-                if(!bestiary.npcCategories[category.key]){
-                    bestiary.npcCategories[category.key] = category.name;
-                }
+            for(var npcKey of Object.keys(bestiaryObject.monster)){
+                const monster = bestiaryObject.monster[npcKey];
+                await journal.createEmbeddedDocuments("JournalEntryPage", [getCreatureDataFromOld(monster)]);
             }
-        } 
 
-        bestiary.metadata.version = '0.9.2';
+            for(var npcKey of Object.keys(bestiaryObject.npc)){
+                const npc = bestiaryObject.npc[npcKey];
+                await journal.createEmbeddedDocuments("JournalEntryPage", [getNPCDataFromOld(npc)]);
+            }
+
+            const oldJournalEntry = game.journal.getName(bestiaryJournalEntry);
+            await oldJournalEntry.delete();
+            await game.folders.getName(bestiaryFolder).delete();
+
+            await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', journal.id);
+            await journal.setFlag('pf2e-bestiary-tracking', 'version', '0.9.4');
+        }
     }
-
-    if(bestiary.metadata.version === '0.9.2');
 
     return bestiary;
 };
@@ -6550,7 +6904,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
         // We do not currently refresh already present creatures in the Bestiary.
         if(bestiary.pages.some(x => x.system.uuid === item.uuid)) return false;
 
-        await bestiary.createEmbeddedDocuments("JournalEntryPage", [getCreatureData(item)]);
+        const data = isNPC(item) ? getNPCData(item) : getCreatureData(item);
+        await bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
         
         const doubleClickOpenActivated = game.settings.get('pf2e-bestiary-tracking', 'doubleClickOpen');
         if(doubleClickOpenActivated && item.ownership.default < 1){

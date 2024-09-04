@@ -275,16 +275,16 @@
             </div>
             <div class="speeds-container">
                 {{#if this.user.isGM}}
-                    {{#each this.system.speeds.values as |speed key|}}
-                        <div class="speed-container data-container toggle-container {{#if speed.revealed}}revealed{{/if}} secondary-container" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState speed}}" data-action="toggleRevealed" data-path="{{concat 'system.speeds.values.' key}}">
-                            {{speed.name}}
+                    {{#each this.system.allSpeeds as |speed key|}}
+                        <div class="speed-container data-container toggle-container {{#if speed.revealed}}revealed{{/if}} secondary-container" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState speed}}" data-action="toggleRevealed" data-path="{{concat 'system.speeds.' key}}">
+                            {{localize speed.name}}
                             {{#if (not ../vagueDescriptions.properties.speed)}}{{speed.value}}{{/if}}
                         </div>
                     {{/each}}
                 {{else}}
                     {{#PF2EBTFilter 'revealed' '?' 10 this.system.speeds.values}}
                         <div class="speed-container data-container secondary-container">
-                            {{this.name}}
+                            {{localize this.name}}
                             {{#if (not ../vagueDescriptions.properties.speed)}}{{this.value}}{{/if}}
                         </div>
                     {{/PF2EBTFilter}}

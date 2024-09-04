@@ -7,13 +7,13 @@ export const toggleStringField = () => new fields.SchemaField({
     revealed: new fields.BooleanField({ required: true, initial: false }),
     value: new fields.StringField({ required: true }),
     custom: new fields.StringField({ nullable: true }),
-}) 
+});
 
 export const toggleNumberField = () => new fields.SchemaField({
     revealed: new fields.BooleanField({ required: true, initial: false }),
     value: new fields.NumberField({ required: true, integer: true }),
     custom: new fields.StringField({ nullable: true }),
-}) 
+}) ;
 
 export const getCreatureData = (actor) => {
     const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
@@ -91,8 +91,9 @@ export const getCreatureData = (actor) => {
             img: actor.img,
             texture: actor.prototypeToken.texture.src,
             name: { value: actor.name },
-            ac: { value: Number.parseInt(actor.system.attributes.ac.value) },
-            hp: { value: Number.parseInt(actor.system.attributes.hp.max) },
+            publication: actor.system.details.publication,
+            ac: { value: Number.parseInt(actor.system.attributes.ac.value), details: actor.system.attributes.ac.details },
+            hp: { value: Number.parseInt(actor.system.attributes.hp.max), temp: Number.parseInt(actor.system.attributes.hp.temp), details: actor.system.attributes.hp.details, negativeHealing: actor.system.attributes.hp.negativeHealing },
             level: { value: Number.parseInt(actor.system.details.level.value) },
             size: actor.system.traits.size.value,
             rarity: { value: actor.system.traits.rarity },
@@ -113,9 +114,9 @@ export const getCreatureData = (actor) => {
             speeds: {
               details: { name: actor.system.attributes.speed.details },
               values: {
-                land: { name: 'Land', value: actor.system.attributes.speed.value },
+                land: { type: 'land', value: actor.system.attributes.speed.value },
                 ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
-                  acc[speed.label] = { name: speed.label, value: speed.value }
+                  acc[speed.label] = { type: speed.type, value: speed.value }
                   return acc;
                 }, {})
               },  
@@ -194,6 +195,11 @@ export const getCreatureData = (actor) => {
                   actions: attack.glyph,
                   totalModifier: attack.totalModifier,
                   isMelee: attack.weapon.isMelee,
+                  additionalEffects: attack.additionalEffects.reduce((acc, effect) => {
+                    acc[effect.tag] = { label: effect.label, tag: effect.tag };
+
+                    return acc;
+                  }, {}),
                   damageInstances: Object.keys(item.system.damageRolls).reduce((acc, damage) => {
                     acc[damage] = { 
                       category: item.system.damageRolls[damage].category,
@@ -222,6 +228,8 @@ export const getCreatureData = (actor) => {
               if(action.type === 'action' && action.system.actionType.value !== 'passive'){
                 acc[action.id] = {
                   label: action.name,
+                  category: action.system.category,
+                  deathNote: action.system.deathNote,
                   actions: action.system.actions.value ?? 'R',
                   traits: action.system.traits.value.reduce((acc, trait) => {
                     acc[trait] = { value: trait };
@@ -237,6 +245,8 @@ export const getCreatureData = (actor) => {
               if(action.type === 'action' && action.system.actionType.value === 'passive'){
                 acc[action.id] = {
                   label: action.name,
+                  category: action.system.category,
+                  deathNote: action.system.deathNote,
                   traits: action.system.traits.value.reduce((acc, trait) => {
                     acc[trait] = { value: trait };
                     return acc;
@@ -266,13 +276,16 @@ export const getNPCData = (actor) => {
       ...creatureData.system,
       hidden: game.settings.get('pf2e-bestiary-tracking', 'hidden-settings').npc,
       npcData: {
-        background: { value: '' },
-        appearance: { value: '' },
-        personality: { value: '' },
-        height: { value: '' },
-        weight: { value: '' },
-        birthplace: { value: '' },
-        disposition: {},
+        categories: [],
+        general: {
+          background: { value: '' },
+          appearance: { value: '' },
+          personality: { value: '' },
+          height: { value: '' },
+          weight: { value: '' },
+          birthplace: { value: '' },
+          disposition: {},
+        }
       }
     }
   }
