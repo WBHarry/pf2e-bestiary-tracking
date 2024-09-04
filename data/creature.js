@@ -18,6 +18,14 @@ export class Creature extends foundry.abstract.TypeDataModel {
                 remaster: new fields.BooleanField({}),
                 title: new fields.StringField({}),
             }),
+            hardness: new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                value: new fields.StringField({}),
+            }),
+            allSaves: new fields.SchemaField({
+                revealed: new fields.BooleanField({ required: true, initial: false }),
+                value: new fields.StringField({}),
+            }),
             ac: new fields.SchemaField({
                 revealed: new fields.BooleanField({ required: true, initial: false }),
                 value: new fields.NumberField({ required: true, integer: true }),

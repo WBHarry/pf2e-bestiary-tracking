@@ -91,6 +91,8 @@ export const getCreatureData = (actor) => {
             img: actor.img,
             texture: actor.prototypeToken.texture.src,
             name: { value: actor.name },
+            hardness: { value: actor.system.attributes.hardness.value },
+            allSaves: { value: actor.system.attributes.allSaves.value },
             publication: actor.system.details.publication,
             ac: { value: Number.parseInt(actor.system.attributes.ac.value), details: actor.system.attributes.ac.details },
             hp: { value: Number.parseInt(actor.system.attributes.hp.max), temp: Number.parseInt(actor.system.attributes.hp.temp), details: actor.system.attributes.hp.details, negativeHealing: actor.system.attributes.hp.negativeHealing },
@@ -174,7 +176,8 @@ export const getCreatureData = (actor) => {
                     type: resistance.type,
                     value: resistance.value, 
                     exceptions:  resistance.exceptions.reduce((acc, exception) => {  
-                      acc[exception] = { type: exception.label ?? exception }
+                      const type = exception.label ?? exception;
+                      acc[slugify(type)] = { type: type }
                       return acc;
                     }, {}),
                     doubleVs: resistance.doubleVs.reduce((acc, doubleVs) => {  

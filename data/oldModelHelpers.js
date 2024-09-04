@@ -22,11 +22,12 @@ export const getCreatureDataFromOld = (actor) => {
                         level = { value: levelValue, spells: {} };
                     }
 
+                    const showActions = !spell.system.traits.value.some(x => x === 'exploration' || x === 'downtime');
                     level.spells[spell._id] = {
                         revealed: spell.revealed,
                         label: spell.name,
                         img: spell.img,
-                        actions: spell.system.time.value,
+                        actions: showActions ? spell.system.time.value.replace('to', '-') : '',
                         defense: spell.system.defense?.save?.statistic ? {
                         statistic: spell.system.defense.save.statistic,
                         basic: spell.system.defense.save.basic,
@@ -78,6 +79,8 @@ export const getCreatureDataFromOld = (actor) => {
             img: actor.img,
             texture: actor.prototypeToken.texture.src,
             name: actor.name,
+            hardness: { value: actor.system.attributes.hardness.value },
+            allSaves: { value: actor.system.attributes.allSaves.value },
             publication: actor.system.details.publication,
             ac: { value: Number.parseInt(actor.system.attributes.ac.value), revealed: Boolean(actor.system.attributes.ac), custom: actor.system.attributes.ac.custom, details: actor.system.attributes.ac.details },
             hp: { value: Number.parseInt(actor.system.attributes.hp.max), revealed: Boolean(actor.system.attributes.hp.revealed), custom: actor.system.attributes.hp.custom, temp: Number.parseInt(actor.system.attributes.hp.temp), details: actor.system.attributes.hp.details, negativeHealing: actor.system.attributes.hp.negativeHealing },
@@ -139,7 +142,8 @@ export const getCreatureDataFromOld = (actor) => {
                     revealed: immunity.revealed, 
                     type: immunity.empty ? 'PF2EBestiary.Miscellaneous.None' : immunity.type, 
                     exceptions:  immunity.exceptions?.reduce((acc, exception) => {  
-                      acc[exception.value] = { revealed: exception.revealed, type: exception.value };
+                      const type = exception.value.label ?? exception.value;
+                      acc[slugify(type)] = { revealed: exception.revealed, type: type };
                       return acc;
                     }, {}) ?? {},
                 };
@@ -153,8 +157,9 @@ export const getCreatureDataFromOld = (actor) => {
                     revealed: weakness.revealed, 
                     type: weakness.empty ? 'PF2EBestiary.Miscellaneous.None' : weakness.type,
                     value: weakness.value, 
-                    exceptions:  weakness.exceptions?.reduce((acc, exception) => {  
-                      acc[exception.value] = { revealed: exception.revealed, type: exception.value };
+                    exceptions:  weakness.exceptions?.reduce((acc, exception) => { 
+                      const type = exception.value.label ?? exception.value; 
+                      acc[slugify(type)] = { revealed: exception.revealed, type: type };
                       return acc;
                     }, {}) ?? {},
                 };
@@ -169,11 +174,13 @@ export const getCreatureDataFromOld = (actor) => {
                     type: resistance.empty ? 'PF2EBestiary.Miscellaneous.None' : resistance.type,
                     value: resistance.value, 
                     exceptions:  resistance.exceptions?.reduce((acc, exception) => {  
-                      acc[exception.value] = { revealed: exception.revealed, type: exception.value };
+                      const type = exception.value.label ?? exception.value;
+                      acc[slugify(type)] = { revealed: exception.revealed, type: type };
                       return acc;
                     }, {}) ?? {},
                     doubleVs: resistance.doubleVs?.reduce((acc, doubleVs) => {  
-                      acc[doubleVs.value] = { revealed: doubleVs.revealed, type: doubleVs.value };
+                      const type = doubleVs.value.label ?? doubleVs.value;
+                      acc[slugify(type)] = { revealed: doubleVs.revealed, type: type };
                       return acc;
                     }, {}) ?? {},
                 };
@@ -184,7 +191,21 @@ export const getCreatureDataFromOld = (actor) => {
               const attack = actor.system.actions[actionKey];
               const item = actor.items[actionKey];
               
-              if(item.type === 'melee' || item.type === 'equipment'){
+              if(attack.fake){
+                acc[actionKey] = {
+                    revealed: attack.revealed,
+                    label: attack.label,
+                    actions: '1',
+                    totalModifier: 0,
+                    isMelee: true,
+                    additionalEffects: [],
+                    damageInstances: attack.item.system.damageRolls,
+                    traits: attack.traits,
+                    variants: attack.variants,
+                    rules: {}
+                };
+              }
+              else if(item.type === 'melee' || item.type === 'equipment'){
                 acc[attack.empty ? 'empty' : attack.item._id] = {
                   revealed: attack.revealed,
                   empty: Boolean(attack.empty),
@@ -262,7 +283,7 @@ export const getCreatureDataFromOld = (actor) => {
             notes: {
               public: { value: actor.system.details.publicNotes.text, revealed: actor.system.details.publicNotes.revealed },
               private: { value: actor.system.details.privateNotes.text, revealed: actor.system.details.privateNotes.revealed },
-              player: game.journal.getName(bestiaryJournalEntry).pages.get(actor.system.details.playerNotes.document)?.text?.content ?? '',
+              player: { value: game.journal.getName(bestiaryJournalEntry).pages.get(actor.system.details.playerNotes.document)?.text?.content ?? '' },
             },
         }
     };
@@ -278,7 +299,7 @@ export const getNPCDataFromOld = (actor) => {
             ...creatureData.system,
             hidden: actor.hidden,
             npcData: {
-                categories: [],
+                categories: actor.npcData.categories.map(category => ({ name: category.name, value: category.key })),
                 general: {
                     background: actor.npcData.general.background,
                     appearance: actor.npcData.general.appearance,
@@ -286,7 +307,14 @@ export const getNPCDataFromOld = (actor) => {
                     height: actor.npcData.general.height,
                     weight: actor.npcData.general.weight,
                     birthplace: actor.npcData.general.birthplace,
-                    disposition: actor.npcData.general.disposition,
+                    disposition: Object.keys(actor.npcData.general.disposition).reduce((acc, key) => {
+                      const character = game.actors.get(key);
+                      const characterId = character?.id ?? game.users.get(key).character?.id;
+                      if(!characterId) return acc;
+
+                      acc[characterId] = actor.npcData.general.disposition[key].value;
+                      return acc;
+                    }, {}),
                 }
             }
         }
