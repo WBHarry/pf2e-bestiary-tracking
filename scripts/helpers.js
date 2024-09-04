@@ -52,14 +52,20 @@ export const getExpandedCreatureTypes = () => {
         else if(a.name > b.name) return 1;
         else return 0;
     });
-    
-    // const types = { unknown: { name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"), values: {} } };
-    // allTypes.forEach(type => {
-    //     types[type.value] = { name: type.name, values: {} }
-    // });
-
 
     return [{ value: 'unknown', name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"), values: [] }, ...allTypes];
+};
+
+export const getNPCCategories = () => {
+    const bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
+    const categories = bestiary.getFlag('pf2e-bestiary-tracking', 'npcCategories');
+    return [
+        { value: 'unaffiliated', name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unaffiliated"), values: [] },
+        ...categories.reduce((acc, category) => {
+            acc.push({ value: category.value, name: category.name, values: [] });
+            return acc;
+        }, []),
+    ];
 };
 
 export const getBaseActor = (actor) => {

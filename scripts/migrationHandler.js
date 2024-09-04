@@ -23,7 +23,7 @@ export const handleDataMigration = async () => {
     if(!bestiary || bestiaryObject ){
         const journal = await JournalEntry.create({ name: game.i18n.localize('PF2EBestiary.Miscellaneous.FirstBestiary') });
         await journal.setFlag('pf2e-bestiary-tracking', 'version', !bestiary ? currentVersion : '0.9.2');
-        await journal.setFlag('pf2e-bestiary-tracking', 'npcCategories', !bestiary ? {} : bestiaryObject.npcCategories);
+        await journal.setFlag('pf2e-bestiary-tracking', 'npcCategories', !bestiary ? [] : bestiaryObject.npcCategories);
         // HAVE TO HANDLE MIGRATION OF OLD BESTIARIES BEFORE THIS POINT
         await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', journal.id);
     }

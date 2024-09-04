@@ -82,7 +82,6 @@ Hooks.on("combatStart", async (encounter) => {
             added?.length && ui.notifications.info(game.i18n.format('PF2EBestiary.Bestiary.Info.AddedToBestiary', { creatures: added.join(', ') }));
         }
     }
-
 });
 
 Hooks.on("updateCombatant", async (combatant, changes) => {

@@ -7,6 +7,7 @@ export default class RegisterHandlebarsHelpers {
             PF2EBTCategoryClassTitle: this.categoryClassTitle,
             PF2EBTToggleContainer: this.toggleContainer,
             PF2EBTToggleContainerOverride: this.toggleContainerOverride,
+            PF2EBTEach: this.each,
             PF2EBTFilter: this.filter,
             PF2EBTTertiary: this.tertiary,
             PF2EBTCaptialize: this.capitalize,
@@ -44,6 +45,16 @@ export default class RegisterHandlebarsHelpers {
 
         if(property.revealed) return `background: ${contrastRevealedState.revealed}`;
         else return `background: ${contrastRevealedState.hidden}`;
+    }
+
+    static each(context, options){
+        var ret = "";
+        const keys = Object.keys(context);
+        for(var i = 0; i < keys.length; i++){
+            ret = ret + options.fn({ ...context[keys[i]], key: keys[i], index: i, length: keys.length });
+        }
+      
+        return ret;
     }
 
     static filter(prop, fallback, leftMargin, context, use, op) {

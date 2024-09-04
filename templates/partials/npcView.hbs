@@ -1,13 +1,13 @@
 <div class="monster-container">
     <div class="left-monster-container flexcol">
         <div class="monster-image-container">
-            <img class="monster-image {{#if this.useTokenArt}}token{{/if}}" src="{{this.creatureData.img}}" data-action="imagePopout" />
+            <img class="monster-image {{#if this.useTokenArt}}token{{/if}}" src="{{this.creatureData.system.img}}" data-action="imagePopout" />
         </div>
         {{#if this.optionalFields.height}}
-            {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-up-down" title="PF2EBestiary.Bestiary.NPC.Height" editMode=this.npcState.editMode path="npc.npcData.general.height" data=this.general.height }}
+            {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-up-down" title="PF2EBestiary.Bestiary.NPC.Height" editMode=this.npcState.editMode path="system.npcData.general.height" data=this.general.height }}
         {{/if}}
         {{#if this.optionalFields.weight}}
-            {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-left-right" title="PF2EBestiary.Bestiary.NPC.Weight" editMode=this.npcState.editMode path="npc.npcData.general.weight" data=this.general.weight }}
+            {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-left-right" title="PF2EBestiary.Bestiary.NPC.Weight" editMode=this.npcState.editMode path="system.npcData.general.weight" data=this.general.weight }}
         {{/if}}
         <div class="flexcol flex1 data-section primary-container active">
             <div class="data-header primary-container">
@@ -17,15 +17,15 @@
                 </div>
             </div>
             <div class="data-body disposition-container primary-border-container flex1">
-                {{#each this.general.disposition as |disposition key|}}
+                {{#each this.partyDispositions}}
                     <div class="disposition-inner-container">
-                        <h4 class="disposition-label">{{disposition.name}}</h4>
+                        <h4 class="disposition-label">{{this.name}}</h4>
                         {{#if ../npcState.editMode}}
-                            <select class="data-input secondary-container" name="{{concat "npc.npcData.general.disposition." disposition.id ".value"}}">
-                                {{selectOptions ../dispositions selected=disposition.value valueAttr="value" labelAttr="name" localize=true}}
+                            <select class="data-input secondary-container" name="{{concat "system.npcData.general.disposition." this.id}}">
+                                {{selectOptions ../dispositions selected=this.value valueAttr="value" labelAttr="name" localize=true}}
                             </select>
                         {{else}}
-                            <div>{{disposition.value}}</div>
+                            <div>{{localize this.label}}</div>
                         {{/if}}
                     </div>
                 {{/each}}
@@ -35,9 +35,9 @@
     <div class="right-monster-container">
         <div class="flexcol">
             <div class="monster-name-container">
-                <div class="monster-name primary-container {{PF2EBTToggleContainer this.user this.creatureData.name}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.creatureData.name}}" data-action="toggleRevealed" data-path="name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}">
-                    {{#if (or this.user.isGM this.creatureData.name.revealed)}}
-                        {{PF2EBTTertiary this.creatureData.name.custom this.creatureData.name.value}}
+                <div class="monster-name primary-container {{PF2EBTToggleContainer this.user this.creatureData.system.name}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.creatureData.system.name}}" data-action="toggleRevealed" data-path="system.name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}">
+                    {{#if (or this.user.isGM this.creatureData.system.name.revealed)}}
+                        {{PF2EBTTertiary this.creatureData.system.name.custom this.creatureData.system.name.value}}
                     {{else}}
                         {{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}
                     {{/if}}
@@ -74,13 +74,13 @@
                 <i class="fa-solid fa-reply monster-return-icon" data-action="returnButton" data-context-type="{{this.selected.type}}" title="{{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory" type=(PF2EBTCaptialize this.selected.type)}}"></i>
             </div>
             {{#if this.user.isGM}}
-                <input class="npc-category-input primary-border-container" value="{{this.categories}}" />
+                <input class="npc-category-input primary-border-container" value="{{this.inputCategories}}" />
             {{/if}}
         </div>
         <div class="right-monster-container-data flexcol">
-            {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleTextSection.hbs" icon="fa-solid fa-user" title="PF2EBestiary.Bestiary.NPC.Personality" editMode=this.npcState.editMode path="npc.npcData.general.personality" data=this.general.personality }}
-            {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleTextSection.hbs" icon="fa-solid fa-person-rays" title="PF2EBestiary.Bestiary.NPC.Appearance" editMode=this.npcState.editMode path="npc.npcData.general.appearance" data=this.general.appearance }}
-            {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleEditorSection.hbs" icon="fa-solid fa-house-chimney" title="PF2EBestiary.Bestiary.NPC.Background" editMode=this.npcState.editMode path="npc.npcData.general.background" data=this.general.background }}
+            {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleTextSection.hbs" icon="fa-solid fa-user" title="PF2EBestiary.Bestiary.NPC.Personality" editMode=this.npcState.editMode path="system.npcData.general.personality" data=this.general.personality }}
+            {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleTextSection.hbs" icon="fa-solid fa-person-rays" title="PF2EBestiary.Bestiary.NPC.Appearance" editMode=this.npcState.editMode path="system.npcData.general.appearance" data=this.general.appearance }}
+            {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleEditorSection.hbs" icon="fa-solid fa-house-chimney" title="PF2EBestiary.Bestiary.NPC.Background" editMode=this.npcState.editMode path="system.npcData.general.background" data=this.general.background }}
         </div>
     </div>
 </div>

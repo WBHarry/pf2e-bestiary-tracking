@@ -256,6 +256,28 @@ export const getCreatureData = (actor) => {
     };
 }
 
+export const getNPCData = (actor) => {
+  const creatureData = getCreatureData(actor);
+  
+  return {
+    ...creatureData,
+    type: 'pf2e-bestiary-tracking.npc',
+    system: {
+      ...creatureData.system,
+      hidden: game.settings.get('pf2e-bestiary-tracking', 'hidden-settings').npc,
+      npcData: {
+        background: { value: '' },
+        appearance: { value: '' },
+        personality: { value: '' },
+        height: { value: '' },
+        weight: { value: '' },
+        birthplace: { value: '' },
+        disposition: {},
+      }
+    }
+  }
+}
+
 export class MappingField extends foundry.data.fields.ObjectField {
     constructor(model, options) {
       if ( !(model instanceof foundry.data.fields.DataField) ) {

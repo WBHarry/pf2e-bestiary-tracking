@@ -232,7 +232,9 @@ export class Creature extends foundry.abstract.TypeDataModel {
                     revealed: new fields.BooleanField({ required: true, initial: false }),
                     value: new fields.HTMLField({ required: true, initial: '' }),
                 }),
-                player: new fields.HTMLField({ required: true, initial: '' })
+                player: new fields.SchemaField({
+                    value: new fields.HTMLField({ required: true, initial: '' }),
+                })
             }),
         };
     }
@@ -314,8 +316,8 @@ export class Creature extends foundry.abstract.TypeDataModel {
         };
     }
 
-    #getRefreshData(actor){
-        const data = getCreatureData(actor);
+    _getRefreshData(actor, creatureData){
+        const data = creatureData ?? getCreatureData(actor);
 
         const spells = data.system.spells.fake ? 
             { fake: { ...data.system.spells.fake, revealed: this.spells.fake?.revealed ?? data.system.spells.fake.revealed }, entries: {} } : 
@@ -546,10 +548,10 @@ export class Creature extends foundry.abstract.TypeDataModel {
         const actor = await fromUuid(this.uuid);
         if(!actor) return;
 
-        await this.parent.update(this.#getRefreshData(actor), { diff: false, recursive: false });
+        await this.parent.update(this._getRefreshData(actor), { diff: false, recursive: false });
     }
 
-    #getToggleUpdate(state){
+    _getToggleUpdate(state){
         const spells = 
             this.spells.fake ? { "spells.fake.revealed": state } :
             { "spells.entries": Object.keys(this.spells.entries).reduce((acc, key) => {
@@ -699,7 +701,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
     }
 
     async toggleEverything(state){
-        await this.parent.update(this.#getToggleUpdate(state));
+        await this.parent.update(this._getToggleUpdate(state));
     }
 
     prepareDerivedData() {
@@ -765,34 +767,23 @@ export class Creature extends foundry.abstract.TypeDataModel {
             return acc;
         }, {});
 
-        const detailedInformation = game.settings.get('pf2e-bestiary-tracking', 'detailed-information-toggles');
         this.resistances = Object.keys(this.resistances).reduce((acc, key) => {
             const exceptionKeys = Object.keys(this.resistances[key].exceptions);
             const doubleKeys = Object.keys(this.resistances[key].doubleVs);
-            const revealedDoubleKeys = doubleKeys.filter(dbKey => detailedInformation.exceptionsDouble || this.resistances[key].doubleVs[dbKey].revealed);
             acc[key] = {
                 ...this.resistances[key],
                 label: CONFIG.PF2E.resistanceTypes[this.resistances[key].type] ?? this.resistances[key].type,
                 category: getCategoryLabel(weaknessTable, contextLevel, this.resistances[key].value, true),
-                exceptions: exceptionKeys.reduce((acc, exKey, index) => {
+                exceptions: exceptionKeys.reduce((acc, exKey) => {
                     const label = CONFIG.PF2E.resistanceTypes[this.resistances[key].exceptions[exKey].type];
-                    const suffix = 
-                    index === exceptionKeys.length-2 ? game.i18n.localize("PF2EBestiary.Miscellaneous.Or") : 
-                    index < exceptionKeys.length-1 ? ',' : 
-                    (index === exceptionKeys.length-1 && revealedDoubleKeys.length === 0) ? ')' : 
-                    (index === exceptionKeys.length-1 && revealedDoubleKeys.length > 0) ? ';' : '';
 
-                    acc[exKey] = { ...this.resistances[key].exceptions[exKey], label: label ?? this.resistances[key].exceptions[exKey].type, suffix: suffix };
+                    acc[exKey] = { ...this.resistances[key].exceptions[exKey], label: label ?? this.resistances[key].exceptions[exKey].type };
                     return acc;
                 }, {}),
-                doubleVs: doubleKeys.reduce((acc, doubleKey, index) => {
+                doubleVs: doubleKeys.reduce((acc, doubleKey) => {
                     const label = CONFIG.PF2E.resistanceTypes[this.resistances[key].doubleVs[doubleKey].type];
-                    const suffix = 
-                    index === doubleKeys.length-2 ? game.i18n.localize("PF2EBestiary.Miscellaneous.Or") : 
-                    index < doubleKeys.length-1 ? ',' : 
-                    index === doubleKeys.length-1 ? ')' : '';
 
-                    acc[doubleKey] = { ...this.resistances[key].doubleVs[doubleKey], label: label ?? this.resistances[key].doubleVs[doubleKey].type, suffix: suffix };
+                    acc[doubleKey] = { ...this.resistances[key].doubleVs[doubleKey], label: label ?? this.resistances[key].doubleVs[doubleKey].type };
                     return acc;
                 }, {}),
             };

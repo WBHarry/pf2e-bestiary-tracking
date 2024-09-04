@@ -461,6 +461,7 @@
 .pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .disposition-container .disposition-inner-container .disposition-label {
   text-decoration: underline;
   margin-bottom: 4px;
+  text-align: center;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .speeds-container {
   display: flex;

@@ -31,13 +31,13 @@
             <div class="bestiary-main-page">
                 <div class="main-page-category-container">
                     <div class="main-page-category-card">
-                        <div class="main-page-category-image-container secondary-border-container primary-hover-container {{#if (eq this.selected.category 'monster')}}active border{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.creature">
+                        <div class="main-page-category-image-container secondary-border-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.monster')}}active border{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.creature">
                             <img src="icons/creatures/magical/humanoid-silhouette-green.webp" />
                             <h4 class="main-page-category-label primary-container">{{localize "PF2EBestiary.Bestiary.Category.Creatures"}}</h4>
                         </div>
                     </div>
                     <div class="main-page-category-card">
-                        <div class="main-page-category-image-container secondary-border-container primary-hover-container {{#if (eq this.selected.category 'npc')}}active border{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.npc">
+                        <div class="main-page-category-image-container secondary-border-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.npc')}}active border{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.npc">
                             <img src="icons/environment/people/group.webp" />
                             <h4 class="main-page-category-label primary-container">{{localize "PF2EBestiary.Bestiary.Category.NPC"}}</h4>
                         </div>
@@ -50,7 +50,7 @@
                         <i class="fa-solid fa-lock under-development primary-icon"></i>
                     </div>
                 </div>
-                {{#if (and this.user.isGM (eq this.selected.category 'npc'))}}
+                {{#if (and this.user.isGM (eq this.selected.category 'pf2e-bestiary-tracking.npc'))}}
                     <div style="margin-top: 8px;">{{localize "PF2EBestiary.Bestiary.NPC.NPCCategoryDescription"}}</div>
                     <div class="category-container">
                         <div class="category-section flexrow">
@@ -81,8 +81,8 @@
             </div>
         {{else}}
             {{#if this.selected.monster}}
-                {{#if (and this.selected.monster.npcData this.npcState.npcView)}}
-                    {{#with this.selected.monster.npcData}}
+                {{#if (and this.selected.monster.system.npcData this.npcState.npcView)}}
+                    {{#with this.selected.monster.system.npcData}}
                         {{> "modules/pf2e-bestiary-tracking/templates/partials/npcView.hbs" 
                             creatureData=../selected.monster
                             selected=../selected 
@@ -93,6 +93,8 @@
                             optionalFields=../optionalFields 
                             npcState=../npcState
                             dispositions=../dispositions
+                            inputCategories=../inputCategories
+                            partyDispositions=../selected.monster.system.partyDispositions
                         }}
                     {{/with}}
                 {{else}}
@@ -153,24 +155,13 @@
     </body>
     <div class="right-bookmark-container">
         {{#each bookmarks}}
-            <div class="bookmark primary-container {{#if (eq ../selected.type this.value)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys this.values) 0)}} empty{{else}} active{{/if}}" data-action="selectBookmark" data-bookmark="{{this.value}}">
+            <div 
+                class="bookmark {{#if (eq ../selected.category 'pf2e-bestiary-tracking.npc')}}npc{{/if}} primary-container {{#if (eq ../selected.type this.value)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys this.values) 0)}} empty{{else}} active{{/if}}" 
+                data-action="selectBookmark" 
+                data-bookmark="{{this.value}}"
+            >
                 {{this.name}}
             </div>
         {{/each}}
-        {{#if (eq this.selected.category 'pf2e-bestiary-tracking.creature')}}
-            {{#each bestiary.monster as |type key|}}
-                <div class="bookmark primary-container {{#if (eq ../selected.type key)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys type.values) 0)}} empty{{else}} active{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
-                    {{type.name}}
-                </div>
-            {{/each}}
-        {{else}}
-            {{#if (eq this.selected.category 'pf2e-bestiary-tracking.npc')}}
-                {{#each bestiary.npc as |category key|}}
-                    <div class="bookmark npc primary-container {{#if (eq ../selected.type key)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys category.values) 0)}} empty{{else}} active{{/if}}" data-action="selectBookmark" data-bookmark="{{key}}">
-                        {{category.name}}
-                    </div>
-                {{/each}}
-            {{/if}}
-        {{/if}}
     </div>
 </div>

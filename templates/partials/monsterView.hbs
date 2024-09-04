@@ -72,7 +72,7 @@
                         <div class="secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat 'immunities.' @key}}" data-fake="{{this.fake}}">
                             {{PF2EBTCaptialize (localize this.label)}}
                             {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
-                                <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
+                                {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}<span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>{{/if}}
                                 {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
                                     <span>
                                         {{localize this.label}}{{#if this.last}}){{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
@@ -135,7 +135,7 @@
                             <span>{{PF2EBTCaptialize (localize this.label)}}</span>
                             {{#if (not this.category)}}{{this.value}}{{/if}}
                             {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
-                                <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
+                                {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}<span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>{{/if}}
                                 {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
                                     <span>
                                         {{localize this.label}}{{#if this.last}}){{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
@@ -161,45 +161,55 @@
             </div>
             <div class="monster-data-list">
                 {{#if this.user.isGM}}
-                    {{#each this.system.resistances as |resistance key|}}
+                    {{#PF2EBTEach this.system.resistances}}
                             <div 
-                                class="secondary-container {{PF2EBTToggleContainer ../user resistance}}" 
-                                style="{{PF2EBTToggleContainerOverride ../contrastRevealedState resistance}}"
+                                class="secondary-container {{PF2EBTToggleContainer ../user this}}" 
+                                style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}"
                                 data-action="toggleRevealed" 
-                                data-path="{{concat 'system.resistances.' key}}" 
-                                data-fake="{{resistance.fake}}"
+                                data-path="{{concat 'system.resistances.' this.key}}" 
+                                data-fake="{{this.fake}}"
                             >
-                                <span>{{PF2EBTCaptialize (localize resistance.label)}}</span>
-                                <span>{{PF2EBTMonsterValue resistance ../vagueDescriptions.properties.resistances "true"}}</span>
-                                {{#if (gt (PF2EBTNrKeys resistance.exceptions) 0)}}
+                                <span>{{PF2EBTCaptialize (localize this.label)}}</span>
+                                <span>{{PF2EBTMonsterValue this ../vagueDescriptions.properties.resistances "true"}}</span>
+                                {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}
                                     <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
-                                    {{#each resistance.exceptions as |exception index|}}
+                                    {{#PF2EBTEach this.exceptions}}
                                         <span 
-                                            class="toggle-container inner {{#if ../../detailedInformation.exceptionsDouble}}detailed{{/if}} {{#if exception.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
+                                            class="toggle-container inner {{#if ../../detailedInformation.exceptionsDouble}}detailed{{/if}} {{#if this.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
                                             {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
-                                            data-path="{{concat 'system.resistances.' @../key '.exceptions.' index}}"
+                                            data-path="{{concat 'system.resistances.' ../key '.exceptions.' this.key}}"
                                         >
-                                            {{localize exception.label}}
+                                            {{localize this.label}}
                                         </span>
-                                        {{exception.suffix}}
-                                    {{/each}}
+                                        {{#if (and (eq this.index (PF2EBTSub (PF2EBTNrKeys ../exceptions) 1)) (eq (PF2EBTNrKeys ../doubleVs) 0))}}){{/if}}
+                                        {{#if (eq this.index (PF2EBTSub (PF2EBTNrKeys ../exceptions) 2))}}
+                                            {{localize "PF2EBestiary.Miscellaneous.Or"}}
+                                        {{else}}
+                                            {{#if (lt this.index (PF2EBTSub (PF2EBTNrKeys ../exceptions) 1))}},{{/if}}
+                                        {{/if}}
+                                    {{/PF2EBTEach}}
                                 {{/if}}
-                                {{!-- {{#if (and (gt resistance.exceptions.length 0) (gt resistance.doubleVs.length 0))}};{{/if}} --}}
-                                {{#if (gt (PF2EBTNrKeys resistance.doubleVs) 0)}}
-                                    <span>{{#if (eq (PF2EBTNrKeys resistance.exceptions) 0)}}({{/if}}{{localize "PF2EBestiary.Miscellaneous.Double"}}</span>
-                                    {{#each resistance.doubleVs as |double index|}}
+                                {{#if (and (gt (PF2EBTNrKeys this.exceptions) 0) (gt (PF2EBTNrKeys this.doubleVs) 0))}};{{/if}}
+                                {{#if (gt (PF2EBTNrKeys this.doubleVs) 0)}}
+                                    <span>{{#if (eq (PF2EBTNrKeys this.exceptions) 0)}}({{/if}}{{localize "PF2EBestiary.Miscellaneous.Double"}}</span>
+                                    {{#PF2EBTEach this.doubleVs}}
                                         <span 
-                                            class="toggle-container inner {{#if ../../detailedInformation.exceptionsDouble}}detailed{{/if}} {{#if double.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
+                                            class="toggle-container inner {{#if ../../detailedInformation.exceptionsDouble}}detailed{{/if}} {{#if this.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
                                             {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
-                                            data-path="{{concat 'system.resistances.' @../key '.doubleVs.' index}}"
+                                            data-path="{{concat 'system.resistances.' ../key '.doubleVs.' this.key}}"
                                         >
-                                            {{localize double.label}}
+                                            {{localize this.label}}
                                         </span>
-                                        {{double.suffix}}
-                                    {{/each}}
+                                        {{#if (eq this.index (PF2EBTSub (PF2EBTNrKeys ../doubleVs) 1))}}){{/if}}
+                                        {{#if (eq this.index (PF2EBTSub (PF2EBTNrKeys ../doubleVs) 2))}}
+                                            {{localize "PF2EBestiary.Miscellaneous.Or"}}
+                                        {{else}}
+                                            {{#if (lt this.index (PF2EBTSub (PF2EBTNrKeys ../doubleVs) 1))}},{{/if}}
+                                        {{/if}}
+                                    {{/PF2EBTEach}}
                                 {{/if}}
                             </div>
-                    {{/each}}
+                    {{/PF2EBTEach}}
                 {{else}}
                     {{#PF2EBTFilter 'revealed' '?' 10 this.system.resistances}}
                         <div 
@@ -215,9 +225,8 @@
                                 <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                 {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
                                     <span>
-                                        {{localize this.label}}
+                                        {{localize this.label}}{{#if (and this.last (eq (PF2EBTNrKeys ../doubleVs 'revealed') 0))}}){{/if}}{{#if (and this.last (gt (PF2EBTNrKeys ../doubleVs 'revealed') 0))}};{{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
                                     </span>
-                                    {{this.suffix}}
                                 {{/PF2EBTFilter}}
                             {{/if}}
                             
@@ -225,9 +234,8 @@
                                 <span>{{#if (eq (PF2EBTNrKeys this.exceptions 'revealed') 0)}}({{/if}}{{localize "PF2EBestiary.Miscellaneous.Double"}}</span>
                                 {{#PF2EBTFilter 'revealed' '' 0 this.doubleVs ../detailedInformation.exceptionsDouble}}
                                     <span>
-                                        {{localize this.label}}
+                                        {{localize this.label}}{{#if this.last}}){{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
                                     </span>
-                                    {{this.suffix}}
                                 {{/PF2EBTFilter}}
                             {{/if}}
                         </div>
@@ -296,7 +304,7 @@
                     {{/if}}
                 </div>
                 <div class="bestiary-toolbar-container">
-                    {{#if this.npcData}}
+                    {{#if this.system.npcData}}
                         <div class="toggle-switch-container">
                             <div class="toggle-switch">
                                 <i class="fa-solid fa-user"></i>
@@ -863,8 +871,8 @@
                     <legend>
                         <div class="data-container primary-container">{{localize "PF2EBestiary.Bestiary.PlayerNotes.Title"}}</div>
                     </legend>
-                    <prose-mirror name="system.notes.player" data-document-u-u-i-d="{{this.uuid}}" value="{{this.system.notes.player}}" collaborate="true" toggled="true">
-                        {{{this.system.notes.player}}}
+                    <prose-mirror name="system.notes.player.value" data-document-u-u-i-d="{{this.uuid}}" value="{{this.system.notes.player.value}}" collaborate="true" toggled="true">
+                        {{{this.system.notes.player.enriched}}}
                     </prose-mirror>
                 </fieldset>
             </div>
