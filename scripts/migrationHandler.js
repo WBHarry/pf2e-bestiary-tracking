@@ -1,13 +1,11 @@
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import PF2EBestiary from "../module/bestiary.js";
-import { bestiaryJournalEntry, currentVersion, setupCollaborativeWrtiting } from "./setup.js";
+import { bestiaryFolder, bestiaryJournalEntry, currentVersion } from "./setup.js";
 import { acTable, attributeTable, savingThrowPerceptionTable, spellAttackTable, spellDCTable } from "./statisticsData.js";
 import { getCategoryLabel, getRollAverage } from "./statisticsHelper.js";
 
 export const handleDataMigration = async () => {
     if(!game.user.isGM) return;
-    
-    await setupCollaborativeWrtiting();
 
     var version = game.settings.get('pf2e-bestiary-tracking', 'version');
     if(!version){
@@ -21,6 +19,11 @@ export const handleDataMigration = async () => {
         bestiaryObject = JSON.parse(bestiary);
     } catch{};
     if(!bestiary || bestiaryObject ){
+        const oldJournalEntry = game.journal.getName(bestiaryJournalEntry);
+        // Handle Migration of PlayerNotes
+        await oldJournalEntry.delete();
+        await game.folders.getName(bestiaryFolder).delete();
+
         const journal = await JournalEntry.create({ name: game.i18n.localize('PF2EBestiary.Miscellaneous.FirstBestiary') });
         await journal.setFlag('pf2e-bestiary-tracking', 'version', !bestiary ? currentVersion : '0.9.2');
         await journal.setFlag('pf2e-bestiary-tracking', 'npcCategories', !bestiary ? [] : bestiaryObject.npcCategories);

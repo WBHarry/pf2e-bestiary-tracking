@@ -1,10 +1,10 @@
 import PF2EBestiary from "./module/bestiary.js";
 import RegisterHandlebarsHelpers from "./scripts/handlebarHelpers.js";
-import { bestiaryFolder, dataTypeSetup, registerGameSettings, registerKeyBindings, setupCollaborativeWrtiting } from "./scripts/setup.js";
+import { dataTypeSetup, registerGameSettings, registerKeyBindings } from "./scripts/setup.js";
 import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
 import { handleDataMigration } from "./scripts/migrationHandler.js";
-import { getBaseActor, getSpellLevel, isNPC } from "./scripts/helpers.js";
+import { getBaseActor, getSpellLevel } from "./scripts/helpers.js";
 
 Hooks.once('init', () => {
     dataTypeSetup();
@@ -59,6 +59,23 @@ Hooks.once("setup", () => {
             new PF2EBestiary(page).render(true);
         });
     }
+});
+
+Hooks.on("renderApplication", (_, html) => {
+    const select = $(html).find('select');
+    if(select.length === 0) return;
+
+    const options = $(select).find('option');
+    if(options.length === 0) return;
+
+    const moduleSubTypes = ['pf2e-bestiary-tracking.creature', 'pf2e-bestiary-tracking.npc', 'pf2e-bestiary-tracking.hazard'];
+    if(options.toArray().every(option => !moduleSubTypes.includes(option.value))) return;
+
+    const filteredOptions = options.toArray().filter(x => !moduleSubTypes.includes(x.value));
+    $(select).empty();
+    filteredOptions.forEach(option => {
+        $(select).append(option);
+    });   
 });
 
 Hooks.on("combatStart", async (encounter) => {
@@ -364,16 +381,4 @@ Hooks.on('getDirectoryApplicationEntryContext', (_, buttons) => {
             }    
         }
     });
-});
-
-Hooks.on('renderJournalDirectory', (_, html) => {   
-    const folder = game.journal.directory.folders.find(folder => folder.name === bestiaryFolder);
-    if (folder)
-    {
-        const element = html.find(`.folder[data-folder-id="${folder.id}"]`);
-        if (element)
-        {
-            element.remove();
-        }
-    }
 });
