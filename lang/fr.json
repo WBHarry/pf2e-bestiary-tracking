@@ -16,22 +16,7 @@
                 "Hint": "Adds the currently selected or targeted creature to the bestiary"
             }
         },
-        "SavesHandler": {
-            "Name": "Bestiary Save Slots",
-            "SaveDirectory": "Save Directory",
-            "LoadTitle": "Load Save Slot",
-            "FilePickerPlaceholder": "Please pick one",
-            "CreateNewSave": "Create New Save Slot",
-            "SaveSlotName": "Save Slot Name",
-            "SaveSlotImage": "Save Slot Image",
-            "SaveSlotsTitle": "Save Slots",
-            "SaveOutOfDate": "Your save is out of date! Consider saving.",
-            "SaveText": "Save",
-            "LoadText": "Are you sure you want to load this save slot? Any unsaved information in the current Bestiary will be lost!",
-            "Errors": {
-                "NeedName": "New save slot requires a name."
-            }
-        },
+        
         "Miscellaneous": {
             "Name": "Nom",
             "Level": "Niveau",
@@ -74,7 +59,7 @@
             "Title": "Bestiaire",
             "WindowControls": {
                 "RefreshBestiary": "Rafraîchir le Bestiaire",
-                "SaveSlots": "Data Save Slots",
+                "BestiarySelection": "Change Bestiary",
                 "ResetBestiary": "Réinitialiser le Bestiaire",
                 "RevealAll": "Reveal Creature",
                 "HideAll": "Hide Creature"

@@ -1,0 +1,55 @@
+.bestiary-selection {
+    .bestiaries-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px;
+        width: 100%;
+        margin-top: 8px;
+
+        .bestiary-container {
+            display: flex;
+            flex: 1;
+            min-width: calc(33% - 2px);
+            max-width: calc(33% - 2px);
+            position: relative;
+            opacity: 0.6;
+
+            &.active {
+                opacity: 1;
+            }
+
+            .bestiary-image {
+                flex: 1;
+                background: white;
+                border-radius: 6px;
+                border-width: 2px;
+                border-color: gold;
+                min-height: 200px;
+            }
+            .bestiary-name{
+                position: absolute;
+                font-size: 32px;
+                width: 100%;
+                text-align: center;
+                color: #dfdfdf;
+                text-shadow: 0 0 10px black;
+            }
+
+            .edit-footer {
+                width: 100%;
+                flex: 0;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                border-radius: 6px;
+                text-wrap: nowrap;
+
+                button:last-child {
+                    border-bottom-left-radius: 6px;
+                    border-bottom-right-radius: 6px;
+                }
+            }
+        }
+    }
+}

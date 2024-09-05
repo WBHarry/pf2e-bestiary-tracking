@@ -933,93 +933,53 @@
 .bestiary-settings-menu .menu-category .form-group.underlined {
   border-bottom: 1px solid black;
 }
-.pf2e-bestiary-tracking {
-  overflow-y: visible;
-  overflow-x: visible;
-}
-.pf2e-bestiary-tracking.saves-handler {
-  min-height: 355px;
-}
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container .new-save-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container .new-save-container .save-dialog-open-button {
-  flex: 0;
-  text-wrap: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container .new-save-container .save-dialog {
-  overflow: hidden;
-  transition: max-width 0.5s ease-in-out;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: space-between;
-  flex: 1;
-}
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container .save-slot-container {
+.bestiary-selection .bestiaries-container {
   display: flex;
   flex-wrap: wrap;
-}
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container .save-slot-container legend {
-  align-self: center;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 16px;
-}
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container .save-slot-container legend h4 {
-  margin-bottom: 0;
-}
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container .save-slot-container .save-slots-container {
-  display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 4px;
-  flex: 1;
+  width: 100%;
+  margin-top: 8px;
 }
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container .save-slot-container .save-slots-container .save-slot {
+.bestiary-selection .bestiaries-container .bestiary-container {
+  display: flex;
+  flex: 1;
+  min-width: calc(33% - 2px);
+  max-width: calc(33% - 2px);
   position: relative;
-  height: 200px;
-  display: flex;
-  padding: 0;
-  border-width: 3px;
-  border-style: solid;
-  border-radius: 6px;
-  flex-basis: calc(50% - 2px);
-  cursor: pointer;
+  opacity: 0.6;
 }
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container .save-slot-container .save-slots-container .save-slot:hover {
-  filter: drop-shadow(0 0 3px red);
+.bestiary-selection .bestiaries-container .bestiary-container.active {
+  opacity: 1;
 }
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container .save-slot-container .save-slots-container .save-slot img {
+.bestiary-selection .bestiaries-container .bestiary-container .bestiary-image {
   flex: 1;
+  background: white;
+  border-radius: 6px;
+  border-width: 2px;
+  border-color: gold;
+  min-height: 200px;
 }
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container .save-slot-container .save-slots-container .save-slot .save-name {
+.bestiary-selection .bestiaries-container .bestiary-container .bestiary-name {
   position: absolute;
   font-size: 32px;
   width: 100%;
   text-align: center;
-  word-wrap: break-word;
-  padding: 0 31px;
+  color: #dfdfdf;
+  text-shadow: 0 0 10px black;
 }
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container .save-slot-container .save-slots-container .save-slot .save-icon {
+.bestiary-selection .bestiaries-container .bestiary-container .edit-footer {
+  width: 100%;
+  flex: 0;
   position: absolute;
-  top: 7px;
-  left: 7px;
-  font-size: 20px;
-  display: flex;
-  gap: 4px;
+  bottom: 0;
+  left: 0;
+  border-radius: 6px;
+  text-wrap: nowrap;
 }
-.pf2e-bestiary-tracking.saves-handler .save-dialog-container .folder-disabled {
-  opacity: 0.5;
+.bestiary-selection .bestiaries-container .bestiary-container .edit-footer button:last-child {
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
 }
 /* REMOVE ME. Temporary as a stopgap for Dorako */
 .theme-dark .pf2e-bestiary-tracking.bestiary.application {

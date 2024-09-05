@@ -1,12 +1,13 @@
 
-import { getCreaturesTypes, getExpandedCreatureTypes, getIWRString, getNPCCategories, isNPC, slugify } from "../scripts/helpers.js";
+import { getCreaturesTypes, getExpandedCreatureTypes, getNPCCategories, isNPC, slugify } from "../scripts/helpers.js";
 import { resetBestiary } from "../scripts/macros.js";
 import { socketEvent } from "../scripts/socket.js";
 import { getCategoryRange } from "../scripts/statisticsHelper.js";
-import PF2EBestiarySavesHandler from "./savesHandler.js";
+
 import { dispositions } from '../data/constants.js';
 import Tagify from '@yaireo/tagify';
 import { getCreatureData, getNPCData } from "../data/modelHelpers.js";
+import BestiarySelection from "./bestiarySelection.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -95,8 +96,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     action: 'refreshBestiary'
                 },
                 {
-                    icon: 'fa-solid fa-floppy-disk', //saveDataToFile(JSON.stringify(data, null, 2), "text/json", `${filename}.json`);
-                    label: 'PF2EBestiary.Bestiary.WindowControls.SaveSlots',
+                    icon: 'fa-solid fa-right-left',
+                    label: 'PF2EBestiary.Bestiary.WindowControls.BestiarySelection',
                     action: 'handleSaveSlots',
                 },
                 {
@@ -741,7 +742,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
         if(!game.user.isGM) return;
         this.toggleControls(false);
 
-        await new PF2EBestiarySavesHandler().render(true);
+        await new BestiarySelection().render(true);
     }
 
     static async resetBestiary(){

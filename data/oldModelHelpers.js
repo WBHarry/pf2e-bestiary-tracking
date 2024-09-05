@@ -289,7 +289,7 @@ export const getCreatureDataFromOld = (actor) => {
             notes: {
               public: { value: actor.system.details.publicNotes.text, revealed: actor.system.details.publicNotes.revealed },
               private: { value: actor.system.details.privateNotes.text, revealed: actor.system.details.privateNotes.revealed },
-              player: { value: game.journal.getName('pf2e-bestiary-tracking-journal-entry').pages.get(actor.system.details.playerNotes.document)?.text?.content ?? '' },
+              player: { value: game.journal.getName('pf2e-bestiary-tracking-journal-entry')?.pages?.get(actor.system.details.playerNotes.document)?.text?.content ?? '' },
             },
         }
     };

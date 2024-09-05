@@ -16,21 +16,19 @@
                 "Hint": "Adds the currently selected or targeted creature to the bestiary"
             }
         },
-        "SavesHandler": {
-            "Name": "Bestiary Save Slots",
-            "SaveDirectory": "Save Directory",
-            "LoadTitle": "Load Save Slot",
-            "FilePickerPlaceholder": "Please pick one",
-            "CreateNewSave": "Create New Save Slot",
-            "SaveSlotName": "Save Slot Name",
-            "SaveSlotImage": "Save Slot Image",
-            "SaveSlotsTitle": "Save Slots",
-            "SaveOutOfDate": "Your save is out of date! Consider saving.",
-            "SaveText": "Save",
-            "LoadText": "Are you sure you want to load this save slot? Any unsaved information in the current Bestiary will be lost!",
-            "Errors": {
-                "NeedName": "New save slot requires a name."
-            }
+        "BestiarySelection": {
+            "Name": "Bestiary Selection",
+            "AddBestiary": "Add New Bestiary",
+            "MissingFolderError": "You have deleted the Bestiary folder. Cannot create new bestiary.",
+            "EditDialogTitle": "Edit Bestiary",
+            "BestiaryNameText": "Bestiary Name",
+            "BestiaryImageText": "Bestiary Image",
+            "EditBestiaryTitle": "Edit Bestiary",
+            "DeleteBestiaryTitle": "Delete Bestiary",
+            "DeleteBestiaryText": "Are you sure you want to delete this bestiary?",
+            "ImportOldSaves": "Import Old Save States",
+            "OldSaveStateImported": "Old Save State successfully imported. Feel free to delete it.",
+            "OldSaveInvalid": "The file is invalid."
         },
         "Miscellaneous": {
             "Name": "Name",
@@ -69,13 +67,15 @@
             "Double": "double",
             "Or": "or",
             "NPC": "NPC",
-            "Add": "Add"
+            "Add": "Add",
+            "Confirm": "Confirm",
+            "Cancel": "Cancel"
         },
         "Bestiary": {
             "Title": "Bestiary",
             "WindowControls": {
                 "RefreshBestiary": "Refresh Bestiary",
-                "SaveSlots": "Data Save Slots",
+                "BestiarySelection": "Change Bestiary",
                 "ResetBestiary": "Reset Bestiary",
                 "RevealAll": "Reveal Creature",
                 "HideAll": "Hide Creature"

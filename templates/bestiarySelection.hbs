@@ -1,0 +1,15 @@
+<div>
+    <button data-action="createNewBestiary"><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.BestiarySelection.AddBestiary"}}</button>
+    <div class="bestiaries-container">
+        {{#each this.bestiaries}}
+            <div class="bestiary-container {{#if this.active}}active{{/if}} pf2e-bestiary-clickable-icon" data-action="swapBestiary" data-bestiary="{{this.id}}">
+                <img class="bestiary-image" src="{{this.img}}" />
+                <div class="bestiary-name">{{this.name}}</div>
+                <footer class="edit-footer flexrow">
+                    <button data-action="editBestiary" data-bestiary="{{this.id}}"><i class="edit-icon fa-solid fa-gear"></i> {{localize "PF2EBestiary.BestiarySelection.EditBestiaryTitle"}}</button>
+                    {{#if (not this.active)}}<button data-action="deleteBestiary" data-bestiary="{{this.id}}"><i class="edit-icon fa-solid fa-x"></i> {{localize "PF2EBestiary.BestiarySelection.DeleteBestiaryTitle"}}</button>{{/if}}
+                </footer>
+            </div>
+        {{/each}}
+    </div>
+</div>
