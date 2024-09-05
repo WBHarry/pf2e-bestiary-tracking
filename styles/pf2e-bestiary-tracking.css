@@ -933,6 +933,18 @@
 .bestiary-settings-menu .menu-category .form-group.underlined {
   border-bottom: 1px solid black;
 }
+.theme-dark .bestiary-selection .bestiaries-container .bestiary-container .bestiary-image {
+  background-color: white;
+  border-color: gold;
+}
+.theme-dark .bestiary-selection .bestiaries-container .bestiary-container .bestiary-name {
+  color: #dfdfdf;
+  text-shadow: 0 0 10px black;
+}
+.theme-dark .bestiary-selection .bestiaries-container .bestiary-container .edit-footer {
+  background-color: inherit;
+  border-color: gold;
+}
 .bestiary-selection .bestiaries-container {
   display: flex;
   flex-wrap: wrap;
@@ -954,10 +966,10 @@
 }
 .bestiary-selection .bestiaries-container .bestiary-container .bestiary-image {
   flex: 1;
-  background: white;
+  background: black;
   border-radius: 6px;
   border-width: 2px;
-  border-color: gold;
+  border-color: #82acff;
   min-height: 200px;
 }
 .bestiary-selection .bestiaries-container .bestiary-container .bestiary-name {
@@ -965,8 +977,8 @@
   font-size: 32px;
   width: 100%;
   text-align: center;
-  color: #dfdfdf;
-  text-shadow: 0 0 10px black;
+  color: black;
+  text-shadow: 0 0 10px #dfdfdf;
 }
 .bestiary-selection .bestiaries-container .bestiary-container .edit-footer {
   width: 100%;
@@ -974,12 +986,17 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  border-radius: 6px;
   text-wrap: nowrap;
-}
-.bestiary-selection .bestiaries-container .bestiary-container .edit-footer button:last-child {
+  background-color: #D4BDAC;
+  border-color: #82acff;
+  border-width: 0 2px 2px 2px;
+  border-style: solid;
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
+}
+.bestiary-selection .bestiaries-container .bestiary-container .edit-footer button {
+  border: 0;
+  border-radius: 0;
 }
 /* REMOVE ME. Temporary as a stopgap for Dorako */
 .theme-dark .pf2e-bestiary-tracking.bestiary.application {

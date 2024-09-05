@@ -1,3 +1,28 @@
+@import "../colors.less";
+@import "../variables.less";
+
+.theme-dark {
+    .bestiary-selection {
+        .bestiaries-container {
+            .bestiary-container {
+                .bestiary-image {
+                    background-color: white;
+                    border-color: gold;
+                }
+                .bestiary-name {
+                    color: #dfdfdf;
+                    text-shadow: 0 0 10px black;
+                }
+
+                .edit-footer {
+                    background-color: inherit;
+                    border-color: gold;
+                }
+            }
+        }
+    }
+}
+
 .bestiary-selection {
     .bestiaries-container {
         display: flex;
@@ -21,10 +46,10 @@
 
             .bestiary-image {
                 flex: 1;
-                background: white;
+                background: black;
                 border-radius: 6px;
                 border-width: 2px;
-                border-color: gold;
+                border-color: @lightSecondaryBorder;
                 min-height: 200px;
             }
             .bestiary-name{
@@ -32,8 +57,8 @@
                 font-size: 32px;
                 width: 100%;
                 text-align: center;
-                color: #dfdfdf;
-                text-shadow: 0 0 10px black;
+                color: black;
+                text-shadow: 0 0 10px #dfdfdf;
             }
 
             .edit-footer {
@@ -42,12 +67,17 @@
                 position: absolute;
                 bottom: 0;
                 left: 0;
-                border-radius: 6px;
                 text-wrap: nowrap;
+                background-color: #D4BDAC;
+                border-color: @lightSecondaryBorder;
+                border-width: 0 2px 2px 2px;
+                border-style: solid;
+                border-bottom-left-radius: 6px;
+                border-bottom-right-radius: 6px;
 
-                button:last-child {
-                    border-bottom-left-radius: 6px;
-                    border-bottom-right-radius: 6px;
+                button {
+                    border: 0;
+                    border-radius: 0;
                 }
             }
         }
