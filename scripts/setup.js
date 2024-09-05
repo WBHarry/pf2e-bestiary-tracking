@@ -9,8 +9,7 @@ import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
 
 export const currentVersion = '0.9.4';
-export const bestiaryFolder = "pf2e-bestiary-tracking-folder";
-export const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry"; // Make sure to migrate old player notes to the new journalEntries
+export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
     CONFIG.JournalEntryPage.dataModels = {
@@ -122,6 +121,15 @@ const generalNonConfigSettings = () => {
     });
 
     game.settings.register('pf2e-bestiary-tracking', 'bestiary-tracking', {
+        name: game.i18n.localize("PF2EBestiary.Menus.Data.Name"),
+        hint: game.i18n.localize("PF2EBestiary.Menus.Data.Hint"),
+        scope: 'world',
+        config: false,
+        type: String,
+        default: '',
+    });
+
+    game.settings.register('pf2e-bestiary-tracking', 'bestiary-tracking-folder', {
         name: game.i18n.localize("PF2EBestiary.Menus.Data.Name"),
         hint: game.i18n.localize("PF2EBestiary.Menus.Data.Hint"),
         scope: 'world',

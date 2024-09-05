@@ -148,7 +148,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(Application
                     class="tagify__tag tagify--noAnim tagify-hover-parent"
                 >
                     <x title='' class='tagify__tag__removeBtn' role='button' aria-label='remove tag'></x>
-                    <i class="tagify-hidden-button ${hidden ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'}"></i>
+                    <i class="tagify-hidden-button primary-container ${hidden ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'}"></i>
                     <div>
                         <span class="tagify__tag-text">${tagData.name}</span>
                     </div>

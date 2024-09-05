@@ -184,9 +184,61 @@ const resetBestiary = async () => {
     return true;
 };
 
+const deactivateModule = async () => {
+    if(!game.user.isGM){
+        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.GMOnly"));
+        return;
+    }
+
+    const link = await TextEditor.enrichHTML(game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.Link"));
+    const content = `
+        <div>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.FirstPart")}</div>
+        <hr />
+        <div>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.SecondPart")}</div>
+        <div style="margin-bottom: 8px;">(${link})</div>
+    `;
+    
+    const confirmed = await Dialog.confirm({
+        title: game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Title"),
+        content: content,
+        yes: () => true,
+        no: () => false,
+    });
+
+    if(!confirmed) return;
+
+    const bestiaries = game.journal.filter(x => x.pages.some(x => ["pf2e-bestiary-tracking.creature", "pf2e-bestiary-tracking.npc", "pf2e-bestiary-tracking.hazard"].includes(x.type)));
+    for(var bestiaryKey in bestiaries){
+        const pageArray = Array.from(bestiaries[bestiaryKey].pages);
+        for(var pageKey in pageArray){
+            const page = pageArray[pageKey];
+            await page.setFlag('pf2e-bestiary-tracking', 'deactivated-data', JSON.stringify({
+                type: page.type,
+                name: page.name,
+                ownership: foundry.utils.deepClone(page.ownership),
+                system: foundry.utils.deepClone(page.system)
+            }));
+            await page.update({ 
+                type: 'text',
+                ownership: { default: 0 },
+                system: {} 
+            }, { diff: false, recursive: false });
+        }
+    }
+
+    await game.settings.set("core", "moduleConfiguration", {
+        ...game.settings.get("core", "moduleConfiguration"),
+        ['pf2e-bestiary-tracking']: false,
+    });
+
+    await game.socket.emit("reload");
+    foundry.utils.debouncedReload();
+};
+
 var macros = /*#__PURE__*/Object.freeze({
     __proto__: null,
     addMonster: addMonster,
+    deactivateModule: deactivateModule,
     openBestiary: openBestiary,
     resetBestiary: resetBestiary,
     showMonster: showMonster
@@ -3853,8 +3905,7 @@ class VagueDescriptionsMenu extends HandlebarsApplicationMixin$2(ApplicationV2$2
 }
 
 const currentVersion = '0.9.4';
-const bestiaryFolder = "pf2e-bestiary-tracking-folder";
-const bestiaryJournalEntry = "pf2e-bestiary-tracking-journal-entry"; // Make sure to migrate old player notes to the new journalEntries
+const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
     CONFIG.JournalEntryPage.dataModels = {
@@ -3966,6 +4017,15 @@ const generalNonConfigSettings = () => {
     });
 
     game.settings.register('pf2e-bestiary-tracking', 'bestiary-tracking', {
+        name: game.i18n.localize("PF2EBestiary.Menus.Data.Name"),
+        hint: game.i18n.localize("PF2EBestiary.Menus.Data.Hint"),
+        scope: 'world',
+        config: false,
+        type: String,
+        default: '',
+    });
+
+    game.settings.register('pf2e-bestiary-tracking', 'bestiary-tracking-folder', {
         name: game.i18n.localize("PF2EBestiary.Menus.Data.Name"),
         hint: game.i18n.localize("PF2EBestiary.Menus.Data.Hint"),
         scope: 'world',
@@ -4506,7 +4566,7 @@ const getCreatureDataFromOld = (actor) => {
             notes: {
               public: { value: actor.system.details.publicNotes.text, revealed: actor.system.details.publicNotes.revealed },
               private: { value: actor.system.details.privateNotes.text, revealed: actor.system.details.privateNotes.revealed },
-              player: { value: game.journal.getName(bestiaryJournalEntry).pages.get(actor.system.details.playerNotes.document)?.text?.content ?? '' },
+              player: { value: game.journal.getName('pf2e-bestiary-tracking-journal-entry').pages.get(actor.system.details.playerNotes.document)?.text?.content ?? '' },
             },
         }
     };
@@ -4570,6 +4630,8 @@ const getNPCDataFromOld = (actor, wrongCategory) => {
 const handleDataMigration = async () => {
     if(!game.user.isGM) return;
 
+    await handleDeactivatedPages();
+    
     var version = game.settings.get('pf2e-bestiary-tracking', 'version');
     if(!version){
         version = currentVersion;
@@ -5343,7 +5405,7 @@ const handleBestiaryMigration = async (bestiary) => {
         }   
 
         if(dataBestiary.metadata.version === '0.8.9.8.2'){
-            const journalEntry = game.journal.getName(bestiaryJournalEntry);
+            const journalEntry = game.journal.getName('pf2e-bestiary-tracking-journal-entry');
             dataBestiary = await newMigrateBestiary(async (_, monster) => {
                 if(!monster.system.details.playerNotes?.document){
                     const existingPage = journalEntry.pages.find(x => x.name === monster.name.value);
@@ -5384,7 +5446,7 @@ const handleBestiaryMigration = async (bestiary) => {
         }
 
         if(dataBestiary.metadata.version === '0.8.9.9.6'){
-            const journalEntry = game.journal.getName(bestiaryJournalEntry);
+            const journalEntry = game.journal.getName('pf2e-bestiary-tracking-journal-entry');
             dataBestiary = await newMigrateBestiary(async (_, monster) => {
                 if(!monster.system.details.playerNotes?.document){
                     const existingPage = journalEntry.pages.find(x => x.name === monster.name.value);
@@ -5407,7 +5469,7 @@ const handleBestiaryMigration = async (bestiary) => {
         }
 
         if(dataBestiary.metadata.version === '0.8.11'){
-            const journalEntry = game.journal.getName(bestiaryJournalEntry);
+            const journalEntry = game.journal.getName('pf2e-bestiary-tracking-journal-entry');
             if(journalEntry){
                 dataBestiary = await newMigrateBestiary(async (_, monster) => {
                     if(!monster.system.details.playerNotes?.document){
@@ -5451,12 +5513,22 @@ const handleBestiaryMigration = async (bestiary) => {
         }
 
         if(dataBestiary.metadata.version === '0.9.2' || dataBestiary.metadata.version === '0.9.3'){
-            const journal = await JournalEntry.create({ name: 'PF2E_Bestiary' });
-            await journal.setFlag('pf2e-bestiary-tracking', 'npcCategories', !bestiary ? [] : Object.keys(bestiaryObject.npcCategories).reduce((acc, key) => {
-                acc.push({ name: bestiaryObject.npcCategories[key], value: key });
+            var folderId = game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking-folder');
+            if(!folderId){
+                const folder = await Folder.create({ "name": bestiaryFolder, "type": "JournalEntry" });
+                folderId = folder.id;
+                await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking-folder', folderId);
+            }
 
-                return acc;
-            }, []));
+            var journal = game.journal.getName('Bestiary');
+            if(!journal){
+                journal = await JournalEntry.create({ name: 'pf2e-bestiary-tracking-bestiary', folder: folderId });
+                await journal.setFlag('pf2e-bestiary-tracking', 'npcCategories', !bestiary ? [] : Object.keys(bestiaryObject.npcCategories).reduce((acc, key) => {
+                    acc.push({ name: bestiaryObject.npcCategories[key], value: key });
+    
+                    return acc;
+                }, []));
+            }
 
             for(var monsterKey of Object.keys(bestiaryObject.monster)){
                 const monster = bestiaryObject.monster[monsterKey];
@@ -5469,9 +5541,9 @@ const handleBestiaryMigration = async (bestiary) => {
                 await journal.createEmbeddedDocuments("JournalEntryPage", [getNPCDataFromOld(npc)]);
             }
 
-            const oldJournalEntry = game.journal.getName(bestiaryJournalEntry);
+            const oldJournalEntry = game.journal.getName('pf2e-bestiary-tracking-journal-entry');
             await oldJournalEntry.delete();
-            await game.folders.getName(bestiaryFolder).delete();
+            await game.folders.getName('pf2e-bestiary-tracking-folder').delete();
 
             await game.settings.set('pf2e-bestiary-tracking', 'bestiary-tracking', journal.id);
             await journal.setFlag('pf2e-bestiary-tracking', 'version', '0.9.4');
@@ -5547,6 +5619,24 @@ const newMigrateBestiary = async (update, bestiary) => {
     }
 
     return bestiary;
+};
+
+const handleDeactivatedPages = async () => {
+    const deactivatedArray = Array.from(game.journal).reduce((acc, journal) => {
+        journal.pages.forEach(page => {
+            const deactivatedData = page.getFlag('pf2e-bestiary-tracking', 'deactivated-data');
+            if(deactivatedData){
+                acc.push({ page: page, data: JSON.parse(deactivatedData) });
+            }
+        });
+        
+        return acc;
+    }, []);
+    
+    for(var deactivated of deactivatedArray){
+        await deactivated.page.update(deactivated.data);
+        await deactivated.page.unsetFlag('pf2e-bestiary-tracking', 'deactivated-data');
+    }
 };
 
 const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
@@ -5663,17 +5753,17 @@ class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin$1(ApplicationV
         const migratedBestiary = await handleBestiaryMigration(loadedBestiary);
 
         // Journal Handling
-        await game.journal.getName(bestiaryJournalEntry)?.delete();
-        await game.folders.getName(bestiaryFolder)?.delete();
+        await game.journal.getName('pf2e-bestiary-tracking-journal-entry')?.delete();
+        await game.folders.getName('pf2e-bestiary-tracking-folder')?.delete();
     
         const journalFolder = await Folder.create(
         { 
-           "name": bestiaryFolder, 
+           "name": 'pf2e-bestiary-tracking-folder', 
            "type": "JournalEntry" 
         });
                 
         const journalEntry = await JournalEntry.create({
-                    name: bestiaryJournalEntry,
+                    name: 'pf2e-bestiary-tracking-journal-entry',
                     pages: [],
                     folder: journalFolder.id
         });
@@ -5872,7 +5962,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(ApplicationV2) {
                     class="tagify__tag tagify--noAnim tagify-hover-parent"
                 >
                     <x title='' class='tagify__tag__removeBtn' role='button' aria-label='remove tag'></x>
-                    <i class="tagify-hidden-button ${hidden ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'}"></i>
+                    <i class="tagify-hidden-button primary-container ${hidden ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'}"></i>
                     <div>
                         <span class="tagify__tag-text">${tagData.name}</span>
                     </div>
@@ -7491,8 +7581,14 @@ Hooks.on('getDirectoryApplicationEntryContext', (_, buttons) => {
 });
 
 Hooks.on('renderJournalDirectory', (_, html) => {   
-    for(var journal of game.journal.filter(x => x.pages.some(x => ['pf2e-bestiary-tracking.creature', 'pf2e-bestiary-tracking.npc', 'pf2e-bestiary-tracking.hazard'].includes(x.type)))){
-        html.find(`.document[data-entry-id=${journal.id}]`)?.remove(); 
+    const folder = game.journal.directory.folders.find(folder => folder.name === bestiaryFolder);
+    if (folder)
+    {
+        const element = html.find(`.folder[data-folder-id="${folder.id}"]`);
+        if (element)
+        {
+            element.remove();
+        }
     }
 });
 //# sourceMappingURL=BestiaryTracking.js.map

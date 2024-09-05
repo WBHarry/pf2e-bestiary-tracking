@@ -367,6 +367,15 @@
             "ResetBestiary": {
                 "Title": "Reset Bestiary",
                 "Text": "This will remove all current data from your bestiary. Are you sure you want to do this?"
+            },
+            "DeactivateModule": {
+                "GMOnly": "This macro can only be used by the GM.",
+                "Title": "PF2E Bestiary Tracking Deactivation",
+                "Text": {
+                    "FirstPart": "This will deactivate the module and safetely store the Bestiary data in the journal folder BestiaryTracking Bestiares.",
+                    "SecondPart": "If you delete this folder's contents and active the module again, the Bestiary data will be gone.",
+                    "Link": "https://github.com/WBHarry/pf2e-bestiary-tracking/wiki/Module-Deactivation"
+                }
             }
         },
         "Interactivity": {

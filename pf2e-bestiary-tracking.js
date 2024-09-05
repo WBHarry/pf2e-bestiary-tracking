@@ -1,6 +1,6 @@
 import PF2EBestiary from "./module/bestiary.js";
 import RegisterHandlebarsHelpers from "./scripts/handlebarHelpers.js";
-import { dataTypeSetup, registerGameSettings, registerKeyBindings } from "./scripts/setup.js";
+import { bestiaryFolder, dataTypeSetup, registerGameSettings, registerKeyBindings } from "./scripts/setup.js";
 import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
 import { handleDataMigration } from "./scripts/migrationHandler.js";
@@ -384,7 +384,13 @@ Hooks.on('getDirectoryApplicationEntryContext', (_, buttons) => {
 });
 
 Hooks.on('renderJournalDirectory', (_, html) => {   
-    for(var journal of game.journal.filter(x => x.pages.some(x => ['pf2e-bestiary-tracking.creature', 'pf2e-bestiary-tracking.npc', 'pf2e-bestiary-tracking.hazard'].includes(x.type)))){
-        html.find(`.document[data-entry-id=${journal.id}]`)?.remove(); 
+    const folder = game.journal.directory.folders.find(folder => folder.name === bestiaryFolder);
+    if (folder)
+    {
+        const element = html.find(`.folder[data-folder-id="${folder.id}"]`);
+        if (element)
+        {
+            element.remove();
+        }
     }
 });

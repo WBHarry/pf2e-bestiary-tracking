@@ -1,5 +1,4 @@
 import { handleBestiaryMigration } from "../scripts/migrationHandler";
-import { bestiaryFolder, bestiaryJournalEntry } from "../scripts/setup";
 import { socketEvent } from "../scripts/socket";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -116,17 +115,17 @@ export default class PF2EBestiarySavesHandler extends HandlebarsApplicationMixin
         const migratedBestiary = await handleBestiaryMigration(loadedBestiary);
 
         // Journal Handling
-        await game.journal.getName(bestiaryJournalEntry)?.delete();
-        await game.folders.getName(bestiaryFolder)?.delete();
+        await game.journal.getName('pf2e-bestiary-tracking-journal-entry')?.delete();
+        await game.folders.getName('pf2e-bestiary-tracking-folder')?.delete();
     
         const journalFolder = await Folder.create(
         { 
-           "name": bestiaryFolder, 
+           "name": 'pf2e-bestiary-tracking-folder', 
            "type": "JournalEntry" 
         });
                 
         const journalEntry = await JournalEntry.create({
-                    name: bestiaryJournalEntry,
+                    name: 'pf2e-bestiary-tracking-journal-entry',
                     pages: [],
                     folder: journalFolder.id
         });

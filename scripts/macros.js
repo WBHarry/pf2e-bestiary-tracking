@@ -105,3 +105,54 @@ export const resetBestiary = async () => {
 
     return true;
 };
+
+export const deactivateModule = async () => {
+    if(!game.user.isGM){
+        ui.notifications.error(game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.GMOnly"));
+        return;
+    }
+
+    const link = await TextEditor.enrichHTML(game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.Link"));
+    const content = `
+        <div>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.FirstPart")}</div>
+        <hr />
+        <div>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.SecondPart")}</div>
+        <div style="margin-bottom: 8px;">(${link})</div>
+    `;
+    
+    const confirmed = await Dialog.confirm({
+        title: game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Title"),
+        content: content,
+        yes: () => true,
+        no: () => false,
+    });
+
+    if(!confirmed) return;
+
+    const bestiaries = game.journal.filter(x => x.pages.some(x => ["pf2e-bestiary-tracking.creature", "pf2e-bestiary-tracking.npc", "pf2e-bestiary-tracking.hazard"].includes(x.type)));
+    for(var bestiaryKey in bestiaries){
+        const pageArray = Array.from(bestiaries[bestiaryKey].pages);
+        for(var pageKey in pageArray){
+            const page = pageArray[pageKey];
+            await page.setFlag('pf2e-bestiary-tracking', 'deactivated-data', JSON.stringify({
+                type: page.type,
+                name: page.name,
+                ownership: foundry.utils.deepClone(page.ownership),
+                system: foundry.utils.deepClone(page.system)
+            }));
+            await page.update({ 
+                type: 'text',
+                ownership: { default: 0 },
+                system: {} 
+            }, { diff: false, recursive: false });
+        }
+    }
+
+    await game.settings.set("core", "moduleConfiguration", {
+        ...game.settings.get("core", "moduleConfiguration"),
+        ['pf2e-bestiary-tracking']: false,
+    });
+
+    await game.socket.emit("reload");
+    foundry.utils.debouncedReload();
+};
