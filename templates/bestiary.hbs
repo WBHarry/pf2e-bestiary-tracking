@@ -1,11 +1,11 @@
 <div>
     {{#if (not this.selected.monster)}}
         <header class="bestiary-header">
-            {{#if this.selected.category}}
-            <div class="return-container" data-action="returnButton" data-context-type="{{this.selected.type}}">
-                <i class="fa-solid fa-reply"></i>
-                {{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome"}}
-            </div>
+            {{#if this.selected.type}}
+                <div class="return-container" data-action="returnButton" data-context-type="{{this.selected.type}}">
+                    <i class="fa-solid fa-reply"></i>
+                    {{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome"}}
+                </div>
             {{/if}}
             {{#if (and this.selected.type (not this.selected.monster))}}
             <div class="bestiary-toolbar">
@@ -31,13 +31,13 @@
             <div class="bestiary-main-page">
                 <div class="main-page-category-container">
                     <div class="main-page-category-card">
-                        <div class="main-page-category-image-container secondary-border-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.monster')}}active border{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.creature">
+                        <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.creature')}}secondary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.creature">
                             <img src="icons/creatures/magical/humanoid-silhouette-green.webp" />
                             <h4 class="main-page-category-label primary-container">{{localize "PF2EBestiary.Bestiary.Category.Creatures"}}</h4>
                         </div>
                     </div>
                     <div class="main-page-category-card">
-                        <div class="main-page-category-image-container secondary-border-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.npc')}}active border{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.npc">
+                        <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.npc')}}secondary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.npc">
                             <img src="icons/environment/people/group.webp" />
                             <h4 class="main-page-category-label primary-container">{{localize "PF2EBestiary.Bestiary.Category.NPC"}}</h4>
                         </div>
