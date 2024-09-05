@@ -10,6 +10,7 @@ export class NPC extends Creature {
            ...creatureFields,
            npcData: new fields.SchemaField({
                 categories: new fields.ArrayField(new fields.SchemaField({
+                    hidden: new fields.BooleanField({}),
                     value: new fields.StringField({ required: true }),
                     name: new fields.StringField({ required: true }),
                 })),

@@ -46,3 +46,19 @@
         border-color: black;
     }
 }
+
+.tagify {
+    .tagify-hover-parent {
+        &:hover:not(:has(.tagify-hidden-button:hover)){
+            background: red;
+        }
+
+        .tagify-hidden-button {
+            border-radius: 50%;
+            font-size: 14px;
+            position: absolute;
+            left: calc(50% - 7px);
+            bottom: calc(100% - 7px);
+        }
+    }
+}

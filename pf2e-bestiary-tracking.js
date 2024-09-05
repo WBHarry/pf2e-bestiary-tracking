@@ -382,3 +382,9 @@ Hooks.on('getDirectoryApplicationEntryContext', (_, buttons) => {
         }
     });
 });
+
+Hooks.on('renderJournalDirectory', (_, html) => {   
+    for(var journal of game.journal.filter(x => x.pages.some(x => ['pf2e-bestiary-tracking.creature', 'pf2e-bestiary-tracking.npc', 'pf2e-bestiary-tracking.hazard'].includes(x.type)))){
+        html.find(`.document[data-entry-id=${journal.id}]`)?.remove(); 
+    }
+});
