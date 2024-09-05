@@ -4334,7 +4334,7 @@ const getCreatureDataFromOld = (actor) => {
               },  
             },
             abilities: Object.keys(actor.system.abilities).reduce((acc, key) => {
-              acc[key] = { key: key, revealed: actor.system.abilities[key].revealed, mod: actor.system.abilities[key].mod };
+              acc[key] = { key: key, revealed: actor.system.abilities[key].revealed, mod: actor.system.abilities[key].mod, custom: actor.system.abilities[key].custom, };
               return acc;
             }, {}),
             senses: {
@@ -4356,6 +4356,7 @@ const getCreatureDataFromOld = (actor) => {
                 const immunity = actor.system.attributes.immunities[key];
                 acc[key] = { 
                     empty: Boolean(immunity.empty),
+                    fake: Boolean(immunity.fake),
                     revealed: immunity.revealed, 
                     type: immunity.empty ? 'PF2EBestiary.Miscellaneous.None' : immunity.type, 
                     exceptions:  immunity.exceptions?.reduce((acc, exception) => {  
@@ -4371,6 +4372,7 @@ const getCreatureDataFromOld = (actor) => {
                 const weakness = actor.system.attributes.weaknesses[key];
                 acc[key] = { 
                     empty: Boolean(weakness.empty),
+                    fake: Boolean(weakness.fake),
                     revealed: weakness.revealed, 
                     type: weakness.empty ? 'PF2EBestiary.Miscellaneous.None' : weakness.type,
                     value: weakness.value, 
@@ -4387,6 +4389,7 @@ const getCreatureDataFromOld = (actor) => {
                 const resistance = actor.system.attributes.resistances[key];
                 acc[key] = { 
                     empty: Boolean(resistance.empty),
+                    fake: Boolean(resistance.fake),
                     revealed: resistance.revealed, 
                     type: resistance.empty ? 'PF2EBestiary.Miscellaneous.None' : resistance.type,
                     value: resistance.value, 
@@ -4411,6 +4414,7 @@ const getCreatureDataFromOld = (actor) => {
               if(attack.fake){
                 acc[actionKey] = {
                     revealed: attack.revealed,
+                    fake: true,
                     label: attack.label,
                     actions: '1',
                     totalModifier: 0,
@@ -4464,6 +4468,7 @@ const getCreatureDataFromOld = (actor) => {
                 acc[action.empty ? 'empty' : action._id] = {
                   revealed: action.revealed,
                   empty: Boolean(action.empty),
+                  fake: Boolean(action.fake),
                   label: action.empty ? 'PF2EBestiary.Miscellaneous.None' : action.name,
                   category: action.system.category ?? '',
                   deathNote: action.system.deathNote ?? false,
@@ -4483,6 +4488,7 @@ const getCreatureDataFromOld = (actor) => {
                 acc[action.empty ? 'empty' : action._id] = {
                   revealed: action.revealed,
                   empty: Boolean(action.empty),
+                  fake: Boolean(action.fake),
                   label: action.empty ? 'PF2EBestiary.Miscellaneous.None' : action.name,
                   category: action.system.category ?? '',
                   deathNote: action.system.deathNote ?? false,
