@@ -259,7 +259,7 @@
                 "Spells": "Spells"
             },
             "HiddenSettings": {
-                "Name": "Hidden Settings",
+                "Name": "Default Hidden From Players",
                 "Monster": "Monster",
                 "NPC": "NPC",
                 "Hazard": "Hazard"

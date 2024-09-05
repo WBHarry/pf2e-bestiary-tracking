@@ -7611,17 +7611,17 @@ Hooks.on('getDirectoryApplicationEntryContext', (_, buttons) => {
     });
 });
 
-// Hooks.on('renderJournalDirectory', (_, html) => {   
-//     const folder = game.journal.directory.folders.find(folder => folder.name === bestiaryFolder);
-//     if (folder)
-//     {
-//         const element = html.find(`.folder[data-folder-id="${folder.id}"]`);
-//         if (element)
-//         {
-//             element.remove();
-//         }
-//     }
-// });
+Hooks.on('renderJournalDirectory', (_, html) => {   
+    const folder = game.journal.directory.folders.find(folder => folder.name === bestiaryFolder);
+    if (folder)
+    {
+        const element = html.find(`.folder[data-folder-id="${folder.id}"]`);
+        if (element)
+        {
+            element.remove();
+        }
+    }
+});
 
 Hooks.on('renderDependencyResolution', (dependencyResolution, html) => {
     if(dependencyResolution.object.id === 'pf2e-bestiary-tracking'){
