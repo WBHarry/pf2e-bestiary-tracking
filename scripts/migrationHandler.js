@@ -897,9 +897,10 @@ export const handleBestiaryMigration = async (bestiary) => {
                 return acc;
             }, []));
 
-            for(var npcKey of Object.keys(bestiaryObject.monster)){
-                const monster = bestiaryObject.monster[npcKey];
-                await journal.createEmbeddedDocuments("JournalEntryPage", [getCreatureDataFromOld(monster)]);
+            for(var monsterKey of Object.keys(bestiaryObject.monster)){
+                const monster = bestiaryObject.monster[monsterKey];
+                const data = monster.system.traits.rarity === 'unique' || Boolean(monster.system.traits.value['npc']) ? getNPCDataFromOld(monster, true) : getCreatureDataFromOld(monster);
+                await journal.createEmbeddedDocuments("JournalEntryPage", [data]);
             }
 
             for(var npcKey of Object.keys(bestiaryObject.npc)){

@@ -295,8 +295,31 @@ export const getCreatureDataFromOld = (actor) => {
     };
 }
 
-export const getNPCDataFromOld = (actor) => {
+export const getNPCDataFromOld = (actor, wrongCategory) => {
     const creatureData = getCreatureDataFromOld(actor);
+
+    if(wrongCategory){
+      return {
+        ...creatureData,
+        type: 'pf2e-bestiary-tracking.npc',
+        system: {
+            ...creatureData.system,
+            hidden: actor.hidden,
+            npcData: {
+                categories: [],
+                general: {
+                    background: { value: '' },
+                    appearance: { value: '' },
+                    personality: { value: '' },
+                    height: { value: '' },
+                    weight: { value: '' },
+                    birthplace: { value: '' },
+                    disposition: {},
+                }
+            }
+        }
+      }
+    }
 
     return {
         ...creatureData,
