@@ -1,7 +1,7 @@
 import { acTable, attributeTable, hpTable, rangeOptions, savingThrowPerceptionTable, skillTable, weaknessTable } from "./statisticsData.js";
 
 export const getCategoryLabel = (statisticsTable, level, save, short) => {
-    if(!save) return save;
+    if(save === undefined || save === null) return save;
 
     const { range, values } = statisticsTable;
     const tableRow = values[level];

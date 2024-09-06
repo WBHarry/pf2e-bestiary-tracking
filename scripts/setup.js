@@ -190,6 +190,7 @@ const vagueDescriptions = () => {
             settings: {
                 playerBased: false,
                 misinformationOptions: false,
+                gmNumeric: false,
             }
         },
     });

@@ -106,8 +106,9 @@
                                 data-path="{{concat 'system.weaknesses.' key}}" 
                                 data-fake="{{weakness.fake}}"
                             >
+                                {{#if (and weakness.category (not ../gmNumeric))}}{{localize this.category}}{{/if}}
                                 <span>{{PF2EBTCaptialize (localize weakness.label)}}</span>
-                                <span>{{weakness.value}}</span>
+                                {{#if (or (not weakness.category) ../gmNumeric)}}{{this.value}}{{/if}}
                                 {{#if (gt (PF2EBTNrKeys weakness.exceptions) 0)}}
                                     <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                     {{#each weakness.exceptions as |exception index|}}
@@ -169,8 +170,9 @@
                                 data-path="{{concat 'system.resistances.' this.key}}" 
                                 data-fake="{{this.fake}}"
                             >
+                                {{#if (and this.category (not ../gmNumeric))}}{{localize this.category}}{{/if}}
                                 <span>{{PF2EBTCaptialize (localize this.label)}}</span>
-                                <span>{{PF2EBTMonsterValue this ../vagueDescriptions.properties.resistances "true"}}</span>
+                                {{#if (or (not this.category) ../gmNumeric)}}{{this.value}}{{/if}}
                                 {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}
                                     <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                     {{#PF2EBTEach this.exceptions}}
@@ -525,12 +527,20 @@
                                         </div>
                                         {{#if (gt (PF2EBTNrKeys attack.variants) 0)}}
                                             <div class="attack-body">
-                                                {{#each attack.variants}}
-                                                    <div class="attack-variant tertiary-container">{{this.label}}</div>
-                                                {{/each}}
+                                                {{#if (and this.category (not ../gmNumeric))}}
+                                                    <div class="attack-variant tertiary-container">{{PF2EBTMonsterValue this ../vagueDescriptions.properties.attacks }}</div>
+                                                {{else}}
+                                                    {{#each this.variants}}
+                                                        <div class="attack-variant tertiary-container">{{this.label}}</div>
+                                                    {{/each}}
+                                                {{/if}}
                                                 {{#each this.damageInstances as |instance key|}}
                                                     <div class="attack-damage tertiary-container active">
-                                                        <span>{{instance.damage.value}}</span>
+                                                        {{#if ../../gmNumeric}}
+                                                            <span>{{instance.damage.value}}</span>
+                                                        {{else}}
+                                                            <span>{{PF2EBTMonsterValue instance.damage ../../vagueDescriptions.properties.damage }}</span>
+                                                        {{/if}}
                                                         &nbsp;
                                                         <span
                                                             class="attack-trait-label inner {{#if ../../detailedInformation.damageTypes}}detailed{{/if}} {{#if instance.damageType.revealed}}revealed {{/if}} {{#if ../../detailedInformation.damageTypes}}toggle-container primary-hover-container{{/if}}"

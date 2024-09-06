@@ -1847,7 +1847,7 @@ const spellAttackTable = {
 };
 
 const getCategoryLabel = (statisticsTable, level, save, short) => {
-    if(!save) return save;
+    if(save === undefined || save === null) return save;
 
     const { range, values } = statisticsTable;
     const tableRow = values[level];
@@ -5174,6 +5174,7 @@ const vagueDescriptions = () => {
             settings: {
                 playerBased: false,
                 misinformationOptions: false,
+                gmNumeric: false,
             }
         },
     });
@@ -7297,7 +7298,7 @@ class RegisterHandlebarsHelpers {
     }
 
     static monsterValue(prop, flag, ignoreLabel, context){
-        return prop.custom ?? (flag && !game.user.isGM && prop.category ? game.i18n.localize(prop.category) : (ignoreLabel && context ? prop.value : game.i18n.localize(prop.label) ?? prop.value));
+        return prop.custom ?? (flag && (!game.user.isGM || !game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions').settings.gmNumeric) && prop.category ? game.i18n.localize(prop.category) : (ignoreLabel && context ? prop.value : game.i18n.localize(prop.label) ?? prop.value));
     }
 
     static slice(value, length){
