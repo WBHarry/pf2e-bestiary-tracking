@@ -24,7 +24,7 @@ for (const pack of packs) {
     {
       yaml,
       transformName,
-    }
+    },
   );
 }
 /**

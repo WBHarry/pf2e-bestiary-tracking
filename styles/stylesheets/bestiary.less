@@ -3,900 +3,898 @@
 @import "./bestiarySpells.less";
 
 .theme-dark {
-    .pf2e-bestiary-tracking {
-        &.bestiary {
-            .right-bookmark-container {
-                top: 0;
-                height: 100%;
-            }
+  .pf2e-bestiary-tracking {
+    &.bestiary {
+      .right-bookmark-container {
+        top: 0;
+        height: 100%;
+      }
 
-            .monster-container {
-                .right-monster-container {
-                    .monster-name-container {
-                        .monster-return-icon{
-                            top: 2px;
-                        }
-                    }
-                }
-
-                .toggle-container {
-                    border-color: @darkBorder;
-                }
+      .monster-container {
+        .right-monster-container {
+          .monster-name-container {
+            .monster-return-icon {
+              top: 2px;
             }
+          }
         }
+
+        .toggle-container {
+          border-color: @darkBorder;
+        }
+      }
     }
+  }
 }
 
 .pf2e-bestiary-tracking {
-    overflow-y: visible;
-    overflow-x: visible;
-
-    &.bestiary {
-        [data-application-part="application"] {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .tab {
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .window-content {
-            overflow: visible;
-            height: calc(100% - 75px); // Ugly
-        }
-
-        .header-icon {
-            width: 14px;
-            text-align: center;
-        }
-
-        .bestiary-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            min-height: 32px;
-
-            .return-container {
-                cursor: pointer;
-                font-size: 20px;
-            }
-
-            .bestiary-toolbar {
-                display: flex;
-                align-items: end;
-                gap: 8px;
-
-                .bestiary-layout-settings {
-                    display: flex;
-                    gap: 8px;
-                    border: 1px solid @mainBorder;
-                    padding: 2px 8px;
-                    border-radius: 6px;
-
-                    i {
-                        font-size: 26px;
-                    }
-                }
-
-                .bestiary-filter-container {
-                    display: flex;
-                    padding: 2px;
-                    border-radius: 6px;
-                    font-size: 26px;
-                    height: 31px;
-                    border-width: 1px;
-                    border-style: solid;
-                }
-
-                .bestiary-search-container {
-                    position: relative;
-        
-                    input {
-                        width: 240px;
-                        padding-left: 26px;
-                        padding-right: 30px;
-                    }
-    
-                    .search-icon {
-                        position: absolute;
-                        left: 8px;
-                        top: calc(50% - 8px);
-                        font-size: 16px;
-                    }
-                    .clear-icon {
-                        position: absolute;
-                        right: 8px;
-                        top: calc(50% - 9px);
-                        font-size: 18px;
-                    }
-                }
-            }
-        }
-
-        .bestiary-main-page {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-
-            .main-page-category-container {
-                display: flex;
-                align-items: center;
-                gap: 32px;
-
-                img {
-                    height: 200px;
-                }
-
-                .main-page-category-card {
-                    position: relative;
-                    flex: 1;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-
-                    .main-page-category-image-container {
-                        position: relative;
-                        justify-content: center;
-                        display: flex;
-                        border-width: 2px;
-                        border-style: solid;
-
-                        &.inactive {
-                            opacity: 0.2;
-                        }
-
-                        .main-page-category-label {
-                            position: absolute;
-                            top: 8px;
-                            width: 80%;
-                            text-align: center;
-                            border-width: 2px;
-                            border-style: solid;
-                            border-radius: 6px;
-                            margin: 0;
-                        }
-                    }
-
-                    .under-development {
-                        position: absolute;
-                        top: calc(50% - 60px);
-                        left: calc(50% - 42px);
-                        font-size: 96px;
-                        z-index: 5000;
-                    }
-                }
-            }
-
-            .category-container {
-                display: flex;
-                align-items: center;
-                gap: 4px;
-                height: 100%;
-                align-items: start;
-                margin-top: 8px;
-
-                .category-section {
-                    flex: 1;
-                    gap: 8px;
-                    
-                    .category-label {
-                        white-space: nowrap;
-                    }
-                }
-            }
-
-            .bestiary-welcome {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                font-size: 16px;
-    
-                .title {
-                    align-self: center;
-                    font-size: 28px;
-                }
-    
-                .sub-title {
-                    font-size: 20px;
-                    display: flex;
-                    align-items: center;
-    
-                    div {
-                        margin-right: 8px;
-                    }
-                }
-    
-                ul {
-                    margin-top: 4px;
-                }
-            }
-        }
-
-
-        .bestiary-toolbar-container {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: end;
-        
-            .toggle-switch-container {
-                display: flex;
-                align-items: center;
-                justify-content: end;
-                position: relative;
-                right: 16px;
-            }
-
-            .bestiary-tabs {
-                gap: 0;
-                align-self: end;
-
-                .bestiary-tab {
-                    border-style: solid;
-                    border-width: 2px 0 2px 2px;
-                    padding: 6px;
-                    font-weight: 600;
-                }
-
-                .bestiary-tab:last-of-type {
-                    border-right-width: 2px;
-                }
-            }
-        }
-        
-        .bestiary-fakable-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
-
-        .bestiary-left-list {
-            padding: 4px 8px 4px 4px;
-            border-width: 1px;
-            border-style: solid;
-        }
-
-        .type-overview-container {
-            display: flex;
-            flex-wrap: wrap;
-            overflow-y: auto;
-            gap: 8px;
-            
-            .type-container {
-                position: relative;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 4px 8px 0;
-                font-size: 36px;
-                width: calc(50% - 4px);
-                border-width: 3px;
-                border-style: solid;
-                border-radius: 6px;
-                cursor: pointer;
-
-                &.trio {
-                    width: calc(33% - 3px);
-                    font-size: 24px;
-
-                    img {
-                        height: 125px;
-                    }
-
-                    .delete-button, .toggle-hide-button {
-                        font-size: 32px;
-                    }
-                }
-
-                &.quarter {
-                    width: calc(25% - 6px);
-                    font-size: 18px;
-
-                    img {
-                        height: 100px;
-                    }
-
-                    .delete-button, .toggle-hide-button {
-                        font-size: 24px;
-                    }
-                }
-
-                img {
-                    height: 150px;
-                    border-width: 0;
-                }
-
-                .type-text-container {
-                    width: 100%;
-                    overflow: hidden;
-                    max-height: 100%;
-                    text-overflow: ellipsis;
-                    text-align: center;
-                }
-
-                .delete-button {
-                    position: absolute;
-                    top: 4px;
-                    right: 8px;
-                    font-size: 48px;
-                }
-
-                .toggle-hide-button {
-                    position: absolute;
-                    top: 4px;
-                    left: 8px;
-                    font-size: 48px;
-                    width: 60px;
-                    text-align: center;
-                }
-            }
-        }
-        
-        .monster-container {
-            display: flex;
-            overflow: auto;
-            height: 100%;
-            gap: 16px;
-
-            .data-container {
-                border-radius: 6px;
-                padding: 4px;
-                border-width: 3px;
-                border-style: solid;
-            }
-
-            .flex-data {
-                display: flex;
-                align-items: center;
-                gap: @titleSpacing;
-            }
-
-            .flex-value {
-                font-weight: bold;
-            }
-
-            .toggle-container {
-                cursor: pointer;
-
-
-                &.inner.detailed:not(.revealed){
-                    text-decoration: line-through;
-                    text-decoration-thickness: 2px;
-                }
-
-                &:not(.inner):not(.revealed) {
-                    border-style: dashed;
-                }
-
-                &.misinformation {
-                    text-decoration-line: grammar-error;
-                }
-            }
-
-            .monster-data-list {
-                display: flex;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 2px;
-
-                &.no-gap {
-                    gap: 0;
-                    font-weight: 500;
-                }
-            }
-
-            .left-monster-container {
-                width: 150px;
-                gap: 12px;
-                display: flex;
-                flex-direction: column;
-                overflow-y: auto;
-
-                .monster-image-container {
-                    position: relative;
-                    .monster-image {
-                        height: 150px;
-                        border-radius: 0.5rem;
-                        cursor: pointer;
-                        
-                        &.token {
-                            border-width: 0;
-                        }
-                    }
-
-                    .unlinked-icon {
-                        position: absolute;
-                        font-size: 16px;
-                        top: 0px;
-                        right: 0px;
-                        padding: 4px;
-                        background: black;
-                        border-radius: 6px;
-                        color: white;
-                    }
-                }
-
-
-                .monster-left-data {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-
-                    &.list-container {
-                        margin-bottom: 4px;
-                    }
-
-                    .health-icon {
-                        margin-left: 2px;
-                    }
-                }
-
-                .monster-left-list {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                }
-
-                .monster-left-data-list {
-                    font-size: 12px;
-                }
-
-
-                .disposition-container {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: space-evenly;
-
-                    .disposition-inner-container {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-
-                        .disposition-label {
-                            text-decoration: underline;
-                            margin-bottom: 4px;
-                            text-align: center;
-                        }
-                    }
-                }
-
-                .speeds-container {
-                    display: flex;
-                    align-items: center;
-                    flex-wrap: wrap;
-                    gap: 4px;
-
-                    .speed-container {
-                        padding: 2px;
-                        border-radius: 6px;
-                        min-width: calc(50% - 2px);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                    }
-                }
-
-                .saves-container {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-
-                    .save-container {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-
-                        .saves-title {
-                            font-weight: bold;
-                            font-size: 14px;
-                        }
-    
-                        .saves-value {
-                            font-size: 16px;
-                        }
-                    }
-                }
-            }
-
-            .data-icon {
-                width: 16px;
-                border: 0;
-            }
-
-            .data-sections {
-                display: flex;
-                justify-content: space-between;
-                gap: 16px;
-
-                .data-section {
-                    flex: 1;
-                    border-radius: 6px;
-                }
-            }
-
-            .data-section {
-                display: flex;
-                flex-direction: column;
-                border-radius: 6px;
-            }
-
-            .data-header {
-                padding: 8px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                border-radius: 4px 4px 0 0;
-                border-width: 1px;
-                border-style: solid;
-            }
-
-            .data-header-label {
-                display: flex;
-                align-items: center;
-                text-transform: uppercase;
-                gap: 8px;
-            }
-
-            .data-body {
-                display: flex;
-                flex-direction: column;
-                flex: 1;
-                padding: 4px;
-                border-width: 0 1px 1px 1px;
-                border-style: solid;
-                border-radius: 0 0 4px 4px;
-
-                .data-input {
-                    border-radius: 6px;
-                    border-width: 1px;
-                    border-style: solid;
-
-                    &.editor {
-                        height: 100%;
-                        overflow: auto;
-                    }
-                }
-
-                .abilities-container {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    flex-wrap: wrap;
-
-                    .ability-container {    
-                        width: calc(33% - 5px);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-
-                        .ability-label {
-                            font-weight: bold;
-                            margin-right: 4px;
-                        }
-                    }
-                }
-
-                .data-chip-container {
-                    display: flex;
-                    align-items: center;
-                    gap: 4px;
-                    flex-wrap: wrap;
-
-                    .data-chip {
-                        text-wrap: nowrap;
-                        flex: 0;
-                    }
-                }
-            }
-
-            .right-monster-container {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-                width: calc(100% - 166px); // Ugly
-
-                .tagify {
-                    height: 35px;
-
-                    .tagify__input {
-                        display: flex;
-                        align-items: center;
-                    }
-                }
-
-                .monster-name-container {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    flex-wrap: nowrap;
-                    margin-bottom: 4px;
-
-                    .monster-name {
-                        position: relative;
-                        font-weight: bold;
-                        font-size: 28px;
-                        padding: 4px 0;
-                        display: -webkit-box;
-                        -webkit-line-clamp: 1;
-                        -webkit-box-orient: vertical;
-                        overflow: hidden;
-                        max-height: 100%;
-                        text-overflow: ellipsis;
-                        width: fit-content;
-                        padding: 4px 18px;
-    
-                        .ban-icon {
-                            position: absolute;
-                            right: 2px;
-                            top: 2px;
-                            font-size: 18px;
-                        }
-                    }
-
-                    .monster-return-icon {
-                        cursor: pointer;
-                        position: absolute;
-                        right: 9px;
-                        top: 38px;
-                        font-size: 24px;
-
-                        &:hover {
-                            filter: drop-shadow(0 0 3px @mainHover);
-                        }
-                    }
-                }
-
-                .monster-traits-row {
-                    display: flex;
-                    align-items: center;
-                    gap: 16px;
-                    padding: 2px;
-                    border-width: 1px;
-                    border-style: solid;
-
-                    .monster-size {
-                        flex: 1;
-                        padding: 4px;
-                        border-width: 1px;
-                        border-style: solid;
-                        text-transform: uppercase;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                    }
-                    
-                    .monster-traits {
-                        gap: 4px;
-                        flex: 5;
-                        overflow: auto;
-                        flex-wrap: nowrap;
-    
-                        .monster-trait {
-                            padding: 4px;
-                            border-radius: 0;
-                            text-transform: uppercase;
-                            display: -webkit-box;
-                            -webkit-line-clamp: 1;
-                            -webkit-box-orient: vertical;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                            text-align: center;
-                            max-width: 25%;
-                            min-width: 115px;
-                        }
-                    }
-                }
-
-                .right-monster-container-data {
-                    height: 100%;
-                    display: flex;
-                    flex-direction: column;
-                    overflow-y: auto;
-                    overflow-x: hidden;
-                    gap: 8px;
-                }
-
-                .actions-container {
-                    display: flex;
-                    flex-direction: column;
-
-                    .action-container {
-                        display: flex;
-                        align-items: center;
-                        gap: 4px;
-                    }
-
-                    .action-description {
-                        height: auto;
-                        max-height: 0;
-                        transition: max-height 0.5s;
-                        transition-timing-function: ease-in;
-                        overflow: hidden;
-                        line-height: normal;
-
-                        &.expanded {
-                            max-height: 500px;
-                        }
-                    }
-                }
-
-                .attack-traits-container {
-                    display: flex;
-                    align-items: center;
-                    flex-wrap: wrap;
-                    font-weight: 200;
-
-                    > * {
-                        flex: 0;
-                    }
-
-                    .attack-trait-label {
-                        white-space: nowrap;
-                    }
-                }
-
-                .attack-container {
-                    display: flex;
-                    align-items: center;
-                    
-                    &:not(:last-child) {
-                        border-bottom: 1px solid @mainBorder;
-                    }
-
-                    .attack-inner-container {
-                        display: flex;
-                        flex-direction: column;
-                        width: 100%;
-                        gap: 2px;
-                    }
-
-                    .attack-header {
-                        display: flex;
-                        align-items: center;
-                        flex-wrap: wrap;
-                        width: 100%;
-                        gap: 8px;
-                        font-weight: bold;
-                    }
-
-                    .attack-body {
-                        display: flex;
-                        align-items: center;
-                        gap: 4px;
-                        
-                        .attack-variant {
-                            border-width: 1px;
-                            border-style: solid;
-                            padding: 2px 6px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            text-transform: uppercase;
-                            font-size: 10px;
-                            margin-bottom: 4px;
-                        }
-
-                        .attack-damage {
-                            border-width: 1px;
-                            border-style: solid;
-                            padding: 2px 6px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            text-transform: uppercase;
-                            font-size: 10px;
-                            margin-bottom: 4px;
-                        }
-                    }
-                }
-
-                .bestiary-notes-page {
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    height: 100%;
-                    overflow: hidden;
-
-                    .bestiary-notes-legend {
-                        font-size: 14px;
-                        font-style: italic;
-                        min-height: 48px;
-                        overflow: auto;
-                        
-                        &.private {
-                            margin-top: 4px;
-                        }
-    
-                        legend {
-                            font-size: 18px;
-                            font-weight: bold;
-                            font-style: normal;
-                        }
-
-                        .editor {
-                            height: 200px;
-                        }
-    
-                        hr {
-                            background-image: none;
-                            background-color: @mainBorder;
-                        }
-                    }
-
-                    .player-notes {
-                        height: 100%;
-
-                        legend {
-                            display: flex;
-                            align-items: center;
-                            gap: 32px;
-
-                            .player-notes-icon {
-                                font-size: 16px;
-                            }
-                        }
-
-                        .editor {
-                            height: 100%;
-                            overflow: auto;
-
-                            .editor-container {
-                                height: 100%;
-
-                                .editor-content {
-                                    height: 100%;
-                                    overflow: auto;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        .right-bookmark-container {
-            position: absolute;
-            left: -100px;
-            top: 36px;
-            height: calc(100% - 36px);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            overflow-x: hidden;
-            width: 100px;
-            align-items: end;
-        }
-
-        .bookmark {
-            width: 88px;
-            font-size: 12px;
-            font-weight: bold;
-            border-width: 2px;
-            border-style: solid;
-            margin-bottom: 4px;
-            height: fit-content;
-            text-shadow: 0 0 black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            text-transform: uppercase;
-            padding: 0 4px;
-            text-align: center;
-            transition: width 0.1s ease-in-out;
-
-            &:hover, &.expanded {
-                width: 100%;
-            }
-        }
+  overflow-y: visible;
+  overflow-x: visible;
+
+  &.bestiary {
+    [data-application-part="application"] {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
+    .tab {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .window-content {
+      overflow: visible;
+      height: calc(100% - 75px); // Ugly
+    }
+
+    .header-icon {
+      width: 14px;
+      text-align: center;
+    }
+
+    .bestiary-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      min-height: 32px;
+
+      .return-container {
+        cursor: pointer;
+        font-size: 20px;
+      }
+
+      .bestiary-toolbar {
+        display: flex;
+        align-items: end;
+        gap: 8px;
+
+        .bestiary-layout-settings {
+          display: flex;
+          gap: 8px;
+          border: 1px solid @mainBorder;
+          padding: 2px 8px;
+          border-radius: 6px;
+
+          i {
+            font-size: 26px;
+          }
+        }
+
+        .bestiary-filter-container {
+          display: flex;
+          padding: 2px;
+          border-radius: 6px;
+          font-size: 26px;
+          height: 31px;
+          border-width: 1px;
+          border-style: solid;
+        }
+
+        .bestiary-search-container {
+          position: relative;
+
+          input {
+            width: 240px;
+            padding-left: 26px;
+            padding-right: 30px;
+          }
+
+          .search-icon {
+            position: absolute;
+            left: 8px;
+            top: calc(50% - 8px);
+            font-size: 16px;
+          }
+          .clear-icon {
+            position: absolute;
+            right: 8px;
+            top: calc(50% - 9px);
+            font-size: 18px;
+          }
+        }
+      }
+    }
+
+    .bestiary-main-page {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+
+      .main-page-category-container {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+
+        img {
+          height: 200px;
+        }
+
+        .main-page-category-card {
+          position: relative;
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .main-page-category-image-container {
+            position: relative;
+            justify-content: center;
+            display: flex;
+            border-width: 2px;
+            border-style: solid;
+
+            &.inactive {
+              opacity: 0.2;
+            }
+
+            .main-page-category-label {
+              position: absolute;
+              top: 8px;
+              width: 80%;
+              text-align: center;
+              border-width: 2px;
+              border-style: solid;
+              border-radius: 6px;
+              margin: 0;
+            }
+          }
+
+          .under-development {
+            position: absolute;
+            top: calc(50% - 60px);
+            left: calc(50% - 42px);
+            font-size: 96px;
+            z-index: 5000;
+          }
+        }
+      }
+
+      .category-container {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        height: 100%;
+        align-items: start;
+        margin-top: 8px;
+
+        .category-section {
+          flex: 1;
+          gap: 8px;
+
+          .category-label {
+            white-space: nowrap;
+          }
+        }
+      }
+
+      .bestiary-welcome {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 16px;
+
+        .title {
+          align-self: center;
+          font-size: 28px;
+        }
+
+        .sub-title {
+          font-size: 20px;
+          display: flex;
+          align-items: center;
+
+          div {
+            margin-right: 8px;
+          }
+        }
+
+        ul {
+          margin-top: 4px;
+        }
+      }
+    }
+
+    .bestiary-toolbar-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+
+      .toggle-switch-container {
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        position: relative;
+        right: 16px;
+      }
+
+      .bestiary-tabs {
+        gap: 0;
+        align-self: end;
+
+        .bestiary-tab {
+          border-style: solid;
+          border-width: 2px 0 2px 2px;
+          padding: 6px;
+          font-weight: 600;
+        }
+
+        .bestiary-tab:last-of-type {
+          border-right-width: 2px;
+        }
+      }
+    }
+
+    .bestiary-fakable-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .bestiary-left-list {
+      padding: 4px 8px 4px 4px;
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    .type-overview-container {
+      display: flex;
+      flex-wrap: wrap;
+      overflow-y: auto;
+      gap: 8px;
+
+      .type-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 4px 8px 0;
+        font-size: 36px;
+        width: calc(50% - 4px);
+        border-width: 3px;
+        border-style: solid;
+        border-radius: 6px;
+        cursor: pointer;
+
+        &.trio {
+          width: calc(33% - 3px);
+          font-size: 24px;
+
+          img {
+            height: 125px;
+          }
+
+          .delete-button,
+          .toggle-hide-button {
+            font-size: 32px;
+          }
+        }
+
+        &.quarter {
+          width: calc(25% - 6px);
+          font-size: 18px;
+
+          img {
+            height: 100px;
+          }
+
+          .delete-button,
+          .toggle-hide-button {
+            font-size: 24px;
+          }
+        }
+
+        img {
+          height: 150px;
+          border-width: 0;
+        }
+
+        .type-text-container {
+          width: 100%;
+          overflow: hidden;
+          max-height: 100%;
+          text-overflow: ellipsis;
+          text-align: center;
+        }
+
+        .delete-button {
+          position: absolute;
+          top: 4px;
+          right: 8px;
+          font-size: 48px;
+        }
+
+        .toggle-hide-button {
+          position: absolute;
+          top: 4px;
+          left: 8px;
+          font-size: 48px;
+          width: 60px;
+          text-align: center;
+        }
+      }
+    }
+
+    .monster-container {
+      display: flex;
+      overflow: auto;
+      height: 100%;
+      gap: 16px;
+
+      .data-container {
+        border-radius: 6px;
+        padding: 4px;
+        border-width: 3px;
+        border-style: solid;
+      }
+
+      .flex-data {
+        display: flex;
+        align-items: center;
+        gap: @titleSpacing;
+      }
+
+      .flex-value {
+        font-weight: bold;
+      }
+
+      .toggle-container {
+        cursor: pointer;
+
+        &.inner.detailed:not(.revealed) {
+          text-decoration: line-through;
+          text-decoration-thickness: 2px;
+        }
+
+        &:not(.inner):not(.revealed) {
+          border-style: dashed;
+        }
+
+        &.misinformation {
+          text-decoration-line: grammar-error;
+        }
+      }
+
+      .monster-data-list {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2px;
+
+        &.no-gap {
+          gap: 0;
+          font-weight: 500;
+        }
+      }
+
+      .left-monster-container {
+        width: 150px;
+        gap: 12px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+
+        .monster-image-container {
+          position: relative;
+          .monster-image {
+            height: 150px;
+            border-radius: 0.5rem;
+            cursor: pointer;
+
+            &.token {
+              border-width: 0;
+            }
+          }
+
+          .unlinked-icon {
+            position: absolute;
+            font-size: 16px;
+            top: 0px;
+            right: 0px;
+            padding: 4px;
+            background: black;
+            border-radius: 6px;
+            color: white;
+          }
+        }
+
+        .monster-left-data {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          &.list-container {
+            margin-bottom: 4px;
+          }
+
+          .health-icon {
+            margin-left: 2px;
+          }
+        }
+
+        .monster-left-list {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .monster-left-data-list {
+          font-size: 12px;
+        }
+
+        .disposition-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-evenly;
+
+          .disposition-inner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            .disposition-label {
+              text-decoration: underline;
+              margin-bottom: 4px;
+              text-align: center;
+            }
+          }
+        }
+
+        .speeds-container {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 4px;
+
+          .speed-container {
+            padding: 2px;
+            border-radius: 6px;
+            min-width: calc(50% - 2px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+
+        .saves-container {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .save-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            .saves-title {
+              font-weight: bold;
+              font-size: 14px;
+            }
+
+            .saves-value {
+              font-size: 16px;
+            }
+          }
+        }
+      }
+
+      .data-icon {
+        width: 16px;
+        border: 0;
+      }
+
+      .data-sections {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+
+        .data-section {
+          flex: 1;
+          border-radius: 6px;
+        }
+      }
+
+      .data-section {
+        display: flex;
+        flex-direction: column;
+        border-radius: 6px;
+      }
+
+      .data-header {
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 4px 4px 0 0;
+        border-width: 1px;
+        border-style: solid;
+      }
+
+      .data-header-label {
+        display: flex;
+        align-items: center;
+        text-transform: uppercase;
+        gap: 8px;
+      }
+
+      .data-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 4px;
+        border-width: 0 1px 1px 1px;
+        border-style: solid;
+        border-radius: 0 0 4px 4px;
+
+        .data-input {
+          border-radius: 6px;
+          border-width: 1px;
+          border-style: solid;
+
+          &.editor {
+            height: 100%;
+            overflow: auto;
+          }
+        }
+
+        .abilities-container {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+
+          .ability-container {
+            width: calc(33% - 5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .ability-label {
+              font-weight: bold;
+              margin-right: 4px;
+            }
+          }
+        }
+
+        .data-chip-container {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          flex-wrap: wrap;
+
+          .data-chip {
+            text-wrap: nowrap;
+            flex: 0;
+          }
+        }
+      }
+
+      .right-monster-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: calc(100% - 166px); // Ugly
+
+        .tagify {
+          height: 35px;
+
+          .tagify__input {
+            display: flex;
+            align-items: center;
+          }
+        }
+
+        .monster-name-container {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: nowrap;
+          margin-bottom: 4px;
+
+          .monster-name {
+            position: relative;
+            font-weight: bold;
+            font-size: 28px;
+            padding: 4px 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            max-height: 100%;
+            text-overflow: ellipsis;
+            width: fit-content;
+            padding: 4px 18px;
+
+            .ban-icon {
+              position: absolute;
+              right: 2px;
+              top: 2px;
+              font-size: 18px;
+            }
+          }
+
+          .monster-return-icon {
+            cursor: pointer;
+            position: absolute;
+            right: 9px;
+            top: 38px;
+            font-size: 24px;
+
+            &:hover {
+              filter: drop-shadow(0 0 3px @mainHover);
+            }
+          }
+        }
+
+        .monster-traits-row {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 2px;
+          border-width: 1px;
+          border-style: solid;
+
+          .monster-size {
+            flex: 1;
+            padding: 4px;
+            border-width: 1px;
+            border-style: solid;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .monster-traits {
+            gap: 4px;
+            flex: 5;
+            overflow: auto;
+            flex-wrap: nowrap;
+
+            .monster-trait {
+              padding: 4px;
+              border-radius: 0;
+              text-transform: uppercase;
+              display: -webkit-box;
+              -webkit-line-clamp: 1;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              text-align: center;
+              max-width: 25%;
+              min-width: 115px;
+            }
+          }
+        }
+
+        .right-monster-container-data {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
+          overflow-x: hidden;
+          gap: 8px;
+        }
+
+        .actions-container {
+          display: flex;
+          flex-direction: column;
+
+          .action-container {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+          }
+
+          .action-description {
+            height: auto;
+            max-height: 0;
+            transition: max-height 0.5s;
+            transition-timing-function: ease-in;
+            overflow: hidden;
+            line-height: normal;
+
+            &.expanded {
+              max-height: 500px;
+            }
+          }
+        }
+
+        .attack-traits-container {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          font-weight: 200;
+
+          > * {
+            flex: 0;
+          }
+
+          .attack-trait-label {
+            white-space: nowrap;
+          }
+        }
+
+        .attack-container {
+          display: flex;
+          align-items: center;
+
+          &:not(:last-child) {
+            border-bottom: 1px solid @mainBorder;
+          }
+
+          .attack-inner-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            gap: 2px;
+          }
+
+          .attack-header {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 100%;
+            gap: 8px;
+            font-weight: bold;
+          }
+
+          .attack-body {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+
+            .attack-variant {
+              border-width: 1px;
+              border-style: solid;
+              padding: 2px 6px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              text-transform: uppercase;
+              font-size: 10px;
+              margin-bottom: 4px;
+            }
+
+            .attack-damage {
+              border-width: 1px;
+              border-style: solid;
+              padding: 2px 6px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              text-transform: uppercase;
+              font-size: 10px;
+              margin-bottom: 4px;
+            }
+          }
+        }
+
+        .bestiary-notes-page {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          height: 100%;
+          overflow: hidden;
+
+          .bestiary-notes-legend {
+            font-size: 14px;
+            font-style: italic;
+            min-height: 48px;
+            overflow: auto;
+
+            &.private {
+              margin-top: 4px;
+            }
+
+            legend {
+              font-size: 18px;
+              font-weight: bold;
+              font-style: normal;
+            }
+
+            .editor {
+              height: 200px;
+            }
+
+            hr {
+              background-image: none;
+              background-color: @mainBorder;
+            }
+          }
+
+          .player-notes {
+            height: 100%;
+
+            legend {
+              display: flex;
+              align-items: center;
+              gap: 32px;
+
+              .player-notes-icon {
+                font-size: 16px;
+              }
+            }
+
+            .editor {
+              height: 100%;
+              overflow: auto;
+
+              .editor-container {
+                height: 100%;
+
+                .editor-content {
+                  height: 100%;
+                  overflow: auto;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .right-bookmark-container {
+      position: absolute;
+      left: -100px;
+      top: 36px;
+      height: calc(100% - 36px);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      width: 100px;
+      align-items: end;
+    }
+
+    .bookmark {
+      width: 88px;
+      font-size: 12px;
+      font-weight: bold;
+      border-width: 2px;
+      border-style: solid;
+      margin-bottom: 4px;
+      height: fit-content;
+      text-shadow: 0 0 black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      text-transform: uppercase;
+      padding: 0 4px;
+      text-align: center;
+      transition: width 0.1s ease-in-out;
+
+      &:hover,
+      &.expanded {
+        width: 100%;
+      }
+    }
+  }
 }

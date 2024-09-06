@@ -2,84 +2,84 @@
 @import "../variables.less";
 
 .theme-dark {
-    .bestiary-selection {
-        .bestiaries-container {
-            .bestiary-container {
-                .bestiary-image {
-                    background-color: white;
-                    border-color: gold;
-                }
-                .bestiary-name {
-                    color: #dfdfdf;
-                    text-shadow: 0 0 10px black;
-                }
-
-                .edit-footer {
-                    background-color: inherit;
-                    border-color: gold;
-                }
-            }
+  .bestiary-selection {
+    .bestiaries-container {
+      .bestiary-container {
+        .bestiary-image {
+          background-color: white;
+          border-color: gold;
         }
+        .bestiary-name {
+          color: #dfdfdf;
+          text-shadow: 0 0 10px black;
+        }
+
+        .edit-footer {
+          background-color: inherit;
+          border-color: gold;
+        }
+      }
     }
+  }
 }
 
 .bestiary-selection {
-    .bestiaries-container {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 4px;
+  .bestiaries-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    margin-top: 8px;
+
+    .bestiary-container {
+      display: flex;
+      flex: 1;
+      min-width: calc(33% - 2px);
+      max-width: calc(33% - 2px);
+      position: relative;
+      opacity: 0.6;
+
+      &.active {
+        opacity: 1;
+      }
+
+      .bestiary-image {
+        flex: 1;
+        background: black;
+        border-radius: 6px;
+        border-width: 2px;
+        border-color: @lightSecondaryBorder;
+        min-height: 200px;
+      }
+      .bestiary-name {
+        position: absolute;
+        font-size: 32px;
         width: 100%;
-        margin-top: 8px;
+        text-align: center;
+        color: black;
+        text-shadow: 0 0 10px #dfdfdf;
+      }
 
-        .bestiary-container {
-            display: flex;
-            flex: 1;
-            min-width: calc(33% - 2px);
-            max-width: calc(33% - 2px);
-            position: relative;
-            opacity: 0.6;
+      .edit-footer {
+        width: 100%;
+        flex: 0;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        text-wrap: nowrap;
+        background-color: #d4bdac;
+        border-color: @lightSecondaryBorder;
+        border-width: 0 2px 2px 2px;
+        border-style: solid;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
 
-            &.active {
-                opacity: 1;
-            }
-
-            .bestiary-image {
-                flex: 1;
-                background: black;
-                border-radius: 6px;
-                border-width: 2px;
-                border-color: @lightSecondaryBorder;
-                min-height: 200px;
-            }
-            .bestiary-name{
-                position: absolute;
-                font-size: 32px;
-                width: 100%;
-                text-align: center;
-                color: black;
-                text-shadow: 0 0 10px #dfdfdf;
-            }
-
-            .edit-footer {
-                width: 100%;
-                flex: 0;
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                text-wrap: nowrap;
-                background-color: #D4BDAC;
-                border-color: @lightSecondaryBorder;
-                border-width: 0 2px 2px 2px;
-                border-style: solid;
-                border-bottom-left-radius: 6px;
-                border-bottom-right-radius: 6px;
-
-                button {
-                    border: 0;
-                    border-radius: 0;
-                }
-            }
+        button {
+          border: 0;
+          border-radius: 0;
         }
+      }
     }
+  }
 }

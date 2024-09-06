@@ -2,174 +2,174 @@
 @import "../variables.less";
 
 .theme-dark {
-    &:not([data-dorako-ui-scope]){
-        .bestiary-settings-menu {
-            .tagify {
-                border-color: inherit;
-                background: inherit;
-            }
+  &:not([data-dorako-ui-scope]) {
+    .bestiary-settings-menu {
+      .tagify {
+        border-color: inherit;
+        background: inherit;
+      }
 
-            .menu-category {
-                legend {
-                    h4 {
-                        color: var(--color-light-2);
-                    }
-                }
-            }
+      .menu-category {
+        legend {
+          h4 {
+            color: var(--color-light-2);
+          }
         }
+      }
+    }
+  }
+
+  .bestiary-settings-menu {
+    .tagify-header {
+      align-self: center;
+      margin-bottom: 0;
+      color: @darkBorder;
     }
 
-    .bestiary-settings-menu{
-        .tagify-header{
-            align-self: center;
-            margin-bottom: 0;
-            color: @darkBorder;
-        }
-
-        tags {
-            border-width: 2px;
-        }
-        
-        .menu-category {
-            display: flex;
-            flex-direction: column;
-            border-style: double;
-            border-width: 4px;
-            border-color: @darkBorder;
-
-            legend {
-                font-weight: bold;
-                text-align: center;
-
-                h4 {
-                    margin: 0;
-                    text-shadow: 0 0 @darkBorder;
-                }
-            }
-
-            .section-header {
-                position: relative;
-                align-self: center;
-
-                div {
-                    font-weight: bold;
-                    font-size: 18px;
-                    margin: 4px 0 4px 0;
-                }
-
-                i {
-                    position: absolute;
-                    top: 8px;
-                    right: -22px;
-                    font-size: 14px;
-                }
-            }
-
-            .form-group {
-                text-wrap: nowrap;
-
-                &.underlined {
-                    border-bottom: 1px solid @darkBorder;
-                }
-            }
-        }
-    }
-}
-
-&:not([data-dorako-ui-scope]){
-    .tagify {
-        border-color: black;
-        background: #cfcfcf;
-    }
-}
-
-&.bestiary-settings-menu{
-    .menu-container {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .menu-grouper-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 2px;
-
-        > label {
-            font-weight: bold;
-            text-decoration: underline;
-        }
-    }
-
-    .menu-grouper {
-        display: flex;
-        align-items: stretch;
-        width: 100%;
-
-        &.spaced {
-            gap: 4px;
-        }
-
-        .grouped-section {
-            border-right-width: 2px;
-            border-right-style: solid;
-            margin-right: 2px;
-        }
-
-        > * {
-            flex: 1;
-        }
+    tags {
+      border-width: 2px;
     }
 
     .menu-category {
-        display: flex;
-        flex-direction: column;
-        border-style: double;
-        border-width: 4px;
-        border-color: @lightBorder;
+      display: flex;
+      flex-direction: column;
+      border-style: double;
+      border-width: 4px;
+      border-color: @darkBorder;
 
-        legend {
-            font-weight: bold;
-            text-align: center;
+      legend {
+        font-weight: bold;
+        text-align: center;
 
-            &.flexed {
-                display: flex;
-                align-items: center;
-                gap: 4px;
-            }
+        h4 {
+          margin: 0;
+          text-shadow: 0 0 @darkBorder;
+        }
+      }
 
-            h4 {
-                margin: 0;
-                color: black;
-                text-shadow: 0 0 @lightBorder;
-            }
+      .section-header {
+        position: relative;
+        align-self: center;
+
+        div {
+          font-weight: bold;
+          font-size: 18px;
+          margin: 4px 0 4px 0;
         }
 
-        .section-header {
-            position: relative;
-            align-self: center;
-
-            div {
-                font-weight: bold;
-                font-size: 18px;
-                margin: 4px 0 4px 0;
-            }
-
-            i {
-                position: absolute;
-                top: 8px;
-                right: -22px;
-                font-size: 14px;
-            }
+        i {
+          position: absolute;
+          top: 8px;
+          right: -22px;
+          font-size: 14px;
         }
+      }
 
-        .form-group {
-            text-wrap: nowrap;
+      .form-group {
+        text-wrap: nowrap;
 
-            &.underlined {
-                border-bottom: 1px solid @lightBorder;
-            }
+        &.underlined {
+          border-bottom: 1px solid @darkBorder;
         }
+      }
     }
+  }
+}
+
+&:not([data-dorako-ui-scope]) {
+  .tagify {
+    border-color: black;
+    background: #cfcfcf;
+  }
+}
+
+&.bestiary-settings-menu {
+  .menu-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .menu-grouper-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+
+    > label {
+      font-weight: bold;
+      text-decoration: underline;
+    }
+  }
+
+  .menu-grouper {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+
+    &.spaced {
+      gap: 4px;
+    }
+
+    .grouped-section {
+      border-right-width: 2px;
+      border-right-style: solid;
+      margin-right: 2px;
+    }
+
+    > * {
+      flex: 1;
+    }
+  }
+
+  .menu-category {
+    display: flex;
+    flex-direction: column;
+    border-style: double;
+    border-width: 4px;
+    border-color: @lightBorder;
+
+    legend {
+      font-weight: bold;
+      text-align: center;
+
+      &.flexed {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      h4 {
+        margin: 0;
+        color: black;
+        text-shadow: 0 0 @lightBorder;
+      }
+    }
+
+    .section-header {
+      position: relative;
+      align-self: center;
+
+      div {
+        font-weight: bold;
+        font-size: 18px;
+        margin: 4px 0 4px 0;
+      }
+
+      i {
+        position: absolute;
+        top: 8px;
+        right: -22px;
+        font-size: 14px;
+      }
+    }
+
+    .form-group {
+      text-wrap: nowrap;
+
+      &.underlined {
+        border-bottom: 1px solid @lightBorder;
+      }
+    }
+  }
 }

@@ -7,58 +7,60 @@
 @import (inline) "../node_modules/@yaireo/tagify/dist/tagify.css";
 
 .pf2e-bestiary-bold {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .pf2e-bestiary-clickable-icon {
-    cursor: pointer;
+  cursor: pointer;
 
-    &:hover, &.selected {
-        filter: drop-shadow(0 0 3px @mainHover);
-    }
+  &:hover,
+  &.selected {
+    filter: drop-shadow(0 0 3px @mainHover);
+  }
 
-    &.alternate:hover, &.alternate.selected {
-        filter: drop-shadow(0 0 3px @secondaryHover);
-    }
+  &.alternate:hover,
+  &.alternate.selected {
+    filter: drop-shadow(0 0 3px @secondaryHover);
+  }
 }
 
 .pf2e-bestiary-standard-gap {
-    gap: 4px;
+  gap: 4px;
 }
 
 .pf2e-bestiary-misinformation-dialog {
-    .editor-container {
-        overflow: auto;
-    }
+  .editor-container {
+    overflow: auto;
+  }
 }
 
 .theme-dark {
-    .dialog-content {
-        .tagify {
-            border-color: rgb(239, 230, 216);
-            background-color: inherit;
-        }
+  .dialog-content {
+    .tagify {
+      border-color: rgb(239, 230, 216);
+      background-color: inherit;
     }
+  }
 }
 
 .dialog-content {
-    .tagify {
-        border-color: black;
-    }
+  .tagify {
+    border-color: black;
+  }
 }
 
 .tagify {
-    .tagify-hover-parent {
-        &:hover:not(:has(.tagify-hidden-button:hover)){
-            background: red;
-        }
-
-        .tagify-hidden-button {
-            border-radius: 50%;
-            font-size: 14px;
-            position: absolute;
-            left: calc(50% - 7px);
-            bottom: calc(100% - 7px);
-        }
+  .tagify-hover-parent {
+    &:hover:not(:has(.tagify-hidden-button:hover)) {
+      background: red;
     }
+
+    .tagify-hidden-button {
+      border-radius: 50%;
+      font-size: 14px;
+      position: absolute;
+      left: calc(50% - 7px);
+      bottom: calc(100% - 7px);
+    }
+  }
 }

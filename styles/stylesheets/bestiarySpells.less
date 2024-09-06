@@ -2,120 +2,123 @@
 @import "../colors.less";
 
 .pf2e-bestiary-tracking {
-    &.bestiary {
-        .monster-container {
-            .right-monster-container {
-                .spells-tab {
-                    overflow: auto;
-                }
-
-                .spells-unknown {
-                    font-size: 22px;
-                    font-style: italic;
-                }
-
-                .spell-section {
-                    &:not(:last-of-type) {
-                        margin-bottom: 4px;
-                    }
-                }
-
-                .spell-list-container {
-                    border-width: 0 1px 1px 1px;
-                    border-color: @mainBorder;
-                    border-style: solid;
-                    border-radius: 0 0 4px 4px;
-                    overflow: auto;
-
-                    table {
-                        margin: 0;
-                        overflow: auto;
-
-                        tbody {
-                            padding: 0 4px;
-                        }
-                    }
-
-                    .spell-header-row {
-                        line-height: 10px;
-                        border-width: 2px;
-                        border-style: solid;
-
-                        &:first-of-type {
-                            border-top-width: 0;
-                        }
-                    }
-
-                    .spell-body-row {
-                        line-height: 10px;
-
-                        &.description {
-                            display: none;
-
-                            &.expanded {
-                                display: table-row;
-                            }
-
-                            td {
-                                .spell-description {
-                                    height: auto;
-                                    max-height: 500;
-                                    transition: max-height 0.5s;
-                                    transition-timing-function: ease-in;
-                                    overflow: hidden;
-                                    line-height: normal;
-            
-                                    &.expanded {
-                                        max-height: 500px;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    .spell-name-cell {
-                        text-align: left;
-                        padding: 0 4px;
-
-                        &.body {
-                            margin: 3px 0;
-
-                            .spell-data-container {
-                                display: flex;
-                                align-items: center;
-
-                                .cell-name {
-                                    margin: 0 4px 0 4px;
-                                    font-weight: bold;
-                                }
-                            }
-                        }
-                    }
-                    
-                    .spell-cell {
-                        text-align: center;
-
-                        &.range {
-                            width: 88px;
-                        }
-
-                        &.defense {
-                            width: 150px;
-                        }
-                    }
-
-                    img {
-                        height: 100%;
-                        width: 30px;
-                        padding: 0;
-                        margin: 0;
-                        --inset-shadow-length: 0.25rem;
-                        border: none;
-                        border-radius: 2px;
-                        box-shadow: 0 0 0 1px var(--tertiary), 0 0 0 2px #9f725b, inset 0 0 var(--inset-shadow-length) rgba(0, 0, 0, 0.5);
-                    }
-                }
-            }
+  &.bestiary {
+    .monster-container {
+      .right-monster-container {
+        .spells-tab {
+          overflow: auto;
         }
+
+        .spells-unknown {
+          font-size: 22px;
+          font-style: italic;
+        }
+
+        .spell-section {
+          &:not(:last-of-type) {
+            margin-bottom: 4px;
+          }
+        }
+
+        .spell-list-container {
+          border-width: 0 1px 1px 1px;
+          border-color: @mainBorder;
+          border-style: solid;
+          border-radius: 0 0 4px 4px;
+          overflow: auto;
+
+          table {
+            margin: 0;
+            overflow: auto;
+
+            tbody {
+              padding: 0 4px;
+            }
+          }
+
+          .spell-header-row {
+            line-height: 10px;
+            border-width: 2px;
+            border-style: solid;
+
+            &:first-of-type {
+              border-top-width: 0;
+            }
+          }
+
+          .spell-body-row {
+            line-height: 10px;
+
+            &.description {
+              display: none;
+
+              &.expanded {
+                display: table-row;
+              }
+
+              td {
+                .spell-description {
+                  height: auto;
+                  max-height: 500;
+                  transition: max-height 0.5s;
+                  transition-timing-function: ease-in;
+                  overflow: hidden;
+                  line-height: normal;
+
+                  &.expanded {
+                    max-height: 500px;
+                  }
+                }
+              }
+            }
+          }
+
+          .spell-name-cell {
+            text-align: left;
+            padding: 0 4px;
+
+            &.body {
+              margin: 3px 0;
+
+              .spell-data-container {
+                display: flex;
+                align-items: center;
+
+                .cell-name {
+                  margin: 0 4px 0 4px;
+                  font-weight: bold;
+                }
+              }
+            }
+          }
+
+          .spell-cell {
+            text-align: center;
+
+            &.range {
+              width: 88px;
+            }
+
+            &.defense {
+              width: 150px;
+            }
+          }
+
+          img {
+            height: 100%;
+            width: 30px;
+            padding: 0;
+            margin: 0;
+            --inset-shadow-length: 0.25rem;
+            border: none;
+            border-radius: 2px;
+            box-shadow:
+              0 0 0 1px var(--tertiary),
+              0 0 0 2px #9f725b,
+              inset 0 0 var(--inset-shadow-length) rgba(0, 0, 0, 0.5);
+          }
+        }
+      }
     }
+  }
 }

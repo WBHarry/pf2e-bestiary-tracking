@@ -1,12 +1,12 @@
 export const revealedState = {
-    enabled: false,
-    revealed: '#008000',
-    hidden: '#ff0000'
-}
+  enabled: false,
+  revealed: "#008000",
+  hidden: "#ff0000",
+};
 
 export const optionalFields = {
-    level: false,
-    languages: false,
-    height: false,
-    weight: false,
+  level: false,
+  languages: false,
+  height: false,
+  weight: false,
 };

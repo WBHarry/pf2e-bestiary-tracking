@@ -1,0 +1,6 @@
+# Ignore all HBS files:
+**/*.hbs
+
+.github/**/*
+BestiaryTracking.js
+styles/pf2e-bestiary-tracking.css

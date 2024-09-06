@@ -11,226 +11,231 @@
 // }
 
 .theme-dark {
-    .pf2e-bestiary-tracking {
-        // Background
-        &.bestiary {
-            &.application {
-                background-color: @darkApplication;
-            }
-        }  
-
-        // Containers
-        .primary-container {
-            background-color: @darkPrimary;
-            border-color: @darkBorder;
-            color: @darkPrimaryColor;
-
-            &.active, &.active.empty {
-                background-color: @darkPrimaryAccent;
-                opacity: 1;
-            }
-
-            &.empty {
-                background-color: @darkPrimary;
-                opacity: 0.6;
-            }
-
-            .data-icon {
-                filter: none;
-            }
-        }
-
-        .secondary-container {
-            background-color: @darkSecondary;
-            border-color: @darkBorder;
-            color: @darkPrimaryColor;
-
-            .data-icon {
-                filter: none;
-            }
-        }
-
-        .tertiary-container {
-            background-color: @darkTertiary;
-            border-color: @darkBorder;
-            color: @darkPrimaryColor;
-
-            &.active {
-                background-color: @darkTertiaryAccent;
-            }
-
-            .data-icon {
-                filter: none;
-            }
-        }
-
-        .spell-container {
-            &.even {
-                background: rgba(255, 255, 255, 0.1);
-            }
-        }
-
-        // Border Containers
-        .primary-border-container {
-            border-color: @darkBorder;
-        }
-
-        .secondary-border-container {
-            border-color: @darkSecondaryBorder;
-        }
-
-        .main-border-container {
-            border-color: @darkPrimary;
-        }
-
-        .bookmark {
-            &:hover {
-                background-color: @darkPrimaryAccent;
-                opacity: 1;
-            }
-        }
-
-        // Hover Containers
-        .primary-hover-container {
-            cursor: pointer;
-
-            &:hover, &.active {
-                filter: drop-shadow(0 0 3px @darkMainHover);
-            }
-
-            &.border {
-                border-color: @darkMainHover;
-            }
-        }
-
-    // Tabs
-    .primary-tab {
-        &:hover {
-            text-shadow: 0 0 5px @mainHover;
-        }
-
-        &.active {
-            text-shadow: 0 0 5px @mainHover;
-        }
-    }
-
-        // Icons
-        .primary-icon {
-            color: @darkIcon;
-        }
-
-        .primary-accent-icon {
-            color: @darkAccentIcon;
-        }
-    }
-}
-
-.pf2e-bestiary-tracking {
+  .pf2e-bestiary-tracking {
     // Background
-    &.application {
-
+    &.bestiary {
+      &.application {
+        background-color: @darkApplication;
+      }
     }
 
     // Containers
     .primary-container {
-        background-color: @lightPrimary;
-        border-color: @lightBorder;
-        color: @lightPrimaryColor;
+      background-color: @darkPrimary;
+      border-color: @darkBorder;
+      color: @darkPrimaryColor;
 
-        &.active, &.active.empty {
-            background-color: @lightPrimaryAccent;
-        }
+      &.active,
+      &.active.empty {
+        background-color: @darkPrimaryAccent;
+        opacity: 1;
+      }
 
-        &.empty {
-            background-color: @lightPrimary
-        }
+      &.empty {
+        background-color: @darkPrimary;
+        opacity: 0.6;
+      }
 
-        .data-icon {
-            filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
-        }
+      .data-icon {
+        filter: none;
+      }
     }
 
     .secondary-container {
-        background-color: @lightSecondary;
-        border-color: @lightBorder;
-        color: @lightPrimaryColor;
+      background-color: @darkSecondary;
+      border-color: @darkBorder;
+      color: @darkPrimaryColor;
 
-        .data-icon {
-            filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
-        }
+      .data-icon {
+        filter: none;
+      }
     }
 
     .tertiary-container {
-        background-color: @lightTertiary;
-        border-color: @lightBorder;
-        color: @lightPrimaryColor;
+      background-color: @darkTertiary;
+      border-color: @darkBorder;
+      color: @darkPrimaryColor;
 
-        &.active {
-            background-color: @lightTertiaryAccent;
-        }
+      &.active {
+        background-color: @darkTertiaryAccent;
+      }
 
-        .data-icon {
-            filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
-        }
+      .data-icon {
+        filter: none;
+      }
     }
 
     .spell-container {
-        &.even {
-            background: rgba(0, 0, 0, 0.1);
-        }
+      &.even {
+        background: rgba(255, 255, 255, 0.1);
+      }
     }
 
     // Border Containers
     .primary-border-container {
-        border-color: @lightBorder;
+      border-color: @darkBorder;
     }
 
     .secondary-border-container {
-        border-color: @lightSecondaryBorder;
+      border-color: @darkSecondaryBorder;
     }
 
     .main-border-container {
-        border-color: @lightPrimary;
+      border-color: @darkPrimary;
+    }
+
+    .bookmark {
+      &:hover {
+        background-color: @darkPrimaryAccent;
+        opacity: 1;
+      }
     }
 
     // Hover Containers
     .primary-hover-container {
-        cursor: pointer;
+      cursor: pointer;
 
-        &:hover {
-            filter: drop-shadow(0 0 3px @lightMainHover);
-        }
+      &:hover,
+      &.active {
+        filter: drop-shadow(0 0 3px @darkMainHover);
+      }
 
-        &.border {
-            border-color: @lightPrimary;
-        }
+      &.border {
+        border-color: @darkMainHover;
+      }
     }
 
     // Tabs
     .primary-tab {
-        &:hover {
-            text-shadow: 0 0 5px @lightMainHover;
-        }
+      &:hover {
+        text-shadow: 0 0 5px @mainHover;
+      }
 
-        &.active {
-            text-shadow: 0 0 5px @lightMainHover;
-        }
+      &.active {
+        text-shadow: 0 0 5px @mainHover;
+      }
     }
 
     // Icons
     .primary-icon {
-        color: @lightIcon;
+      color: @darkIcon;
     }
 
     .primary-accent-icon {
-        color: @lightAccentIcon;
+      color: @darkAccentIcon;
+    }
+  }
+}
+
+.pf2e-bestiary-tracking {
+  // Background
+  &.application {
+  }
+
+  // Containers
+  .primary-container {
+    background-color: @lightPrimary;
+    border-color: @lightBorder;
+    color: @lightPrimaryColor;
+
+    &.active,
+    &.active.empty {
+      background-color: @lightPrimaryAccent;
     }
 
-    // Misc
-
-    .bookmark {
-        &:hover {
-            background-color: @lightPrimaryAccent;
-        }
+    &.empty {
+      background-color: @lightPrimary;
     }
+
+    .data-icon {
+      filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg)
+        brightness(102%) contrast(102%);
+    }
+  }
+
+  .secondary-container {
+    background-color: @lightSecondary;
+    border-color: @lightBorder;
+    color: @lightPrimaryColor;
+
+    .data-icon {
+      filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg)
+        brightness(102%) contrast(102%);
+    }
+  }
+
+  .tertiary-container {
+    background-color: @lightTertiary;
+    border-color: @lightBorder;
+    color: @lightPrimaryColor;
+
+    &.active {
+      background-color: @lightTertiaryAccent;
+    }
+
+    .data-icon {
+      filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg)
+        brightness(102%) contrast(102%);
+    }
+  }
+
+  .spell-container {
+    &.even {
+      background: rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  // Border Containers
+  .primary-border-container {
+    border-color: @lightBorder;
+  }
+
+  .secondary-border-container {
+    border-color: @lightSecondaryBorder;
+  }
+
+  .main-border-container {
+    border-color: @lightPrimary;
+  }
+
+  // Hover Containers
+  .primary-hover-container {
+    cursor: pointer;
+
+    &:hover {
+      filter: drop-shadow(0 0 3px @lightMainHover);
+    }
+
+    &.border {
+      border-color: @lightPrimary;
+    }
+  }
+
+  // Tabs
+  .primary-tab {
+    &:hover {
+      text-shadow: 0 0 5px @lightMainHover;
+    }
+
+    &.active {
+      text-shadow: 0 0 5px @lightMainHover;
+    }
+  }
+
+  // Icons
+  .primary-icon {
+    color: @lightIcon;
+  }
+
+  .primary-accent-icon {
+    color: @lightAccentIcon;
+  }
+
+  // Misc
+
+  .bookmark {
+    &:hover {
+      background-color: @lightPrimaryAccent;
+    }
+  }
 }
