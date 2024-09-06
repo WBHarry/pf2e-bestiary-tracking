@@ -16,6 +16,7 @@ export const toggleNumberField = () => new fields.SchemaField({
 }) ;
 
 export const getCreatureData = (actor) => {
+    const { creature: defaultRevealed } = game.settings.get('pf2e-bestiary-tracking', 'default-revealed');
     const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
     const weaknessesKeys = Object.keys(actor.system.attributes.weaknesses);
     const resistancesKeys = Object.keys(actor.system.attributes.resistances);
@@ -35,6 +36,7 @@ export const getCreatureData = (actor) => {
             }
 
             level.spells[spell._id] = {
+                revealed: defaultRevealed.spells,
                 label: spell.name,
                 img: spell.img,
                 actions: spell.actionGlyph,
@@ -62,6 +64,7 @@ export const getCreatureData = (actor) => {
         }); 
 
         acc[entry.id] = {
+          revealed: defaultRevealed.spells,
           tradition: entry.system.tradition.value,
           category: entry.category,
           dc: { value: entry.system.spelldc.dc },
@@ -90,62 +93,62 @@ export const getCreatureData = (actor) => {
             version: currentVersion,
             img: actor.img,
             texture: actor.prototypeToken.texture.src,
-            name: { value: actor.name },
+            name: { value: actor.name, revealed: defaultRevealed.name },
             hardness: { value: actor.system.attributes.hardness.value },
             allSaves: { value: actor.system.attributes.allSaves.value },
             publication: actor.system.details.publication,
-            ac: { value: Number.parseInt(actor.system.attributes.ac.value), details: actor.system.attributes.ac.details },
-            hp: { value: Number.parseInt(actor.system.attributes.hp.max), temp: Number.parseInt(actor.system.attributes.hp.temp), details: actor.system.attributes.hp.details, negativeHealing: actor.system.attributes.hp.negativeHealing },
-            level: { value: Number.parseInt(actor.system.details.level.value) },
+            ac: { value: Number.parseInt(actor.system.attributes.ac.value), details: actor.system.attributes.ac.details, revealed: defaultRevealed.ac },
+            hp: { value: Number.parseInt(actor.system.attributes.hp.max), temp: Number.parseInt(actor.system.attributes.hp.temp), details: actor.system.attributes.hp.details, negativeHealing: actor.system.attributes.hp.negativeHealing, revealed: defaultRevealed.hp },
+            level: { value: Number.parseInt(actor.system.details.level.value), revealed: defaultRevealed.level },
             size: actor.system.traits.size.value,
             rarity: { value: actor.system.traits.rarity },
             traits: actor.system.traits.value.reduce((acc, trait) => {
-              acc[trait] = { value: trait };
+              acc[trait] = { value: trait, revealed: defaultRevealed.traits };
               return acc;
             }, {}),
             skills: Object.values(actor.system.skills).some(x => x.base > 0) ? Object.keys(actor.system.skills).reduce((acc, key) => {
               const skill = actor.system.skills[key];
-              acc[key] = { value: skill.base, lore: skill.lore, note: skill.note, modifiers: skill.modifiers.filter(x => x.slug !== 'base').map(x => ({ kind: x.kind, label: x.label, modifier: x.modifier })), label: skill.label, totalModifier: Number.parseInt(skill.totalModifier) };
+              acc[key] = { value: skill.base, revealed: defaultRevealed.skills, lore: skill.lore, note: skill.note, modifiers: skill.modifiers.filter(x => x.slug !== 'base').map(x => ({ kind: x.kind, label: x.label, modifier: x.modifier })), label: skill.label, totalModifier: Number.parseInt(skill.totalModifier) };
               return acc;
             }, {}) : { empty: { empty: true, value: 'PF2EBestiary.Miscellaneous.None' } },
             saves: {
-              fortitude: { value: actor.system.saves.fortitude.value },
-              reflex: { value: actor.system.saves.reflex.value },
-              will: { value: actor.system.saves.will.value },
+              fortitude: { value: actor.system.saves.fortitude.value, revealed: defaultRevealed.saves },
+              reflex: { value: actor.system.saves.reflex.value, revealed: defaultRevealed.saves },
+              will: { value: actor.system.saves.will.value, revealed: defaultRevealed.saves },
             },
             speeds: {
-              details: { name: actor.system.attributes.speed.details },
+              details: { name: actor.system.attributes.speed.details, revealed: defaultRevealed.speeds },
               values: {
-                land: { type: 'land', value: actor.system.attributes.speed.value },
+                land: { type: 'land', value: actor.system.attributes.speed.value, revealed: defaultRevealed.speeds },
                 ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
-                  acc[speed.label] = { type: speed.type, value: speed.value }
+                  acc[speed.label] = { type: speed.type, value: speed.value, revealed: defaultRevealed.speeds }
                   return acc;
                 }, {})
               },  
             },
             abilities: Object.keys(actor.system.abilities).reduce((acc, key) => {
-              acc[key] = { key: key, mod: actor.system.abilities[key].mod };
+              acc[key] = { key: key, mod: actor.system.abilities[key].mod, revealed: defaultRevealed.abilities };
               return acc;
             }, {}),
             senses: {
-              perception: { value: actor.system.perception.value },
-              details: { value: actor.system.perception.details },
+              perception: { value: actor.system.perception.value, revealed: defaultRevealed.perception },
+              details: { value: actor.system.perception.details, revealed: defaultRevealed.senses },
               senses: actor.system.perception.senses.reduce((acc, sense) => {
-                acc[sense.type] = { type: sense.type };
+                acc[sense.type] = { type: sense.type, revealed: defaultRevealed.senses };
                 return acc;
               }, {})
             },
             languages: {
-              details: { value: actor.system.details.languages.details },
+              details: { value: actor.system.details.languages.details, revealed: defaultRevealed.languages },
               values: (actor.system.details.languages.value.length > 0 || actor.system.details.languages.details) ? actor.system.details.languages.value.reduce((acc, language) => {
-                acc[language] = { value: language };
+                acc[language] = { value: language, revealed: defaultRevealed.languages };
                 return acc;
               }, {}) : { empty: { empty: true, value: 'PF2EBestiary.Miscellaneous.None', exceptions: {} } }
             },
             immunities: immunitiesKeys.length > 0 ? immunitiesKeys.reduce((acc, key) => {
                 const immunity = actor.system.attributes.immunities[key];
                 acc[getIWRString(immunity)] = { 
-                    revealed: false, 
+                    revealed: defaultRevealed.iwr, 
                     type: immunity.type, 
                     exceptions:  immunity.exceptions.reduce((acc, exception) => {  
                       acc[exception] = { type: exception.label ?? exception }
@@ -158,7 +161,7 @@ export const getCreatureData = (actor) => {
             weaknesses: weaknessesKeys.length > 0 ? weaknessesKeys.reduce((acc, key) => {
                 const weakness = actor.system.attributes.weaknesses[key];
                 acc[getIWRString(weakness)] = { 
-                    revealed: false, 
+                    revealed: defaultRevealed.iwr, 
                     type: weakness.type,
                     value: weakness.value, 
                     exceptions:  weakness.exceptions.reduce((acc, exception) => {  
@@ -172,7 +175,7 @@ export const getCreatureData = (actor) => {
             resistances: resistancesKeys.length > 0 ? resistancesKeys.reduce((acc, key) => {
                 const resistance = actor.system.attributes.resistances[key];
                 acc[getIWRString(resistance)] = { 
-                    revealed: false, 
+                    revealed: defaultRevealed.iwr, 
                     type: resistance.type,
                     value: resistance.value, 
                     exceptions:  resistance.exceptions.reduce((acc, exception) => {  
@@ -194,6 +197,7 @@ export const getCreatureData = (actor) => {
               
               if(item.type === 'melee' || item.type === 'equipment'){
                 acc[attack.item.id] = {
+                  revealed: defaultRevealed.attacks,
                   label: attack.label,
                   actions: attack.glyph,
                   totalModifier: attack.totalModifier,
@@ -230,6 +234,7 @@ export const getCreatureData = (actor) => {
             actions: itemKeys.filter(action => action.type === 'action' && action.system.actionType.value !== 'passive').length > 0 ? itemKeys.reduce((acc, action) => {
               if(action.type === 'action' && action.system.actionType.value !== 'passive'){
                 acc[action.id] = {
+                  revealed: defaultRevealed.abilities,
                   label: action.name,
                   category: action.system.category,
                   deathNote: action.system.deathNote,
@@ -247,6 +252,7 @@ export const getCreatureData = (actor) => {
             passives: itemKeys.filter(action => action.type === 'action' && action.system.actionType.value === 'passive').length > 0 ? itemKeys.reduce((acc, action) => {
               if(action.type === 'action' && action.system.actionType.value === 'passive'){
                 acc[action.id] = {
+                  revealed: defaultRevealed.abilities,
                   label: action.name,
                   category: action.system.category,
                   deathNote: action.system.deathNote,
@@ -262,7 +268,7 @@ export const getCreatureData = (actor) => {
             }, {}) : { empty: { empty: true, label: 'PF2EBestiary.Miscellaneous.None', traits: {}, description: '' } },
             spells: spells,
             notes: {
-              public: { value: actor.system.details.publicNotes },
+              public: { value: actor.system.details.publicNotes, revealed: defaultRevealed.description },
               private: { value: actor.system.details.privateNotes },
             },
         }
@@ -270,6 +276,7 @@ export const getCreatureData = (actor) => {
 }
 
 export const getNPCData = (actor) => {
+  const { npc: defaultRevealed } = game.settings.get('pf2e-bestiary-tracking', 'default-revealed');
   const creatureData = getCreatureData(actor);
   
   return {
@@ -281,12 +288,12 @@ export const getNPCData = (actor) => {
       npcData: {
         categories: [],
         general: {
-          background: { value: '' },
-          appearance: { value: '' },
-          personality: { value: '' },
-          height: { value: '' },
-          weight: { value: '' },
-          birthplace: { value: '' },
+          background: { value: '', revealed: defaultRevealed.background },
+          appearance: { value: '', revealed: defaultRevealed.appearance },
+          personality: { value: '', revealed: defaultRevealed.personality },
+          height: { value: '', revealed: defaultRevealed.height },
+          weight: { value: '', revealed: defaultRevealed.weight },
+          birthplace: { value: '', revealed: defaultRevealed.birthplace },
           disposition: {},
         }
       }

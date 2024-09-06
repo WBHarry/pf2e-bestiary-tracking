@@ -83,3 +83,9 @@ export const isNPC = (data) => {
 export const getSpellLevel = (spell, creatureLevel) => {
     return spell.system.traits.value.includes("cantrip") ? 'Cantrips' : spell.system.location.heightenedLevel ?? spell.system.cast.focusPoints ? Math.ceil(creatureLevel / 2) : spell.system.level.value;
 }
+
+export const chunkArray = (arr, size) => {
+    return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+        arr.slice(i * size, i * size + size)
+    );
+}

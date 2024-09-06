@@ -312,6 +312,33 @@
                     "Monster": "Monster",
                     "NPC": "NPC",
                     "Hazard": "Hazard"
+                },
+                "DefaultRevealed": {
+                    "Title": "Default Revealed Properties",
+                    "Creature": "Creature",
+                    "NPC": "NPC",
+                    "Name": "Name",
+                    "Traits": "Traits",
+                    "Attributes": "Attributes",
+                    "Description": "Description",
+                    "AC": "AC",
+                    "HP": "HP",
+                    "Saves": "Saves",
+                    "IWR": "IWR",
+                    "Speeds": "Speeds",
+                    "Senses": "Senses",
+                    "Skills": "Skills",
+                    "Attacks": "Attacks",
+                    "Abilities": "Abilities",
+                    "Spells": "Spells",
+                    "Perception": "Perception",
+                    "Level": "Level",
+                    "Languages": "Languages",
+                    "Appearance": "Appearance",
+                    "Personality": "Personality",
+                    "Background": "Background",
+                    "Height": "Height",
+                    "Weight": "Weight"
                 }
             }
         },

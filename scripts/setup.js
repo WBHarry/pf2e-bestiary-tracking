@@ -380,4 +380,42 @@ const bestiaryIntegration = () => {
             hazard: false,
         },
     });
+
+    game.settings.register('pf2e-bestiary-tracking', 'default-revealed', {
+        name: game.i18n.localize('PF2EBestiary.Settings.DefaultRevealed.Name'),
+        hint: game.i18n.localize('PF2EBestiary.Settings.DefaultReaveled.Hint'),
+        scope: 'world',
+        config: false,
+        type: Object,
+        default: {
+            creature: {
+                name: false,
+                traits: false,
+                attributes: false,
+                description: false,
+                level: false,
+                ac: false,
+                hp: false,
+                saves: false,
+                iwr: false,
+                speeds: false,
+                perception: false,
+                senses: false,
+                skills: false,
+                languages: false,
+                attacks: false,
+                abilities: false,
+                spells: false,
+            },
+            npc: {
+                appearance: false,
+                personality: false,
+                background: false,
+                height: false,
+                weight: false,
+                // birthplace: false,
+            },
+            hazard: {},
+        },
+    });
 };
