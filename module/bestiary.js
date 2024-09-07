@@ -484,7 +484,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     }
   }
 
-  getBookmarks() {
+  getBookmarks(layout) {
     const bookmarks =
       this.selected.category === "pf2e-bestiary-tracking.creature"
         ? getExpandedCreatureTypes()
@@ -572,47 +572,47 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           })
           .sort((a, b) => {
             if (
-              !context.layout?.categories?.filter?.type ||
-              context.layout.categories.filter.type === 0
+              !layout?.categories?.filter?.type ||
+              layout.categories.filter.type === 0
             ) {
               var comparison =
-                a.name.value < b.name.value
+                a.system.name.value < b.system.name.value
                   ? -1
-                  : a.name.value > b.name.value
+                  : a.system.name.value > b.system.name.value
                     ? 1
                     : 0;
               if (!game.user.isGM) {
                 comparison =
-                  a.name.revealed && b.name.revealed
-                    ? a.name.value < b.name.value
+                  a.system.name.revealed && b.system.name.revealed
+                    ? a.system.name.value < b.system.name.value
                       ? -1
-                      : a.name.value > b.name.value
+                      : a.system.name.value > b.system.name.value
                         ? 1
                         : 0
-                    : a.name.revealed && !b.name.revealed
+                    : a.system.name.revealed && !b.system.name.revealed
                       ? 1
-                      : !a.name.revealed && b.name.revealed
+                      : !a.system.name.revealed && b.system.name.revealed
                         ? -1
                         : 0;
               }
 
-              return context.layout?.categories?.filter?.direction === 0
+              return layout?.categories?.filter?.direction === 0
                 ? comparison
                 : comparison * -1;
             } else {
-              var comparison = a.level.value - b.level.value;
+              var comparison = a.system.level.value - b.system.level.value;
               if (!game.user.isGM) {
                 comparison =
-                  a.level.revealed && b.level.revealed
-                    ? a.level.value - b.level.value
-                    : a.level.revealed && !b.level.revealed
+                  a.system.level.revealed && b.system.level.revealed
+                    ? a.system.level.value - b.system.level.value
+                    : a.system.level.revealed && !b.system.level.revealed
                       ? 1
-                      : !a.level.revealed && b.level.revealed
+                      : !a.system.level.revealed && b.system.level.revealed
                         ? -1
                         : 0;
               }
 
-              return context.layout.categories.filter.direction === 0
+              return layout.categories.filter.direction === 0
                 ? comparison
                 : comparison * -1;
             }
@@ -629,7 +629,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     var context = await super._prepareContext(_options);
 
     context = await this.sharedPreparation(context);
-    context.bookmarks = this.getBookmarks();
+    context.bookmarks = this.getBookmarks(context.layout);
     context.bookmarkEntities = this.selected.type
       ? context.bookmarks.find((x) => x.value === this.selected.type).values
       : [];
@@ -1154,7 +1154,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         },
       },
     });
-    this.render();
+
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
   getMisinformationDialogData(name) {
