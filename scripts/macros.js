@@ -1,4 +1,5 @@
 import PF2EBestiary from "../module/bestiary.js";
+import { bestiaryFolder, currentVersion } from "./setup.js";
 import { socketEvent } from "./socket.js";
 
 export const openBestiary = async () => {
@@ -136,10 +137,57 @@ export const resetBestiary = async () => {
 
   if (!confirmed) return;
 
-  for (var page of game.journal.get(
-    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
-  ).pages) {
-    await page.delete();
+  var folder = game.folders.get(
+    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking-folder"),
+  );
+  if (!folder) {
+    folder = await Folder.create({
+      name: bestiaryFolder,
+      type: "JournalEntry",
+    });
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "bestiary-tracking-folder",
+      folder.id,
+    );
+  }
+
+  const bestiaryTracking = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "bestiary-tracking",
+  );
+  var bestiaryObject = null;
+  try {
+    bestiaryObject = JSON.parse(bestiaryTracking);
+  } catch {}
+
+  const existingJournal =
+    !bestiaryObject && Boolean(game.journal.get(bestiaryTracking));
+  if (bestiaryObject || !existingJournal) {
+    const journal = await JournalEntry.create({
+      name: game.i18n.localize("PF2EBestiary.BestiaryName"),
+      folder: folder.id,
+    });
+    await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
+    await journal.setFlag("pf2e-bestiary-tracking", "version", currentVersion);
+    await journal.setFlag(
+      "pf2e-bestiary-tracking",
+      "image",
+      "systems/pf2e/assets/compendium-banner/green.webp",
+    );
+
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "bestiary-tracking",
+      journal.id,
+    );
+  } else {
+    const journal = game.journal.get(bestiaryTracking);
+    for (var page of Array.from(journal.pages)) {
+      await page.delete();
+    }
+
+    await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
   }
 
   await game.socket.emit(`module.pf2e-bestiary-tracking`, {
