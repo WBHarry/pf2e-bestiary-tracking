@@ -1049,7 +1049,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   async toggleEverythingRevealed(revealed) {
     if (!game.user.isGM || !this.selected.monster) return;
 
-    await this.selected.monster.system.toggleEverything(revealed);
+    await this.selected.monster.system.toggleEverything(
+      revealed,
+      this.npcData.npcView,
+    );
 
     await PF2EBestiary.handleTokenNames(this.selected.monster);
 

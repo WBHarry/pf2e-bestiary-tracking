@@ -356,7 +356,8 @@
           "Personality": "Personality",
           "Background": "Background",
           "Height": "Height",
-          "Weight": "Weight"
+          "Weight": "Weight",
+          "Premise": "Premise (Influence)"
         }
       }
     },

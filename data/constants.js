@@ -56,6 +56,7 @@ export const defaultRevealing = {
     height: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Height",
     weight: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Weight",
     // birthplace: 'PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Birthplace',
+    premise: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Premise",
   },
   hazard: {},
 };

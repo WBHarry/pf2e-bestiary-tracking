@@ -113,10 +113,6 @@ export class NPC extends Creature {
           ),
           influence: new MappingField(
             new fields.SchemaField({
-              revealed: new fields.BooleanField({
-                required: true,
-                initial: false,
-              }),
               points: new fields.NumberField({ required: true, integer: true }),
               description: new fields.StringField({ required: true }),
             }),
@@ -184,60 +180,66 @@ export class NPC extends Creature {
       ...creatureData,
       system: {
         ...creatureData.system,
-        npcData: {
-          general: {
-            background: {
-              ...data.system.npcData.background,
-              revealed: this.npcData.general.background.revealed,
-            },
-            appearance: {
-              ...data.system.npcData.appearance,
-              revealed: this.npcData.general.appearance.revealed,
-            },
-            personality: {
-              ...data.system.npcData.personality,
-              revealed: this.npcData.general.personality.revealed,
-            },
-            height: {
-              ...data.system.npcData.height,
-              revealed: this.npcData.general.height.revealed,
-            },
-            weight: {
-              ...data.system.npcData.weight,
-              revealed: this.npcData.general.weight.revealed,
-            },
-            birthplace: {
-              ...data.system.npcData.birthplace,
-              revealed: this.npcData.general.birthplace.revealed,
-            },
-          },
-        },
+        npcData: this.npcData,
       },
     };
   }
 
-  _getToggleUpdate(state) {
-    const creatureData = super._getToggleUpdate(state);
-    return {
-      ...creatureData,
-      system: {
-        ...creatureData.system,
-        npcData: {
-          general: {
-            "background.revealed": state,
-            "appearance.revealed": state,
-            "personality.revealed": state,
-            "height.revealed": state,
-            "weight.revealed": state,
-            "birthplace.revealed": state,
-            disposition: Object.keys(this.disposition).reduce((acc, key) => {
-              acc[key] = { revealed: state };
-              return acc;
-            }, {}),
+  _getToggleUpdate(state, npcView) {
+    if (npcView) {
+      return {
+        system: {
+          npcData: {
+            general: {
+              "background.revealed": state,
+              "appearance.revealed": state,
+              "personality.revealed": state,
+              "height.revealed": state,
+              "weight.revealed": state,
+              "birthplace.revealed": state,
+            },
+            influence: {
+              "premise.revealed": state,
+              discovery: Object.keys(this.npcData.influence.discovery).reduce(
+                (acc, key) => {
+                  acc[key] = { revealed: state };
+                  return acc;
+                },
+                {},
+              ),
+              influenceSkills: Object.keys(
+                this.npcData.influence.influenceSkills,
+              ).reduce((acc, key) => {
+                acc[key] = { revealed: state };
+                return acc;
+              }, {}),
+              resistances: Object.keys(
+                this.npcData.influence.resistances,
+              ).reduce((acc, key) => {
+                acc[key] = { revealed: state };
+                return acc;
+              }, {}),
+              weaknesses: Object.keys(this.npcData.influence.weaknesses).reduce(
+                (acc, key) => {
+                  acc[key] = { revealed: state };
+                  return acc;
+                },
+                {},
+              ),
+              penalties: Object.keys(this.npcData.influence.penalties).reduce(
+                (acc, key) => {
+                  acc[key] = { revealed: state };
+                  return acc;
+                },
+                {},
+              ),
+            },
           },
         },
-      },
-    };
+      };
+    } else {
+      return super._getToggleUpdate(state);
+    }
   }
 
   get partyDispositions() {
@@ -310,6 +312,7 @@ export class NPC extends Creature {
     }, 0);
     const influenceModifier =
       resistanceModifier + weaknessModifier + penaltyModifier;
+
     this.npcData.influence.influenceSkills = Object.keys(
       this.npcData.influence.influenceSkills,
     ).reduce((acc, key) => {
@@ -322,7 +325,7 @@ export class NPC extends Creature {
 
       acc[key] = {
         ...influence,
-        label: `@Check[type:${type}|dc:${influence.dc}|adjustment:${influenceModifier}|showDC:gm] ${(influence.description.revealed || game.user.isGM) && influence.description.value ? `(${influence.description.value})` : ""}`,
+        label: `@Check[type:${type}|dc:${influence.dc}|adjustment:${influenceModifier}|showDC:gm]`,
       };
       return acc;
     }, {});

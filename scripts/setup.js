@@ -8,7 +8,7 @@ import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
 
-export const currentVersion = "0.9.4";
+export const currentVersion = "0.9.5";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
@@ -462,7 +462,7 @@ const bestiaryIntegration = () => {
     type: Object,
     default: {
       monster: false,
-      npc: false,
+      npc: true,
       hazard: false,
     },
   });
@@ -500,6 +500,7 @@ const bestiaryIntegration = () => {
         height: false,
         weight: false,
         // birthplace: false,
+        premise: false,
       },
       hazard: {},
     },

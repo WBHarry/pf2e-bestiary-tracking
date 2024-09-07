@@ -198,6 +198,21 @@
                                 {{#PF2EBTFilter 'revealed' '?' 0 this.influence.influenceSkills (not this.user.isGM)}}
                                     <div class="secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.influenceSkills." this.key}}">
                                         {{{this.label}}}
+                                        {{#if this.description.value}}
+                                            {{#if ../user.isGM}}
+                                                <span 
+                                                    class="toggle-container inner detailed {{#if this.description.revealed}}revealed{{/if}} primary-hover-container" 
+                                                    data-action="toggleRevealed"
+                                                    data-path="{{concat "system.npcData.influence.influenceSkills." this.key ".description"}}"
+                                                >
+                                                    ({{localize this.description.value}})
+                                                </span>
+                                            {{else}}
+                                                {{#if this.description.revealed}}
+                                                    ({{localize this.description.value}})
+                                                {{/if}}
+                                            {{/if}}
+                                        {{/if}}
                                     </div>
                                 {{/PF2EBTFilter}}
                             </div>

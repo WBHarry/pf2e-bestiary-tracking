@@ -2240,6 +2240,7 @@ const defaultRevealing = {
     height: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Height",
     weight: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Weight",
     // birthplace: 'PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Birthplace',
+    premise: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Premise",
   },
   hazard: {},
 };
@@ -3463,8 +3464,8 @@ class Creature extends foundry.abstract.TypeDataModel {
     };
   }
 
-  async toggleEverything(state) {
-    await this.parent.update(this._getToggleUpdate(state));
+  async toggleEverything(state, npcView) {
+    await this.parent.update(this._getToggleUpdate(state, npcView));
   }
 
   prepareDerivedData() {
@@ -3942,10 +3943,6 @@ class NPC extends Creature {
           ),
           influence: new MappingField(
             new fields.SchemaField({
-              revealed: new fields.BooleanField({
-                required: true,
-                initial: false,
-              }),
               points: new fields.NumberField({ required: true, integer: true }),
               description: new fields.StringField({ required: true }),
             }),
@@ -4013,60 +4010,66 @@ class NPC extends Creature {
       ...creatureData,
       system: {
         ...creatureData.system,
-        npcData: {
-          general: {
-            background: {
-              ...data.system.npcData.background,
-              revealed: this.npcData.general.background.revealed,
-            },
-            appearance: {
-              ...data.system.npcData.appearance,
-              revealed: this.npcData.general.appearance.revealed,
-            },
-            personality: {
-              ...data.system.npcData.personality,
-              revealed: this.npcData.general.personality.revealed,
-            },
-            height: {
-              ...data.system.npcData.height,
-              revealed: this.npcData.general.height.revealed,
-            },
-            weight: {
-              ...data.system.npcData.weight,
-              revealed: this.npcData.general.weight.revealed,
-            },
-            birthplace: {
-              ...data.system.npcData.birthplace,
-              revealed: this.npcData.general.birthplace.revealed,
-            },
-          },
-        },
+        npcData: this.npcData,
       },
     };
   }
 
-  _getToggleUpdate(state) {
-    const creatureData = super._getToggleUpdate(state);
-    return {
-      ...creatureData,
-      system: {
-        ...creatureData.system,
-        npcData: {
-          general: {
-            "background.revealed": state,
-            "appearance.revealed": state,
-            "personality.revealed": state,
-            "height.revealed": state,
-            "weight.revealed": state,
-            "birthplace.revealed": state,
-            disposition: Object.keys(this.disposition).reduce((acc, key) => {
-              acc[key] = { revealed: state };
-              return acc;
-            }, {}),
+  _getToggleUpdate(state, npcView) {
+    if (npcView) {
+      return {
+        system: {
+          npcData: {
+            general: {
+              "background.revealed": state,
+              "appearance.revealed": state,
+              "personality.revealed": state,
+              "height.revealed": state,
+              "weight.revealed": state,
+              "birthplace.revealed": state,
+            },
+            influence: {
+              "premise.revealed": state,
+              discovery: Object.keys(this.npcData.influence.discovery).reduce(
+                (acc, key) => {
+                  acc[key] = { revealed: state };
+                  return acc;
+                },
+                {},
+              ),
+              influenceSkills: Object.keys(
+                this.npcData.influence.influenceSkills,
+              ).reduce((acc, key) => {
+                acc[key] = { revealed: state };
+                return acc;
+              }, {}),
+              resistances: Object.keys(
+                this.npcData.influence.resistances,
+              ).reduce((acc, key) => {
+                acc[key] = { revealed: state };
+                return acc;
+              }, {}),
+              weaknesses: Object.keys(this.npcData.influence.weaknesses).reduce(
+                (acc, key) => {
+                  acc[key] = { revealed: state };
+                  return acc;
+                },
+                {},
+              ),
+              penalties: Object.keys(this.npcData.influence.penalties).reduce(
+                (acc, key) => {
+                  acc[key] = { revealed: state };
+                  return acc;
+                },
+                {},
+              ),
+            },
           },
         },
-      },
-    };
+      };
+    } else {
+      return super._getToggleUpdate(state);
+    }
   }
 
   get partyDispositions() {
@@ -4139,6 +4142,7 @@ class NPC extends Creature {
     }, 0);
     const influenceModifier =
       resistanceModifier + weaknessModifier + penaltyModifier;
+
     this.npcData.influence.influenceSkills = Object.keys(
       this.npcData.influence.influenceSkills,
     ).reduce((acc, key) => {
@@ -4151,7 +4155,7 @@ class NPC extends Creature {
 
       acc[key] = {
         ...influence,
-        label: `@Check[type:${type}|dc:${influence.dc}|adjustment:${influenceModifier}|showDC:gm] ${(influence.description.revealed || game.user.isGM) && influence.description.value ? `(${influence.description.value})` : ""}`,
+        label: `@Check[type:${type}|dc:${influence.dc}|adjustment:${influenceModifier}|showDC:gm]`,
       };
       return acc;
     }, {});
@@ -5785,6 +5789,21 @@ const handleDataMigration = async () => {
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
 
+  if(version === '0.9.3' || version === '0.9.4'){
+    version = "0.9.5";
+
+    const defaultRevealed = game.settings.get("pf2e-bestiary-tracking", "default-revealed");
+    await game.settings.set("pf2e-bestiary-tracking", "default-revealed", {
+      ...defaultRevealed,
+      npc: {
+        ...defaultRevealed.npc,
+        premise: false,
+      }
+    });
+
+    await game.settings.set("pf2e-bestiary-tracking", "version", version);
+  }
+
   await handleBestiaryMigration(
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );
@@ -6737,7 +6756,7 @@ const handleDeactivatedPages = async () => {
   }
 };
 
-const currentVersion = "0.9.4";
+const currentVersion = "0.9.5";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -7191,7 +7210,7 @@ const bestiaryIntegration = () => {
     type: Object,
     default: {
       monster: false,
-      npc: false,
+      npc: true,
       hazard: false,
     },
   });
@@ -7229,6 +7248,7 @@ const bestiaryIntegration = () => {
         height: false,
         weight: false,
         // birthplace: false,
+        premise: false,
       },
       hazard: {},
     },
@@ -7718,6 +7738,16 @@ const getNPCData = (actor) => {
           weight: { value: "", revealed: defaultRevealed.weight },
           birthplace: { value: "", revealed: defaultRevealed.birthplace },
           disposition: {},
+        },
+        influence: {
+          premise: { value: "", revealed: defaultRevealed.premise },
+          influencePoints: 0,
+          discovery: {},
+          influenceSkils: {},
+          influence: {},
+          resistances: {},
+          weaknesses: {},
+          penalties: {},
         },
       },
     },
@@ -8444,7 +8474,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.General"),
       },
-      influence: { active: false, cssClass: '', group: 'npc', id: 'influence', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.Influence") },
+      influence: {
+        active: false,
+        cssClass: "",
+        group: "npc",
+        id: "influence",
+        icon: null,
+        label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.Influence"),
+      },
     };
 
     for (const v of Object.values(tabs)) {
@@ -8519,12 +8556,20 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
       // selected.monster.system.npcData.influence.premise.enriched = await TextEditor.enrichHTML(selected.monster.system.npcData.influence.premise.value);
 
-      for(var key of Object.keys(selected.monster.system.npcData.influence.discovery)){
-        selected.monster.system.npcData.influence.discovery[key].label = await TextEditor.enrichHTML(selected.monster.system.npcData.influence.discovery[key].label);
+      for (var key of Object.keys(
+        selected.monster.system.npcData.influence.discovery,
+      )) {
+        selected.monster.system.npcData.influence.discovery[key].label =
+          await TextEditor.enrichHTML(
+            selected.monster.system.npcData.influence.discovery[key].label,
+          );
       }
 
-      for(var key of Object.keys(selected.monster.system.npcData.influence.influenceSkills)){
-        const influence = selected.monster.system.npcData.influence.influenceSkills[key];
+      for (var key of Object.keys(
+        selected.monster.system.npcData.influence.influenceSkills,
+      )) {
+        const influence =
+          selected.monster.system.npcData.influence.influenceSkills[key];
         influence.label = await TextEditor.enrichHTML(influence.label);
       }
     }
@@ -8771,7 +8816,13 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       ? this.selected.monster.system.npcData.categories.map((x) => x.name)
       : [];
 
-    context.skillTypes = [...Object.keys(CONFIG.PF2E.skills).map(skill => ({ value: skill, name: CONFIG.PF2E.skills[skill].label })), { value: 'perception', name: 'PF2EBestiary.Miscellaneous.Perception' }];
+    context.skillTypes = [
+      ...Object.keys(CONFIG.PF2E.skills).map((skill) => ({
+        value: skill,
+        name: CONFIG.PF2E.skills[skill].label,
+      })),
+      { value: "perception", name: "PF2EBestiary.Miscellaneous.Perception" },
+    ];
 
     return context;
   };
@@ -9122,7 +9173,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   async toggleEverythingRevealed(revealed) {
     if (!game.user.isGM || !this.selected.monster) return;
 
-    await this.selected.monster.system.toggleEverything(revealed);
+    await this.selected.monster.system.toggleEverything(revealed, this.npcData.npcView);
 
     await PF2EBestiary.handleTokenNames(this.selected.monster);
 
@@ -9605,30 +9656,55 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async addInfluence(_, button) {
     var update = null;
-    switch(button.dataset.type){
-      case 'discovery':
-        update = { [`system.npcData.influence.discovery.${foundry.utils.randomID()}`]: { dc: 10, type: 'acrobatics', lore: false } };
+    switch (button.dataset.type) {
+      case "discovery":
+        update = {
+          [`system.npcData.influence.discovery.${foundry.utils.randomID()}`]: {
+            dc: 10,
+            type: "acrobatics",
+            lore: false,
+          },
+        };
         break;
-      case 'influenceSkills':
-        update = { [`system.npcData.influence.influenceSkills.${foundry.utils.randomID()}`]: { dc: 10, type: 'acrobatics', lore: false, description: '' } };
+      case "influenceSkills":
+        update = {
+          [`system.npcData.influence.influenceSkills.${foundry.utils.randomID()}`]:
+            { dc: 10, type: "acrobatics", lore: false, description: "" },
+        };
         break;
-      case 'influence':
-        update = { [`system.npcData.influence.influence.${foundry.utils.randomID()}`]: { points: 1, description: '' } };
+      case "influence":
+        update = {
+          [`system.npcData.influence.influence.${foundry.utils.randomID()}`]: {
+            points: 1,
+            description: "",
+          },
+        };
         break;
-      case 'weakness':
-        update = { [`system.npcData.influence.weaknesses.${foundry.utils.randomID()}`]: { description: '' } };
+      case "weakness":
+        update = {
+          [`system.npcData.influence.weaknesses.${foundry.utils.randomID()}`]: {
+            description: "",
+          },
+        };
         break;
-      case 'resistance':
-        update = { [`system.npcData.influence.resistances.${foundry.utils.randomID()}`]: { description: '' } };
+      case "resistance":
+        update = {
+          [`system.npcData.influence.resistances.${foundry.utils.randomID()}`]:
+            { description: "" },
+        };
         break;
-      case 'penalty':
-        update = { [`system.npcData.influence.penalties.${foundry.utils.randomID()}`]: { description: '' } };
+      case "penalty":
+        update = {
+          [`system.npcData.influence.penalties.${foundry.utils.randomID()}`]: {
+            description: "",
+          },
+        };
         break;
     }
 
-    if(!update) return ;
+    if (!update) return;
     await this.selected.monster.update(update);
-    
+
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,
       data: {},
@@ -9636,8 +9712,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
-  static async increaseInfluence(){
-    await this.selected.monster.update({ "system.npcData.influence.influencePoints": this.selected.monster.system.npcData.influence.influencePoints+1 });
+  static async increaseInfluence() {
+    await this.selected.monster.update({
+      "system.npcData.influence.influencePoints":
+        this.selected.monster.system.npcData.influence.influencePoints + 1,
+    });
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,
       data: {},
@@ -9645,8 +9724,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
-  static async decreaseInfluence(){
-    await this.selected.monster.update({ "system.npcData.influence.influencePoints": this.selected.monster.system.npcData.influence.influencePoints-1 });
+  static async decreaseInfluence() {
+    await this.selected.monster.update({
+      "system.npcData.influence.influencePoints":
+        this.selected.monster.system.npcData.influence.influencePoints - 1,
+    });
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,
       data: {},
@@ -9654,7 +9736,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
-  static async removeProperty(_, button){
+  static async removeProperty(_, button) {
     await this.selected.monster.update({ [button.dataset.path]: null });
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {

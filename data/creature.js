@@ -1163,8 +1163,8 @@ export class Creature extends foundry.abstract.TypeDataModel {
     };
   }
 
-  async toggleEverything(state) {
-    await this.parent.update(this._getToggleUpdate(state));
+  async toggleEverything(state, npcView) {
+    await this.parent.update(this._getToggleUpdate(state, npcView));
   }
 
   prepareDerivedData() {

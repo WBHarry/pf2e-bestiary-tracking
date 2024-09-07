@@ -485,6 +485,16 @@ export const getNPCData = (actor) => {
           birthplace: { value: "", revealed: defaultRevealed.birthplace },
           disposition: {},
         },
+        influence: {
+          premise: { value: "", revealed: defaultRevealed.premise },
+          influencePoints: 0,
+          discovery: {},
+          influenceSkils: {},
+          influence: {},
+          resistances: {},
+          weaknesses: {},
+          penalties: {},
+        },
       },
     },
   };
