@@ -1,12 +1,14 @@
 <div class="flexcol data-section primary-container active">
     <div class="data-header primary-container {{PF2EBTToggleContainer this.user data}}" data-action="toggleRevealed" data-path="{{path}}">
-        <div class="data-header-label">
-            <i class="header-icon {{icon}}"></i>
-            <div class="flex-value">{{localize title}}</div>
-            {{#if (and this.user.isGM editMode)}}
+        <div class="data-header-label full">
+            <div class="data-header-label">
+                <i class="header-icon {{icon}}"></i>
+                <div class="flex-value">{{localize title}}</div>
+            </div>
+            {{#if (and (not this.noEdit) (and this.user.isGM editMode))}}
                 <input class="data-input secondary-container" type="text" value="{{data.value}}" name="{{concat path ".value"}}" />
             {{else}}
-                {{#if (or this.user.isGM data.revealed)}}{{{data.value}}}{{else}}?{{/if}}
+                {{#if (or this.user.isGM data.revealed)}}<div>{{{data.value}}}</div>{{else}}?{{/if}}
             {{/if}}
         </div>
     </div>

@@ -55,7 +55,7 @@
                     <div class="category-container">
                         <div class="category-section flexrow">
                             <div class="category-label flex0">{{localize "PF2EBestiary.Bestiary.NPC.NewCategory"}}</div>
-                            <input class="secondary-container" type="text" name="npcData.newCategory.text" value="{{this.npcState.newCategory.text}}" />
+                            <input "data-container" type="text" name="npcData.newCategory.text" value="{{this.npcState.newCategory.text}}" />
                             <button data-action="addNpcCategory" {{#if (not this.npcState.newCategory.text)}}disabled{{/if}}><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.Miscellaneous.Add"}}</button>
                         </div>
                     </div>
@@ -95,6 +95,7 @@
                             dispositions=../dispositions
                             inputCategories=../inputCategories
                             partyDispositions=../selected.monster.system.partyDispositions
+                            skillTypes=../skillTypes
                         }}
                     {{/with}}
                 {{else}}

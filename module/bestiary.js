@@ -97,7 +97,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       setCategoriesLayout: this.setCategoriesLayout,
       addNpcCategory: this.addNpcCategory,
       removeNPCCategory: this.removeNPCCategory,
-      unlinkedDialog: this.unlinkedDialog,
+      addInfluence: this.addInfluence,
+      increaseInfluence: this.increaseInfluence,
+      decreaseInfluence: this.decreaseInfluence,
+      removeProperty: this.removeProperty,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -140,6 +143,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       scrollable: [
         ".left-monster-container",
         ".right-monster-container-data",
+        ".right-npc-container-data",
         ".type-overview-container",
         ".spells-tab",
       ],
@@ -346,7 +350,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.General"),
       },
-      // influence: { active: false, cssClass: '', group: 'npc', id: 'influence', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.Influence") },
+      influence: {
+        active: false,
+        cssClass: "",
+        group: "npc",
+        id: "influence",
+        icon: null,
+        label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.Influence"),
+      },
     };
 
     for (const v of Object.values(tabs)) {
@@ -418,6 +429,25 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         await TextEditor.enrichHTML(
           selected.monster.system.npcData.general.background.value,
         );
+
+      // selected.monster.system.npcData.influence.premise.enriched = await TextEditor.enrichHTML(selected.monster.system.npcData.influence.premise.value);
+
+      for (var key of Object.keys(
+        selected.monster.system.npcData.influence.discovery,
+      )) {
+        selected.monster.system.npcData.influence.discovery[key].label =
+          await TextEditor.enrichHTML(
+            selected.monster.system.npcData.influence.discovery[key].label,
+          );
+      }
+
+      for (var key of Object.keys(
+        selected.monster.system.npcData.influence.influenceSkills,
+      )) {
+        const influence =
+          selected.monster.system.npcData.influence.influenceSkills[key];
+        influence.label = await TextEditor.enrichHTML(influence.label);
+      }
     }
   }
 
@@ -661,6 +691,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     context.inputCategories = this.selected.monster
       ? this.selected.monster.system.npcData.categories.map((x) => x.name)
       : [];
+
+    context.skillTypes = [
+      ...Object.keys(CONFIG.PF2E.skills).map((skill) => ({
+        value: skill,
+        name: CONFIG.PF2E.skills[skill].label,
+      })),
+      { value: "perception", name: "PF2EBestiary.Miscellaneous.Perception" },
+    ];
 
     return context;
   };
@@ -1485,6 +1523,98 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       "bestiary-tracking",
       this.bestiary,
     );
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  static async addInfluence(_, button) {
+    var update = null;
+    switch (button.dataset.type) {
+      case "discovery":
+        update = {
+          [`system.npcData.influence.discovery.${foundry.utils.randomID()}`]: {
+            dc: 10,
+            type: "acrobatics",
+            lore: false,
+          },
+        };
+        break;
+      case "influenceSkills":
+        update = {
+          [`system.npcData.influence.influenceSkills.${foundry.utils.randomID()}`]:
+            { dc: 10, type: "acrobatics", lore: false, description: "" },
+        };
+        break;
+      case "influence":
+        update = {
+          [`system.npcData.influence.influence.${foundry.utils.randomID()}`]: {
+            points: 1,
+            description: "",
+          },
+        };
+        break;
+      case "weakness":
+        update = {
+          [`system.npcData.influence.weaknesses.${foundry.utils.randomID()}`]: {
+            description: "",
+          },
+        };
+        break;
+      case "resistance":
+        update = {
+          [`system.npcData.influence.resistances.${foundry.utils.randomID()}`]:
+            { description: "" },
+        };
+        break;
+      case "penalty":
+        update = {
+          [`system.npcData.influence.penalties.${foundry.utils.randomID()}`]: {
+            description: "",
+          },
+        };
+        break;
+    }
+
+    if (!update) return;
+    await this.selected.monster.update(update);
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  static async increaseInfluence() {
+    await this.selected.monster.update({
+      "system.npcData.influence.influencePoints":
+        this.selected.monster.system.npcData.influence.influencePoints + 1,
+    });
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  static async decreaseInfluence() {
+    await this.selected.monster.update({
+      "system.npcData.influence.influencePoints":
+        this.selected.monster.system.npcData.influence.influencePoints - 1,
+    });
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  static async removeProperty(_, button) {
+    await this.selected.monster.update({ [button.dataset.path]: null });
+
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,
       data: {},

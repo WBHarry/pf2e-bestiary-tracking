@@ -138,16 +138,18 @@ const chunkArray = (arr, size) => {
   );
 };
 
-function handleSocketEvent({action=null, data={}}={}) {
-    switch (action) {
-        case socketEvent.UpdateBestiary:
-            Hooks.callAll(socketEvent.UpdateBestiary, { monsterSlug: data.monsterSlug });
-            break;
-    }
+function handleSocketEvent({ action = null, data = {} } = {}) {
+  switch (action) {
+    case socketEvent.UpdateBestiary:
+      Hooks.callAll(socketEvent.UpdateBestiary, {
+        monsterSlug: data.monsterSlug,
+      });
+      break;
+  }
 }
-  
+
 const socketEvent = {
-    UpdateBestiary: "UpdateBestiary",
+  UpdateBestiary: "UpdateBestiary",
 };
 
 const openBestiary = async () => {
@@ -3837,6 +3839,7 @@ class NPC extends Creature {
     return {
       ...creatureFields,
       npcData: new fields.SchemaField({
+        simple: new fields.BooleanField({ initial: false }),
         categories: new fields.ArrayField(
           new fields.SchemaField({
             hidden: new fields.BooleanField({}),
@@ -3892,6 +3895,110 @@ class NPC extends Creature {
               required: true,
               choices: dispositions,
               initial: dispositions.indifferent.value,
+            }),
+          ),
+        }),
+        influence: new fields.SchemaField({
+          premise: new fields.SchemaField({
+            revealed: new fields.BooleanField({
+              required: true,
+              initial: false,
+            }),
+            value: new fields.HTMLField({}),
+          }),
+          influencePoints: new fields.NumberField({
+            required: true,
+            integer: true,
+            initial: 0,
+          }),
+          discovery: new MappingField(
+            new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              type: new fields.StringField({ required: true }),
+              lore: new fields.BooleanField({ required: true, initial: false }),
+              dc: new fields.NumberField({ required: true, integer: true }),
+            }),
+          ),
+          influenceSkills: new MappingField(
+            new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              type: new fields.StringField({ required: true }),
+              lore: new fields.BooleanField({ required: true, initial: false }),
+              dc: new fields.NumberField({ required: true, integer: true }),
+              description: new fields.SchemaField({
+                revealed: new fields.BooleanField({
+                  required: true,
+                  initial: false,
+                }),
+                value: new fields.StringField({ required: true }),
+              }),
+            }),
+          ),
+          influence: new MappingField(
+            new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              points: new fields.NumberField({ required: true, integer: true }),
+              description: new fields.StringField({ required: true }),
+            }),
+          ),
+          resistances: new MappingField(
+            new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              description: new fields.StringField({}),
+              modifier: new fields.SchemaField({
+                revealed: new fields.BooleanField({ initial: false }),
+                value: new fields.NumberField({
+                  integer: true,
+                  nullable: true,
+                  initial: null,
+                }),
+              }),
+            }),
+          ),
+          weaknesses: new MappingField(
+            new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              description: new fields.StringField({}),
+              modifier: new fields.SchemaField({
+                revealed: new fields.BooleanField({ initial: false }),
+                value: new fields.NumberField({
+                  integer: true,
+                  nullable: true,
+                  initial: null,
+                }),
+              }),
+            }),
+          ),
+          penalties: new MappingField(
+            new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              description: new fields.StringField({}),
+              modifier: new fields.SchemaField({
+                revealed: new fields.BooleanField({ initial: false }),
+                value: new fields.NumberField({
+                  integer: true,
+                  nullable: true,
+                  initial: null,
+                }),
+              }),
             }),
           ),
         }),
@@ -3991,6 +4098,77 @@ class NPC extends Creature {
 
   prepareDerivedData() {
     super.prepareDerivedData();
+
+    this.npcData.influence.discovery = Object.keys(
+      this.npcData.influence.discovery,
+    ).reduce((acc, key) => {
+      const discovery = this.npcData.influence.discovery[key];
+      var type = discovery.type;
+      if (discovery.lore) {
+        type = slugify(type);
+        if (!type.endsWith("-lore")) type = type.concat("-lore");
+      }
+
+      acc[key] = {
+        ...discovery,
+        label: `@Check[type:${type}|dc:${discovery.dc}|showDC:gm]`,
+      };
+      return acc;
+    }, {});
+
+    const resistanceModifier = Object.values(
+      this.npcData.influence.resistances,
+    ).reduce((acc, resistance) => {
+      return resistance.modifier.value && resistance.modifier.revealed
+        ? acc + resistance.modifier.value
+        : acc;
+    }, 0);
+    const weaknessModifier = Object.values(
+      this.npcData.influence.weaknesses,
+    ).reduce((acc, weakness) => {
+      return weakness.modifier.value && weakness.modifier.revealed
+        ? acc + weakness.modifier.value
+        : acc;
+    }, 0);
+    const penaltyModifier = Object.values(
+      this.npcData.influence.penalties,
+    ).reduce((acc, penalty) => {
+      return penalty.modifier.value && penalty.modifier.revealed
+        ? acc + penalty.modifier.value
+        : acc;
+    }, 0);
+    const influenceModifier =
+      resistanceModifier + weaknessModifier + penaltyModifier;
+    this.npcData.influence.influenceSkills = Object.keys(
+      this.npcData.influence.influenceSkills,
+    ).reduce((acc, key) => {
+      const influence = this.npcData.influence.influenceSkills[key];
+      var type = influence.type;
+      if (influence.lore) {
+        type = slugify(type);
+        if (!type.endsWith("-lore")) type = type.concat("-lore");
+      }
+
+      acc[key] = {
+        ...influence,
+        label: `@Check[type:${type}|dc:${influence.dc}|adjustment:${influenceModifier}|showDC:gm] ${(influence.description.revealed || game.user.isGM) && influence.description.value ? `(${influence.description.value})` : ""}`,
+      };
+      return acc;
+    }, {});
+
+    this.npcData.influence.influence = Object.keys(
+      this.npcData.influence.influence,
+    ).reduce((acc, key) => {
+      const influence = this.npcData.influence.influence[key];
+      if (
+        game.user.isGM ||
+        this.npcData.influence.influencePoints >= influence.points
+      ) {
+        acc[key] = influence;
+      }
+
+      return acc;
+    }, {});
   }
 }
 
@@ -8013,7 +8191,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       setCategoriesLayout: this.setCategoriesLayout,
       addNpcCategory: this.addNpcCategory,
       removeNPCCategory: this.removeNPCCategory,
-      unlinkedDialog: this.unlinkedDialog,
+      addInfluence: this.addInfluence,
+      increaseInfluence: this.increaseInfluence,
+      decreaseInfluence: this.decreaseInfluence,
+      removeProperty: this.removeProperty,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -8056,6 +8237,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       scrollable: [
         ".left-monster-container",
         ".right-monster-container-data",
+        ".right-npc-container-data",
         ".type-overview-container",
         ".spells-tab",
       ],
@@ -8262,7 +8444,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.General"),
       },
-      // influence: { active: false, cssClass: '', group: 'npc', id: 'influence', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.Influence") },
+      influence: { active: false, cssClass: '', group: 'npc', id: 'influence', icon: null, label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.Influence") },
     };
 
     for (const v of Object.values(tabs)) {
@@ -8334,6 +8516,17 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         await TextEditor.enrichHTML(
           selected.monster.system.npcData.general.background.value,
         );
+
+      // selected.monster.system.npcData.influence.premise.enriched = await TextEditor.enrichHTML(selected.monster.system.npcData.influence.premise.value);
+
+      for(var key of Object.keys(selected.monster.system.npcData.influence.discovery)){
+        selected.monster.system.npcData.influence.discovery[key].label = await TextEditor.enrichHTML(selected.monster.system.npcData.influence.discovery[key].label);
+      }
+
+      for(var key of Object.keys(selected.monster.system.npcData.influence.influenceSkills)){
+        const influence = selected.monster.system.npcData.influence.influenceSkills[key];
+        influence.label = await TextEditor.enrichHTML(influence.label);
+      }
     }
   }
 
@@ -8577,6 +8770,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     context.inputCategories = this.selected.monster
       ? this.selected.monster.system.npcData.categories.map((x) => x.name)
       : [];
+
+    context.skillTypes = [...Object.keys(CONFIG.PF2E.skills).map(skill => ({ value: skill, name: CONFIG.PF2E.skills[skill].label })), { value: 'perception', name: 'PF2EBestiary.Miscellaneous.Perception' }];
 
     return context;
   };
@@ -9408,6 +9603,67 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
+  static async addInfluence(_, button) {
+    var update = null;
+    switch(button.dataset.type){
+      case 'discovery':
+        update = { [`system.npcData.influence.discovery.${foundry.utils.randomID()}`]: { dc: 10, type: 'acrobatics', lore: false } };
+        break;
+      case 'influenceSkills':
+        update = { [`system.npcData.influence.influenceSkills.${foundry.utils.randomID()}`]: { dc: 10, type: 'acrobatics', lore: false, description: '' } };
+        break;
+      case 'influence':
+        update = { [`system.npcData.influence.influence.${foundry.utils.randomID()}`]: { points: 1, description: '' } };
+        break;
+      case 'weakness':
+        update = { [`system.npcData.influence.weaknesses.${foundry.utils.randomID()}`]: { description: '' } };
+        break;
+      case 'resistance':
+        update = { [`system.npcData.influence.resistances.${foundry.utils.randomID()}`]: { description: '' } };
+        break;
+      case 'penalty':
+        update = { [`system.npcData.influence.penalties.${foundry.utils.randomID()}`]: { description: '' } };
+        break;
+    }
+
+    if(!update) return ;
+    await this.selected.monster.update(update);
+    
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  static async increaseInfluence(){
+    await this.selected.monster.update({ "system.npcData.influence.influencePoints": this.selected.monster.system.npcData.influence.influencePoints+1 });
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  static async decreaseInfluence(){
+    await this.selected.monster.update({ "system.npcData.influence.influencePoints": this.selected.monster.system.npcData.influence.influencePoints-1 });
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  static async removeProperty(_, button){
+    await this.selected.monster.update({ [button.dataset.path]: null });
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
   async obscureData(event) {
     if (!game.user.isGM || !event.currentTarget.dataset.name) return;
 
@@ -9848,6 +10104,7 @@ Hooks.once("init", () => {
     "modules/pf2e-bestiary-tracking/templates/partials/toggleTextSection.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/toggleEditorSection.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs",
+    "modules/pf2e-bestiary-tracking/templates/partials/toggleOptionsSection.hbs",
   ]);
 });
 

@@ -1,1 +1,2 @@
-max_line_length=120
+max_line_length=800
+printWidth=800

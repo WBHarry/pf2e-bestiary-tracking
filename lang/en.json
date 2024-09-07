@@ -131,8 +131,9 @@
       "NPC": {
         "NPCCategoryDescription": "NPCs are sorted into categories created by the GM. You can add one below. Remove categories by rightclicking their bookmarks.",
         "NewCategory": "New NPC Category",
-        "NPCViewText": "NPC View",
+        "NPCViewText": "NPC View Toggle",
         "EditModeText": "Edit Mode Toggle",
+        "NPCSimpleText": "Simple NPC Toggle",
         "Dispositions": "Dispositions",
         "Height": "Height",
         "Weight": "Weight",
@@ -145,7 +146,23 @@
           "Indifferent": "Indifferent",
           "Unfriendly": "Unfriendly",
           "Hostile": "Hostile"
-        }
+        },
+        "Discovery": "Discovery",
+        "InfluenceSkills": "Influence Skills",
+        "Influence": "Influence",
+        "Weaknesses": "Weaknesses",
+        "Resistances": "Resistances",
+        "Penalties": "Penalties",
+        "SkillLabel": "Skill",
+        "DCLabel": "DC",
+        "LoreLabel": "Lore",
+        "DescriptionLabel": "Description",
+        "InfluencePointsLabel": "Influence Points",
+        "IWRModifierLabel": "Modifier",
+        "Active": "Active",
+        "Inactive": "Inactive",
+        "ToggleModifier": "Toggle Modifier",
+        "PremiseLabel": "Premise"
       },
       "Lore": {
         "Public": "Description",

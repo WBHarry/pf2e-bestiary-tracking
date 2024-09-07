@@ -1,0 +1,22 @@
+<div class="flexcol data-section primary-container active">
+    <div class="data-header primary-container">
+        <div class="data-header-label">
+            <i class="header-icon {{icon}}"></i>
+            <div class="flex-value">{{localize title}}</div>
+            {{#if this.editMode}}<i class="fa-solid fa-plus primary-hover-container" data-action="addInfluence" data-type="{{type}}"></i>{{/if}}
+        </div>
+    </div>
+    <div class="data-body primary-border-container flex1">
+        {{#if this.editMode}}
+            {{#each this.data as |data key|}}
+                <div class="option-select-container">
+                    <input name="{{concat path '.' key}}" value="{{}}" />
+                </div>
+            {{/each}}
+        {{else}}
+            {{#each this.data}}
+                Test
+            {{/each}}
+        {{/if}}
+    </div>
+</div>

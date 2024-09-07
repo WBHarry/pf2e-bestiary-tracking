@@ -24,6 +24,7 @@ Hooks.once("init", () => {
     "modules/pf2e-bestiary-tracking/templates/partials/toggleTextSection.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/toggleEditorSection.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs",
+    "modules/pf2e-bestiary-tracking/templates/partials/toggleOptionsSection.hbs",
   ]);
 });
 

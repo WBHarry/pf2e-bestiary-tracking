@@ -39,8 +39,19 @@
     }
 
     .tab {
-      height: 100%;
-      overflow: hidden;
+      &:not(.minor) {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      &.minor {
+        flex: 1;
+
+        > .flexcol {
+          height: 100%;
+          gap: 12px;
+        }
+      }
     }
 
     .window-content {
@@ -350,6 +361,11 @@
         padding: 4px;
         border-width: 3px;
         border-style: solid;
+
+        &.automatic-lock {
+          border-style: dashed;
+          opacity: 0.6;
+        }
       }
 
       .flex-data {
@@ -465,6 +481,10 @@
           }
         }
 
+        .premise-editor {
+          height: 100%;
+        }
+
         .speeds-container {
           display: flex;
           align-items: center;
@@ -540,6 +560,11 @@
         align-items: center;
         text-transform: uppercase;
         gap: 8px;
+
+        &.full {
+          width: 100%;
+          justify-content: space-between;
+        }
       }
 
       .data-body {
@@ -550,6 +575,10 @@
         border-width: 0 1px 1px 1px;
         border-style: solid;
         border-radius: 0 0 4px 4px;
+
+        &.spaced {
+          gap: 8px;
+        }
 
         .data-input {
           border-radius: 6px;
@@ -590,6 +619,110 @@
           .data-chip {
             text-wrap: nowrap;
             flex: 0;
+          }
+        }
+      }
+
+      .option-select-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .option-field-label {
+        white-space: nowrap;
+        font-weight: bold;
+      }
+
+      .option-field-check-container {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 4px;
+
+        &.vertical {
+          flex-direction: column;
+          align-items: start;
+        }
+      }
+
+      .option-field-icon {
+        flex: 0;
+      }
+
+      .option-field-inner-container {
+        display: flex;
+        flex-direction: column;
+
+        &:not(:last-child) {
+          border-bottom-width: 2px;
+          border-bottom-style: dashed;
+          padding-bottom: 4px;
+          margin-bottom: 2px;
+        }
+      }
+
+      .option-field-description {
+        height: 50px;
+      }
+
+      .influence-points-container {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        .value {
+          font-size: 18px;
+        }
+      }
+
+      .influence-modifier-container {
+        width: 100%;
+        position: relative;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+
+        .influence-modifier-text {
+          flex: 1;
+          display: flex;
+          flex-wrap: wrap;
+        }
+
+        .influence-modifier-inner-container {
+          display: flex;
+          height: 33px;
+          width: 30px;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          top: -3px;
+          padding: 0;
+          right: 0;
+          border-radius: 6px;
+          margin: 0;
+          opacity: 0.6;
+
+          &.active {
+            opacity: 1;
+          }
+
+          legend {
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+
+            .hidden-icon {
+              position: absolute;
+              font-size: 12px;
+              top: calc(50% - 8px);
+              left: calc(50% - 8px);
+            }
+          }
+
+          div {
+            position: relative;
+            bottom: 3px;
           }
         }
       }
@@ -693,7 +826,8 @@
           }
         }
 
-        .right-monster-container-data {
+        .right-monster-container-data,
+        .right-npc-container-data {
           height: 100%;
           display: flex;
           flex-direction: column;
