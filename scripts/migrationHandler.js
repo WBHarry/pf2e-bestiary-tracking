@@ -1331,24 +1331,18 @@ export const handleBestiaryMigration = async (bestiary, isSave) => {
 
       await journal.setFlag("pf2e-bestiary-tracking", "version", "0.9.4");
     }
-  } else {
-    const bestiaryJournal = game.journal.get(bestiary);
-    if (!bestiaryJournal) return bestiary;
-
-    if (
-      bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.5"
-    ) {
-      await bestiaryJournal.setFlag(
-        "pf2e-bestiary-tracking",
-        "version",
-        "0.9.5",
-      );
-    }
-
-    await migrateBestiaryPages(bestiaryJournal);
   }
 
-  return bestiary;
+  const bestiaryJournal = game.journal.get(
+    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+  );
+  if (!bestiaryJournal) return bestiary;
+
+  if (bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.5") {
+    await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.5");
+  }
+
+  await migrateBestiaryPages(bestiaryJournal);
 };
 
 export const migrateBestiaryPages = async (bestiary) => {

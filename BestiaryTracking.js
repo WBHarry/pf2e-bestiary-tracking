@@ -7072,27 +7072,31 @@ const handleBestiaryMigration = async (bestiary, isSave) => {
 
       await journal.setFlag("pf2e-bestiary-tracking", "version", "0.9.4");
     }
+  } 
+
+  const bestiaryJournal = game.journal.get(game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"));
+  if (!bestiaryJournal) return bestiary;
+
+  if (
+    bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.5"
+  ) {
+    await bestiaryJournal.setFlag(
+      "pf2e-bestiary-tracking",
+      "version",
+      "0.9.5",
+    );
   }
-  else {
-    const bestiaryJournal = game.journal.get(bestiary);
-    if(!bestiaryJournal) return bestiary;
 
-    if(bestiaryJournal.getFlag('pf2e-bestiary-tracking', 'version') < '0.9.5'){
-      await bestiaryJournal.setFlag('pf2e-bestiary-tracking', 'version', '0.9.5');
-    }
-
-    await migrateBestiaryPages(bestiaryJournal);
-  }
-
-  return bestiary;
+  await migrateBestiaryPages(bestiaryJournal);
 };
 
 const migrateBestiaryPages = async (bestiary) => {
-  for(var page of Array.from(bestiary.pages)){
-    if(page.system.version < '0.9.5'){
-      await page.update({ 'system.version': '0.9.5' });
+  for (var page of Array.from(bestiary.pages)) {
+    if (page.system.version < "0.9.5") {
+      await page.update({ "system.version": "0.9.5" });
     }
-  }};
+  }
+};
 
 const migrateBestiary = async (update) => {
   const bestiary = await game.settings.get(
@@ -7909,14 +7913,18 @@ const resetBestiary = async () => {
     );
   }
 
-  const bestiaryTracking = game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking");
+  const bestiaryTracking = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "bestiary-tracking",
+  );
   var bestiaryObject = null;
   try {
     bestiaryObject = JSON.parse(bestiaryTracking);
-  } catch{}
+  } catch {}
 
-  const existingJournal = !bestiaryObject && Boolean(game.journal.get(bestiaryTracking)); 
-  if(bestiaryObject || !existingJournal){
+  const existingJournal =
+    !bestiaryObject && Boolean(game.journal.get(bestiaryTracking));
+  if (bestiaryObject || !existingJournal) {
     const journal = await JournalEntry.create({
       name: game.i18n.localize("PF2EBestiary.BestiaryName"),
       folder: folder.id,
@@ -7934,14 +7942,13 @@ const resetBestiary = async () => {
       "bestiary-tracking",
       journal.id,
     );
-  }
-  else {
+  } else {
     const journal = game.journal.get(bestiaryTracking);
     for (var page of Array.from(journal.pages)) {
       await page.delete();
     }
 
-    await journal.setFlag('pf2e-bestiary-tracking', 'npcCategories', []);
+    await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
   }
 
   await game.socket.emit(`module.pf2e-bestiary-tracking`, {
