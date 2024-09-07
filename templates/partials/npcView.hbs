@@ -35,6 +35,11 @@
                 </div>
             </div>
         </div>
+        <div class="tab minor {{this.tabs.notes.cssClass}}" data-group="npc" data-tab="notes">
+            <div class="flexcol">
+
+            </div>
+        </div>
         <div class="tab minor {{this.tabs.influence.cssClass}}" data-group="npc" data-tab="influence"> {{!-- <img class="data-icon" src="icons/svg/eye.svg" /> --}}
             <div class="flexcol">
                 {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-eye" title="PF2EBestiary.Miscellaneous.Perception" editMode=this.npcState.editMode path="system.senses.perception" data=this.creatureData.system.senses.perception noEdit="true" }}
@@ -401,5 +406,17 @@
                 </div>
             </div>
         </div>
+        <div class="tab {{this.tabs.notes.cssClass}}" data-group="npc" data-tab="notes">
+            <div class="bestiary-notes-page">
+                <fieldset class="bestiary-notes-legend player-notes main-border-container">
+                    <legend>
+                        <div class="data-container primary-container">{{localize "PF2EBestiary.Bestiary.PlayerNotes.Title"}}</div>
+                    </legend>
+                    <prose-mirror name="system.notes.player.value" data-document-u-u-i-d="{{this.creatureData.uuid}}" value="{{this.creatureData.system.notes.player.value}}" collaborate="true" toggled="true">
+                        {{{this.creatureData.system.notes.player.enriched}}}
+                    </prose-mirror>
+                </fieldset>
+            </div>
+        </div> 
     </div>
 </div>

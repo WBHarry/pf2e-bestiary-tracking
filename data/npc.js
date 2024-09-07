@@ -269,6 +269,43 @@ export class NPC extends Creature {
     }, []);
   }
 
+  async transformToCreature() {
+    const confirmed = await Dialog.confirm({
+      title: game.i18n.localize("PF2EBestiary.Bestiary.NPC.TransformNPCTitle"),
+      content: game.i18n.localize("PF2EBestiary.Bestiary.NPC.TransformNPCText"),
+      yes: () => true,
+      no: () => false,
+    });
+
+    if (!confirmed) return null;
+
+    const bestiary = game.journal.get(
+      game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+    );
+    if (!bestiary) return;
+
+    const { npcData, ...rest } = this.parent.system;
+    const newEntity = await bestiary.createEmbeddedDocuments(
+      "JournalEntryPage",
+      [
+        {
+          name: this.parent.name,
+          type: "pf2e-bestiary-tracking.creature",
+          system: rest,
+        },
+      ],
+    );
+    await this.parent.delete();
+
+    return newEntity[0];
+  }
+
+  get initialType() {
+    return this.npcData.categories.length > 0
+      ? this.npcData.categories[0].value
+      : "unaffiliated";
+  }
+
   prepareDerivedData() {
     super.prepareDerivedData();
 

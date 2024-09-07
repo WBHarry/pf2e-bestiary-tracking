@@ -1,3 +1,4 @@
+import { getCreaturesTypes } from "../scripts/helpers";
 import {
   acTable,
   attackTable,
@@ -1165,6 +1166,64 @@ export class Creature extends foundry.abstract.TypeDataModel {
 
   async toggleEverything(state, npcView) {
     await this.parent.update(this._getToggleUpdate(state, npcView));
+  }
+
+  async transformToNPC() {
+    const bestiary = game.journal.get(
+      game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+    );
+    if (!bestiary) return;
+
+    const { npc: defaultRevealed } = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "default-revealed",
+    );
+
+    const newEntity = await bestiary.createEmbeddedDocuments(
+      "JournalEntryPage",
+      [
+        {
+          name: this.parent.name,
+          type: "pf2e-bestiary-tracking.npc",
+          system: {
+            ...this.parent.system,
+            npcData: {
+              categories: [],
+              general: {
+                background: { value: "", revealed: defaultRevealed.background },
+                appearance: { value: "", revealed: defaultRevealed.appearance },
+                personality: {
+                  value: "",
+                  revealed: defaultRevealed.personality,
+                },
+                height: { value: "", revealed: defaultRevealed.height },
+                weight: { value: "", revealed: defaultRevealed.weight },
+                birthplace: { value: "", revealed: defaultRevealed.birthplace },
+                disposition: {},
+              },
+              influence: {
+                premise: { value: "", revealed: defaultRevealed.premise },
+                influencePoints: 0,
+                discovery: {},
+                influenceSkils: {},
+                influence: {},
+                resistances: {},
+                weaknesses: {},
+                penalties: {},
+              },
+            },
+          },
+        },
+      ],
+    );
+    await this.parent.delete();
+
+    return newEntity[0];
+  }
+
+  get initialType() {
+    const types = getCreaturesTypes(this.traits).map((x) => x.key);
+    return types.length > 0 ? types[0] : "unknown";
   }
 
   prepareDerivedData() {

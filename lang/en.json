@@ -78,7 +78,9 @@
         "BestiarySelection": "Change Bestiary",
         "ResetBestiary": "Reset Bestiary",
         "RevealAll": "Reveal Creature",
-        "HideAll": "Hide Creature"
+        "HideAll": "Hide Creature",
+        "TransformCreature": "Transform To NPC",
+        "TransformNPC": "Transform To Creature"
       },
       "Category": {
         "Creatures": "Creatures",
@@ -162,7 +164,10 @@
         "Active": "Active",
         "Inactive": "Inactive",
         "ToggleModifier": "Toggle Modifier",
-        "PremiseLabel": "Premise"
+        "PremiseLabel": "Premise",
+        "TransformCreatureTitle": "Transform To NPC",
+        "TransformNPCTitle": "Transform To Creature",
+        "TransformNPCText": " Are you sure you want to transform this NPC into a creature? Any NPC data you've added will be lost."
       },
       "Lore": {
         "Public": "Description",
