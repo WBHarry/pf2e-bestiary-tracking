@@ -151,7 +151,7 @@
                                 </div>
                             {{/each}}
                         {{else}}
-                            <div class="option-field-check-container">
+                            <div class="option-field-check-container {{#if this.user.isGM}}gm{{/if}}">
                                 {{#PF2EBTFilter 'revealed' '?' 0 this.influence.discovery (not this.user.isGM)}}
                                     <div class="secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.discovery." this.key}}">
                                         {{{this.label}}}
@@ -194,7 +194,7 @@
                                 </div>
                             {{/each}}
                         {{else}}
-                            <div class="option-field-check-container">
+                            <div class="option-field-check-container {{#if this.user.isGM}}gm{{/if}}">
                                 {{#PF2EBTFilter 'revealed' '?' 0 this.influence.influenceSkills (not this.user.isGM)}}
                                     <div class="secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.influenceSkills." this.key}}">
                                         {{{this.label}}}

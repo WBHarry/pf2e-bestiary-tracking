@@ -5789,16 +5789,19 @@ const handleDataMigration = async () => {
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
 
-  if(version === '0.9.3' || version === '0.9.4'){
+  if (version === "0.9.3" || version === "0.9.4") {
     version = "0.9.5";
 
-    const defaultRevealed = game.settings.get("pf2e-bestiary-tracking", "default-revealed");
+    const defaultRevealed = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "default-revealed",
+    );
     await game.settings.set("pf2e-bestiary-tracking", "default-revealed", {
       ...defaultRevealed,
       npc: {
         ...defaultRevealed.npc,
         premise: false,
-      }
+      },
     });
 
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
@@ -9173,7 +9176,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   async toggleEverythingRevealed(revealed) {
     if (!game.user.isGM || !this.selected.monster) return;
 
-    await this.selected.monster.system.toggleEverything(revealed, this.npcData.npcView);
+    await this.selected.monster.system.toggleEverything(
+      revealed,
+      this.npcData.npcView,
+    );
 
     await PF2EBestiary.handleTokenNames(this.selected.monster);
 

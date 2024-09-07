@@ -611,6 +611,10 @@
   flex-direction: column;
   align-items: start;
 }
+.pf2e-bestiary-tracking.bestiary .monster-container .option-field-check-container.gm .inline-check * {
+  text-shadow: none !important;
+  color: var(--color-text-dark-inactive);
+}
 .pf2e-bestiary-tracking.bestiary .monster-container .option-field-icon {
   flex: 0;
 }
