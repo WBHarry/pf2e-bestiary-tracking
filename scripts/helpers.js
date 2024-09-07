@@ -123,22 +123,29 @@ export const getBaseActor = (actor) => {
 };
 
 export const isNPC = (data) => {
-  if (data.type === "pf2e-bestiary-tracking.npc") return true;
+  if (data.type === "pf2e-bestiary-tracking.hazard" || data.type === "hazard")
+    return "hazard";
+
+  if (data.type === "pf2e-bestiary-tracking.npc") return "npc";
   if (
     data.type === "pf2e-bestiary-tracking.creature" ||
     data.type === "pf2e-bestiary-tracking.hazard"
   )
-    return false;
+    return "creature";
 
   const npcRegistration = game.settings.get(
     "pf2e-bestiary-tracking",
     "npc-registration",
   );
-  return npcRegistration === 0
-    ? data.system.traits.rarity === "unique"
-    : Object.values(data.system.traits.value).find((x) =>
-        x.value ? x.value === "npc" : x === "npc",
-      );
+
+  const isNPC =
+    npcRegistration === 0
+      ? data.system.traits.rarity === "unique"
+      : Object.values(data.system.traits.value).find((x) =>
+          x.value ? x.value === "npc" : x === "npc",
+        );
+
+  return isNPC ? "npc" : "creature";
 };
 
 export const getSpellLevel = (spell, creatureLevel) => {

@@ -11,7 +11,11 @@ import { getCategoryRange } from "../scripts/statisticsHelper.js";
 
 import { dispositions } from "../data/constants.js";
 import Tagify from "@yaireo/tagify";
-import { getCreatureData, getNPCData } from "../data/modelHelpers.js";
+import {
+  getCreatureData,
+  getHazardData,
+  getNPCData,
+} from "../data/modelHelpers.js";
 import BestiarySelection from "./bestiarySelection.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -1866,7 +1870,19 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     // We do not currently refresh already present creatures in the Bestiary.
     if (bestiary.pages.some((x) => x.system.uuid === item.uuid)) return false;
 
-    const data = isNPC(item) ? getNPCData(item) : getCreatureData(item);
+    var data = null;
+    switch (isNPC(item)) {
+      case "creature":
+        data = getCreatureData(item);
+        break;
+      case "npc":
+        data = getNPCData(item);
+        break;
+      case "hazard":
+        data = getHazardData(item);
+        break;
+    }
+
     await bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
 
     const doubleClickOpenActivated = game.settings.get(
@@ -1922,7 +1938,18 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     if (existingPage) {
       await existingPage.system.refreshData(item);
     } else {
-      const pageData = isNPC(item) ? getNPCData(item) : getCreatureData(item);
+      var pageData = null;
+      switch (isNPC(item)) {
+        case "creature":
+          pageData = getCreatureData(item);
+          break;
+        case "npc":
+          pageData = getNPCData(item);
+          break;
+        case "hazard":
+          pageData = getHazardData(item);
+          break;
+      }
       await bestiary.createEmbeddedDocuments("JournalEntryPage", [pageData]);
     }
 

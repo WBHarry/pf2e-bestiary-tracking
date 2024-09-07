@@ -127,6 +127,8 @@ export class Creature extends foundry.abstract.TypeDataModel {
           fake: new fields.BooleanField({}),
           empty: new fields.BooleanField({ initial: false }),
           type: new fields.StringField({ required: true }),
+          source: new fields.StringField({}),
+          customLabel: new fields.StringField({}),
           exceptions: new MappingField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
@@ -144,6 +146,8 @@ export class Creature extends foundry.abstract.TypeDataModel {
           fake: new fields.BooleanField({}),
           empty: new fields.BooleanField({ initial: false }),
           type: new fields.StringField({ required: true }),
+          source: new fields.StringField({}),
+          customLabel: new fields.StringField({}),
           value: new fields.NumberField({ required: true, integer: true }),
           exceptions: new MappingField(
             new fields.SchemaField({
@@ -162,6 +166,8 @@ export class Creature extends foundry.abstract.TypeDataModel {
           fake: new fields.BooleanField({}),
           empty: new fields.BooleanField({ initial: false }),
           type: new fields.StringField({ required: true }),
+          source: new fields.StringField({}),
+          customLabel: new fields.StringField({}),
           value: new fields.NumberField({ required: true, integer: true }),
           exceptions: new MappingField(
             new fields.SchemaField({
@@ -1296,11 +1302,13 @@ export class Creature extends foundry.abstract.TypeDataModel {
 
     this.immunities = Object.keys(this.immunities).reduce((acc, key) => {
       const exceptionKeys = Object.keys(this.immunities[key].exceptions);
+      const translatedLabel =
+        CONFIG.PF2E.immunityTypes[this.immunities[key].type];
       acc[key] = {
         ...this.immunities[key],
-        label:
-          CONFIG.PF2E.immunityTypes[this.immunities[key].type] ??
-          this.immunities[key].type,
+        label: translatedLabel
+          ? this.immunities[key].custom
+          : this.immunities[key].type,
         exceptions: exceptionKeys.reduce((acc, exKey, index) => {
           const label =
             CONFIG.PF2E.immunityTypes[
@@ -1329,11 +1337,14 @@ export class Creature extends foundry.abstract.TypeDataModel {
 
     this.weaknesses = Object.keys(this.weaknesses).reduce((acc, key) => {
       const exceptionKeys = Object.keys(this.weaknesses[key].exceptions);
+      const translatedLabel =
+        CONFIG.PF2E.weaknessTypes[this.weaknesses[key].type];
+
       acc[key] = {
         ...this.weaknesses[key],
-        label:
-          CONFIG.PF2E.weaknessTypes[this.weaknesses[key].type] ??
-          this.weaknesses[key].type,
+        label: translatedLabel
+          ? translatedLabel
+          : (this.weaknesses[key].source ?? this.weaknesses[key].type),
         category: getCategoryLabel(
           weaknessTable,
           contextLevel,
@@ -1369,11 +1380,14 @@ export class Creature extends foundry.abstract.TypeDataModel {
     this.resistances = Object.keys(this.resistances).reduce((acc, key) => {
       const exceptionKeys = Object.keys(this.resistances[key].exceptions);
       const doubleKeys = Object.keys(this.resistances[key].doubleVs);
+      const translatedLabel =
+        CONFIG.PF2E.resistanceTypes[this.resistances[key].type];
+
       acc[key] = {
         ...this.resistances[key],
-        label:
-          CONFIG.PF2E.resistanceTypes[this.resistances[key].type] ??
-          this.resistances[key].type,
+        label: translatedLabel
+          ? translatedLabel
+          : (this.resistances[key].custom ?? this.resistances[key].type),
         category: getCategoryLabel(
           weaknessTable,
           contextLevel,

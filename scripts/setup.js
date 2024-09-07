@@ -1,6 +1,7 @@
 import { optionalFields, revealedState } from "../data/bestiaryAppearance.js";
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import { Creature } from "../data/creature.js";
+import { Hazard } from "../data/hazard.js";
 import { NPC } from "../data/npc.js";
 import BestiaryAppearanceMenu from "../module/bestiaryAppearanceMenu.js";
 import BestiaryIntegrationMenu from "../module/bestiaryIntegrationMenu.js";
@@ -16,6 +17,7 @@ export const dataTypeSetup = () => {
     ...CONFIG.JournalEntryPage.dataModels,
     "pf2e-bestiary-tracking.creature": Creature,
     "pf2e-bestiary-tracking.npc": NPC,
+    // "pf2e-bestiary-tracking.hazard": Hazard,
   };
 };
 
@@ -502,7 +504,16 @@ const bestiaryIntegration = () => {
         // birthplace: false,
         premise: false,
       },
-      hazard: {},
+      hazard: {
+        name: false,
+        traits: false,
+        description: false,
+        level: false,
+        ac: false,
+        hp: false,
+        saves: false,
+        iwr: false,
+      },
     },
   });
 };

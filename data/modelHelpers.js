@@ -244,6 +244,8 @@ export const getCreatureData = (actor) => {
               acc[getIWRString(immunity)] = {
                 revealed: defaultRevealed.iwr,
                 type: immunity.type,
+                source: weakness.source,
+                customLabel: weakness["#customLabel"],
                 exceptions: immunity.exceptions.reduce((acc, exception) => {
                   acc[exception] = { type: exception.label ?? exception };
                   return acc;
@@ -266,6 +268,8 @@ export const getCreatureData = (actor) => {
               acc[getIWRString(weakness)] = {
                 revealed: defaultRevealed.iwr,
                 type: weakness.type,
+                source: weakness.source,
+                customLabel: weakness["#customLabel"],
                 value: weakness.value,
                 exceptions: weakness.exceptions.reduce((acc, exception) => {
                   acc[exception] = { type: exception.label ?? exception };
@@ -289,6 +293,8 @@ export const getCreatureData = (actor) => {
               acc[getIWRString(resistance)] = {
                 revealed: defaultRevealed.iwr,
                 type: resistance.type,
+                source: weakness.source,
+                customLabel: weakness["#customLabel"],
                 value: resistance.value,
                 exceptions: resistance.exceptions.reduce((acc, exception) => {
                   const type = exception.label ?? exception;
@@ -494,6 +500,332 @@ export const getNPCData = (actor) => {
           resistances: {},
           weaknesses: {},
           penalties: {},
+        },
+      },
+    },
+  };
+};
+
+export const getHazardData = (actor) => {
+  const { hazard: defaultRevealed } = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "default-revealed",
+  );
+  const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
+  const weaknessesKeys = Object.keys(actor.system.attributes.weaknesses);
+  const resistancesKeys = Object.keys(actor.system.attributes.resistances);
+  const attackKeys = Object.keys(actor.system.actions);
+  const itemKeys = Array.from(actor.items);
+
+  return {
+    type: "pf2e-bestiary-tracking.hazard",
+    name: actor.name,
+    ownership: { default: 3 },
+    system: {
+      hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
+        .hazard,
+      uuid: actor.uuid,
+      version: currentVersion,
+      img: actor.img,
+      texture: actor.prototypeToken.texture.src,
+      name: { value: actor.name, revealed: defaultRevealed.name },
+      publication: actor.system.details.publication,
+      hasHealth: actor.system.attributes.hasHealth,
+      isComplex: actor.system.details.isComplex,
+      ac: {
+        value: Number.parseInt(actor.system.attributes.ac.value),
+        details: actor.system.attributes.ac.details,
+        revealed: defaultRevealed.ac,
+      },
+      hp: {
+        value: Number.parseInt(actor.system.attributes.hp.max),
+        temp: Number.parseInt(actor.system.attributes.hp.temp),
+        details: actor.system.attributes.hp.details,
+        negativeHealing: actor.system.attributes.hp.negativeHealing,
+        revealed: defaultRevealed.hp,
+      },
+      hardness: { value: actor.system.attributes.hardness.value },
+      level: {
+        value: Number.parseInt(actor.system.details.level.value),
+        revealed: defaultRevealed.level,
+      },
+      size: actor.system.traits.size.value,
+      rarity: { value: actor.system.traits.rarity },
+      traits: actor.system.traits.value.reduce((acc, trait) => {
+        acc[trait] = { value: trait, revealed: defaultRevealed.traits };
+        return acc;
+      }, {}),
+      skills: Object.values(actor.system.skills).some((x) => x.base > 0)
+        ? Object.keys(actor.system.skills).reduce((acc, key) => {
+            const skill = actor.system.skills[key];
+            acc[key] = {
+              value: skill.base,
+              revealed: defaultRevealed.skills,
+              lore: skill.lore,
+              note: skill.note,
+              modifiers: skill.modifiers
+                .filter((x) => x.slug !== "base")
+                .map((x) => ({
+                  kind: x.kind,
+                  label: x.label,
+                  modifier: x.modifier,
+                })),
+              label: skill.label,
+              totalModifier: Number.parseInt(skill.totalModifier),
+            };
+            return acc;
+          }, {})
+        : { empty: { empty: true, value: "PF2EBestiary.Miscellaneous.None" } },
+      saves: {
+        fortitude: {
+          value: actor.system.saves.fortitude.value,
+          revealed: defaultRevealed.saves,
+        },
+        reflex: {
+          value: actor.system.saves.reflex.value,
+          revealed: defaultRevealed.saves,
+        },
+        will: {
+          value: actor.system.saves.will.value,
+          revealed: defaultRevealed.saves,
+        },
+      },
+      speeds: {
+        details: {
+          name: actor.system.attributes.speed.details,
+          revealed: defaultRevealed.speeds,
+        },
+        values: {
+          land: {
+            type: "land",
+            value: actor.system.attributes.speed.value,
+            revealed: defaultRevealed.speeds,
+          },
+          ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
+            acc[speed.label] = {
+              type: speed.type,
+              value: speed.value,
+              revealed: defaultRevealed.speeds,
+            };
+            return acc;
+          }, {}),
+        },
+      },
+      immunities:
+        immunitiesKeys.length > 0
+          ? immunitiesKeys.reduce((acc, key) => {
+              const immunity = actor.system.attributes.immunities[key];
+              acc[getIWRString(immunity)] = {
+                revealed: defaultRevealed.iwr,
+                type: immunity.type,
+                exceptions: immunity.exceptions.reduce((acc, exception) => {
+                  acc[exception] = { type: exception.label ?? exception };
+                  return acc;
+                }, {}),
+              };
+
+              return acc;
+            }, {})
+          : {
+              empty: {
+                empty: true,
+                type: "PF2EBestiary.Miscellaneous.None",
+                exceptions: {},
+              },
+            },
+      weaknesses:
+        weaknessesKeys.length > 0
+          ? weaknessesKeys.reduce((acc, key) => {
+              const weakness = actor.system.attributes.weaknesses[key];
+              acc[getIWRString(weakness)] = {
+                revealed: defaultRevealed.iwr,
+                type: weakness.type,
+                value: weakness.value,
+                exceptions: weakness.exceptions.reduce((acc, exception) => {
+                  acc[exception] = { type: exception.label ?? exception };
+                  return acc;
+                }, {}),
+              };
+
+              return acc;
+            }, {})
+          : {
+              empty: {
+                empty: true,
+                type: "PF2EBestiary.Miscellaneous.None",
+                exceptions: {},
+              },
+            },
+      resistances:
+        resistancesKeys.length > 0
+          ? resistancesKeys.reduce((acc, key) => {
+              const resistance = actor.system.attributes.resistances[key];
+              acc[getIWRString(resistance)] = {
+                revealed: defaultRevealed.iwr,
+                type: resistance.type,
+                value: resistance.value,
+                exceptions: resistance.exceptions.reduce((acc, exception) => {
+                  const type = exception.label ?? exception;
+                  acc[slugify(type)] = { type: type };
+                  return acc;
+                }, {}),
+                doubleVs: resistance.doubleVs.reduce((acc, doubleVs) => {
+                  acc[doubleVs] = { type: doubleVs.label ?? doubleVs };
+                  return acc;
+                }, {}),
+              };
+
+              return acc;
+            }, {})
+          : {
+              empty: {
+                empty: true,
+                type: "PF2EBestiary.Miscellaneous.None",
+                exceptions: {},
+                doubleVs: {},
+              },
+            },
+      attacks:
+        attackKeys.length > 0
+          ? attackKeys.reduce((acc, actionKey) => {
+              const attack = actor.system.actions[actionKey];
+              const item = actor.items.get(attack.item.id);
+
+              if (item.type === "melee" || item.type === "equipment") {
+                acc[attack.item.id] = {
+                  revealed: defaultRevealed.attacks,
+                  label: attack.label,
+                  actions: attack.glyph,
+                  totalModifier: attack.totalModifier,
+                  isMelee: attack.weapon.isMelee,
+                  additionalEffects: attack.additionalEffects.reduce(
+                    (acc, effect) => {
+                      acc[effect.tag] = {
+                        label: effect.label,
+                        tag: effect.tag,
+                      };
+
+                      return acc;
+                    },
+                    {},
+                  ),
+                  damageInstances: Object.keys(item.system.damageRolls).reduce(
+                    (acc, damage) => {
+                      acc[damage] = {
+                        category: item.system.damageRolls[damage].category,
+                        damage: {
+                          value: item.system.damageRolls[damage].damage,
+                        },
+                        damageType: {
+                          value: item.system.damageRolls[damage].damageType,
+                        },
+                      };
+
+                      return acc;
+                    },
+                    {},
+                  ),
+                  traits: item.system.traits.value.reduce((acc, trait) => {
+                    acc[trait] = { value: trait, description: trait };
+                    return acc;
+                  }, {}),
+                  variants: attack.variants.reduce((acc, variant) => {
+                    acc[slugify(variant.label)] = { label: variant.label };
+
+                    return acc;
+                  }, {}),
+                  rules: item.system.rules,
+                };
+              }
+
+              return acc;
+            }, {})
+          : {
+              empty: {
+                empty: true,
+                label: "PF2EBestiary.Miscellaneous.None",
+                totalModifier: 0,
+                isMelee: false,
+                damageInstances: {},
+                traits: {},
+                variants: {},
+                rules: {},
+              },
+            },
+      actions:
+        itemKeys.filter(
+          (action) =>
+            action.type === "action" &&
+            action.system.actionType.value !== "passive",
+        ).length > 0
+          ? itemKeys.reduce((acc, action) => {
+              if (
+                action.type === "action" &&
+                action.system.actionType.value !== "passive"
+              ) {
+                acc[action.id] = {
+                  revealed: defaultRevealed.abilities,
+                  label: action.name,
+                  category: action.system.category,
+                  deathNote: action.system.deathNote,
+                  actions: action.system.actions.value ?? "R",
+                  traits: action.system.traits.value.reduce((acc, trait) => {
+                    acc[trait] = { value: trait };
+                    return acc;
+                  }, {}),
+                  description: action.system.description.value,
+                };
+              }
+
+              return acc;
+            }, {})
+          : {
+              empty: {
+                empty: true,
+                label: "PF2EBestiary.Miscellaneous.None",
+                actions: "",
+                traits: {},
+                description: "",
+              },
+            },
+      passives:
+        itemKeys.filter(
+          (action) =>
+            action.type === "action" &&
+            action.system.actionType.value === "passive",
+        ).length > 0
+          ? itemKeys.reduce((acc, action) => {
+              if (
+                action.type === "action" &&
+                action.system.actionType.value === "passive"
+              ) {
+                acc[action.id] = {
+                  revealed: defaultRevealed.abilities,
+                  label: action.name,
+                  category: action.system.category,
+                  deathNote: action.system.deathNote,
+                  traits: action.system.traits.value.reduce((acc, trait) => {
+                    acc[trait] = { value: trait };
+                    return acc;
+                  }, {}),
+                  description: action.system.description.value,
+                };
+              }
+
+              return acc;
+            }, {})
+          : {
+              empty: {
+                empty: true,
+                label: "PF2EBestiary.Miscellaneous.None",
+                traits: {},
+                description: "",
+              },
+            },
+      notes: {
+        public: {
+          value: actor.system.details.publicNotes,
+          revealed: defaultRevealed.description,
         },
       },
     },
