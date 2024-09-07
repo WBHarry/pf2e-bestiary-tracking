@@ -2,7 +2,6 @@
     <div class="left-monster-container">
         <div class="monster-image-container">
             <img class="monster-image {{#if this.useTokenArt}}token{{/if}}" src="{{this.system.displayImage}}" data-action="imagePopout" />
-            {{!-- {{#if this.isUnlinked}}<i class="fa-solid fa-link-slash unlinked-icon primary-hover-container" data-action="unlinkedDialog"></i>{{/if}} --}}
         </div>
 
         {{#if this.optionalFields.level}}
@@ -284,7 +283,7 @@
                         </div>
                     {{/each}}
                 {{else}}
-                    {{#PF2EBTFilter 'revealed' '?' 10 this.system.speeds.values}}
+                    {{#PF2EBTFilter 'revealed' '?' 10 this.system.allSpeeds}}
                         <div class="speed-container data-container secondary-container">
                             {{localize this.name}}
                             {{#if (not ../vagueDescriptions.properties.speed)}}{{this.value}}{{/if}}

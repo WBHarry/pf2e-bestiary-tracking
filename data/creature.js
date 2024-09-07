@@ -1307,8 +1307,8 @@ export class Creature extends foundry.abstract.TypeDataModel {
       acc[key] = {
         ...this.immunities[key],
         label: translatedLabel
-          ? this.immunities[key].custom
-          : this.immunities[key].type,
+          ? translatedLabel
+          : (this.immunities[key].custom ?? this.immunities[key].type),
         exceptions: exceptionKeys.reduce((acc, exKey, index) => {
           const label =
             CONFIG.PF2E.immunityTypes[
