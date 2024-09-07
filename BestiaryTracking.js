@@ -7678,17 +7678,24 @@ const migrateBestiaryPages = async (bestiary) => {
       await page.update({ "system.version": "0.9.5" });
     }
 
-    if(page.system.version < '0.9.6'){
-      if(page.type === 'pf2e-bestiary-tracking.npc'){
-        const availableCategories = await bestiary.getFlag('pf2e-bestiary-tracking', 'npcCategories');
-        await page.update({ 
+    if (page.system.version < "0.9.6") {
+      if (page.type === "pf2e-bestiary-tracking.npc") {
+        const availableCategories = await bestiary.getFlag(
+          "pf2e-bestiary-tracking",
+          "npcCategories",
+        );
+        await page.update({
           system: {
-            version: '0.9.6',
-            "npcData.categories": page.system.npcData.categories.filter(x => availableCategories.find(category => category.value === x.value)),
-          } 
+            version: "0.9.6",
+            "npcData.categories": page.system.npcData.categories.filter((x) =>
+              availableCategories.find(
+                (category) => category.value === x.value,
+              ),
+            ),
+          },
         });
       } else {
-        await page.update({ "system.version": '0.9.6' });
+        await page.update({ "system.version": "0.9.6" });
       }
     }
   }
@@ -8983,7 +8990,6 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       imagePopout: this.imagePopout,
       setCategoriesLayout: this.setCategoriesLayout,
       addNpcCategory: this.addNpcCategory,
-      removeNPCCategory: this.removeNPCCategory,
       addInfluence: this.addInfluence,
       increaseInfluence: this.increaseInfluence,
       decreaseInfluence: this.decreaseInfluence,
@@ -9654,24 +9660,26 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   async removeBookmark(event) {
     if (event.currentTarget.dataset.bookmark === "unaffiliated") return;
-    for (var npc of this.bestiary.pages.filter((page) =>
-      page.system.npcData?.categories.includes(
-        event.currentTarget.dataset.bookmark,
-      ),
-    )) {
+    for (var npc of this.bestiary.pages.filter((page) => {
+      return page.system.npcData?.categories.some(x => 
+        x.value === event.currentTarget.dataset.bookmark,
+      )
+    })) {
       await npc.update({
         "system.npcData.categories": npc.system.npcData.categories.filter(
-          x => x !== event.currentTarget.dataset.bookmark,
+          x => x.value !== event.currentTarget.dataset.bookmark,
         ),
       });
     }
+
+    this.selected.type = this.selected.type === event.currentTarget.dataset.bookmark ? null : this.selected.type;
 
     await this.bestiary.setFlag(
       "pf2e-bestiary-tracking",
       "npcCategories",
       this.bestiary
         .getFlag("pf2e-bestiary-tracking", "npcCategories")
-        .filter((x) => x.value !== event.currentTarget.dataset.bookmark),
+        .filter(x => x.value !== event.currentTarget.dataset.bookmark),
     );
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -10433,30 +10441,6 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       });
       Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
-  }
-
-  static async removeNPCCategory(_, button) {
-    if (!game.user.isGM) return;
-
-    this.bestiary.npcCategories = Object.keys(
-      this.bestiary.npcCategories,
-    ).reduce((acc, key) => {
-      if (key !== button.dataset.key)
-        acc[key] = this.bestiary.npcCategories[key];
-
-      return acc;
-    }, {});
-
-    await game.settings.set(
-      "pf2e-bestiary-tracking",
-      "bestiary-tracking",
-      this.bestiary,
-    );
-    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-      action: socketEvent.UpdateBestiary,
-      data: {},
-    });
-    Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
   static async addInfluence(_, button) {
