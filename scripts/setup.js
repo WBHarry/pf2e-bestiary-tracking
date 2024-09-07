@@ -1,7 +1,6 @@
 import { optionalFields, revealedState } from "../data/bestiaryAppearance.js";
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import { Creature } from "../data/creature.js";
-import { Hazard } from "../data/hazard.js";
 import { NPC } from "../data/npc.js";
 import BestiaryAppearanceMenu from "../module/bestiaryAppearanceMenu.js";
 import BestiaryIntegrationMenu from "../module/bestiaryIntegrationMenu.js";
@@ -9,7 +8,7 @@ import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
 
-export const currentVersion = "0.9.5";
+export const currentVersion = "0.9.6";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
