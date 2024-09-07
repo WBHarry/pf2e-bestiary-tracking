@@ -106,9 +106,9 @@
                                 data-path="{{concat 'system.weaknesses.' key}}" 
                                 data-fake="{{weakness.fake}}"
                             >
-                                {{#if (and weakness.category (not ../gmNumeric))}}{{localize this.category}}{{/if}}
+                                {{#if (and ../vagueDescriptions.properties.weaknesses (and weakness.category (not ../gmNumeric)))}}{{localize this.category}}{{/if}}
                                 <span>{{PF2EBTCaptialize (localize weakness.label)}}</span>
-                                {{#if (or (not weakness.category) ../gmNumeric)}}{{this.value}}{{/if}}
+                                {{#if (or (not ../vagueDescriptions.properties.weaknesses) (or (not weakness.category) ../gmNumeric))}}{{this.value}}{{/if}}
                                 {{#if (gt (PF2EBTNrKeys weakness.exceptions) 0)}}
                                     <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                     {{#each weakness.exceptions as |exception index|}}
@@ -132,9 +132,9 @@
                             data-path="{{concat 'system.weaknesses.' @key}}" 
                             data-fake="{{this.fake}}"
                         >
-                            {{#if this.category}}{{localize this.category}}{{/if}}
+                            {{#if (and ../vagueDescriptions.properties.weaknesses this.category)}}{{localize this.category}}{{/if}}
                             <span>{{PF2EBTCaptialize (localize this.label)}}</span>
-                            {{#if (not this.category)}}{{this.value}}{{/if}}
+                            {{#if (or (not ../vagueDescriptions.properties.weaknesses) (not this.category))}}{{this.value}}{{/if}}
                             {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
                                 {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}<span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>{{/if}}
                                 {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
@@ -170,9 +170,9 @@
                                 data-path="{{concat 'system.resistances.' this.key}}" 
                                 data-fake="{{this.fake}}"
                             >
-                                {{#if (and this.category (not ../gmNumeric))}}{{localize this.category}}{{/if}}
+                                {{#if (and ../vagueDescriptions.properties.resistances (and this.category (not ../gmNumeric)))}}{{localize this.category}}{{/if}}
                                 <span>{{PF2EBTCaptialize (localize this.label)}}</span>
-                                {{#if (or (not this.category) ../gmNumeric)}}{{this.value}}{{/if}}
+                                {{#if (or (not ../vagueDescriptions.properties.resistances) (or (not this.category) ../gmNumeric))}}{{this.value}}{{/if}}
                                 {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}
                                     <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                     {{#PF2EBTEach this.exceptions}}
@@ -220,9 +220,9 @@
                             data-path="{{concat 'system.resistances.' @key}}" 
                             data-fake="{{this.fake}}"
                         >
-                            {{#if this.category}}{{localize this.category}}{{/if}}
+                            {{#if (and ../vagueDescriptions.properties.resistances this.category)}}{{localize this.category}}{{/if}}
                             <span>{{PF2EBTCaptialize (localize this.label)}}</span>
-                            {{#if (not this.category)}}{{this.value}}{{/if}}
+                            {{#if (or (not ../vagueDescriptions.properties.resistances) (not this.category))}}{{this.value}}{{/if}}
                             {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
                                 <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                 {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
