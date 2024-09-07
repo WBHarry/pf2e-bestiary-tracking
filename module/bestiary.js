@@ -769,7 +769,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     )) {
       await npc.update({
         "system.npcData.categories": npc.system.npcData.categories.filter(
-          (x) => x === event.currentTarget.dataset.bookmark,
+          (x) => x !== event.currentTarget.dataset.bookmark,
         ),
       });
     }
@@ -779,7 +779,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       "npcCategories",
       this.bestiary
         .getFlag("pf2e-bestiary-tracking", "npcCategories")
-        .filter((x) => x.value === event.currentTarget.dataset.bookmark),
+        .filter((x) => x.value !== event.currentTarget.dataset.bookmark),
     );
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {

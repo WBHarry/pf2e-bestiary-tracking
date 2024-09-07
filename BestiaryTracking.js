@@ -106,27 +106,29 @@ const getBaseActor = (actor) => {
 };
 
 const isNPC = (data) => {
-  if(data.type === 'pf2e-bestiary-tracking.hazard' || data.type === 'hazard') return 'hazard';
+  if (data.type === "pf2e-bestiary-tracking.hazard" || data.type === "hazard")
+    return "hazard";
 
-  if (data.type === "pf2e-bestiary-tracking.npc") return 'npc';
+  if (data.type === "pf2e-bestiary-tracking.npc") return "npc";
   if (
     data.type === "pf2e-bestiary-tracking.creature" ||
     data.type === "pf2e-bestiary-tracking.hazard"
   )
-    return 'creature';
+    return "creature";
 
   const npcRegistration = game.settings.get(
     "pf2e-bestiary-tracking",
     "npc-registration",
   );
 
-  const isNPC = npcRegistration === 0
-  ? data.system.traits.rarity === "unique"
-  : Object.values(data.system.traits.value).find((x) =>
-      x.value ? x.value === "npc" : x === "npc",
-    );
+  const isNPC =
+    npcRegistration === 0
+      ? data.system.traits.rarity === "unique"
+      : Object.values(data.system.traits.value).find((x) =>
+          x.value ? x.value === "npc" : x === "npc",
+        );
 
-  return isNPC ? 'npc' : 'creature';
+  return isNPC ? "npc" : "creature";
 };
 
 const getSpellLevel = (spell, creatureLevel) => {
@@ -2237,8 +2239,8 @@ const getCreatureData = (actor) => {
               acc[getIWRString(immunity)] = {
                 revealed: defaultRevealed.iwr,
                 type: immunity.type,
-                source: weakness.source,
-                customLabel: weakness['#customLabel'],
+                source: immunity.source,
+                customLabel: immunity["#customLabel"],
                 exceptions: immunity.exceptions.reduce((acc, exception) => {
                   acc[exception] = { type: exception.label ?? exception };
                   return acc;
@@ -2262,7 +2264,7 @@ const getCreatureData = (actor) => {
                 revealed: defaultRevealed.iwr,
                 type: weakness.type,
                 source: weakness.source,
-                customLabel: weakness['#customLabel'],
+                customLabel: weakness["#customLabel"],
                 value: weakness.value,
                 exceptions: weakness.exceptions.reduce((acc, exception) => {
                   acc[exception] = { type: exception.label ?? exception };
@@ -2286,8 +2288,8 @@ const getCreatureData = (actor) => {
               acc[getIWRString(resistance)] = {
                 revealed: defaultRevealed.iwr,
                 type: resistance.type,
-                source: weakness.source,
-                customLabel: weakness['#customLabel'],
+                source: resistance.source,
+                customLabel: resistance["#customLabel"],
                 value: resistance.value,
                 exceptions: resistance.exceptions.reduce((acc, exception) => {
                   const type = exception.label ?? exception;
@@ -7663,6 +7665,9 @@ const handleBestiaryMigration = async (bestiary, isSave) => {
   if (bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.5") {
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.5");
   }
+  if (bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.6") {
+    await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.6");
+  }
 
   await migrateBestiaryPages(bestiaryJournal);
 };
@@ -7671,6 +7676,20 @@ const migrateBestiaryPages = async (bestiary) => {
   for (var page of Array.from(bestiary.pages)) {
     if (page.system.version < "0.9.5") {
       await page.update({ "system.version": "0.9.5" });
+    }
+
+    if(page.system.version < '0.9.6'){
+      if(page.type === 'pf2e-bestiary-tracking.npc'){
+        const availableCategories = await bestiary.getFlag('pf2e-bestiary-tracking', 'npcCategories');
+        await page.update({ 
+          system: {
+            version: '0.9.6',
+            "npcData.categories": page.system.npcData.categories.filter(x => availableCategories.find(category => category.value === x.value)),
+          } 
+        });
+      } else {
+        await page.update({ "system.version": '0.9.6' });
+      }
     }
   }
 };
@@ -9642,7 +9661,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     )) {
       await npc.update({
         "system.npcData.categories": npc.system.npcData.categories.filter(
-          (x) => x === event.currentTarget.dataset.bookmark,
+          x => x !== event.currentTarget.dataset.bookmark,
         ),
       });
     }
@@ -9652,7 +9671,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       "npcCategories",
       this.bestiary
         .getFlag("pf2e-bestiary-tracking", "npcCategories")
-        .filter((x) => x.value === event.currentTarget.dataset.bookmark),
+        .filter((x) => x.value !== event.currentTarget.dataset.bookmark),
     );
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -10744,18 +10763,18 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     if (bestiary.pages.some((x) => x.system.uuid === item.uuid)) return false;
 
     var data = null;
-    switch(isNPC(item)){
-      case 'creature':
+    switch (isNPC(item)) {
+      case "creature":
         data = getCreatureData(item);
         break;
-      case 'npc':
+      case "npc":
         data = getNPCData(item);
         break;
-      case 'hazard':
+      case "hazard":
         data = getHazardData(item);
         break;
     }
-    
+
     await bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
 
     const doubleClickOpenActivated = game.settings.get(
@@ -10812,14 +10831,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       await existingPage.system.refreshData(item);
     } else {
       var pageData = null;
-      switch(isNPC(item)){
-        case 'creature':
+      switch (isNPC(item)) {
+        case "creature":
           pageData = getCreatureData(item);
           break;
-        case 'npc':
+        case "npc":
           pageData = getNPCData(item);
           break;
-        case 'hazard':
+        case "hazard":
           pageData = getHazardData(item);
           break;
       }

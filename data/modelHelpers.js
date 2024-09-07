@@ -244,8 +244,8 @@ export const getCreatureData = (actor) => {
               acc[getIWRString(immunity)] = {
                 revealed: defaultRevealed.iwr,
                 type: immunity.type,
-                source: weakness.source,
-                customLabel: weakness["#customLabel"],
+                source: immunity.source,
+                customLabel: immunity["#customLabel"],
                 exceptions: immunity.exceptions.reduce((acc, exception) => {
                   acc[exception] = { type: exception.label ?? exception };
                   return acc;
@@ -293,8 +293,8 @@ export const getCreatureData = (actor) => {
               acc[getIWRString(resistance)] = {
                 revealed: defaultRevealed.iwr,
                 type: resistance.type,
-                source: weakness.source,
-                customLabel: weakness["#customLabel"],
+                source: resistance.source,
+                customLabel: resistance["#customLabel"],
                 value: resistance.value,
                 exceptions: resistance.exceptions.reduce((acc, exception) => {
                   const type = exception.label ?? exception;
