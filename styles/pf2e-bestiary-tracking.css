@@ -422,7 +422,7 @@
   position: relative;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .monster-image-container .monster-image {
-  height: 150px;
+  height: 100%;
   border-radius: 0.5rem;
   cursor: pointer;
 }
@@ -723,16 +723,6 @@
   right: 2px;
   top: 2px;
   font-size: 18px;
-}
-.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-return-icon {
-  cursor: pointer;
-  position: absolute;
-  right: 9px;
-  top: 38px;
-  font-size: 24px;
-}
-.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-return-icon:hover {
-  filter: drop-shadow(0 0 3px red);
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .monster-traits-row {
   display: flex;

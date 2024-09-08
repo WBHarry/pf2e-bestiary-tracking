@@ -630,9 +630,19 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
     context = await this.sharedPreparation(context);
     context.bookmarks = this.getBookmarks(context.layout);
-    context.bookmarkEntities = this.selected.type
-      ? context.bookmarks.find((x) => x.value === this.selected.type).values
-      : [];
+
+    const activeBookmark = context.bookmarks.find(
+      (x) => x.value === this.selected.type,
+    );
+    context.bookmarkEntities = this.selected.type ? activeBookmark.values : [];
+    context.returnLabel = !this.selected.monster
+      ? game.i18n.localize(
+          "PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome",
+        )
+      : game.i18n.format(
+          "PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory",
+          { type: activeBookmark.name },
+        );
 
     if (this.selected.category === "pf2e-bestiary-tracking.npc") {
       context = await this.npcPreparation(context);

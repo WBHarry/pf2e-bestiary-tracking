@@ -9299,9 +9299,12 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     context = await this.sharedPreparation(context);
     context.bookmarks = this.getBookmarks(context.layout);
+  
+    const activeBookmark = context.bookmarks.find((x) => x.value === this.selected.type);
     context.bookmarkEntities = this.selected.type
-      ? context.bookmarks.find((x) => x.value === this.selected.type).values
+      ? activeBookmark.values
       : [];
+    context.returnLabel = !this.selected.monster ? game.i18n.localize('PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome') : game.i18n.format('PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory', { type: activeBookmark.name });
 
     if (this.selected.category === "pf2e-bestiary-tracking.npc") {
       context = await this.npcPreparation(context);
@@ -10180,7 +10183,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     new ImagePopout(this.selected.monster.system.displayImage, {
       title: title,
       uuid: this.selected.monster.system.uuid,
-      showTitle: !game.user.isGM ? true : this.selected.monster.system.name.revealed ? true : undefined,
+      showTitle: !game.user.isGM
+        ? true
+        : this.selected.monster.system.name.revealed
+          ? true
+          : undefined,
     }).render(true);
   }
 

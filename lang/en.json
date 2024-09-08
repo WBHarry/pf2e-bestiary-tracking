@@ -103,8 +103,8 @@
         }
       },
       "ReturnMessages": {
-        "ReturnToCategory": "Return to the {type} category page",
-        "ReturnToWelcome": "Return to the main page"
+        "ReturnToCategory": "Return to the {type} category",
+        "ReturnToWelcome": "Return to main page"
       },
       "CategoryView": {
         "EmptyText": "No {category} creature encountered yet. Enjoy it while you can.",

@@ -111,7 +111,6 @@
                         {{/each}}
                     </nav>
                 </div>
-                <i class="fa-solid fa-reply monster-return-icon" data-action="returnButton" data-context-type="{{this.selected.type}}" title="{{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory" type=(PF2EBTCaptialize this.selected.type)}}"></i>
             </div>
             {{#if this.user.isGM}}
                 <input class="npc-category-input primary-border-container" value="{{this.inputCategories}}" />

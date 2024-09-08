@@ -1,10 +1,10 @@
 <div>
-    {{#if (not this.selected.monster)}}
+
         <header class="bestiary-header">
             {{#if this.selected.type}}
                 <div class="return-container" data-action="returnButton" data-context-type="{{this.selected.type}}">
                     <i class="fa-solid fa-reply"></i>
-                    {{localize "PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome"}}
+                    {{this.returnLabel}}
                 </div>
             {{/if}}
             {{#if (and this.selected.type (not this.selected.monster))}}
@@ -25,7 +25,7 @@
             </div>
             {{/if}}
         </header>
-    {{/if}}
+
     <body>
         {{#if (not this.selected.type)}}
             <div class="bestiary-main-page">
