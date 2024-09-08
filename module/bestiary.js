@@ -1509,9 +1509,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         );
 
     new ImagePopout(this.selected.monster.system.displayImage, {
-      title: game.user.isGM ? this.selected.monster.system.name.value : title,
+      title: title,
       uuid: this.selected.monster.system.uuid,
-      showTitle: true,
+      showTitle: !game.user.isGM
+        ? true
+        : this.selected.monster.system.name.revealed
+          ? true
+          : undefined,
     }).render(true);
   }
 
