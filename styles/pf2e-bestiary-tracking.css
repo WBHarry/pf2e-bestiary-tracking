@@ -177,6 +177,9 @@
   top: calc(50% - 9px);
   font-size: 18px;
 }
+.pf2e-bestiary-tracking.bestiary .bestiary-title {
+  text-align: center;
+}
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page {
   display: flex;
   flex-direction: column;
@@ -191,24 +194,24 @@
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container img {
   height: 200px;
 }
-.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container .main-page-category-card {
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-card {
   position: relative;
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container .main-page-category-card .main-page-category-image-container {
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-card .main-page-category-image-container {
   position: relative;
   justify-content: center;
   display: flex;
   border-width: 2px;
   border-style: solid;
 }
-.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container .main-page-category-card .main-page-category-image-container.inactive {
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-card .main-page-category-image-container.inactive {
   opacity: 0.2;
 }
-.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container .main-page-category-card .main-page-category-image-container .main-page-category-label {
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-card .main-page-category-image-container .main-page-category-label {
   position: absolute;
   top: 8px;
   width: 80%;
@@ -218,12 +221,41 @@
   border-radius: 6px;
   margin: 0;
 }
-.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container .main-page-category-card .under-development {
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-card .under-development {
   position: absolute;
   top: calc(50% - 60px);
   left: calc(50% - 42px);
   font-size: 96px;
   z-index: 5000;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-info-container {
+  gap: 8px;
+  align-items: end;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .recall-knowledge-container {
+  position: relative;
+  min-width: 200px;
+  flex: 0;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .recall-knowledge-container.empty .main-page-category-card {
+  opacity: 0.4;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .recall-knowledge-container.empty .main-page-category-card .main-page-category-image-container {
+  border-style: dashed;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .recall-knowledge-container .recall-knowledge-empty-icon {
+  position: absolute;
+  font-size: 100px;
+  bottom: calc(50% - 50px);
+  width: 100%;
+  text-align: center;
+  opacity: 0.6;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .recall-knowledge-container .recall-knowledge-unlink-icon {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 24px;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .category-container {
   display: flex;
@@ -245,10 +277,6 @@
   flex-direction: column;
   align-items: center;
   font-size: 16px;
-}
-.pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-welcome .title {
-  align-self: center;
-  font-size: 28px;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-welcome .sub-title {
   font-size: 20px;

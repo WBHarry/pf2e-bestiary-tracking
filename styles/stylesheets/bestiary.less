@@ -128,6 +128,10 @@
       }
     }
 
+    .bestiary-title {
+      text-align: center;
+    }
+
     .bestiary-main-page {
       display: flex;
       flex-direction: column;
@@ -142,44 +146,79 @@
         img {
           height: 200px;
         }
+      }
 
-        .main-page-category-card {
+      .main-page-category-card {
+        position: relative;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .main-page-category-image-container {
           position: relative;
-          flex: 1;
-          display: flex;
-          align-items: center;
           justify-content: center;
+          display: flex;
+          border-width: 2px;
+          border-style: solid;
 
-          .main-page-category-image-container {
-            position: relative;
-            justify-content: center;
-            display: flex;
+          &.inactive {
+            opacity: 0.2;
+          }
+
+          .main-page-category-label {
+            position: absolute;
+            top: 8px;
+            width: 80%;
+            text-align: center;
             border-width: 2px;
             border-style: solid;
-
-            &.inactive {
-              opacity: 0.2;
-            }
-
-            .main-page-category-label {
-              position: absolute;
-              top: 8px;
-              width: 80%;
-              text-align: center;
-              border-width: 2px;
-              border-style: solid;
-              border-radius: 6px;
-              margin: 0;
-            }
+            border-radius: 6px;
+            margin: 0;
           }
+        }
 
-          .under-development {
-            position: absolute;
-            top: calc(50% - 60px);
-            left: calc(50% - 42px);
-            font-size: 96px;
-            z-index: 5000;
+        .under-development {
+          position: absolute;
+          top: calc(50% - 60px);
+          left: calc(50% - 42px);
+          font-size: 96px;
+          z-index: 5000;
+        }
+      }
+
+      .bestiary-info-container {
+        gap: 8px;
+        align-items: end;
+      }
+
+      .recall-knowledge-container {
+        position: relative;
+        min-width: 200px;
+        flex: 0;
+
+        &.empty .main-page-category-card {
+          opacity: 0.4;
+
+          .main-page-category-image-container {
+            border-style: dashed;
           }
+        }
+
+        .recall-knowledge-empty-icon {
+          position: absolute;
+          font-size: 100px;
+          bottom: calc(50% - 50px);
+          width: 100%;
+          text-align: center;
+          opacity: 0.6;
+        }
+
+        .recall-knowledge-unlink-icon {
+          position: absolute;
+          bottom: 8px;
+          right: 8px;
+          font-size: 24px;
         }
       }
 
@@ -206,11 +245,6 @@
         flex-direction: column;
         align-items: center;
         font-size: 16px;
-
-        .title {
-          align-self: center;
-          font-size: 28px;
-        }
 
         .sub-title {
           font-size: 20px;

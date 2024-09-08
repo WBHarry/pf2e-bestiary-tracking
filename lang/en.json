@@ -99,7 +99,10 @@
           "AddCreaturesTip": "Add new creatures the players have encountered by dragging them into the bestiary.",
           "ModuleSettingsTip": "Customize module behavior and the way monster information is shown in the module settings.",
           "ToggleInformationTip": "Toggle known information on individual monsters as the players learn information.",
-          "ToggleMisinformationTip": "Toggle misinformation on a field. Enter false information and remove it the same way."
+          "ToggleMisinformationTip": "Toggle misinformation on a field. Enter false information and remove it the same way.",
+          "RecallKnowledgeRulesTitle": "Recall Rules",
+          "RecallKnowledgeJournalMissing": "Drag a journal here to give players a link to your recall knowledge rules.",
+          "RecallKnowledgeAttachedNotification": "You've added a link to your recall knowledge rules."
         }
       },
       "ReturnMessages": {

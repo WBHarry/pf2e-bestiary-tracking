@@ -1,13 +1,14 @@
 <div>
-
+    {{#if this.selected.type}}
         <header class="bestiary-header">
-            {{#if this.selected.type}}
-                <div class="return-container" data-action="returnButton" data-context-type="{{this.selected.type}}">
-                    <i class="fa-solid fa-reply"></i>
-                    {{this.returnLabel}}
-                </div>
-            {{/if}}
-            {{#if (and this.selected.type (not this.selected.monster))}}
+            <div class="return-container" data-action="returnButton" data-context-type="{{this.selected.type}}">
+                <i class="fa-solid fa-reply"></i>
+                {{this.returnLabel}}
+            </div>
+        </header>
+    {{/if}}
+    {{#if (and this.selected.type (not this.selected.monster))}}
+        <header class="bestiary-header">
             <div class="bestiary-toolbar">
                 <div class="bestiary-layout-settings secondary-container">
                     <i class="fa-solid fa-table-cells-large primary-hover-container {{#if (eq this.layout.categories.layout 0)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="0"></i>
@@ -23,11 +24,12 @@
                     {{#if search.name}}<i class="fa-solid fa-circle-xmark clear-icon primary-hover-container" data-action="clearSearch"></i>{{/if}}
                 </div>
             </div>
-            {{/if}}
         </header>
+    {{/if}}
 
     <body>
         {{#if (not this.selected.type)}}
+            <h2 class="bestiary-title">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h2> 
             <div class="bestiary-main-page">
                 <div class="main-page-category-container">
                     <div class="main-page-category-card">
@@ -60,23 +62,36 @@
                         </div>
                     </div>
                 {{/if}}
-                <div class="bestiary-welcome">
-                    <h3 class="title">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h3> 
-                    <div class="sub-title">{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.Title"}}</div>
-                    <ul>
-                        <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.NavigationTip"}}</li>
-                        <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.MacroTip"}}</li>
-                    </ul>
+                <div class="bestiary-info-container flexrow">
+                    <div class="bestiary-welcome flex1">
+                        <div class="sub-title">{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.Title"}}</div>
+                        <ul>
+                            <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.NavigationTip"}}</li>
+                            <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.MacroTip"}}</li>
+                        </ul>
 
-                    <div class="sub-title">
-                        <div>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.Title"}}</div>
+                        <div class="sub-title">
+                            <div>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.Title"}}</div>
+                        </div>
+                        <ul>
+                            <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.AddCreaturesTip"}}</li>
+                            <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ModuleSettingsTip"}}</li>
+                            <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.LeftClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleInformationTip"}}</li>
+                            <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RightClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleMisinformationTip"}}</li>
+                        </ul>
                     </div>
-                    <ul>
-                        <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.AddCreaturesTip"}}</li>
-                        <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ModuleSettingsTip"}}</li>
-                        <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.LeftClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleInformationTip"}}</li>
-                        <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RightClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleMisinformationTip"}}</li>
-                    </ul>
+                    {{#if (or this.user.isGM this.recallKnowledgeJournal)}}
+                        <div class="recall-knowledge-container secondary-border-container {{#if (not this.recallKnowledgeJournal)}}empty{{/if}}" {{#if (not this.recallKnowledgeJournal)}}title="{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeJournalMissing"}}"{{/if}}>
+                            <div class="main-page-category-card">
+                                <div class="main-page-category-image-container secondary-border-container {{#if this.recallKnowledgeJournal}}primary-hover-container{{/if}}" {{#if this.recallKnowledgeJournal}}data-action="openDocument"{{/if}} data-uuid="{{this.recallKnowledgeJournal}}">
+                                    <img src="icons/sundries/books/book-embossed-bound-brown.webp" />
+                                    <h4 class="main-page-category-label primary-container">{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle"}}</h4>
+                                    {{#if (and this.user.isGM this.recallKnowledgeJournal)}}<i class="recall-knowledge-unlink-icon fa-solid fa-link-slash primary-hover-container" data-action="removeRecallKnowledgeJournal"></i>{{/if}}
+                                </div>
+                            </div>
+                            {{#if (not this.recallKnowledgeJournal)}}<i class="recall-knowledge-empty-icon fa-solid fa-link-slash"></i>{{/if}}
+                        </div>
+                    {{/if}}
                 </div>
             </div>
         {{else}}

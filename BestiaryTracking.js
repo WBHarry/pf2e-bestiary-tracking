@@ -3907,19 +3907,19 @@ class Creature extends foundry.abstract.TypeDataModel {
     if (!actor) return;
 
     const itemRules = {};
-    for(var subItem of actor.items){
-      if(subItem.type === 'effect'){
+    for (var subItem of actor.items) {
+      if (subItem.type === "effect") {
         itemRules[subItem.id] = subItem.system.rules;
         await subItem.update({ "system.rules": [] });
       }
     }
-    
+
     await this.parent.update(this._getRefreshData(actor), {
       diff: false,
       recursive: false,
     });
 
-    for(var key in itemRules){
+    for (var key in itemRules) {
       await actor.items.get(key).update({ "system.rules": itemRules[key] });
     }
   }
@@ -8789,6 +8789,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       removeProperty: this.removeProperty,
       transformNPC: this.transformNPC,
       transformCreature: this.transformCreature,
+      openDocument: this.openDocument,
+      removeRecallKnowledgeJournal: this.removeRecallKnowledgeJournal,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -8831,7 +8833,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         },
       ],
     },
-    dragDrop: [{ dragSelector: null, dropSelector: null }],
+    dragDrop: [
+      { dragSelector: null, dropSelector: '.recall-knowledge-container' },
+      { dragSelector: null, dropSelector: null }
+    ],
   };
 
   static PARTS = {
@@ -9373,6 +9378,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     context.vagueDescriptions = foundry.utils.deepClone(
       await game.settings.get("pf2e-bestiary-tracking", "vague-descriptions"),
     );
+    context.recallKnowledgeJournal = this.bestiary.getFlag('pf2e-bestiary-tracking', 'recall-knowledge-journal');
     context.vagueDescriptions.settings.playerBased = game.user.isGM
       ? false
       : context.vagueDescriptions.settings.playerBased;
@@ -10353,6 +10359,22 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   static async transformCreature() {
     await this.toggleIsNPC();
   }
+  
+  static async openDocument(_, button) {
+    const document = await fromUuid(button.dataset.uuid);
+    await document.sheet.render(true);
+  }
+
+  static async removeRecallKnowledgeJournal(event){
+    event.stopPropagation();
+    await this.bestiary.unsetFlag('pf2e-bestiary-tracking', 'recall-knowledge-journal');
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
 
   async toggleIsNPC() {
     if (!this.selected.monster) return;
@@ -10558,8 +10580,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     if (bestiary.pages.some((x) => x.system.uuid === item.uuid)) return false;
 
     const itemRules = {};
-    for(var subItem of item.items){
-      if(subItem.type === 'effect'){
+    for (var subItem of item.items) {
+      if (subItem.type === "effect") {
         itemRules[subItem.id] = subItem.system.rules;
         await subItem.update({ "system.rules": [] });
       }
@@ -10579,7 +10601,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     await bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
-    for(var key in itemRules){
+    for (var key in itemRules) {
       await item.items.get(key).update({ "system.rules": itemRules[key] });
     }
 
@@ -10606,6 +10628,22 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     const data = TextEditor.getDragEventData(event);
     const baseItem = await fromUuid(data.uuid);
+
+    if(data.type === 'JournalEntry'){
+      if(event.currentTarget.classList.contains('recall-knowledge-container')){
+        await this.bestiary.setFlag('pf2e-bestiary-tracking', 'recall-knowledge-journal', baseItem.uuid);
+        ui.notifications.info(game.i18n.localize("PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeAttachedNotification"));
+
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+          action: socketEvent.UpdateBestiary,
+          data: {},
+        });
+    
+        Hooks.callAll(socketEvent.UpdateBestiary, {});
+      }
+
+      return;
+    }
 
     if (baseItem?.type === "character" || baseItem.hasPlayerOwner) {
       ui.notifications.error(
@@ -10637,8 +10675,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       await existingPage.system.refreshData(item);
     } else {
       const itemRules = {};
-      for(var subItem of item.items){
-        if(subItem.type === 'effect'){
+      for (var subItem of item.items) {
+        if (subItem.type === "effect") {
           itemRules[subItem.id] = subItem.system.rules;
           await subItem.update({ "system.rules": [] });
         }
@@ -10656,9 +10694,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           pageData = getHazardData(item);
           break;
       }
-      
+
       await bestiary.createEmbeddedDocuments("JournalEntryPage", [pageData]);
-      for(var key in itemRules){
+      for (var key in itemRules) {
         await item.items.get(key).update({ "system.rules": itemRules[key] });
       }
     }
