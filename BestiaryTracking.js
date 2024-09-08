@@ -9916,7 +9916,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
             };
           },
         };
-      case "Trait": 
+      case "Trait":
         const allTypes = [
           ...Object.keys(CONFIG.PF2E.creatureTraits).map((type) => ({
             value: type,
@@ -9942,12 +9942,21 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
             ),
             choices: allTypes,
             required: true,
-          }).toFormGroup({}, { name: "misinformation", localize: true, nameAttr: 'value', labelAttr: 'label' }).outerHTML,
+          }).toFormGroup(
+            {},
+            {
+              name: "misinformation",
+              localize: true,
+              nameAttr: "value",
+              labelAttr: "label",
+            },
+          ).outerHTML,
           getValue: (elements) => {
             if (!elements.misinformation?.value)
               return { value: null, errors: [`Fake ${name}`] };
 
-            const type = allTypes[Number.parseInt(elements.misinformation.value)];
+            const type =
+              allTypes[Number.parseInt(elements.misinformation.value)];
             return {
               value: {
                 slug: slugify(type.value),
