@@ -91,7 +91,12 @@ const getNPCCategories = () => {
       values: [],
     },
     ...categories.reduce((acc, category) => {
-      acc.push({ value: category.value, name: category.name, hidden: category.hidden, values: [] });
+      acc.push({
+        value: category.value,
+        name: category.name,
+        hidden: category.hidden,
+        values: [],
+      });
       return acc;
     }, []),
   ];
@@ -3118,6 +3123,7 @@ class Creature extends foundry.abstract.TypeDataModel {
       traits: new MappingField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
+          fake: new fields.BooleanField({ intitial: false }),
           value: new fields.StringField({ required: true }),
         }),
       ),
@@ -8894,10 +8900,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       const traitsTagify = new Y(npcCategoryInput, {
         tagTextProp: "name",
         enforceWhitelist: true,
-        whitelist: this.bestiary.getFlag(
-          "pf2e-bestiary-tracking",
-          "npcCategories",
-        ).map(x => ({ value: x.value, name: x.name })),
+        whitelist: this.bestiary
+          .getFlag("pf2e-bestiary-tracking", "npcCategories")
+          .map((x) => ({ value: x.value, name: x.name })),
         placeholder: game.i18n.localize(
           "PF2EBestiary.Bestiary.Miscellaneous.CategoryPlaceholder",
         ),
@@ -9186,7 +9191,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const bookmarks =
       this.selected.category === "pf2e-bestiary-tracking.creature"
         ? getExpandedCreatureTypes()
-        : getNPCCategories().filter(x => game.user.isGM || !x.hidden);
+        : getNPCCategories().filter((x) => game.user.isGM || !x.hidden);
 
     const creatureReduce = (acc, creature) => {
       const types = getCreaturesTypes(creature.system.traits);
@@ -9213,25 +9218,28 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     };
 
     const npcReduce = (npcCategories) => (acc, npc) => {
-      const categories = npc.system.npcData.categories.filter(
-        (x) => {
-          const npcCategory = npcCategories.find(category => category.value === x.value);
-          return game.user.isGM || (!x.hidden && npcCategory && !npcCategory.hidden);
-        });
+      const categories = npc.system.npcData.categories.filter((x) => {
+        const npcCategory = npcCategories.find(
+          (category) => category.value === x.value,
+        );
+        return (
+          game.user.isGM || (!x.hidden && npcCategory && !npcCategory.hidden)
+        );
+      });
       var usedCategories =
         categories.length > 0
-          ? categories.map(x => x.value)
+          ? categories.map((x) => x.value)
           : ["unaffiliated"];
 
       for (var category of usedCategories) {
         acc
-        .find((x) => x.value === category)
-        ?.values?.push({
-          id: npc.id,
-          name: npc.system.name,
-          hidden: npc.system.hidden,
-          img: npc.system.displayImage,
-        });
+          .find((x) => x.value === category)
+          ?.values?.push({
+            id: npc.id,
+            name: npc.system.name,
+            hidden: npc.system.hidden,
+            img: npc.system.displayImage,
+          });
       }
 
       return acc;
@@ -9320,7 +9328,12 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           .reduce(
             this.selected.category === "pf2e-bestiary-tracking.creature"
               ? creatureReduce
-              : npcReduce(this.bestiary.getFlag('pf2e-bestiary-tracking', 'npcCategories')),
+              : npcReduce(
+                  this.bestiary.getFlag(
+                    "pf2e-bestiary-tracking",
+                    "npcCategories",
+                  ),
+                ),
             bookmarks,
           );
   }
@@ -9903,6 +9916,52 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
             };
           },
         };
+      case "Trait": 
+        const allTypes = [
+          ...Object.keys(CONFIG.PF2E.creatureTraits).map((type) => ({
+            value: type,
+            label: CONFIG.PF2E.creatureTraits[type],
+          })),
+          ...game.settings
+            .get("pf2e-bestiary-tracking", "additional-creature-types")
+            .map((type) => ({
+              value: type.value,
+              label: type.name,
+            })),
+        ].sort((a, b) => {
+          if (a.label < b.label) return -1;
+          else if (a.label > b.label) return 1;
+          else return 0;
+        });
+        return {
+          width: 400,
+          content: new foundry.data.fields.StringField({
+            label: game.i18n.format(
+              "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
+              { property: name },
+            ),
+            choices: allTypes,
+            required: true,
+          }).toFormGroup({}, { name: "misinformation", localize: true, nameAttr: 'value', labelAttr: 'label' }).outerHTML,
+          getValue: (elements) => {
+            if (!elements.misinformation?.value)
+              return { value: null, errors: [`Fake ${name}`] };
+
+            const type = allTypes[Number.parseInt(elements.misinformation.value)];
+            return {
+              value: {
+                slug: slugify(type.value),
+                value: {
+                  revealed: false,
+                  label: type.label,
+                  value: type.value,
+                  fake: true,
+                },
+              },
+              errors: [],
+            };
+          },
+        };
       case "Languages":
         return {
           width: 400,
@@ -10267,10 +10326,19 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   static async toggleHideNPCCategory(_, button) {
-    const categories = this.bestiary.getFlag("pf2e-bestiary-tracking", "npcCategories");
-    const toggleCategory = categories.find(x => x.value === button.dataset.category);
+    const categories = this.bestiary.getFlag(
+      "pf2e-bestiary-tracking",
+      "npcCategories",
+    );
+    const toggleCategory = categories.find(
+      (x) => x.value === button.dataset.category,
+    );
     toggleCategory.hidden = !toggleCategory.hidden;
-    await this.bestiary.setFlag("pf2e-bestiary-tracking", "npcCategories", categories);
+    await this.bestiary.setFlag(
+      "pf2e-bestiary-tracking",
+      "npcCategories",
+      categories,
+    );
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,

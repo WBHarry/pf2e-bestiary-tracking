@@ -1218,6 +1218,61 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
             };
           },
         };
+      case "Trait":
+        const allTypes = [
+          ...Object.keys(CONFIG.PF2E.creatureTraits).map((type) => ({
+            value: type,
+            label: CONFIG.PF2E.creatureTraits[type],
+          })),
+          ...game.settings
+            .get("pf2e-bestiary-tracking", "additional-creature-types")
+            .map((type) => ({
+              value: type.value,
+              label: type.name,
+            })),
+        ].sort((a, b) => {
+          if (a.label < b.label) return -1;
+          else if (a.label > b.label) return 1;
+          else return 0;
+        });
+        return {
+          width: 400,
+          content: new foundry.data.fields.StringField({
+            label: game.i18n.format(
+              "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
+              { property: name },
+            ),
+            choices: allTypes,
+            required: true,
+          }).toFormGroup(
+            {},
+            {
+              name: "misinformation",
+              localize: true,
+              nameAttr: "value",
+              labelAttr: "label",
+            },
+          ).outerHTML,
+          getValue: (elements) => {
+            if (!elements.misinformation?.value)
+              return { value: null, errors: [`Fake ${name}`] };
+
+            const type =
+              allTypes[Number.parseInt(elements.misinformation.value)];
+            return {
+              value: {
+                slug: slugify(type.value),
+                value: {
+                  revealed: false,
+                  label: type.label,
+                  value: type.value,
+                  fake: true,
+                },
+              },
+              errors: [],
+            };
+          },
+        };
       case "Languages":
         return {
           width: 400,

@@ -337,16 +337,25 @@
                 </div>
             </div>
             <div class="monster-traits-row primary-container">
-                <div class="monster-size tertiary-container">{{this.system.sizeLabel}}</div>
-                <div class="monster-traits flexrow">
-                    {{#each this.system.traits as |trait key|}}
-                        {{#if (or ../user.isGM trait.revealed)}}
-                            <div class="monster-trait data-container secondary-container pf2e-bestiary-bold {{#if ../user.isGM }}toggle-container {{#if trait.revealed}}revealed{{/if}}{{/if}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState trait}}" data-action="toggleRevealed" data-path="{{concat 'system.traits.' key}}">
-                                {{localize trait.label}}
-                            </div>
-                        {{/if}}
-                    {{/each}}
+                <div class="monster-traits-row-inner">
+                    <div class="monster-size tertiary-container">{{this.system.sizeLabel}}</div>
+                    <div class="monster-traits flexrow">
+                        {{#each this.system.traits as |trait key|}}
+                            {{#if (or ../user.isGM trait.revealed)}}
+                                <div 
+                                    class="monster-trait data-container secondary-container pf2e-bestiary-bold {{PF2EBTToggleContainer ../user trait}}" 
+                                    style="{{PF2EBTToggleContainerOverride ../contrastRevealedState trait}}" 
+                                    data-action="toggleRevealed" 
+                                    data-path="{{concat 'system.traits.' key}}"
+                                    data-fake="{{trait.fake}}"
+                                >
+                                    {{localize trait.label}}
+                                </div>
+                            {{/if}}
+                        {{/each}}
+                    </div>
                 </div>
+                {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.traits" data-name="Trait" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
             </div>
         </div>
         <div class="tab {{this.tabs.statistics.cssClass}}" data-group="primary" data-tab="statistics">

@@ -196,6 +196,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
       traits: new MappingField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
+          fake: new fields.BooleanField({ intitial: false }),
           value: new fields.StringField({ required: true }),
         }),
       ),
