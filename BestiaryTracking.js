@@ -4154,6 +4154,11 @@ class Creature extends foundry.abstract.TypeDataModel {
     return types.length > 0 ? types[0] : "unknown";
   }
 
+  get initialActiveType() {
+    const types = getCreaturesTypes(this.traits, true).map((x) => x.key);
+    return types.length > 0 ? types[0] : "unknown";
+  }
+
   prepareDerivedData() {
     const vagueDescriptions = game.settings.get(
       "pf2e-bestiary-tracking",
@@ -4179,7 +4184,7 @@ class Creature extends foundry.abstract.TypeDataModel {
       ? game.user.character.system.details.level.value
       : null;
     const contextLevel = vagueDescriptions.settings.playerBased
-      ? (gmLevel ?? playerLevel ?? this.level.value)
+      ? (!Number.isNaN(gmLevel) && game.user.isGM ? gmLevel : playerLevel ?? this.level.value)
       : this.level.value;
 
     this.ac.category = getCategoryLabel(acTable, contextLevel, this.ac.value);
@@ -7623,7 +7628,7 @@ const handleDeactivatedPages = async () => {
   }
 };
 
-const currentVersion = "0.9.6";
+const currentVersion = "0.9.7";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -9299,12 +9304,19 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     context = await this.sharedPreparation(context);
     context.bookmarks = this.getBookmarks(context.layout);
-  
-    const activeBookmark = context.bookmarks.find((x) => x.value === this.selected.type);
-    context.bookmarkEntities = this.selected.type
-      ? activeBookmark.values
-      : [];
-    context.returnLabel = !this.selected.monster ? game.i18n.localize('PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome') : game.i18n.format('PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory', { type: activeBookmark.name });
+
+    const activeBookmark = context.bookmarks.find(
+      (x) => x.value === this.selected.type,
+    );
+    context.bookmarkEntities = this.selected.type ? activeBookmark.values : [];
+    context.returnLabel = !this.selected.monster
+      ? game.i18n.localize(
+          "PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome",
+        )
+      : game.i18n.format(
+          "PF2EBestiary.Bestiary.ReturnMessages.ReturnToCategory",
+          { type: activeBookmark.name },
+        );
 
     if (this.selected.category === "pf2e-bestiary-tracking.npc") {
       context = await this.npcPreparation(context);
@@ -10639,6 +10651,12 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         null)
       : null;
     if (!existingEntity) this.selected.monster = null;
+
+    const initialActiveType = this.selected.monster?.system?.initialActiveType; 
+    const unknown = initialActiveType && (initialActiveType === 'unknown' || initialActiveType === 'unaffiliated');
+    if(this.selected.monster && (unknown || (this.selected.type === 'unknown' || this.selected.type === 'unaffiliated'))){
+      this.selected.type = initialActiveType;
+    }
 
     const saveButton = $(this.element).find(
       '.prosemirror[collaborate="true"] *[data-action="save"]',

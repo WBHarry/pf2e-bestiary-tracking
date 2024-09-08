@@ -1232,6 +1232,11 @@ export class Creature extends foundry.abstract.TypeDataModel {
     return types.length > 0 ? types[0] : "unknown";
   }
 
+  get initialActiveType() {
+    const types = getCreaturesTypes(this.traits, true).map((x) => x.key);
+    return types.length > 0 ? types[0] : "unknown";
+  }
+
   prepareDerivedData() {
     const vagueDescriptions = game.settings.get(
       "pf2e-bestiary-tracking",
@@ -1257,7 +1262,9 @@ export class Creature extends foundry.abstract.TypeDataModel {
       ? game.user.character.system.details.level.value
       : null;
     const contextLevel = vagueDescriptions.settings.playerBased
-      ? (gmLevel ?? playerLevel ?? this.level.value)
+      ? !Number.isNaN(gmLevel) && game.user.isGM
+        ? gmLevel
+        : (playerLevel ?? this.level.value)
       : this.level.value;
 
     this.ac.category = getCategoryLabel(acTable, contextLevel, this.ac.value);

@@ -222,7 +222,7 @@
                             {{#if (and ../vagueDescriptions.properties.resistances this.category)}}{{localize this.category}}{{/if}}
                             <span>{{PF2EBTCaptialize (localize this.label)}}</span>
                             {{#if (or (not ../vagueDescriptions.properties.resistances) (not this.category))}}{{this.value}}{{/if}}
-                            {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
+                            {{#if (and (gt (PF2EBTNrKeys this.exceptions ) 0) (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0)))}}
                                 <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                 {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
                                     <span>
@@ -231,7 +231,7 @@
                                 {{/PF2EBTFilter}}
                             {{/if}}
                             
-                            {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.doubleVs 'revealed') 0))}}
+                            {{#if (and (gt (PF2EBTNrKeys this.doubleVs) 0) (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.doubleVs 'revealed') 0)))}}
                                 <span>{{#if (eq (PF2EBTNrKeys this.exceptions 'revealed') 0)}}({{/if}}{{localize "PF2EBestiary.Miscellaneous.Double"}}</span>
                                 {{#PF2EBTFilter 'revealed' '' 0 this.doubleVs ../detailedInformation.exceptionsDouble}}
                                     <span>
@@ -525,7 +525,7 @@
                                         </div>
                                         {{#if (gt (PF2EBTNrKeys attack.variants) 0)}}
                                             <div class="attack-body">
-                                                {{#if (and this.category (not ../gmNumeric))}}
+                                                {{#if (and this.category (and ../vagueDescriptions.properties.attacks (not ../gmNumeric)))}}
                                                     <div class="attack-variant tertiary-container">{{PF2EBTMonsterValue this ../vagueDescriptions.properties.attacks }}</div>
                                                 {{else}}
                                                     {{#each this.variants}}
@@ -579,7 +579,7 @@
                                         {{#if (gt (PF2EBTNrKeys this.variants) 0)}}
                                             <div class="attack-body">
                                                 {{#if this.damageStatsRevealed}}
-                                                    {{#if (or this.category this.missinformation)}}
+                                                    {{#if (and this.category ../vagueDescriptions.properties.attacks)}}
                                                         <div class="attack-variant tertiary-container">{{PF2EBTMonsterValue this ../vagueDescriptions.properties.attacks }}</div>
                                                     {{else}}
                                                         {{#each this.variants}}
@@ -750,19 +750,6 @@
         </div>
 
         <div class="tab {{this.tabs.spells.cssClass}} spells-tab" data-group="primary" data-tab="spells">
-            {{!-- {{#if (and (not this.user.isGM) this.system.sortedSpells.fake)}}
-                {{#if this.spells.fake.revealed}}
-                    <div class="spells-unknown">{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
-                {{else}}
-                    <div class="spells-unknown">{{localize "PF2EBestiary.Bestiary.Miscellaneous.Unknown"}}...</div>
-                {{/if}}
-            {{/if}}
-            {{#if (and this.user.isGM this.system.sortedSpells.fake)}}
-                <div class="secondary-container {{PF2EBTToggleContainer this.user this.spells.fake}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.spells.fake}}" data-action="toggleRevealed" data-path="items.Spells-None">{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
-            {{/if}}
-            
-            {{#if (and (not this.user.isGM) (and (not this.system.sortedSpells.fake) (eq (PF2EBTNrKeys this.spells.entries 'revealed') 0)))}}<div class="spells-unknown">{{localize "PF2EBestiary.Bestiary.Miscellaneous.Unknown"}}</div>{{/if}} --}}
-
             {{#if this.system.spells.fake}}
                 {{#if this.user.isGM}}
                     <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.spells.fake}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.spells.fake}}" data-action="toggleRevealed" data-path="system.spells.fake">{{localize "PF2EBestiary.Miscellaneous.None"}}</div>

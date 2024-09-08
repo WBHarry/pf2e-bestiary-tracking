@@ -1978,6 +1978,19 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       : null;
     if (!existingEntity) this.selected.monster = null;
 
+    const initialActiveType = this.selected.monster?.system?.initialActiveType;
+    const unknown =
+      initialActiveType &&
+      (initialActiveType === "unknown" || initialActiveType === "unaffiliated");
+    if (
+      this.selected.monster &&
+      (unknown ||
+        this.selected.type === "unknown" ||
+        this.selected.type === "unaffiliated")
+    ) {
+      this.selected.type = initialActiveType;
+    }
+
     const saveButton = $(this.element).find(
       '.prosemirror[collaborate="true"] *[data-action="save"]',
     );
