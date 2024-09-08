@@ -3906,10 +3906,22 @@ class Creature extends foundry.abstract.TypeDataModel {
     const actor = await fromUuid(this.uuid);
     if (!actor) return;
 
+    const itemRules = {};
+    for(var subItem of actor.items){
+      if(subItem.type === 'effect'){
+        itemRules[subItem.id] = subItem.system.rules;
+        await subItem.update({ "system.rules": [] });
+      }
+    }
+    
     await this.parent.update(this._getRefreshData(actor), {
       diff: false,
       recursive: false,
     });
+
+    for(var key in itemRules){
+      await actor.items.get(key).update({ "system.rules": itemRules[key] });
+    }
   }
 
   _getToggleUpdate(state) {
@@ -10545,6 +10557,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     // We do not currently refresh already present creatures in the Bestiary.
     if (bestiary.pages.some((x) => x.system.uuid === item.uuid)) return false;
 
+    const itemRules = {};
+    for(var subItem of item.items){
+      if(subItem.type === 'effect'){
+        itemRules[subItem.id] = subItem.system.rules;
+        await subItem.update({ "system.rules": [] });
+      }
+    }
+
     var data = null;
     switch (isNPC(item)) {
       case "creature":
@@ -10559,6 +10579,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     await bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
+    for(var key in itemRules){
+      await item.items.get(key).update({ "system.rules": itemRules[key] });
+    }
 
     const doubleClickOpenActivated = game.settings.get(
       "pf2e-bestiary-tracking",
@@ -10613,6 +10636,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     if (existingPage) {
       await existingPage.system.refreshData(item);
     } else {
+      const itemRules = {};
+      for(var subItem of item.items){
+        if(subItem.type === 'effect'){
+          itemRules[subItem.id] = subItem.system.rules;
+          await subItem.update({ "system.rules": [] });
+        }
+      }
+
       var pageData = null;
       switch (isNPC(item)) {
         case "creature":
@@ -10625,7 +10656,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           pageData = getHazardData(item);
           break;
       }
+      
       await bestiary.createEmbeddedDocuments("JournalEntryPage", [pageData]);
+      for(var key in itemRules){
+        await item.items.get(key).update({ "system.rules": itemRules[key] });
+      }
     }
 
     const doubleClickOpenActivated = game.settings.get(

@@ -984,10 +984,22 @@ export class Creature extends foundry.abstract.TypeDataModel {
     const actor = await fromUuid(this.uuid);
     if (!actor) return;
 
+    const itemRules = {};
+    for (var subItem of actor.items) {
+      if (subItem.type === "effect") {
+        itemRules[subItem.id] = subItem.system.rules;
+        await subItem.update({ "system.rules": [] });
+      }
+    }
+
     await this.parent.update(this._getRefreshData(actor), {
       diff: false,
       recursive: false,
     });
+
+    for (var key in itemRules) {
+      await actor.items.get(key).update({ "system.rules": itemRules[key] });
+    }
   }
 
   _getToggleUpdate(state) {

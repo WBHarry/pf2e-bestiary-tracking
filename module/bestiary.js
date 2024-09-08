@@ -1865,6 +1865,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     // We do not currently refresh already present creatures in the Bestiary.
     if (bestiary.pages.some((x) => x.system.uuid === item.uuid)) return false;
 
+    const itemRules = {};
+    for (var subItem of item.items) {
+      if (subItem.type === "effect") {
+        itemRules[subItem.id] = subItem.system.rules;
+        await subItem.update({ "system.rules": [] });
+      }
+    }
+
     var data = null;
     switch (isNPC(item)) {
       case "creature":
@@ -1879,6 +1887,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     await bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
+    for (var key in itemRules) {
+      await item.items.get(key).update({ "system.rules": itemRules[key] });
+    }
 
     const doubleClickOpenActivated = game.settings.get(
       "pf2e-bestiary-tracking",
@@ -1933,6 +1944,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     if (existingPage) {
       await existingPage.system.refreshData(item);
     } else {
+      const itemRules = {};
+      for (var subItem of item.items) {
+        if (subItem.type === "effect") {
+          itemRules[subItem.id] = subItem.system.rules;
+          await subItem.update({ "system.rules": [] });
+        }
+      }
+
       var pageData = null;
       switch (isNPC(item)) {
         case "creature":
@@ -1945,7 +1964,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           pageData = getHazardData(item);
           break;
       }
+
       await bestiary.createEmbeddedDocuments("JournalEntryPage", [pageData]);
+      for (var key in itemRules) {
+        await item.items.get(key).update({ "system.rules": itemRules[key] });
+      }
     }
 
     const doubleClickOpenActivated = game.settings.get(
