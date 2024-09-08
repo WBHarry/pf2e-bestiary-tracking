@@ -52,6 +52,7 @@ export const getCreaturesTypes = (traits, onlyActive) => {
       acc.push({
         key: typeMatch.value,
         revealed: trait.revealed,
+        fake: trait.fake,
         name: typeMatch.name,
       });
 

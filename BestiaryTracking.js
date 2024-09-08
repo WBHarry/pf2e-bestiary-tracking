@@ -35,6 +35,7 @@ const getCreaturesTypes = (traits, onlyActive) => {
       acc.push({
         key: typeMatch.value,
         revealed: trait.revealed,
+        fake: trait.fake,
         name: typeMatch.name,
       });
 
@@ -7652,7 +7653,7 @@ const handleDeactivatedPages = async () => {
   }
 };
 
-const currentVersion = "0.9.7";
+const currentVersion = "0.9.8";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -9197,7 +9198,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       const types = getCreaturesTypes(creature.system.traits);
 
       var usedTypes = types.map((x) => x.key);
-      if (!game.user.isGM) {
+      if(game.user.isGM){
+        usedTypes = types.filter(x => !x.fake).map(x => x.key);
+      }
+      else {
         usedTypes = types.filter((x) => x.revealed).map((x) => x.key);
       }
 
