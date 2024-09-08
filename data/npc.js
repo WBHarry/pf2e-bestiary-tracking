@@ -306,6 +306,10 @@ export class NPC extends Creature {
       : "unaffiliated";
   }
 
+  get initialActiveType() {
+    return this.initialType;
+  }
+
   prepareDerivedData() {
     super.prepareDerivedData();
 

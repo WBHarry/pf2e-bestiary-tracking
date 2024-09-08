@@ -4184,7 +4184,9 @@ class Creature extends foundry.abstract.TypeDataModel {
       ? game.user.character.system.details.level.value
       : null;
     const contextLevel = vagueDescriptions.settings.playerBased
-      ? (!Number.isNaN(gmLevel) && game.user.isGM ? gmLevel : playerLevel ?? this.level.value)
+      ? !Number.isNaN(gmLevel) && game.user.isGM
+        ? gmLevel
+        : (playerLevel ?? this.level.value)
       : this.level.value;
 
     this.ac.category = getCategoryLabel(acTable, contextLevel, this.ac.value);
@@ -4896,6 +4898,10 @@ class NPC extends Creature {
     return this.npcData.categories.length > 0
       ? this.npcData.categories[0].value
       : "unaffiliated";
+  }
+
+  get initialActiveType() {
+    return this.initialType;
   }
 
   prepareDerivedData() {
@@ -10652,9 +10658,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       : null;
     if (!existingEntity) this.selected.monster = null;
 
-    const initialActiveType = this.selected.monster?.system?.initialActiveType; 
-    const unknown = initialActiveType && (initialActiveType === 'unknown' || initialActiveType === 'unaffiliated');
-    if(this.selected.monster && (unknown || (this.selected.type === 'unknown' || this.selected.type === 'unaffiliated'))){
+    const initialActiveType = this.selected.monster?.system?.initialActiveType;
+    const unknown =
+      initialActiveType &&
+      (initialActiveType === "unknown" || initialActiveType === "unaffiliated");
+    if (
+      this.selected.monster &&
+      (unknown ||
+        this.selected.type === "unknown" ||
+        this.selected.type === "unaffiliated")
+    ) {
       this.selected.type = initialActiveType;
     }
 
