@@ -930,15 +930,40 @@
 }
 .pf2e-bestiary-tracking.bestiary .right-bookmark-container {
   position: absolute;
-  left: -100px;
+  left: -124px;
   top: 36px;
   height: calc(100% - 36px);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
-  width: 100px;
+  width: 124px;
   align-items: end;
+}
+.pf2e-bestiary-tracking.bestiary .right-bookmark-container .bookmark-container {
+  width: 100%;
+  position: relative;
+  display: flex;
+  justify-content: end;
+}
+.pf2e-bestiary-tracking.bestiary .right-bookmark-container .bookmark-container:hover .bookmark {
+  width: 104px;
+}
+.pf2e-bestiary-tracking.bestiary .right-bookmark-container .bookmark-container:hover .hide-icon {
+  opacity: 1;
+}
+.pf2e-bestiary-tracking.bestiary .right-bookmark-container .bookmark-container:not(:hover) .bookmark:not(.expanded) + .hide-icon.visible {
+  left: 20px;
+}
+.pf2e-bestiary-tracking.bestiary .right-bookmark-container .bookmark-container .hide-icon {
+  opacity: 0;
+  font-size: 12px;
+  position: absolute;
+  left: 4px;
+  top: calc(50% - 9px);
+}
+.pf2e-bestiary-tracking.bestiary .right-bookmark-container .bookmark-container .hide-icon.visible {
+  opacity: 1;
 }
 .pf2e-bestiary-tracking.bestiary .bookmark {
   width: 88px;
@@ -958,9 +983,8 @@
   text-align: center;
   transition: width 0.1s ease-in-out;
 }
-.pf2e-bestiary-tracking.bestiary .bookmark:hover,
 .pf2e-bestiary-tracking.bestiary .bookmark.expanded {
-  width: 100%;
+  width: 104px;
 }
 .theme-dark:not([data-dorako-ui-scope]) .bestiary-settings-menu .tagify {
   border-color: inherit;

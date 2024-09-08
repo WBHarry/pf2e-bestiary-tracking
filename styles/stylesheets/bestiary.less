@@ -1025,15 +1025,46 @@
 
     .right-bookmark-container {
       position: absolute;
-      left: -100px;
+      left: -124px;
       top: 36px;
       height: calc(100% - 36px);
       display: flex;
       flex-direction: column;
       overflow-y: auto;
       overflow-x: hidden;
-      width: 100px;
+      width: 124px;
       align-items: end;
+
+      .bookmark-container {
+        width: 100%;
+        position: relative;
+        display: flex;
+        justify-content: end;
+
+        &:hover .bookmark {
+          width: 104px;
+        }
+
+        &:hover .hide-icon {
+          opacity: 1;
+        }
+
+        &:not(:hover) .bookmark:not(.expanded) + .hide-icon.visible {
+          left: 20px;
+        }
+
+        .hide-icon {
+          opacity: 0;
+          font-size: 12px;
+          position: absolute;
+          left: 4px;
+          top: calc(50% - 9px);
+
+          &.visible {
+            opacity: 1;
+          }
+        }
+      }
     }
 
     .bookmark {
@@ -1054,9 +1085,8 @@
       text-align: center;
       transition: width 0.1s ease-in-out;
 
-      &:hover,
       &.expanded {
-        width: 100%;
+        width: 104px;
       }
     }
   }

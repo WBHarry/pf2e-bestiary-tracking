@@ -5,28 +5,25 @@
                 <i class="fa-solid fa-reply"></i>
                 {{this.returnLabel}}
             </div>
+            {{#if (not this.selected.monster)}}
+                <div class="bestiary-toolbar">
+                    <div class="bestiary-layout-settings secondary-container">
+                        <i class="fa-solid fa-table-cells-large primary-hover-container {{#if (eq this.layout.categories.layout 0)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="0"></i>
+                        <i class="fa-solid fa-table-cells primary-hover-container {{#if (eq this.layout.categories.layout 1)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="1"></i>
+                        <i class="fa-solid fa-maximize primary-hover-container {{#if (eq this.layout.categories.layout 2)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="2"></i>
+                    </div>
+                    <div class="bestiary-filter-container secondary-container">
+                        <i class="primary-hover-container fa-solid {{#if (eq this.layout.categories.filter.direction 0)}}fa-arrow-up-z-a{{else}}fa-arrow-down-z-a{{/if}}" data-action="toggleFilterDirection"></i>
+                    </div>
+                    <div class="bestiary-search-container">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input class="secondary-container" type="text" name="search.name" value="{{this.search.name}}" />
+                        {{#if search.name}}<i class="fa-solid fa-circle-xmark clear-icon primary-hover-container" data-action="clearSearch"></i>{{/if}}
+                    </div>
+                </div>
+            {{/if}}
         </header>
     {{/if}}
-    {{#if (and this.selected.type (not this.selected.monster))}}
-        <header class="bestiary-header">
-            <div class="bestiary-toolbar">
-                <div class="bestiary-layout-settings secondary-container">
-                    <i class="fa-solid fa-table-cells-large primary-hover-container {{#if (eq this.layout.categories.layout 0)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="0"></i>
-                    <i class="fa-solid fa-table-cells primary-hover-container {{#if (eq this.layout.categories.layout 1)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="1"></i>
-                    <i class="fa-solid fa-maximize primary-hover-container {{#if (eq this.layout.categories.layout 2)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="2"></i>
-                </div>
-                <div class="bestiary-filter-container secondary-container">
-                    <i class="primary-hover-container fa-solid {{#if (eq this.layout.categories.filter.direction 0)}}fa-arrow-up-z-a{{else}}fa-arrow-down-z-a{{/if}}" data-action="toggleFilterDirection"></i>
-                </div>
-                <div class="bestiary-search-container">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input class="secondary-container" type="text" name="search.name" value="{{this.search.name}}" />
-                    {{#if search.name}}<i class="fa-solid fa-circle-xmark clear-icon primary-hover-container" data-action="clearSearch"></i>{{/if}}
-                </div>
-            </div>
-        </header>
-    {{/if}}
-
     <body>
         {{#if (not this.selected.type)}}
             <h2 class="bestiary-title">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h2> 
@@ -172,12 +169,17 @@
     </body>
     <div class="right-bookmark-container">
         {{#each bookmarks}}
-            <div 
-                class="bookmark {{#if (eq ../selected.category 'pf2e-bestiary-tracking.npc')}}npc{{/if}} primary-container {{#if (eq ../selected.type this.value)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys this.values) 0)}} empty{{else}} active{{/if}}" 
-                data-action="selectBookmark" 
-                data-bookmark="{{this.value}}"
-            >
-                {{this.name}}
+            <div class="bookmark-container">
+                <div 
+                    class="bookmark {{#if (eq ../selected.category 'pf2e-bestiary-tracking.npc')}}npc{{/if}} primary-container {{#if (eq ../selected.type this.value)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys this.values) 0)}} empty{{else}} active{{/if}}" 
+                    data-action="selectBookmark" 
+                    data-bookmark="{{this.value}}"
+                >
+                    {{this.name}}
+                </div>
+                {{#if (and ../user.isGM (and (not (eq this.value 'unaffiliated')) (eq ../selected.category 'pf2e-bestiary-tracking.npc')))}}
+                    <i class="hide-icon {{#if this.hidden}}fa-solid fa-eye-slash visible{{else}}fa-solid fa-eye{{/if}} primary-hover-container" data-action="toggleHideNPCCategory" data-category="{{this.value}}"></i>
+                {{/if}}
             </div>
         {{/each}}
     </div>

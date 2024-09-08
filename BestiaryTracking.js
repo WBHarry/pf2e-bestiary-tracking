@@ -91,7 +91,7 @@ const getNPCCategories = () => {
       values: [],
     },
     ...categories.reduce((acc, category) => {
-      acc.push({ value: category.value, name: category.name, values: [] });
+      acc.push({ value: category.value, name: category.name, hidden: category.hidden, values: [] });
       return acc;
     }, []),
   ];
@@ -8783,6 +8783,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       imagePopout: this.imagePopout,
       setCategoriesLayout: this.setCategoriesLayout,
       addNpcCategory: this.addNpcCategory,
+      toggleHideNPCCategory: this.toggleHideNPCCategory,
       addInfluence: this.addInfluence,
       increaseInfluence: this.increaseInfluence,
       decreaseInfluence: this.decreaseInfluence,
@@ -8834,8 +8835,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       ],
     },
     dragDrop: [
-      { dragSelector: null, dropSelector: '.recall-knowledge-container' },
-      { dragSelector: null, dropSelector: null }
+      { dragSelector: null, dropSelector: ".recall-knowledge-container" },
+      { dragSelector: null, dropSelector: null },
     ],
   };
 
@@ -8896,7 +8897,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         whitelist: this.bestiary.getFlag(
           "pf2e-bestiary-tracking",
           "npcCategories",
-        ),
+        ).map(x => ({ value: x.value, name: x.name })),
         placeholder: game.i18n.localize(
           "PF2EBestiary.Bestiary.Miscellaneous.CategoryPlaceholder",
         ),
@@ -9185,7 +9186,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const bookmarks =
       this.selected.category === "pf2e-bestiary-tracking.creature"
         ? getExpandedCreatureTypes()
-        : getNPCCategories();
+        : getNPCCategories().filter(x => game.user.isGM || !x.hidden);
 
     const creatureReduce = (acc, creature) => {
       const types = getCreaturesTypes(creature.system.traits);
@@ -9211,24 +9212,26 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       return acc;
     };
 
-    const npcReduce = (acc, npc) => {
+    const npcReduce = (npcCategories) => (acc, npc) => {
       const categories = npc.system.npcData.categories.filter(
-        (x) => game.user.isGM || !x.hidden,
-      );
+        (x) => {
+          const npcCategory = npcCategories.find(category => category.value === x.value);
+          return game.user.isGM || (!x.hidden && npcCategory && !npcCategory.hidden);
+        });
       var usedCategories =
         categories.length > 0
-          ? categories.map((x) => x.value)
+          ? categories.map(x => x.value)
           : ["unaffiliated"];
 
       for (var category of usedCategories) {
         acc
-          .find((x) => x.value === category)
-          ?.values?.push({
-            id: npc.id,
-            name: npc.system.name,
-            hidden: npc.system.hidden,
-            img: npc.system.displayImage,
-          });
+        .find((x) => x.value === category)
+        ?.values?.push({
+          id: npc.id,
+          name: npc.system.name,
+          hidden: npc.system.hidden,
+          img: npc.system.displayImage,
+        });
       }
 
       return acc;
@@ -9317,7 +9320,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           .reduce(
             this.selected.category === "pf2e-bestiary-tracking.creature"
               ? creatureReduce
-              : npcReduce,
+              : npcReduce(this.bestiary.getFlag('pf2e-bestiary-tracking', 'npcCategories')),
             bookmarks,
           );
   }
@@ -9378,7 +9381,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     context.vagueDescriptions = foundry.utils.deepClone(
       await game.settings.get("pf2e-bestiary-tracking", "vague-descriptions"),
     );
-    context.recallKnowledgeJournal = this.bestiary.getFlag('pf2e-bestiary-tracking', 'recall-knowledge-journal');
+    context.recallKnowledgeJournal = this.bestiary.getFlag(
+      "pf2e-bestiary-tracking",
+      "recall-knowledge-journal",
+    );
     context.vagueDescriptions.settings.playerBased = game.user.isGM
       ? false
       : context.vagueDescriptions.settings.playerBased;
@@ -10260,6 +10266,19 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     }
   }
 
+  static async toggleHideNPCCategory(_, button) {
+    const categories = this.bestiary.getFlag("pf2e-bestiary-tracking", "npcCategories");
+    const toggleCategory = categories.find(x => x.value === button.dataset.category);
+    toggleCategory.hidden = !toggleCategory.hidden;
+    await this.bestiary.setFlag("pf2e-bestiary-tracking", "npcCategories", categories);
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
   static async addInfluence(_, button) {
     var update = null;
     switch (button.dataset.type) {
@@ -10359,15 +10378,18 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   static async transformCreature() {
     await this.toggleIsNPC();
   }
-  
+
   static async openDocument(_, button) {
     const document = await fromUuid(button.dataset.uuid);
     await document.sheet.render(true);
   }
 
-  static async removeRecallKnowledgeJournal(event){
+  static async removeRecallKnowledgeJournal(event) {
     event.stopPropagation();
-    await this.bestiary.unsetFlag('pf2e-bestiary-tracking', 'recall-knowledge-journal');
+    await this.bestiary.unsetFlag(
+      "pf2e-bestiary-tracking",
+      "recall-knowledge-journal",
+    );
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,
@@ -10629,16 +10651,26 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const data = TextEditor.getDragEventData(event);
     const baseItem = await fromUuid(data.uuid);
 
-    if(data.type === 'JournalEntry'){
-      if(event.currentTarget.classList.contains('recall-knowledge-container')){
-        await this.bestiary.setFlag('pf2e-bestiary-tracking', 'recall-knowledge-journal', baseItem.uuid);
-        ui.notifications.info(game.i18n.localize("PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeAttachedNotification"));
+    if (data.type === "JournalEntry") {
+      if (
+        event.currentTarget.classList.contains("recall-knowledge-container")
+      ) {
+        await this.bestiary.setFlag(
+          "pf2e-bestiary-tracking",
+          "recall-knowledge-journal",
+          baseItem.uuid,
+        );
+        ui.notifications.info(
+          game.i18n.localize(
+            "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeAttachedNotification",
+          ),
+        );
 
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
           action: socketEvent.UpdateBestiary,
           data: {},
         });
-    
+
         Hooks.callAll(socketEvent.UpdateBestiary, {});
       }
 

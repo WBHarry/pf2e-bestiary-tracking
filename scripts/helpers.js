@@ -108,7 +108,12 @@ export const getNPCCategories = () => {
       values: [],
     },
     ...categories.reduce((acc, category) => {
-      acc.push({ value: category.value, name: category.name, values: [] });
+      acc.push({
+        value: category.value,
+        name: category.name,
+        hidden: category.hidden,
+        values: [],
+      });
       return acc;
     }, []),
   ];

@@ -91,6 +91,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       imagePopout: this.imagePopout,
       setCategoriesLayout: this.setCategoriesLayout,
       addNpcCategory: this.addNpcCategory,
+      toggleHideNPCCategory: this.toggleHideNPCCategory,
       addInfluence: this.addInfluence,
       increaseInfluence: this.increaseInfluence,
       decreaseInfluence: this.decreaseInfluence,
@@ -201,10 +202,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       const traitsTagify = new Tagify(npcCategoryInput, {
         tagTextProp: "name",
         enforceWhitelist: true,
-        whitelist: this.bestiary.getFlag(
-          "pf2e-bestiary-tracking",
-          "npcCategories",
-        ),
+        whitelist: this.bestiary
+          .getFlag("pf2e-bestiary-tracking", "npcCategories")
+          .map((x) => ({ value: x.value, name: x.name })),
         placeholder: game.i18n.localize(
           "PF2EBestiary.Bestiary.Miscellaneous.CategoryPlaceholder",
         ),
@@ -493,7 +493,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     const bookmarks =
       this.selected.category === "pf2e-bestiary-tracking.creature"
         ? getExpandedCreatureTypes()
-        : getNPCCategories();
+        : getNPCCategories().filter((x) => game.user.isGM || !x.hidden);
 
     const creatureReduce = (acc, creature) => {
       const types = getCreaturesTypes(creature.system.traits);
@@ -519,10 +519,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       return acc;
     };
 
-    const npcReduce = (acc, npc) => {
-      const categories = npc.system.npcData.categories.filter(
-        (x) => game.user.isGM || !x.hidden,
-      );
+    const npcReduce = (npcCategories) => (acc, npc) => {
+      const categories = npc.system.npcData.categories.filter((x) => {
+        const npcCategory = npcCategories.find(
+          (category) => category.value === x.value,
+        );
+        return (
+          game.user.isGM || (!x.hidden && npcCategory && !npcCategory.hidden)
+        );
+      });
       var usedCategories =
         categories.length > 0
           ? categories.map((x) => x.value)
@@ -625,7 +630,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           .reduce(
             this.selected.category === "pf2e-bestiary-tracking.creature"
               ? creatureReduce
-              : npcReduce,
+              : npcReduce(
+                  this.bestiary.getFlag(
+                    "pf2e-bestiary-tracking",
+                    "npcCategories",
+                  ),
+                ),
             bookmarks,
           );
   }
@@ -1569,6 +1579,28 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       });
       Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
+  }
+
+  static async toggleHideNPCCategory(_, button) {
+    const categories = this.bestiary.getFlag(
+      "pf2e-bestiary-tracking",
+      "npcCategories",
+    );
+    const toggleCategory = categories.find(
+      (x) => x.value === button.dataset.category,
+    );
+    toggleCategory.hidden = !toggleCategory.hidden;
+    await this.bestiary.setFlag(
+      "pf2e-bestiary-tracking",
+      "npcCategories",
+      categories,
+    );
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
   static async addInfluence(_, button) {
