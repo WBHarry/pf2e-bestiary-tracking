@@ -57,6 +57,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       },
     };
 
+    this.dragData = {
+      bookmarkActive: false,
+    };
+
     this._dragDrop = this._createDragDropHandlers();
 
     Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
@@ -2048,33 +2052,33 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
     event.dataTransfer.setData("text/plain", bookmark.dataset.bookmark);
     event.dataTransfer.setDragImage(bookmark, 60, 0);
+
+    this.dragData.bookmarkActive = true;
   }
 
   async _onDragOver(event) {
-    // Get the drop target.
+    if (!this.dragData.bookmarkActive) return;
+
     let self = $(event.target)[0];
     let dropTarget = self.matches(".bookmark-container.draggable")
-      ? self
-      : self.closest(".bookmark-container.draggable");
+      ? $(self).find(".bookmark")[0]
+      : self.closest(".bookmark");
 
-    // Exit early if we don't need to make any changes.
     if (!dropTarget || dropTarget.classList.contains("drop-hover")) {
       return;
     }
-    // if (!dropTarget.data('combatant-id')) {
-    //   return;
-    // }
 
-    // Add the hover class.
     $(dropTarget).addClass("drop-hover");
     return false;
   }
 
   async _onDragLeave(event) {
+    if (!this.dragData.bookmarkActive) return;
+
     let self = $(event.target)[0];
     let dropTarget = self.matches(".bookmark-container.draggable")
-      ? self
-      : self.closest(".bookmark-container.draggable");
+      ? $(self).find(".bookmark")[0]
+      : self.closest(".bookmark");
     $(dropTarget).removeClass("drop-hover");
   }
 
@@ -2086,14 +2090,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
     const eventData = event.dataTransfer.getData("text/plain");
     if (eventData) {
+      this.dragData.bookmarkActive = false;
       let categories = this.bestiary.getFlag(
         "pf2e-bestiary-tracking",
         "npcCategories",
       );
       let self = $(event.target)[0];
-      let dropTarget = self.matches(".container.draggable")
+      let dropTarget = self.matches(".bookmark-container")
         ? self
-        : self.closest(".bookmark-container.draggable");
+        : self.closest(".bookmark-container");
       let bookmarkTarget = $(dropTarget).find(".bookmark")[0];
       $(dropTarget).removeClass("drop-hover");
 
@@ -2109,7 +2114,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         (x) => x.value === bookmarkTarget.dataset.bookmark,
       );
 
-      categories.splice(bookmark.position + 1, 0, orig);
+      categories.splice(bookmark ? bookmark.position + 1 : 0, 0, orig);
       await this.bestiary.setFlag(
         "pf2e-bestiary-tracking",
         "npcCategories",

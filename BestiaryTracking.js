@@ -79,10 +79,9 @@ const getNPCCategories = () => {
   const bestiary = game.journal.get(
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );
-  const categories = bestiary.getFlag(
-    "pf2e-bestiary-tracking",
-    "npcCategories",
-  ).sort((a, b) => a.position - b.position);
+  const categories = bestiary
+    .getFlag("pf2e-bestiary-tracking", "npcCategories")
+    .sort((a, b) => a.position - b.position);
   return [
     {
       value: "unaffiliated",
@@ -152,14 +151,14 @@ const chunkArray = (arr, size) => {
 };
 
 const alphaSort = (a, b, prop) => {
-  if(prop){
-    if(a[prop] < b[prop]) return -1;
-    if(a[prop] > b[prop]) return 1;
+  if (prop) {
+    if (a[prop] < b[prop]) return -1;
+    if (a[prop] > b[prop]) return 1;
     else return 0;
   }
 
-  if(a < b) return -1;
-  if(a > b) return 1;
+  if (a < b) return -1;
+  if (a > b) return 1;
   else return 0;
 };
 
@@ -7481,9 +7480,15 @@ const handleBestiaryMigration = async (bestiary, isSave) => {
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.6");
   }
   if (bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.9") {
-    await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "npcCategories", bestiaryJournal.getFlag("pf2e-bestiary-tracking", "npcCategories").sort((a, b) => alphaSort(a, b, 'name')).map((x, index) => ({ ...x, position: index }))); 
+    await bestiaryJournal.setFlag(
+      "pf2e-bestiary-tracking",
+      "npcCategories",
+      bestiaryJournal
+        .getFlag("pf2e-bestiary-tracking", "npcCategories")
+        .sort((a, b) => alphaSort(a, b, "name"))
+        .map((x, index) => ({ ...x, position: index })),
+    );
   }
-
 
   await migrateBestiaryPages(bestiaryJournal);
 };
@@ -8734,35 +8739,36 @@ class BestiarySelection extends HandlebarsApplicationMixin$1(
 }
 
 class ExpandedDragDrop extends DragDrop {
-    bind(html) {
-
-        // Identify and activate draggable targets
-        if ( this.can("dragstart", this.dragSelector) ) {
-          const draggables = html.querySelectorAll(this.dragSelector);
-          for (let el of draggables) {
-            el.setAttribute("draggable", true);
-            el.ondragstart = this._handleDragStart.bind(this);
-          }
-        }
-    
-        // Identify and activate drop targets
-        if ( this.can("drop", this.dropSelector) ) {
-          const droppables = !this.dropSelector || html.matches(this.dropSelector) ? [html] :
-            html.querySelectorAll(this.dropSelector);
-          for ( let el of droppables ) {
-            el.ondragover = this._handleDragOver.bind(this);
-            el.ondragleave = this._handleDragLeave.bind(this);
-            el.ondrop = this._handleDrop.bind(this);
-          }
-        }
-        return this;
+  bind(html) {
+    // Identify and activate draggable targets
+    if (this.can("dragstart", this.dragSelector)) {
+      const draggables = html.querySelectorAll(this.dragSelector);
+      for (let el of draggables) {
+        el.setAttribute("draggable", true);
+        el.ondragstart = this._handleDragStart.bind(this);
       }
+    }
 
-      _handleDragLeave(event) {
-        event.preventDefault();
-        this.callback(event, "dragleave");
-        return false;
+    // Identify and activate drop targets
+    if (this.can("drop", this.dropSelector)) {
+      const droppables =
+        !this.dropSelector || html.matches(this.dropSelector)
+          ? [html]
+          : html.querySelectorAll(this.dropSelector);
+      for (let el of droppables) {
+        el.ondragover = this._handleDragOver.bind(this);
+        el.ondragleave = this._handleDragLeave.bind(this);
+        el.ondrop = this._handleDrop.bind(this);
       }
+    }
+    return this;
+  }
+
+  _handleDragLeave(event) {
+    event.preventDefault();
+    this.callback(event, "dragleave");
+    return false;
+  }
 }
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -8801,6 +8807,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       newCategory: {
         text: null,
       },
+    };
+
+    this.dragData = {
+      bookmarkActive: false,
     };
 
     this._dragDrop = this._createDragDropHandlers();
@@ -8893,7 +8903,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     },
     dragDrop: [
       { dragSelector: null, dropSelector: ".recall-knowledge-container" },
-      { dragSelector: '.bookmark-container.draggable', dropSelector: null },
+      { dragSelector: ".bookmark-container.draggable", dropSelector: null },
       { dragSelector: null, dropSelector: null },
     ],
   };
@@ -8924,7 +8934,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       .find(".bookmark.npc")
       .on("contextmenu", this.removeBookmark.bind(this));
 
-    this._dragDrop.forEach(d => d.bind(htmlElement));
+    this._dragDrop.forEach((d) => d.bind(htmlElement));
 
     const npcCategoryInput = $(htmlElement).find(".npc-category-input")[0];
     if (npcCategoryInput) {
@@ -9566,7 +9576,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       "npcCategories",
       this.bestiary
         .getFlag("pf2e-bestiary-tracking", "npcCategories")
-        .filter((x) => x.value !== event.currentTarget.dataset.bookmark).map((x, index) => ({ ...x, position: index })),
+        .filter((x) => x.value !== event.currentTarget.dataset.bookmark)
+        .map((x, index) => ({ ...x, position: index })),
     );
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -10376,10 +10387,17 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     if (game.user.isGM && this.npcData.newCategory.text) {
       const categoryKey = `${slugify(this.npcData.newCategory.text)}-${foundry.utils.randomID()}`;
 
-      const categories = this.bestiary.getFlag("pf2e-bestiary-tracking", "npcCategories");
+      const categories = this.bestiary.getFlag(
+        "pf2e-bestiary-tracking",
+        "npcCategories",
+      );
       await this.bestiary.setFlag("pf2e-bestiary-tracking", "npcCategories", [
         ...categories,
-        { value: categoryKey, name: this.npcData.newCategory.text, position: categories.length },
+        {
+          value: categoryKey,
+          name: this.npcData.newCategory.text,
+          position: categories.length,
+        },
       ]);
       this.npcData.newCategory.text = null;
 
@@ -10781,35 +10799,39 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   async _onDragStart(event) {
     const target = event.currentTarget;
-    const bookmark = $(target).find('.bookmark')[0];
-    if(!bookmark) return;
+    const bookmark = $(target).find(".bookmark")[0];
+    if (!bookmark) return;
 
-    event.dataTransfer.setData('text/plain', bookmark.dataset.bookmark);
+    event.dataTransfer.setData("text/plain", bookmark.dataset.bookmark);
     event.dataTransfer.setDragImage(bookmark, 60, 0);
+
+    this.dragData.bookmarkActive = true;
   }
 
   async _onDragOver(event) {
-      // Get the drop target.
-      let self = $(event.target)[0];
-      let dropTarget = self.matches('.bookmark-container.draggable') ? self : self.closest('.bookmark-container.draggable');
+    if(!this.dragData.bookmarkActive) return;
 
-      // Exit early if we don't need to make any changes.
-      if (!dropTarget || dropTarget.classList.contains('drop-hover')) {
-        return;
-      }
-      // if (!dropTarget.data('combatant-id')) {
-      //   return;
-      // }
-
-      // Add the hover class.
-      $(dropTarget).addClass('drop-hover');
-      return false;
-  }
-  
-  async _onDragLeave(event){
     let self = $(event.target)[0];
-    let dropTarget = self.matches('.bookmark-container.draggable') ? self : self.closest('.bookmark-container.draggable');
-    $(dropTarget).removeClass('drop-hover');
+    let dropTarget = self.matches(".bookmark-container.draggable")
+      ? $(self).find('.bookmark')[0]
+      : self.closest(".bookmark");
+
+    if (!dropTarget || dropTarget.classList.contains("drop-hover")) {
+      return;
+    }
+
+    $(dropTarget).addClass("drop-hover");
+    return false;
+  }
+
+  async _onDragLeave(event) {
+    if(!this.dragData.bookmarkActive) return;
+
+    let self = $(event.target)[0];
+    let dropTarget = self.matches(".bookmark-container.draggable")
+      ? $(self).find('.bookmark')[0]
+      : self.closest(".bookmark");
+    $(dropTarget).removeClass("drop-hover");
   }
 
   async _onDrop(event) {
@@ -10818,24 +10840,39 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const data = TextEditor.getDragEventData(event);
     const baseItem = await fromUuid(data.uuid);
 
-    const eventData = event.dataTransfer.getData('text/plain');
-    if(eventData){
-      let categories =  this.bestiary.getFlag('pf2e-bestiary-tracking', 'npcCategories');
+    const eventData = event.dataTransfer.getData("text/plain");
+    if (eventData) {
+      this.dragData.bookmarkActive = false;
+      let categories = this.bestiary.getFlag(
+        "pf2e-bestiary-tracking",
+        "npcCategories",
+      );
       let self = $(event.target)[0];
-      let dropTarget = self.matches('.container.draggable') ? self : self.closest('.bookmark-container.draggable');
-      let bookmarkTarget = $(dropTarget).find('.bookmark')[0];
-      $(dropTarget).removeClass('drop-hover');
+      let dropTarget = self.matches(".bookmark-container")
+        ? self
+        : self.closest(".bookmark-container");
+      let bookmarkTarget = $(dropTarget).find(".bookmark")[0];
+      $(dropTarget).removeClass("drop-hover");
 
-      if(bookmarkTarget.dataset.bookmark === eventData) return;
-      const orig = categories.splice(categories.indexOf(categories.find(x => x.value === eventData)), 1)[0];
+      if (bookmarkTarget.dataset.bookmark === eventData) return;
+      const orig = categories.splice(
+        categories.indexOf(categories.find((x) => x.value === eventData)),
+        1,
+      )[0];
 
       categories = categories.map((x, index) => ({ ...x, position: index }));
-      bookmarkTarget = $(dropTarget).find('.bookmark')[0];
-      const bookmark = categories.find(x => x.value === bookmarkTarget.dataset.bookmark);
+      bookmarkTarget = $(dropTarget).find(".bookmark")[0];
+      const bookmark = categories.find(
+        (x) => x.value === bookmarkTarget.dataset.bookmark,
+      );
 
-      categories.splice(bookmark.position+1, 0, orig);
-      await this.bestiary.setFlag('pf2e-bestiary-tracking', 'npcCategories', categories.map((x, index) => ({ ...x, position: index })));
-      
+      categories.splice(bookmark ? bookmark.position + 1 : 0, 0, orig);
+      await this.bestiary.setFlag(
+        "pf2e-bestiary-tracking",
+        "npcCategories",
+        categories.map((x, index) => ({ ...x, position: index })),
+      );
+
       await game.socket.emit(`module.pf2e-bestiary-tracking`, {
         action: socketEvent.UpdateBestiary,
         data: {},
@@ -10979,7 +11016,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   };
 
   _createDragDropHandlers() {
-    return this.options.dragDrop.map(d => {
+    return this.options.dragDrop.map((d) => {
       d.permissions = {
         dragstart: () => game.user.isGM,
         drop: () => game.user.isGM,
@@ -10988,7 +11025,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         dragstart: this._onDragStart.bind(this),
         dragover: this._onDragOver.bind(this),
         dragleave: this._onDragLeave.bind(this),
-        drop: this._onDrop.bind(this)
+        drop: this._onDrop.bind(this),
       };
       return new ExpandedDragDrop(d);
     });

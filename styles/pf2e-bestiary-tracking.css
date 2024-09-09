@@ -104,8 +104,8 @@
   flex-direction: column;
 }
 .pf2e-bestiary-tracking.bestiary .drop-hover::after {
-  content: '';
-  width: 100%;
+  content: "";
+  width: 124px;
   border-bottom: 2px solid white;
   position: absolute;
   bottom: 2px;
