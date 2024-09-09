@@ -38,6 +38,16 @@
       flex-direction: column;
     }
 
+    .drop-hover {
+      &::after {
+        content: "";
+        width: 100%;
+        border-bottom: 2px solid white;
+        position: absolute;
+        bottom: 2px;
+      }
+    }
+
     .tab {
       &:not(.minor) {
         height: 100%;
@@ -1052,17 +1062,17 @@
         display: flex;
         justify-content: end;
 
-        &:hover .bookmark {
-          width: 104px;
-        }
+        // &:hover .bookmark {
+        //   width: 104px;
+        // }
 
         &:hover .hide-icon {
           opacity: 1;
         }
 
-        &:not(:hover) .bookmark:not(.expanded) + .hide-icon.visible {
-          left: 20px;
-        }
+        // &:not(:hover) .bookmark:not(.expanded) + .hide-icon.visible {
+        //   left: 20px;
+        // }
 
         .hide-icon {
           opacity: 0;
@@ -1079,7 +1089,7 @@
     }
 
     .bookmark {
-      width: 88px;
+      width: 104px;
       font-size: 12px;
       font-weight: bold;
       border-width: 2px;
@@ -1095,10 +1105,6 @@
       padding: 0 4px;
       text-align: center;
       transition: width 0.1s ease-in-out;
-
-      &.expanded {
-        width: 104px;
-      }
     }
   }
 }

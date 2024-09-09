@@ -96,10 +96,9 @@ export const getNPCCategories = () => {
   const bestiary = game.journal.get(
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );
-  const categories = bestiary.getFlag(
-    "pf2e-bestiary-tracking",
-    "npcCategories",
-  );
+  const categories = bestiary
+    .getFlag("pf2e-bestiary-tracking", "npcCategories")
+    .sort((a, b) => a.position - b.position);
   return [
     {
       value: "unaffiliated",
@@ -166,4 +165,16 @@ export const chunkArray = (arr, size) => {
   return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
     arr.slice(i * size, i * size + size),
   );
+};
+
+export const alphaSort = (a, b, prop) => {
+  if (prop) {
+    if (a[prop] < b[prop]) return -1;
+    if (a[prop] > b[prop]) return 1;
+    else return 0;
+  }
+
+  if (a < b) return -1;
+  if (a > b) return 1;
+  else return 0;
 };

@@ -14,6 +14,7 @@ import {
 } from "./statisticsData.js";
 import { getCategoryLabel, getRollAverage } from "./statisticsHelper.js";
 import { bestiaryFolder } from "./setup.js";
+import { alphaSort } from "./helpers.js";
 
 export const handleDataMigration = async () => {
   if (!game.user.isGM) return;
@@ -1343,6 +1344,16 @@ export const handleBestiaryMigration = async (bestiary, isSave) => {
   }
   if (bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.6") {
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.6");
+  }
+  if (bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.9") {
+    await bestiaryJournal.setFlag(
+      "pf2e-bestiary-tracking",
+      "npcCategories",
+      bestiaryJournal
+        .getFlag("pf2e-bestiary-tracking", "npcCategories")
+        .sort((a, b) => alphaSort(a, b, "name"))
+        .map((x, index) => ({ ...x, position: index })),
+    );
   }
 
   await migrateBestiaryPages(bestiaryJournal);

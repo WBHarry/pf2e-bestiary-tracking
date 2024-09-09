@@ -169,7 +169,7 @@
     </body>
     <div class="right-bookmark-container">
         {{#each bookmarks}}
-            <div class="bookmark-container">
+            <div class="bookmark-container {{#if (and (eq ../selected.category 'pf2e-bestiary-tracking.npc') (not (eq this.value 'unaffiliated')))}}draggable{{/if}}">
                 <div 
                     class="bookmark {{#if (eq ../selected.category 'pf2e-bestiary-tracking.npc')}}npc{{/if}} primary-container {{#if (eq ../selected.type this.value)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys this.values) 0)}} empty{{else}} active{{/if}}" 
                     data-action="selectBookmark" 
