@@ -2050,7 +2050,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     const bookmark = $(target).find(".bookmark")[0];
     if (!bookmark) return;
 
-    event.dataTransfer.setData("text/plain", bookmark.dataset.bookmark);
+    event.dataTransfer.setData("text/plain", JSON.stringify(bookmark.dataset));
     event.dataTransfer.setDragImage(bookmark, 60, 0);
 
     this.dragData.bookmarkActive = true;
@@ -2088,8 +2088,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     const data = TextEditor.getDragEventData(event);
     const baseItem = await fromUuid(data.uuid);
 
-    const eventData = event.dataTransfer.getData("text/plain");
-    if (eventData) {
+    if (!data.type) {
       this.dragData.bookmarkActive = false;
       let categories = this.bestiary.getFlag(
         "pf2e-bestiary-tracking",
@@ -2102,9 +2101,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       let bookmarkTarget = $(dropTarget).find(".bookmark")[0];
       $(dropTarget).removeClass("drop-hover");
 
-      if (bookmarkTarget.dataset.bookmark === eventData) return;
+      if (bookmarkTarget.dataset.bookmark === data.bookmark) return;
       const orig = categories.splice(
-        categories.indexOf(categories.find((x) => x.value === eventData)),
+        categories.indexOf(categories.find((x) => x.value === data.bookmark)),
         1,
       )[0];
 
@@ -2127,6 +2126,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       });
 
       Hooks.callAll(socketEvent.UpdateBestiary, {});
+      return;
+    }
+
+    if (
+      baseItem.type === "effect" &&
+      this.selected.category === "pf2e-bestiary-tracking.npc" &&
+      this.selected.monster
+    ) {
+      console.log("Add effect");
+
       return;
     }
 
