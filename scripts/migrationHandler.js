@@ -14,7 +14,7 @@ import {
 } from "./statisticsData.js";
 import { getCategoryLabel, getRollAverage } from "./statisticsHelper.js";
 import { bestiaryFolder } from "./setup.js";
-import { alphaSort } from "./helpers.js";
+import { alphaSort, versionCompare } from "./helpers.js";
 
 export const handleDataMigration = async () => {
   if (!game.user.isGM) return;
@@ -1339,13 +1339,28 @@ export const handleBestiaryMigration = async (bestiary, isSave) => {
   );
   if (!bestiaryJournal) return bestiary;
 
-  if (bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.5") {
+  if (
+    versionCompare(
+      bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"),
+      "0.9.5",
+    )
+  ) {
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.5");
   }
-  if (bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.6") {
+  if (
+    versionCompare(
+      bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"),
+      "0.9.6",
+    )
+  ) {
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.6");
   }
-  if (bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.9") {
+  if (
+    versionCompare(
+      bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"),
+      "0.9.9",
+    )
+  ) {
     await bestiaryJournal.setFlag(
       "pf2e-bestiary-tracking",
       "npcCategories",
@@ -1355,17 +1370,44 @@ export const handleBestiaryMigration = async (bestiary, isSave) => {
         .map((x, index) => ({ ...x, position: index })),
     );
   }
+  if (
+    versionCompare(
+      bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"),
+      "0.9.10",
+    )
+  ) {
+    await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "tabStates", {
+      creature: {
+        statistics: { hidden: false },
+        spells: { hidden: false },
+        lore: { hidden: false },
+        notes: { hidden: false },
+      },
+      npc: {
+        general: { hidden: false },
+        influence: { hidden: true },
+        notes: { hidden: false },
+        gm: { hidden: false },
+      },
+      hazard: {},
+    });
+    await bestiaryJournal.setFlag(
+      "pf2e-bestiary-tracking",
+      "version",
+      "0.9.10",
+    );
+  }
 
   await migrateBestiaryPages(bestiaryJournal);
 };
 
 export const migrateBestiaryPages = async (bestiary) => {
   for (var page of Array.from(bestiary.pages)) {
-    if (page.system.version < "0.9.5") {
+    if (versionCompare(page.system.version, "0.9.5")) {
       await page.update({ "system.version": "0.9.5" });
     }
 
-    if (page.system.version < "0.9.6") {
+    if (versionCompare(page.system.version, "0.9.6")) {
       if (page.type === "pf2e-bestiary-tracking.npc") {
         const availableCategories = await bestiary.getFlag(
           "pf2e-bestiary-tracking",

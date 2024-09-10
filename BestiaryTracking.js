@@ -162,6 +162,16 @@ const alphaSort = (a, b, prop) => {
   else return 0;
 };
 
+const versionCompare = (current, target) => {
+  const currentSplit = current.split('.').map(x => Number.parseInt(x));
+  const targetSplit = target.split('.').map(x => Number.parseInt(x));
+  for(var i = 0; i < currentSplit.length; i++){
+    if(currentSplit[i] < targetSplit[i]) return true;
+  }
+  
+  return false;
+};
+
 const revealedState = {
   enabled: false,
   revealed: "#008000",
@@ -7476,13 +7486,13 @@ const handleBestiaryMigration = async (bestiary, isSave) => {
   );
   if (!bestiaryJournal) return bestiary;
 
-  if (bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.5") {
+  if (versionCompare(bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"), "0.9.5")) {
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.5");
   }
-  if (bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.6") {
+  if (versionCompare(bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"), "0.9.6")) {
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.6");
   }
-  if (bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version") < "0.9.9") {
+  if (versionCompare(bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"), "0.9.9")) {
     await bestiaryJournal.setFlag(
       "pf2e-bestiary-tracking",
       "npcCategories",
@@ -7492,17 +7502,37 @@ const handleBestiaryMigration = async (bestiary, isSave) => {
         .map((x, index) => ({ ...x, position: index })),
     );
   }
+  if(versionCompare(bestiaryJournal.getFlag("pf2e-bestiary-tracking", 'version'), "0.9.10")) {
+    await bestiaryJournal.setFlag('pf2e-bestiary-tracking', 'tabStates', {
+      creature: {
+        statistics: { hidden: false },
+        spells: { hidden: false },
+        lore: { hidden: false },
+        notes: { hidden: false }
+      },
+      npc: {
+        general: { hidden: false },
+        influence: { hidden: true },
+        notes: { hidden: false },
+        gm: { hidden: false },
+      },
+      hazard: {
+
+      }
+    });
+    await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.10");
+  }
 
   await migrateBestiaryPages(bestiaryJournal);
 };
 
 const migrateBestiaryPages = async (bestiary) => {
   for (var page of Array.from(bestiary.pages)) {
-    if (page.system.version < "0.9.5") {
+    if (versionCompare(page.system.version, "0.9.5")) {
       await page.update({ "system.version": "0.9.5" });
     }
 
-    if (page.system.version < "0.9.6") {
+    if (versionCompare(page.system.version, "0.9.6")) {
       if (page.type === "pf2e-bestiary-tracking.npc") {
         const availableCategories = await bestiary.getFlag(
           "pf2e-bestiary-tracking",
@@ -8907,7 +8937,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     dragDrop: [
       { dragSelector: null, dropSelector: ".recall-knowledge-container" },
       { dragSelector: ".bookmark-container.draggable", dropSelector: null },
-      { dragSelector: null, dropSelector: '.npc-players-inner-container' },
+      { dragSelector: null, dropSelector: ".npc-players-inner-container" },
     ],
   };
 
@@ -8936,6 +8966,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     $(htmlElement)
       .find(".bookmark.npc")
       .on("contextmenu", this.removeBookmark.bind(this));
+    $(htmlElement)
+      .find(".bestiary-tab.hideable")
+      .on("contextmenu", this.hideTab.bind(this));
 
     this._dragDrop.forEach((d) => d.bind(htmlElement));
 
@@ -9091,7 +9124,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       statistics: {
         active: true,
         cssClass: "",
-        group: "primary",
+        group: "creature",
         id: "statistics",
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Statistics"),
@@ -9099,7 +9132,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       spells: {
         active: false,
         cssClass: "",
-        group: "primary",
+        group: "creature",
         id: "spells",
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Spells"),
@@ -9107,7 +9140,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       lore: {
         active: false,
         cssClass: "",
-        group: "primary",
+        group: "creature",
         id: "lore",
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Lore"),
@@ -9118,7 +9151,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       tabs["notes"] = {
         active: false,
         cssClass: "",
-        group: "primary",
+        group: "creature",
         id: "notes",
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes"),
@@ -9136,6 +9169,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   getNPCTabs() {
+    const { npc: tabStates } = this.bestiary.getFlag('pf2e-bestiary-tracking', 'tabStates');
     const tabs = {
       general: {
         active: true,
@@ -9152,6 +9186,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         id: "influence",
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.Influence"),
+        hideable: true,
+        hidden: tabStates.influence.hidden,
       },
       notes: {
         active: false,
@@ -9163,7 +9199,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       },
     };
 
-    if(game.user.isGM){
+    if (game.user.isGM) {
       tabs.gm = {
         active: false,
         cssClass: "",
@@ -9493,7 +9529,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     await this.enrichTexts(context.selected);
 
     context.players = [];
-    for(var data of game.actors.find(x => x.type === 'party' && x.active)?.system?.details?.members ?? []) {
+    for (var data of game.actors.find((x) => x.type === "party" && x.active)
+      ?.system?.details?.members ?? []) {
       const actor = await fromUuid(data.uuid);
       context.players.push({ id: actor.id, name: actor.name, img: actor.img });
     }
@@ -9616,7 +9653,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       this.selected.monster.type === "pf2e-bestiary-tracking.npc"
         ? true
         : false;
-    this.tabGroups = { primary: "statistics", secondary: "general" };
+    this.tabGroups = { creature: "statistics", secondary: "general" };
     this.render();
   }
 
@@ -10572,6 +10609,26 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
+  async hideTab(event){
+    event.stopPropagation();
+    event.preventDefault();
+
+    if(!game.user.isGM) return;
+
+    const group = event.currentTarget.dataset.group;
+    const tab = event.currentTarget.dataset.tab;
+
+    const tabStates = this.bestiary.getFlag('pf2e-bestiary-tracking', 'tabStates');
+    tabStates[group][tab] = { ...tabStates[group][tab], hidden: !tabStates[group][tab].hidden };
+    await this.bestiary.setFlag('pf2e-bestiary-tracking', 'tabStates', tabStates);
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
   async toggleIsNPC() {
     if (!this.selected.monster) return;
 
@@ -10903,10 +10960,15 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       return;
     }
 
-    if(event.currentTarget.classList.contains('npc-players-inner-container')){
+    if (event.currentTarget.classList.contains("npc-players-inner-container")) {
       const playerCharacter = game.actors.get(event.currentTarget.id);
-      const newDropEvent = new DragEvent("drop", { altKey: game.keyboard.isModifierActive("Alt") });
-      playerCharacter.sheet._onDropItem(newDropEvent, { type: 'item', data: baseItem });
+      const newDropEvent = new DragEvent("drop", {
+        altKey: game.keyboard.isModifierActive("Alt"),
+      });
+      playerCharacter.sheet._onDropItem(newDropEvent, {
+        type: "item",
+        data: baseItem,
+      });
       event.stopPropagation();
       return;
     }
@@ -10935,9 +10997,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       }
 
       const gmEditor = event.target.parentElement.parentElement;
-      if(
-        gmEditor.classList.contains('gm-notes')
-      ) {
+      if (gmEditor.classList.contains("gm-notes")) {
         const dialog = new foundry.applications.api.DialogV2({
           buttons: [
             foundry.utils.mergeObject(
@@ -10947,25 +11007,37 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
                 icon: "fas fa-check",
                 default: true,
               },
-              { callback: async (_, button) => {
-                const page = Array.from(baseItem.pages)[Number.parseInt(button.form.elements.page.value)];
-                await this.selected.monster.update({ "system.notes.gm.value": page.text.content });
-                
-                Hooks.callAll(socketEvent.UpdateBestiary, {});
-              }},
+              {
+                callback: async (_, button) => {
+                  const page = Array.from(baseItem.pages)[
+                    Number.parseInt(button.form.elements.page.value)
+                  ];
+                  await this.selected.monster.update({
+                    "system.notes.gm.value": page.text.content,
+                  });
+
+                  Hooks.callAll(socketEvent.UpdateBestiary, {});
+                },
+              },
             ),
           ],
           content: `
             <div style="display: flex; flex-direction: column; gap:8px;">
               <div>${game.i18n.localize("PF2EBestiary.Bestiary.NPC.GMNotesImportText")}</div>
-              ${new foundry.data.fields.StringField({
-                  choices: baseItem.pages.map(x => ({ id: x.id, name: x.name })),
+              ${
+                new foundry.data.fields.StringField({
+                  choices: baseItem.pages.map((x) => ({
+                    id: x.id,
+                    name: x.name,
+                  })),
                   label: game.i18n.localize(
                     "PF2EBestiary.Bestiary.NPC.GMNotesPageTitle",
                   ),
                   required: true,
-                }).toFormGroup({}, { name: "page", nameAttr: 'id', labelAttr: 'name' })
-                  .outerHTML
+                }).toFormGroup(
+                  {},
+                  { name: "page", nameAttr: "id", labelAttr: "name" },
+                ).outerHTML
               }
             </div>
           `,
@@ -10978,7 +11050,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           },
           position: { width: 400 },
         });
-    
+
         await dialog.render(true);
       }
 

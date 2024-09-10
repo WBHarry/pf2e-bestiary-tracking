@@ -178,3 +178,13 @@ export const alphaSort = (a, b, prop) => {
   if (a > b) return 1;
   else return 0;
 };
+
+export const versionCompare = (current, target) => {
+  const currentSplit = current.split(".").map((x) => Number.parseInt(x));
+  const targetSplit = target.split(".").map((x) => Number.parseInt(x));
+  for (var i = 0; i < currentSplit.length; i++) {
+    if (currentSplit[i] < targetSplit[i]) return true;
+  }
+
+  return false;
+};

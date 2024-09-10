@@ -134,6 +134,9 @@
         "Influence": "Influence",
         "GM": "GM"
       },
+      "Tips": {
+        "ToggleHideTabs": "Rightclick to toggle a hidden tab"
+      },
       "NPC": {
         "NPCCategoryDescription": "NPCs are sorted into categories created by the GM. You can add one below. Remove categories by rightclicking their bookmarks.",
         "NewCategory": "New NPC Category",

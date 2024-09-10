@@ -358,7 +358,7 @@
                 {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.traits" data-name="Trait" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
             </div>
         </div>
-        <div class="tab {{this.tabs.statistics.cssClass}}" data-group="primary" data-tab="statistics">
+        <div class="tab {{this.tabs.statistics.cssClass}}" data-group="creature" data-tab="statistics">
             <div class="right-monster-container-data">
                 <div class="data-sections">
                     <div class="data-section primary-container active">
@@ -758,7 +758,7 @@
             </div>        
         </div>
 
-        <div class="tab {{this.tabs.spells.cssClass}} spells-tab" data-group="primary" data-tab="spells">
+        <div class="tab {{this.tabs.spells.cssClass}} spells-tab" data-group="creature" data-tab="spells">
             {{#if this.system.spells.fake}}
                 {{#if this.user.isGM}}
                     <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.spells.fake}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.spells.fake}}" data-action="toggleRevealed" data-path="system.spells.fake">{{localize "PF2EBestiary.Miscellaneous.None"}}</div>
@@ -844,7 +844,7 @@
             {{/if}}
         </div>
 
-        <div class="tab {{this.tabs.lore.cssClass}}" data-group="primary" data-tab="lore">
+        <div class="tab {{this.tabs.lore.cssClass}}" data-group="creature" data-tab="lore">
             <div class="bestiary-notes-page">
                 <fieldset class="bestiary-notes-legend main-border-container">
                     <legend class="data-container {{#if this.user.isGM }}toggle-container {{#if this.system.notes.public.revealed}}revealed{{/if}}{{/if}} primary-container" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.notes.public}}" data-action="toggleRevealed" data-path="system.notes.public">
@@ -869,7 +869,7 @@
             </div>
         </div>
 
-        <div class="tab {{this.tabs.notes.cssClass}}" data-group="primary" data-tab="notes">
+        <div class="tab {{this.tabs.notes.cssClass}}" data-group="creature" data-tab="notes">
             <div class="bestiary-notes-page">
                 <fieldset class="bestiary-notes-legend player-notes main-border-container">
                     <legend>

@@ -181,6 +181,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     $(htmlElement)
       .find(".bookmark.npc")
       .on("contextmenu", this.removeBookmark.bind(this));
+    $(htmlElement)
+      .find(".bestiary-tab.hideable")
+      .on("contextmenu", this.hideTab.bind(this));
 
     this._dragDrop.forEach((d) => d.bind(htmlElement));
 
@@ -336,7 +339,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       statistics: {
         active: true,
         cssClass: "",
-        group: "primary",
+        group: "creature",
         id: "statistics",
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Statistics"),
@@ -344,7 +347,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       spells: {
         active: false,
         cssClass: "",
-        group: "primary",
+        group: "creature",
         id: "spells",
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Spells"),
@@ -352,7 +355,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       lore: {
         active: false,
         cssClass: "",
-        group: "primary",
+        group: "creature",
         id: "lore",
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Lore"),
@@ -363,7 +366,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       tabs["notes"] = {
         active: false,
         cssClass: "",
-        group: "primary",
+        group: "creature",
         id: "notes",
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes"),
@@ -381,6 +384,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   getNPCTabs() {
+    const { npc: tabStates } = this.bestiary.getFlag(
+      "pf2e-bestiary-tracking",
+      "tabStates",
+    );
     const tabs = {
       general: {
         active: true,
@@ -397,6 +404,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         id: "influence",
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.Influence"),
+        hideable: true,
+        hidden: tabStates.influence.hidden,
       },
       notes: {
         active: false,
@@ -862,7 +871,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       this.selected.monster.type === "pf2e-bestiary-tracking.npc"
         ? true
         : false;
-    this.tabGroups = { primary: "statistics", secondary: "general" };
+    this.tabGroups = { creature: "statistics", secondary: "general" };
     this.render();
   }
 
@@ -1809,6 +1818,36 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     await this.bestiary.unsetFlag(
       "pf2e-bestiary-tracking",
       "recall-knowledge-journal",
+    );
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  async hideTab(event) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (!game.user.isGM) return;
+
+    const group = event.currentTarget.dataset.group;
+    const tab = event.currentTarget.dataset.tab;
+
+    const tabStates = this.bestiary.getFlag(
+      "pf2e-bestiary-tracking",
+      "tabStates",
+    );
+    tabStates[group][tab] = {
+      ...tabStates[group][tab],
+      hidden: !tabStates[group][tab].hidden,
+    };
+    await this.bestiary.setFlag(
+      "pf2e-bestiary-tracking",
+      "tabStates",
+      tabStates,
     );
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {

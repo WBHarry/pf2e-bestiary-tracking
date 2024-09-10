@@ -118,15 +118,19 @@
                     </div>
                     <nav class="bestiary-tabs tabs">
                         {{#each this.tabs as |tab|}}
-                            <a 
-                                class="bestiary-tab secondary-container primary-tab {{tab.cssClass}}" 
-                                data-action="tab" 
-                                data-group="{{tab.group}}" 
-                                data-tab="{{tab.id}}"
-                            >
-                                <i class="{{tab.icon}}"></i>
-                                <label>{{tab.label}}</label>
-                            </a>
+                            {{#if (or ../user.isGM (not tab.hidden))}}
+                                <a 
+                                    class="bestiary-tab {{#if tab.hideable}}hideable{{/if}} secondary-container primary-tab {{tab.cssClass}}" 
+                                    data-action="tab" 
+                                    data-group="{{tab.group}}" 
+                                    data-tab="{{tab.id}}"
+                                    {{#if tab.hideable}}title="{{localize "PF2EBestiary.Bestiary.Tips.ToggleHideTabs"}}"{{/if}}
+                                >
+                                    {{#if (and ../user.isGM tab.hideable)}}<i class="tab-hide-icon {{#if tab.hidden}}fa solid fa-eye-slash{{else}}fa-solid fa-eye{{/if}}"></i>{{/if}}
+                                    <i class="{{tab.icon}}"></i>
+                                    <label>{{tab.label}}</label>
+                                </a>
+                            {{/if}}
                         {{/each}}
                     </nav>
                 </div>

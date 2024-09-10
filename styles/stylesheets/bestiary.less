@@ -323,10 +323,18 @@
         align-self: end;
 
         .bestiary-tab {
+          position: relative;
           border-style: solid;
           border-width: 2px 0 2px 2px;
           padding: 6px;
           font-weight: 600;
+
+          .tab-hide-icon {
+            position: absolute;
+            left: calc(50% - 6px);
+            top: -4px;
+            font-size: 12px;
+          }
         }
 
         .bestiary-tab:last-of-type {

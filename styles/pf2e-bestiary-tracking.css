@@ -340,10 +340,17 @@
   align-self: end;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-toolbar-container .bestiary-tabs .bestiary-tab {
+  position: relative;
   border-style: solid;
   border-width: 2px 0 2px 2px;
   padding: 6px;
   font-weight: 600;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-toolbar-container .bestiary-tabs .bestiary-tab .tab-hide-icon {
+  position: absolute;
+  left: calc(50% - 6px);
+  top: -4px;
+  font-size: 12px;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-toolbar-container .bestiary-tabs .bestiary-tab:last-of-type {
   border-right-width: 2px;
