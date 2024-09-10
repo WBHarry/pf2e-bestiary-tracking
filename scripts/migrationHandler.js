@@ -1361,21 +1361,20 @@ export const handleBestiaryMigration = async (bestiary, isSave) => {
       "0.9.9",
     )
   ) {
+    const newCategories = bestiaryJournal.getFlag(
+      "pf2e-bestiary-tracking",
+      "npcCategories",
+    );
     await bestiaryJournal.setFlag(
       "pf2e-bestiary-tracking",
       "npcCategories",
-      bestiaryJournal
-        .getFlag("pf2e-bestiary-tracking", "npcCategories")
-        .sort((a, b) => alphaSort(a, b, "name"))
-        .map((x, index) => ({ ...x, position: index })),
+      newCategories
+        ? newCategories
+            .sort((a, b) => alphaSort(a, b, "name"))
+            .map((x, index) => ({ ...x, position: index }))
+        : [],
     );
-  }
-  if (
-    versionCompare(
-      bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"),
-      "0.9.10",
-    )
-  ) {
+
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "tabStates", {
       creature: {
         statistics: { hidden: false },
@@ -1391,11 +1390,8 @@ export const handleBestiaryMigration = async (bestiary, isSave) => {
       },
       hazard: {},
     });
-    await bestiaryJournal.setFlag(
-      "pf2e-bestiary-tracking",
-      "version",
-      "0.9.10",
-    );
+
+    await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.9");
   }
 
   await migrateBestiaryPages(bestiaryJournal);

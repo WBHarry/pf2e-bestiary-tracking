@@ -163,12 +163,12 @@ const alphaSort = (a, b, prop) => {
 };
 
 const versionCompare = (current, target) => {
-  const currentSplit = current.split('.').map(x => Number.parseInt(x));
-  const targetSplit = target.split('.').map(x => Number.parseInt(x));
-  for(var i = 0; i < currentSplit.length; i++){
-    if(currentSplit[i] < targetSplit[i]) return true;
+  const currentSplit = current.split(".").map((x) => Number.parseInt(x));
+  const targetSplit = target.split(".").map((x) => Number.parseInt(x));
+  for (var i = 0; i < currentSplit.length; i++) {
+    if (currentSplit[i] < targetSplit[i]) return true;
   }
-  
+
   return false;
 };
 
@@ -7486,29 +7486,43 @@ const handleBestiaryMigration = async (bestiary, isSave) => {
   );
   if (!bestiaryJournal) return bestiary;
 
-  if (versionCompare(bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"), "0.9.5")) {
+  if (
+    versionCompare(
+      bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"),
+      "0.9.5",
+    )
+  ) {
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.5");
   }
-  if (versionCompare(bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"), "0.9.6")) {
+  if (
+    versionCompare(
+      bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"),
+      "0.9.6",
+    )
+  ) {
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.6");
   }
-  if (versionCompare(bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"), "0.9.9")) {
+  if (
+    versionCompare(
+      bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"),
+      "0.9.9",
+    )
+  ) {
+    const newCategories = bestiaryJournal
+    .getFlag("pf2e-bestiary-tracking", "npcCategories");
     await bestiaryJournal.setFlag(
       "pf2e-bestiary-tracking",
       "npcCategories",
-      bestiaryJournal
-        .getFlag("pf2e-bestiary-tracking", "npcCategories")
-        .sort((a, b) => alphaSort(a, b, "name"))
-        .map((x, index) => ({ ...x, position: index })),
+      newCategories ? newCategories.sort((a, b) => alphaSort(a, b, "name"))
+      .map((x, index) => ({ ...x, position: index })) : [],
     );
-  }
-  if(versionCompare(bestiaryJournal.getFlag("pf2e-bestiary-tracking", 'version'), "0.9.10")) {
-    await bestiaryJournal.setFlag('pf2e-bestiary-tracking', 'tabStates', {
+
+    await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "tabStates", {
       creature: {
         statistics: { hidden: false },
         spells: { hidden: false },
         lore: { hidden: false },
-        notes: { hidden: false }
+        notes: { hidden: false },
       },
       npc: {
         general: { hidden: false },
@@ -7516,11 +7530,10 @@ const handleBestiaryMigration = async (bestiary, isSave) => {
         notes: { hidden: false },
         gm: { hidden: false },
       },
-      hazard: {
-
-      }
+      hazard: {},
     });
-    await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.10");
+
+    await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.9");
   }
 
   await migrateBestiaryPages(bestiaryJournal);
@@ -9169,7 +9182,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   getNPCTabs() {
-    const { npc: tabStates } = this.bestiary.getFlag('pf2e-bestiary-tracking', 'tabStates');
+    const { npc: tabStates } = this.bestiary.getFlag(
+      "pf2e-bestiary-tracking",
+      "tabStates",
+    );
     const tabs = {
       general: {
         active: true,
@@ -10609,18 +10625,28 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
-  async hideTab(event){
+  async hideTab(event) {
     event.stopPropagation();
     event.preventDefault();
 
-    if(!game.user.isGM) return;
+    if (!game.user.isGM) return;
 
     const group = event.currentTarget.dataset.group;
     const tab = event.currentTarget.dataset.tab;
 
-    const tabStates = this.bestiary.getFlag('pf2e-bestiary-tracking', 'tabStates');
-    tabStates[group][tab] = { ...tabStates[group][tab], hidden: !tabStates[group][tab].hidden };
-    await this.bestiary.setFlag('pf2e-bestiary-tracking', 'tabStates', tabStates);
+    const tabStates = this.bestiary.getFlag(
+      "pf2e-bestiary-tracking",
+      "tabStates",
+    );
+    tabStates[group][tab] = {
+      ...tabStates[group][tab],
+      hidden: !tabStates[group][tab].hidden,
+    };
+    await this.bestiary.setFlag(
+      "pf2e-bestiary-tracking",
+      "tabStates",
+      tabStates,
+    );
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,
