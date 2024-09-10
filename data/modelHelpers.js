@@ -109,7 +109,7 @@ export const getCreatureData = (actor) => {
       texture: actor.prototypeToken.texture.src,
       name: { value: actor.name, revealed: defaultRevealed.name },
       hardness: { value: actor.system.attributes.hardness.value },
-      allSaves: { value: actor.system.attributes.allSaves.value },
+      allSaves: { value: actor.system.attributes.allSaves?.value },
       publication: actor.system.details.publication,
       ac: {
         value: Number.parseInt(actor.system.attributes.ac.value),

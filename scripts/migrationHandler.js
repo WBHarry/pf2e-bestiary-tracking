@@ -549,7 +549,7 @@ export const handleBestiaryMigration = async (bestiary, isSave) => {
   } catch {}
 
   if (bestiaryObject) {
-    const dataBestiary = bestiaryObject?.monster ? bestiaryObject : bestiary;
+    let dataBestiary = bestiaryObject?.monster ? bestiaryObject : bestiary;
 
     const oldMonsterData =
       Object.keys(dataBestiary.monster).length > 0 &&
@@ -559,7 +559,7 @@ export const handleBestiaryMigration = async (bestiary, isSave) => {
     dataBestiary.metadata.version = oldMonsterData
       ? "0.8.8.4"
       : !dataBestiary.metadata.version
-        ? currentVersion
+        ? "0.8.8.4"
         : dataBestiary.metadata.version;
 
     if (dataBestiary.metadata.version === "0.8.8") {
