@@ -112,6 +112,7 @@ export const getNPCCategories = () => {
         value: category.value,
         name: category.name,
         hidden: category.hidden,
+        position: category.position,
         values: [],
       });
       return acc;

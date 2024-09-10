@@ -1423,6 +1423,26 @@ export const migrateBestiaryPages = async (bestiary) => {
         await page.update({ "system.version": "0.9.6" });
       }
     }
+    if (versionCompare(page.system.version, "0.9.13")) {
+      if (page.type === "pf2e-bestiary-tracking.npc") {
+        const availableCategories = await bestiary.getFlag(
+          "pf2e-bestiary-tracking",
+          "npcCategories",
+        );
+        await page.update({
+          system: {
+            version: "0.9.13",
+            "npcData.categories": page.system.npcData.categories.filter((x) =>
+              availableCategories.find(
+                (category) => category.value === x.value,
+              ),
+            ),
+          },
+        });
+      } else {
+        await page.update({ "system.version": "0.9.13" });
+      }
+    }
   }
 };
 

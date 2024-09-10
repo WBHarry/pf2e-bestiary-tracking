@@ -95,6 +95,7 @@ const getNPCCategories = () => {
         value: category.value,
         name: category.name,
         hidden: category.hidden,
+        position: category.position,
         values: [],
       });
       return acc;
@@ -7625,6 +7626,26 @@ const migrateBestiaryPages = async (bestiary) => {
         await page.update({ "system.version": "0.9.6" });
       }
     }
+    if (versionCompare(page.system.version, "0.9.13")) {
+      if (page.type === "pf2e-bestiary-tracking.npc") {
+        const availableCategories = await bestiary.getFlag(
+          "pf2e-bestiary-tracking",
+          "npcCategories",
+        );
+        await page.update({
+          system: {
+            version: "0.9.13",
+            "npcData.categories": page.system.npcData.categories.filter((x) =>
+              availableCategories.find(
+                (category) => category.value === x.value,
+              ),
+            ),
+          },
+        });
+      } else {
+        await page.update({ "system.version": "0.9.13" });
+      }
+    }
   }
 };
 
@@ -7795,7 +7816,7 @@ const handleDeactivatedPages = async () => {
   }
 };
 
-const currentVersion = "0.9.12";
+const currentVersion = "0.9.13";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -11071,21 +11092,27 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         ? self
         : self.closest(".bookmark-container");
       let bookmarkTarget = $(dropTarget).find(".bookmark")[0];
-      $(dropTarget).removeClass("drop-hover");
+      $(bookmarkTarget).removeClass("drop-hover");
 
-      if (bookmarkTarget.dataset.bookmark === data.bookmark) return;
+      if (!bookmarkTarget || bookmarkTarget.dataset.bookmark === data.bookmark) return;
+
+      bookmarkTarget = $(dropTarget).find(".bookmark")[0];
+      const bookmark = categories.find(
+        (x) => x.value === bookmarkTarget.dataset.bookmark,
+      );
+      const position = bookmark ? bookmark.position < Number.parseInt(data.position) ? bookmark.position+1 : bookmark.position : 0;
+
+      if(position === Number.parseInt(data.position)) return;
+
       const orig = categories.splice(
         categories.indexOf(categories.find((x) => x.value === data.bookmark)),
         1,
       )[0];
 
       categories = categories.map((x, index) => ({ ...x, position: index }));
-      bookmarkTarget = $(dropTarget).find(".bookmark")[0];
-      const bookmark = categories.find(
-        (x) => x.value === bookmarkTarget.dataset.bookmark,
-      );
+      categories.splice(position, 0, orig);
+  
 
-      categories.splice(bookmark ? bookmark.position + 1 : 0, 0, orig);
       await this.bestiary.setFlag(
         "pf2e-bestiary-tracking",
         "npcCategories",

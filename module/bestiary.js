@@ -2165,21 +2165,31 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         ? self
         : self.closest(".bookmark-container");
       let bookmarkTarget = $(dropTarget).find(".bookmark")[0];
-      $(dropTarget).removeClass("drop-hover");
+      $(bookmarkTarget).removeClass("drop-hover");
 
-      if (bookmarkTarget.dataset.bookmark === data.bookmark) return;
+      if (!bookmarkTarget || bookmarkTarget.dataset.bookmark === data.bookmark)
+        return;
+
+      bookmarkTarget = $(dropTarget).find(".bookmark")[0];
+      const bookmark = categories.find(
+        (x) => x.value === bookmarkTarget.dataset.bookmark,
+      );
+      const position = bookmark
+        ? bookmark.position < Number.parseInt(data.position)
+          ? bookmark.position + 1
+          : bookmark.position
+        : 0;
+
+      if (position === Number.parseInt(data.position)) return;
+
       const orig = categories.splice(
         categories.indexOf(categories.find((x) => x.value === data.bookmark)),
         1,
       )[0];
 
       categories = categories.map((x, index) => ({ ...x, position: index }));
-      bookmarkTarget = $(dropTarget).find(".bookmark")[0];
-      const bookmark = categories.find(
-        (x) => x.value === bookmarkTarget.dataset.bookmark,
-      );
+      categories.splice(position, 0, orig);
 
-      categories.splice(bookmark ? bookmark.position + 1 : 0, 0, orig);
       await this.bestiary.setFlag(
         "pf2e-bestiary-tracking",
         "npcCategories",
