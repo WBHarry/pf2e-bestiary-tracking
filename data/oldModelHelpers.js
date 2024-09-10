@@ -336,7 +336,7 @@ export const getCreatureDataFromOld = (actor) => {
               },
               {},
             ),
-            traits: item.system.traits.value.reduce((acc, trait) => {
+            traits: item.system.traits?.value?.reduce((acc, trait) => {
               acc[trait.value] = {
                 revealed: trait.revealed,
                 value: trait.value,
@@ -372,7 +372,7 @@ export const getCreatureDataFromOld = (actor) => {
             actions: action.system.actions
               ? (action.system.actions.value ?? "R")
               : "1",
-            traits: action.system.traits.value.reduce((acc, trait) => {
+            traits: action.system.traits?.value?.reduce((acc, trait) => {
               acc[trait.value] = trait;
               return acc;
             }, {}),
@@ -396,7 +396,7 @@ export const getCreatureDataFromOld = (actor) => {
               : action.name,
             category: action.system.category ?? "",
             deathNote: action.system.deathNote ?? false,
-            traits: action.system.traits.value.reduce((acc, trait) => {
+            traits: action.system.traits?.value?.reduce((acc, trait) => {
               acc[trait.value] = trait;
               return acc;
             }, {}),

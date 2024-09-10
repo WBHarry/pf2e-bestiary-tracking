@@ -6065,7 +6065,7 @@ const getCreatureDataFromOld = (actor) => {
               },
               {},
             ),
-            traits: item.system.traits.value.reduce((acc, trait) => {
+            traits: item.system.traits?.value?.reduce((acc, trait) => {
               acc[trait.value] = {
                 revealed: trait.revealed,
                 value: trait.value,
@@ -6101,7 +6101,7 @@ const getCreatureDataFromOld = (actor) => {
             actions: action.system.actions
               ? (action.system.actions.value ?? "R")
               : "1",
-            traits: action.system.traits.value.reduce((acc, trait) => {
+            traits: action.system.traits?.value?.reduce((acc, trait) => {
               acc[trait.value] = trait;
               return acc;
             }, {}),
@@ -6125,7 +6125,7 @@ const getCreatureDataFromOld = (actor) => {
               : action.name,
             category: action.system.category ?? "",
             deathNote: action.system.deathNote ?? false,
-            traits: action.system.traits.value.reduce((acc, trait) => {
+            traits: action.system.traits?.value?.reduce((acc, trait) => {
               acc[trait.value] = trait;
               return acc;
             }, {}),
@@ -7816,7 +7816,7 @@ const handleDeactivatedPages = async () => {
   }
 };
 
-const currentVersion = "0.9.13";
+const currentVersion = "0.9.14";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -11094,15 +11094,20 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       let bookmarkTarget = $(dropTarget).find(".bookmark")[0];
       $(bookmarkTarget).removeClass("drop-hover");
 
-      if (!bookmarkTarget || bookmarkTarget.dataset.bookmark === data.bookmark) return;
+      if (!bookmarkTarget || bookmarkTarget.dataset.bookmark === data.bookmark)
+        return;
 
       bookmarkTarget = $(dropTarget).find(".bookmark")[0];
       const bookmark = categories.find(
         (x) => x.value === bookmarkTarget.dataset.bookmark,
       );
-      const position = bookmark ? bookmark.position < Number.parseInt(data.position) ? bookmark.position+1 : bookmark.position : 0;
+      const position = bookmark
+        ? bookmark.position < Number.parseInt(data.position)
+          ? bookmark.position + 1
+          : bookmark.position
+        : 0;
 
-      if(position === Number.parseInt(data.position)) return;
+      if (position === Number.parseInt(data.position)) return;
 
       const orig = categories.splice(
         categories.indexOf(categories.find((x) => x.value === data.bookmark)),
@@ -11111,7 +11116,6 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
       categories = categories.map((x, index) => ({ ...x, position: index }));
       categories.splice(position, 0, orig);
-  
 
       await this.bestiary.setFlag(
         "pf2e-bestiary-tracking",
