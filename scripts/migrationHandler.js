@@ -1541,7 +1541,7 @@ const handleDeactivatedPages = async () => {
       folder: folder.id,
     });
     await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
-    await journal.setFlag("pf2e-bestiary-tracking", "version", currentVersion);
+    await journal.setFlag("pf2e-bestiary-tracking", "version", "0.9.5");
     await journal.setFlag(
       "pf2e-bestiary-tracking",
       "image",
