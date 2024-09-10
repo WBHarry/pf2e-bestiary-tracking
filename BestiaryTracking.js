@@ -7744,6 +7744,21 @@ const handleDeactivatedPages = async () => {
     });
     await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
     await journal.setFlag("pf2e-bestiary-tracking", "version", "0.9.5");
+    await journal.setFlag("pf2e-bestiary-tracking", "tabStates", {
+      creature: {
+        statistics: { hidden: false },
+        spells: { hidden: false },
+        lore: { hidden: false },
+        notes: { hidden: false },
+      },
+      npc: {
+        general: { hidden: false },
+        influence: { hidden: true },
+        notes: { hidden: false },
+        gm: { hidden: false },
+      },
+      hazard: {},
+    });
     await journal.setFlag(
       "pf2e-bestiary-tracking",
       "image",
@@ -7780,7 +7795,7 @@ const handleDeactivatedPages = async () => {
   }
 };
 
-const currentVersion = "0.9.11";
+const currentVersion = "0.9.12";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -8489,6 +8504,21 @@ const resetBestiary = async () => {
     });
     await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
     await journal.setFlag("pf2e-bestiary-tracking", "version", currentVersion);
+    await journal.setFlag("pf2e-bestiary-tracking", "tabStates", {
+      creature: {
+        statistics: { hidden: false },
+        spells: { hidden: false },
+        lore: { hidden: false },
+        notes: { hidden: false },
+      },
+      npc: {
+        general: { hidden: false },
+        influence: { hidden: true },
+        notes: { hidden: false },
+        gm: { hidden: false },
+      },
+      hazard: {},
+    });
     await journal.setFlag(
       "pf2e-bestiary-tracking",
       "image",
