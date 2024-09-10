@@ -7725,7 +7725,7 @@ const handleDeactivatedPages = async () => {
   }
 };
 
-const currentVersion = "0.9.9";
+const currentVersion = "0.9.10";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -8182,7 +8182,7 @@ const bestiaryIntegration = () => {
       monster: false,
       npc: true,
       hazard: false,
-      npcCategories: true
+      npcCategories: true,
     },
   });
 
@@ -9793,7 +9793,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         if (game.combat) {
           await game.combat.combatants
             .find((x) => x.token.baseActor.uuid === monster.system.uuid)
-            .update({ name: name });
+            ?.update({ name: name });
         }
       }
     }
@@ -10478,7 +10478,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           value: categoryKey,
           name: this.npcData.newCategory.text,
           position: categories.length,
-          hidden: game.settings.get('pf2e-bestiary-tracking', 'hidden-settings').npcCategories,
+          hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
+            .npcCategories,
         },
       ]);
       this.npcData.newCategory.text = null;

@@ -467,6 +467,9 @@
   border-style: dashed;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .toggle-container.misinformation {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-style: wavy;
   text-decoration-line: grammar-error;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .monster-data-list {

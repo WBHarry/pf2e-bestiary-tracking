@@ -3,7 +3,7 @@
   "name": "pf2e-bestiary-tracking",
   "title": "PF2E Bestiary Tracking",
   "description": "A module to track known information about enemies for players in a bestiary.",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "authors": [
     {
       "name": "HarryBoy"

@@ -989,7 +989,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         if (game.combat) {
           await game.combat.combatants
             .find((x) => x.token.baseActor.uuid === monster.system.uuid)
-            .update({ name: name });
+            ?.update({ name: name });
         }
       }
     }
