@@ -1,4 +1,7 @@
-import { revealedState } from "../data/bestiaryAppearance.js";
+import {
+  bestiaryCategorySettings,
+  revealedState,
+} from "../data/bestiaryAppearance.js";
 import Tagify from "@yaireo/tagify";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -30,6 +33,10 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
         "pf2e-bestiary-tracking",
         "detailed-information-toggles",
       ),
+      categorySettings: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "bestiary-category-settings",
+      ),
     };
   }
 
@@ -44,8 +51,10 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
     position: { width: 680, height: "auto" },
     actions: {
       resetContrastRevealedState: this.resetContrastRevealedState,
+      resetCategorySettings: this.resetCategorySettings,
       toggleOptionalFields: this.toggleOptionalFields,
       toggleDetailedInformation: this.toggleDetailedInformation,
+      filePicker: this.filePicker,
       save: this.save,
     },
     form: { handler: this.updateData, submitOnChange: true },
@@ -110,6 +119,19 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
       contrastRevealedState: data.contrastRevealedState,
       optionalFields: data.optionalFields,
       detailedInformation: { ...data.detailedInformation },
+      categorySettings: {
+        creature: {
+          ...data.categorySettings.creature,
+          image: this.settings.categorySettings.creature.image,
+        },
+        npc: {
+          ...data.categorySettings.npc,
+          image: this.settings.categorySettings.npc.image,
+        },
+        hazard: {
+          ...this.settings.categorySettings.hazard,
+        },
+      },
     };
     this.render();
   }
@@ -123,6 +145,11 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
 
   static async resetContrastRevealedState() {
     this.settings.contrastRevealedState = { ...revealedState };
+    this.render();
+  }
+
+  static async resetCategorySettings() {
+    this.settings.categorySettings = { ...bestiaryCategorySettings };
     this.render();
   }
 
@@ -148,6 +175,17 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
     }, {});
 
     this.render();
+  }
+
+  static async filePicker(_, button) {
+    new FilePicker({
+      type: "image",
+      title: "Image Select",
+      callback: async (path) => {
+        foundry.utils.setProperty(this.settings, button.dataset.path, path);
+        this.render();
+      },
+    }).render(true);
   }
 
   static async save(_) {
@@ -183,6 +221,11 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "detailed-information-toggles",
       this.settings.detailedInformation,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "bestiary-category-settings",
+      this.settings.categorySettings,
     );
     this.close();
   }

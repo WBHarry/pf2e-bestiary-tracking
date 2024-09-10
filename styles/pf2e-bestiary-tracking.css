@@ -1095,6 +1095,17 @@
   flex-direction: column;
   gap: 8px;
 }
+.bestiary-settings-menu .bestiary-customization-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bestiary-settings-menu .bestiary-customization-container .no-flex {
+  flex: none;
+}
+.bestiary-settings-menu .bestiary-customization-container button {
+  height: 32px;
+}
 .bestiary-settings-menu .menu-grouper-container {
   display: flex;
   flex-direction: column;

@@ -728,8 +728,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       "contrast-revealed-state",
     );
     context.vagueDescriptions = foundry.utils.deepClone(
-      await game.settings.get("pf2e-bestiary-tracking", "vague-descriptions"),
+      game.settings.get("pf2e-bestiary-tracking", "vague-descriptions"),
     );
+    context.categorySettings = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "bestiary-category-settings",
+    );
+
     context.recallKnowledgeJournal = this.bestiary.getFlag(
       "pf2e-bestiary-tracking",
       "recall-knowledge-journal",

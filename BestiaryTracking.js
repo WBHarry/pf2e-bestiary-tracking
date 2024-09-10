@@ -185,6 +185,21 @@ const optionalFields = {
   weight: false,
 };
 
+const bestiaryCategorySettings = {
+  creature: {
+    name: "PF2EBestiary.Bestiary.Category.Creatures",
+    image: "icons/creatures/magical/humanoid-silhouette-green.webp",
+  },
+  npc: {
+    name: "PF2EBestiary.Bestiary.Category.NPC",
+    image: "icons/environment/people/group.webp",
+  },
+  hazard: {
+    name: "PF2EBestiary.Bestiary.Category.Hazards",
+    image: "icons/environment/traps/trap-jaw-steel.webp",
+  },
+};
+
 const getVagueDescriptionLabels = () => ({
   full: {
     extreme: game.i18n.localize(
@@ -5082,6 +5097,10 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$5(
         "pf2e-bestiary-tracking",
         "detailed-information-toggles",
       ),
+      categorySettings: game.settings.get(
+        "pf2e-bestiary-tracking", 
+        "bestiary-category-settings"
+      ),
     };
   }
 
@@ -5096,8 +5115,10 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$5(
     position: { width: 680, height: "auto" },
     actions: {
       resetContrastRevealedState: this.resetContrastRevealedState,
+      resetCategorySettings: this.resetCategorySettings,
       toggleOptionalFields: this.toggleOptionalFields,
       toggleDetailedInformation: this.toggleDetailedInformation,
+      filePicker: this.filePicker,
       save: this.save,
     },
     form: { handler: this.updateData, submitOnChange: true },
@@ -5162,6 +5183,19 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$5(
       contrastRevealedState: data.contrastRevealedState,
       optionalFields: data.optionalFields,
       detailedInformation: { ...data.detailedInformation },
+      categorySettings: {  
+        creature: {
+          ...data.categorySettings.creature,
+          image: this.settings.categorySettings.creature.image,
+        },
+        npc: {
+          ...data.categorySettings.npc,
+          image: this.settings.categorySettings.npc.image,
+        },
+        hazard: {
+          ...this.settings.categorySettings.hazard
+        }
+      },
     };
     this.render();
   }
@@ -5175,6 +5209,11 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$5(
 
   static async resetContrastRevealedState() {
     this.settings.contrastRevealedState = { ...revealedState };
+    this.render();
+  }
+
+  static async resetCategorySettings() {
+    this.settings.categorySettings = { ...bestiaryCategorySettings };
     this.render();
   }
 
@@ -5200,6 +5239,17 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$5(
     }, {});
 
     this.render();
+  }
+
+  static async filePicker(_, button){
+    new FilePicker({
+      type: "image",
+      title: "Image Select",
+      callback: async path => {
+        foundry.utils.setProperty(this.settings, button.dataset.path, path);
+        this.render();
+      },
+    }).render(true);
   }
 
   static async save(_) {
@@ -5235,6 +5285,11 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$5(
       "pf2e-bestiary-tracking",
       "detailed-information-toggles",
       this.settings.detailedInformation,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking", 
+      "bestiary-category-settings",
+      this.settings.categorySettings,
     );
     this.close();
   }
@@ -8025,6 +8080,15 @@ const bestiaryAppearance = () => {
     restricted: true,
   });
 
+  game.settings.register("pf2e-bestiary-tracking", "bestiary-category-settings", {
+    name: game.i18n.localize("PF2EBestiary.Settings.BestiaryCategorySettings.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.BestiaryCategorySettings.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: bestiaryCategorySettings,
+  });
+
   game.settings.register("pf2e-bestiary-tracking", "contrast-revealed-state", {
     name: game.i18n.localize("PF2EBestiary.Settings.ContrastRevealState.Name"),
     hint: game.i18n.localize("PF2EBestiary.Settings.ContrastRevealState.Hint"),
@@ -9532,8 +9596,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       "contrast-revealed-state",
     );
     context.vagueDescriptions = foundry.utils.deepClone(
-      await game.settings.get("pf2e-bestiary-tracking", "vague-descriptions"),
+      game.settings.get("pf2e-bestiary-tracking", "vague-descriptions"),
     );
+    context.categorySettings = game.settings.get('pf2e-bestiary-tracking', 'bestiary-category-settings');
+
     context.recallKnowledgeJournal = this.bestiary.getFlag(
       "pf2e-bestiary-tracking",
       "recall-knowledge-journal",

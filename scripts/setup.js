@@ -1,4 +1,8 @@
-import { optionalFields, revealedState } from "../data/bestiaryAppearance.js";
+import {
+  bestiaryCategorySettings,
+  optionalFields,
+  revealedState,
+} from "../data/bestiaryAppearance.js";
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import { Creature } from "../data/creature.js";
 import { NPC } from "../data/npc.js";
@@ -307,6 +311,23 @@ const bestiaryAppearance = () => {
     type: BestiaryAppearanceMenu,
     restricted: true,
   });
+
+  game.settings.register(
+    "pf2e-bestiary-tracking",
+    "bestiary-category-settings",
+    {
+      name: game.i18n.localize(
+        "PF2EBestiary.Settings.BestiaryCategorySettings.Name",
+      ),
+      hint: game.i18n.localize(
+        "PF2EBestiary.Settings.BestiaryCategorySettings.Hint",
+      ),
+      scope: "world",
+      config: false,
+      type: Object,
+      default: bestiaryCategorySettings,
+    },
+  );
 
   game.settings.register("pf2e-bestiary-tracking", "contrast-revealed-state", {
     name: game.i18n.localize("PF2EBestiary.Settings.ContrastRevealState.Name"),

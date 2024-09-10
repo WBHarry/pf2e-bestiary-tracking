@@ -31,20 +31,20 @@
                 <div class="main-page-category-container">
                     <div class="main-page-category-card">
                         <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.creature')}}secondary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.creature">
-                            <img src="icons/creatures/magical/humanoid-silhouette-green.webp" />
-                            <h4 class="main-page-category-label primary-container">{{localize "PF2EBestiary.Bestiary.Category.Creatures"}}</h4>
+                            <img src="{{this.categorySettings.creature.image}}" />
+                            <h4 class="main-page-category-label primary-container">{{localize this.categorySettings.creature.name}}</h4>
                         </div>
                     </div>
                     <div class="main-page-category-card">
                         <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.npc')}}secondary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.npc">
-                            <img src="icons/environment/people/group.webp" />
-                            <h4 class="main-page-category-label primary-container">{{localize "PF2EBestiary.Bestiary.Category.NPC"}}</h4>
+                            <img src="{{this.categorySettings.npc.image}}" />
+                            <h4 class="main-page-category-label primary-container">{{localize this.categorySettings.npc.name}}</h4>
                         </div>
                     </div>
                     <div class="main-page-category-card" title="Not available yet!">
                         <div class="main-page-category-image-container secondary-border-container inactive">
-                            <img src="icons/environment/traps/trap-jaw-steel.webp" class="inactive" />
-                            <h4 class="main-page-category-label primary-container inactive">{{localize "PF2EBestiary.Bestiary.Category.Hazards"}}</h4>
+                            <img src="{{this.categorySettings.hazard.image}}" class="inactive" />
+                            <h4 class="main-page-category-label primary-container inactive">{{localize this.categorySettings.hazard.name}}</h4>
                         </div>
                         <i class="fa-solid fa-lock under-development primary-icon"></i>
                     </div>

@@ -96,6 +96,51 @@
 
     <fieldset class="menu-category">
         <legend class="flexed">
+            <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.CategorySettings.Title"}}</h4>
+            <i class="fa-solid fa-arrow-rotate-left pf2e-bestiary-clickable-icon" data-action="resetCategorySettings"></i>
+        </legend>
+        <div class="bestiary-customization-container">
+            <div class="menu-grouper-container">
+                <label>{{localize "PF2EBestiary.Bestiary.Category.Creatures"}}</label>
+                <div class="menu-grouper">
+                    <div class="form-group">
+                        <div class="form-fields">
+                            <label>{{localize "PF2EBestiary.Miscellaneous.Title"}}</label>
+                            <div class="form-fields no-flex">
+                                <input type="text" name="categorySettings.creature.name" value="{{localize settings.categorySettings.creature.name}}" />
+                            </div>
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.CategorySettings.Image"}}</label>
+                            <div class="form-fields">
+                                <input type="text" value="{{localize settings.categorySettings.creature.image}}" disabled />
+                                <button data-action="filePicker" data-path="categorySettings.creature.image" title="Browse Files"><i class="fas fa-file-import fa-fw"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-grouper-container">
+                <label>{{localize "PF2EBestiary.Bestiary.Category.NPC"}}</label>
+                <div class="menu-grouper">
+                    <div class="form-group">
+                        <div class="form-fields">
+                            <label>{{localize "PF2EBestiary.Miscellaneous.Title"}}</label>
+                            <div class="form-fields no-flex">
+                                <input type="text" name="categorySettings.npc.name" value="{{localize settings.categorySettings.npc.name}}" />
+                            </div>
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.CategorySettings.Image"}}</label>
+                            <div class="form-fields">
+                                <input type="text" value="{{localize settings.categorySettings.npc.image}}" disabled />
+                                <button data-action="filePicker" data-path="categorySettings.npc.image" title="Browse Files"><i class="fas fa-file-import fa-fw"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="menu-category">
+        <legend class="flexed">
             <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ContrastRevealedState.Name"}}</h4>
             <i class="fa-solid fa-arrow-rotate-left pf2e-bestiary-clickable-icon" data-action="resetContrastRevealedState"></i>
         </legend>
