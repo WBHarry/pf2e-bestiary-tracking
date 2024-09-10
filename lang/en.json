@@ -131,7 +131,8 @@
       },
       "NPCTabs": {
         "General": "General",
-        "Influence": "Influence"
+        "Influence": "Influence",
+        "GM": "GM"
       },
       "NPC": {
         "NPCCategoryDescription": "NPCs are sorted into categories created by the GM. You can add one below. Remove categories by rightclicking their bookmarks.",
@@ -170,7 +171,13 @@
         "PremiseLabel": "Premise",
         "TransformCreatureTitle": "Transform To NPC",
         "TransformNPCTitle": "Transform To Creature",
-        "TransformNPCText": " Are you sure you want to transform this NPC into a creature? Any NPC data you've added will be lost."
+        "TransformNPCText": " Are you sure you want to transform this NPC into a creature? Any NPC data you've added will be lost.",
+        "GMNotesImportTitle": "Import GM Notes from journal",
+        "GMNotesImportText": "Select a page to import text from. This will overwrite any existing text in the GM Notes.",
+        "GMNotesPageTitle": "Page",
+        "GMPlayersContainerTitle": "Players",
+        "GMPlayersContainerTip": "Dropping anything on a player's image acts the same as dropping them on the player token.",
+        "GMTextZoneTip": "Drag and drop a journal onto the text area to import text from it."
       },
       "Lore": {
         "Public": "Description",
@@ -178,6 +185,9 @@
       },
       "PlayerNotes": {
         "Title": "Player Notes"
+      },
+      "GMNotes": {
+        "Title": "GM Notes"
       },
       "Misinformation": {
         "AddMisinformation": "Add Misinformation",

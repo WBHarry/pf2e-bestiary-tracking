@@ -152,7 +152,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     dragDrop: [
       { dragSelector: null, dropSelector: ".recall-knowledge-container" },
       { dragSelector: ".bookmark-container.draggable", dropSelector: null },
-      { dragSelector: null, dropSelector: null },
+      { dragSelector: null, dropSelector: ".npc-players-inner-container" },
     ],
   };
 
@@ -408,6 +408,17 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       },
     };
 
+    if (game.user.isGM) {
+      tabs.gm = {
+        active: false,
+        cssClass: "",
+        group: "npc",
+        id: "gm",
+        icon: null,
+        label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.GM"),
+      };
+    }
+
     for (const v of Object.values(tabs)) {
       v.active = this.tabGroups[v.group]
         ? this.tabGroups[v.group] === v.id
@@ -478,7 +489,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           selected.monster.system.npcData.general.background.value,
         );
 
-      // selected.monster.system.npcData.influence.premise.enriched = await TextEditor.enrichHTML(selected.monster.system.npcData.influence.premise.value);
+      selected.monster.system.notes.gm.enriched = await TextEditor.enrichHTML(
+        selected.monster.system.notes.gm.value,
+      );
 
       for (var key of Object.keys(
         selected.monster.system.npcData.influence.discovery,
@@ -723,6 +736,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     context.npcState = this.npcData;
     context.selected = foundry.utils.deepClone(this.selected);
     await this.enrichTexts(context.selected);
+
+    context.players = [];
+    for (var data of game.actors.find((x) => x.type === "party" && x.active)
+      ?.system?.details?.members ?? []) {
+      const actor = await fromUuid(data.uuid);
+      context.players.push({ id: actor.id, name: actor.name, img: actor.img });
+    }
 
     context.typeTitle = this.selected.type
       ? this.selected.category === "pf2e-bestiary-tracking.monster"
@@ -2129,13 +2149,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       return;
     }
 
-    if (
-      baseItem.type === "effect" &&
-      this.selected.category === "pf2e-bestiary-tracking.npc" &&
-      this.selected.monster
-    ) {
-      console.log("Add effect");
-
+    if (event.currentTarget.classList.contains("npc-players-inner-container")) {
+      const playerCharacter = game.actors.get(event.currentTarget.id);
+      const newDropEvent = new DragEvent("drop", {
+        altKey: game.keyboard.isModifierActive("Alt"),
+      });
+      playerCharacter.sheet._onDropItem(newDropEvent, {
+        type: "item",
+        data: baseItem,
+      });
+      event.stopPropagation();
       return;
     }
 
@@ -2160,6 +2183,64 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         });
 
         Hooks.callAll(socketEvent.UpdateBestiary, {});
+      }
+
+      const gmEditor = event.target.parentElement.parentElement;
+      if (gmEditor.classList.contains("gm-notes")) {
+        const dialog = new foundry.applications.api.DialogV2({
+          buttons: [
+            foundry.utils.mergeObject(
+              {
+                action: "ok",
+                label: "Confirm",
+                icon: "fas fa-check",
+                default: true,
+              },
+              {
+                callback: async (_, button) => {
+                  const page = Array.from(baseItem.pages)[
+                    Number.parseInt(button.form.elements.page.value)
+                  ];
+                  await this.selected.monster.update({
+                    "system.notes.gm.value": page.text.content,
+                  });
+
+                  Hooks.callAll(socketEvent.UpdateBestiary, {});
+                },
+              },
+            ),
+          ],
+          content: `
+            <div style="display: flex; flex-direction: column; gap:8px;">
+              <div>${game.i18n.localize("PF2EBestiary.Bestiary.NPC.GMNotesImportText")}</div>
+              ${
+                new foundry.data.fields.StringField({
+                  choices: baseItem.pages.map((x) => ({
+                    id: x.id,
+                    name: x.name,
+                  })),
+                  label: game.i18n.localize(
+                    "PF2EBestiary.Bestiary.NPC.GMNotesPageTitle",
+                  ),
+                  required: true,
+                }).toFormGroup(
+                  {},
+                  { name: "page", nameAttr: "id", labelAttr: "name" },
+                ).outerHTML
+              }
+            </div>
+          `,
+          rejectClose: false,
+          modal: false,
+          window: {
+            title: game.i18n.localize(
+              "PF2EBestiary.Bestiary.NPC.GMNotesImportTitle",
+            ),
+          },
+          position: { width: 400 },
+        });
+
+        await dialog.render(true);
       }
 
       return;

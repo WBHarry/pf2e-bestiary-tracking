@@ -423,6 +423,9 @@ export class Creature extends foundry.abstract.TypeDataModel {
         player: new fields.SchemaField({
           value: new fields.HTMLField({ required: true, initial: "" }),
         }),
+        gm: new fields.SchemaField({
+          value: new fields.HTMLField({ required: true, initial: "" }),
+        }),
       }),
     };
   }

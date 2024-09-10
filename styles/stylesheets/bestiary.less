@@ -38,6 +38,36 @@
       flex-direction: column;
     }
 
+    .npc-players-container {
+      height: 100%;
+
+      .data-body {
+        gap: 8px;
+        overflow: auto;
+      }
+
+      .npc-players-inner-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+
+        img {
+          width: 112px;
+        }
+
+        .npc-players-name {
+          position: absolute;
+          top: -6px;
+          width: 100%;
+          text-align: center;
+          font-size: 18px;
+          color: white;
+          text-shadow: 0 0 10px black;
+        }
+      }
+    }
+
     .drop-hover {
       &::after {
         content: "";
@@ -282,8 +312,10 @@
         display: flex;
         align-items: center;
         justify-content: end;
-        position: relative;
-        right: 16px;
+
+        .toggle-switch:last-of-type input {
+          margin-right: 0;
+        }
       }
 
       .bestiary-tabs {
@@ -1013,7 +1045,8 @@
             }
           }
 
-          .player-notes {
+          .player-notes,
+          .gm-notes {
             height: 100%;
 
             legend {

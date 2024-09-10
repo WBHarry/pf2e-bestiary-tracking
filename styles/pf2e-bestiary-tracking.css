@@ -103,6 +103,31 @@
   display: flex;
   flex-direction: column;
 }
+.pf2e-bestiary-tracking.bestiary .npc-players-container {
+  height: 100%;
+}
+.pf2e-bestiary-tracking.bestiary .npc-players-container .data-body {
+  gap: 8px;
+  overflow: auto;
+}
+.pf2e-bestiary-tracking.bestiary .npc-players-container .npc-players-inner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.pf2e-bestiary-tracking.bestiary .npc-players-container .npc-players-inner-container img {
+  width: 112px;
+}
+.pf2e-bestiary-tracking.bestiary .npc-players-container .npc-players-inner-container .npc-players-name {
+  position: absolute;
+  top: -6px;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  color: white;
+  text-shadow: 0 0 10px black;
+}
 .pf2e-bestiary-tracking.bestiary .drop-hover::after {
   content: "";
   width: 124px;
@@ -306,8 +331,9 @@
   display: flex;
   align-items: center;
   justify-content: end;
-  position: relative;
-  right: 16px;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-toolbar-container .toggle-switch-container .toggle-switch:last-of-type input {
+  margin-right: 0;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-toolbar-container .bestiary-tabs {
   gap: 0;
@@ -922,25 +948,31 @@
   background-image: none;
   background-color: black;
 }
-.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes {
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes,
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .gm-notes {
   height: 100%;
 }
-.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes legend {
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes legend,
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .gm-notes legend {
   display: flex;
   align-items: center;
   gap: 32px;
 }
-.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes legend .player-notes-icon {
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes legend .player-notes-icon,
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .gm-notes legend .player-notes-icon {
   font-size: 16px;
 }
-.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes .editor {
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes .editor,
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .gm-notes .editor {
   height: 100%;
   overflow: auto;
 }
-.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes .editor .editor-container {
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes .editor .editor-container,
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .gm-notes .editor .editor-container {
   height: 100%;
 }
-.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes .editor .editor-container .editor-content {
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .player-notes .editor .editor-container .editor-content,
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .bestiary-notes-page .gm-notes .editor .editor-container .editor-content {
   height: 100%;
   overflow: auto;
 }

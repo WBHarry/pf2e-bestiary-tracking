@@ -40,6 +40,24 @@
 
             </div>
         </div>
+        <div class="tab minor {{this.tabs.gm.cssClass}}" data-group="npc" data-tab="gm">
+            <div class="data-section primary-container npc-players-container">
+                <div class="data-header primary-container" title="{{localize "PF2EBestiary.Bestiary.NPC.GMPlayersContainerTip"}}">
+                    <div class="data-header-label">
+                        <i class="fa-solid fa-person-burst"></i>
+                        <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.GMPlayersContainerTitle"}}</div>
+                    </div>
+                </div>
+                <div class="data-body primary-border-container flex1">
+                    {{#each this.players}}
+                        <div class="npc-players-inner-container" id="{{this.id}}">
+                            <img class="primary-border-container" src="{{this.img}}" />
+                            <div class="npc-players-name">{{this.name}}</div>
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
+        </div>
         <div class="tab minor {{this.tabs.influence.cssClass}}" data-group="npc" data-tab="influence"> {{!-- <img class="data-icon" src="icons/svg/eye.svg" /> --}}
             <div class="flexcol">
                 {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-eye" title="PF2EBestiary.Miscellaneous.Perception" editMode=this.npcState.editMode path="system.senses.perception" data=this.creatureData.system.senses.perception noEdit="true" }}
@@ -79,6 +97,12 @@
                 <div class="bestiary-toolbar-container">
                     <div class="flexrow">
                         <div class="toggle-switch-container">
+                            {{#if (not this.simple)}}
+                                <div class="toggle-switch">
+                                    <i class="fa-solid fa-user"></i>
+                                    <input type="checkbox" name="npcData.npcView" {{checked this.npcState.npcView}} title="{{localize "PF2EBestiary.Bestiary.NPC.NPCViewText"}}" />
+                                </div>
+                            {{/if}}
                             {{#if this.user.isGM}}
                                 <div class="toggle-switch">
                                     <i class="fa-solid fa-screwdriver-wrench"></i>
@@ -89,12 +113,7 @@
                                     <input type="checkbox" name="system.npcData.simple" {{checked this.simple}} title="{{localize "PF2EBestiary.Bestiary.NPC.NPCSimpleText"}}" />
                                 </div>
                             {{/if}}
-                            {{#if (not this.simple)}}
-                                <div class="toggle-switch">
-                                    <i class="fa-solid fa-user"></i>
-                                    <input type="checkbox" name="npcData.npcView" {{checked this.npcState.npcView}} title="{{localize "PF2EBestiary.Bestiary.NPC.NPCViewText"}}" />
-                                </div>
-                            {{/if}}
+
                         </div>
                     </div>
                     <nav class="bestiary-tabs tabs">
@@ -413,6 +432,18 @@
                     </legend>
                     <prose-mirror name="system.notes.player.value" data-document-u-u-i-d="{{this.creatureData.uuid}}" value="{{this.creatureData.system.notes.player.value}}" collaborate="true" toggled="true">
                         {{{this.creatureData.system.notes.player.enriched}}}
+                    </prose-mirror>
+                </fieldset>
+            </div>
+        </div> 
+        <div class="tab {{this.tabs.gm.cssClass}}" data-group="npc" data-tab="gm">
+            <div class="bestiary-notes-page">
+                <fieldset class="bestiary-notes-legend gm-notes main-border-container">
+                    <legend title="{{localize "PF2EBestiary.Bestiary.NPC.GMTextZoneTip"}}">
+                        <div class="data-container primary-container">{{localize "PF2EBestiary.Bestiary.GMNotes.Title"}}</div>
+                    </legend>
+                    <prose-mirror name="system.notes.gm.value" data-document-u-u-i-d="{{this.creatureData.uuid}}" value="{{this.creatureData.system.notes.gm.value}}" toggled="true">
+                        {{{this.creatureData.system.notes.gm.enriched}}}
                     </prose-mirror>
                 </fieldset>
             </div>
