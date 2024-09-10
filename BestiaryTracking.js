@@ -8182,6 +8182,7 @@ const bestiaryIntegration = () => {
       monster: false,
       npc: true,
       hazard: false,
+      npcCategories: true
     },
   });
 
@@ -10477,6 +10478,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           value: categoryKey,
           name: this.npcData.newCategory.text,
           position: categories.length,
+          hidden: game.settings.get('pf2e-bestiary-tracking', 'hidden-settings').npcCategories,
         },
       ]);
       this.npcData.newCategory.text = null;

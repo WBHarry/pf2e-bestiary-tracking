@@ -465,6 +465,7 @@ const bestiaryIntegration = () => {
       monster: false,
       npc: true,
       hazard: false,
+      npcCategories: true,
     },
   });
 

@@ -350,7 +350,8 @@
           "Name": "Default Hidden From Players",
           "Monster": "Monster",
           "NPC": "NPC",
-          "Hazard": "Hazard"
+          "Hazard": "Hazard",
+          "NPCCategories": "NPC Categories"
         },
         "DefaultRevealed": {
           "Title": "Default Revealed Properties",
