@@ -1402,22 +1402,6 @@ export const handleBestiaryMigration = async (bestiary, isSave) => {
         : [],
     );
 
-    await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "tabStates", {
-      creature: {
-        statistics: { hidden: false },
-        spells: { hidden: false },
-        lore: { hidden: false },
-        notes: { hidden: false },
-      },
-      npc: {
-        general: { hidden: false },
-        influence: { hidden: true },
-        notes: { hidden: false },
-        gm: { hidden: false },
-      },
-      hazard: {},
-    });
-
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.9");
   }
 
@@ -1589,21 +1573,6 @@ const handleDeactivatedPages = async () => {
     });
     await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
     await journal.setFlag("pf2e-bestiary-tracking", "version", "0.9.5");
-    await journal.setFlag("pf2e-bestiary-tracking", "tabStates", {
-      creature: {
-        statistics: { hidden: false },
-        spells: { hidden: false },
-        lore: { hidden: false },
-        notes: { hidden: false },
-      },
-      npc: {
-        general: { hidden: false },
-        influence: { hidden: true },
-        notes: { hidden: false },
-        gm: { hidden: false },
-      },
-      hazard: {},
-    });
     await journal.setFlag(
       "pf2e-bestiary-tracking",
       "image",

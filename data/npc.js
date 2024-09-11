@@ -9,6 +9,11 @@ export class NPC extends Creature {
     const creatureFields = super.defineSchema();
     return {
       ...creatureFields,
+      tabStates: new fields.SchemaField({
+        influence: new fields.SchemaField({
+          hidden: new fields.BooleanField({ required: true, initial: false }),
+        }),
+      }),
       npcData: new fields.SchemaField({
         simple: new fields.BooleanField({ initial: false }),
         categories: new fields.ArrayField(

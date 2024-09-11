@@ -2232,7 +2232,10 @@ const getCreatureData = (actor) => {
             };
             return acc;
           }, {})
-        : { revealed: defaultRevealed.skills, empty: { empty: true, value: "PF2EBestiary.Miscellaneous.None" } },
+        : {
+            revealed: defaultRevealed.skills,
+            empty: { empty: true, value: "PF2EBestiary.Miscellaneous.None" },
+          },
       saves: {
         fortitude: {
           value: actor.system.saves.fortitude.value,
@@ -2618,9 +2621,18 @@ const getHazardData = (actor) => {
       publication: actor.system.details.publication,
       hasHealth: actor.system.attributes.hasHealth,
       isComplex: actor.system.details.isComplex,
-      disable: { value: actor.system.details.disable, revealed: defaultRevealed.disable },
-      routine: { value: actor.system.details.routine, revealed: defaultRevealed.routine },
-      reset: { value: actor.system.details.reset, revealed: defaultRevealed.reset },
+      disable: {
+        value: actor.system.details.disable,
+        revealed: defaultRevealed.disable,
+      },
+      routine: {
+        value: actor.system.details.routine,
+        revealed: defaultRevealed.routine,
+      },
+      reset: {
+        value: actor.system.details.reset,
+        revealed: defaultRevealed.reset,
+      },
       ac: {
         value: Number.parseInt(actor.system.attributes.ac.value),
         details: actor.system.attributes.ac.details,
@@ -2633,7 +2645,10 @@ const getHazardData = (actor) => {
         negativeHealing: actor.system.attributes.hp.negativeHealing,
         revealed: defaultRevealed.hp,
       },
-      hardness: { value: actor.system.attributes.hardness.value, revealed: defaultRevealed.hardness },
+      hardness: {
+        value: actor.system.attributes.hardness.value,
+        revealed: defaultRevealed.hardness,
+      },
       level: {
         value: Number.parseInt(actor.system.details.level.value),
         revealed: defaultRevealed.level,
@@ -4693,6 +4708,11 @@ class NPC extends Creature {
     const creatureFields = super.defineSchema();
     return {
       ...creatureFields,
+      tabStates: new fields.SchemaField({
+        influence: new fields.SchemaField({
+          hidden: new fields.BooleanField({ required: true, initial: false }),
+        })
+      }),
       npcData: new fields.SchemaField({
         simple: new fields.BooleanField({ initial: false }),
         categories: new fields.ArrayField(
@@ -6418,16 +6438,13 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$4(
       .sort(this.categorySort);
     const npcChunks = chunkArray(npcs, Math.ceil(npcs.length / 3));
     const hazards = Object.keys(defaultRevealed.hazard)
-    .map((propKey) => ({
-      key: propKey,
-      value: defaultRevealed.hazard[propKey],
-      name: game.i18n.localize(defaultRevealing.hazard[propKey]),
-    }))
-    .sort(this.categorySort);
-    const hazardChunks = chunkArray(
-      hazards,
-      Math.ceil(hazards.length / 3),
-    );
+      .map((propKey) => ({
+        key: propKey,
+        value: defaultRevealed.hazard[propKey],
+        name: game.i18n.localize(defaultRevealing.hazard[propKey]),
+      }))
+      .sort(this.categorySort);
+    const hazardChunks = chunkArray(hazards, Math.ceil(hazards.length / 3));
     context.settings.defaultRevealed = {
       creature: {
         first: creatureChunks[0],
@@ -7770,7 +7787,7 @@ const handleDataMigration = async () => {
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
 
-  if(versionCompare(version, "1.0.0")){
+  if (versionCompare(version, "1.0.0")) {
     version = "1.0.0";
     await game.settings.set("pf2e-bestiary-tracking", "default-revealed", {
       ...game.settings.get("pf2e-bestiary-tracking", "default-revealed"),
@@ -7793,7 +7810,7 @@ const handleDataMigration = async () => {
         iwr: false,
       },
     });
-    
+
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
 
@@ -8635,22 +8652,6 @@ const handleBestiaryMigration = async (bestiary, isSave) => {
         : [],
     );
 
-    await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "tabStates", {
-      creature: {
-        statistics: { hidden: false },
-        spells: { hidden: false },
-        lore: { hidden: false },
-        notes: { hidden: false },
-      },
-      npc: {
-        general: { hidden: false },
-        influence: { hidden: true },
-        notes: { hidden: false },
-        gm: { hidden: false },
-      },
-      hazard: {},
-    });
-
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.9");
   }
 
@@ -8822,21 +8823,6 @@ const handleDeactivatedPages = async () => {
     });
     await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
     await journal.setFlag("pf2e-bestiary-tracking", "version", "0.9.5");
-    await journal.setFlag("pf2e-bestiary-tracking", "tabStates", {
-      creature: {
-        statistics: { hidden: false },
-        spells: { hidden: false },
-        lore: { hidden: false },
-        notes: { hidden: false },
-      },
-      npc: {
-        general: { hidden: false },
-        influence: { hidden: true },
-        notes: { hidden: false },
-        gm: { hidden: false },
-      },
-      hazard: {},
-    });
     await journal.setFlag(
       "pf2e-bestiary-tracking",
       "image",
@@ -9590,21 +9576,6 @@ const resetBestiary = async () => {
     });
     await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
     await journal.setFlag("pf2e-bestiary-tracking", "version", currentVersion);
-    await journal.setFlag("pf2e-bestiary-tracking", "tabStates", {
-      creature: {
-        statistics: { hidden: false },
-        spells: { hidden: false },
-        lore: { hidden: false },
-        notes: { hidden: false },
-      },
-      npc: {
-        general: { hidden: false },
-        influence: { hidden: true },
-        notes: { hidden: false },
-        gm: { hidden: false },
-      },
-      hazard: {},
-    });
     await journal.setFlag(
       "pf2e-bestiary-tracking",
       "image",
@@ -10376,10 +10347,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   getNPCTabs() {
-    const { npc: tabStates } = this.bestiary.getFlag(
-      "pf2e-bestiary-tracking",
-      "tabStates",
-    );
+    const tabStates = this.selected.monster?.system?.tabStates;
     const tabs = {
       general: {
         active: true,
@@ -10397,7 +10365,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.Influence"),
         hideable: true,
-        hidden: tabStates.influence.hidden,
+        hidden: tabStates?.influence?.hidden,
       },
       notes: {
         active: false,
@@ -12005,22 +11973,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     if (!game.user.isGM) return;
 
-    const group = event.currentTarget.dataset.group;
     const tab = event.currentTarget.dataset.tab;
-
-    const tabStates = this.bestiary.getFlag(
-      "pf2e-bestiary-tracking",
-      "tabStates",
-    );
-    tabStates[group][tab] = {
-      ...tabStates[group][tab],
-      hidden: !tabStates[group][tab].hidden,
-    };
-    await this.bestiary.setFlag(
-      "pf2e-bestiary-tracking",
-      "tabStates",
-      tabStates,
-    );
+    await this.selected.monster.update({ [`system.tabStates.${tab}.hidden`]: !this.selected.monster.system.tabStates[tab].hidden });
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,
@@ -12859,7 +12813,9 @@ Hooks.on("combatStart", async (encounter) => {
 
     if (automaticCombatSetting === 1) {
       for (var combatant of encounter.combatants.filter(
-        (combatant) => (combatant?.actor?.type === "npc" || combatant?.actor?.type === "hazard"),
+        (combatant) =>
+          combatant?.actor?.type === "npc" ||
+          combatant?.actor?.type === "hazard",
       )) {
         const successful = await PF2EBestiary.addMonster(
           combatant.token.baseActor,
@@ -12934,7 +12890,11 @@ Hooks.on("xdy-pf2e-workbench.tokenCreateMystification", (token) => {
 });
 
 Hooks.on("preCreateToken", async (token) => {
-  if (!game.user.isGM || (token.actor.type !== "npc" && token.actor.type !== "hazard") || token.hasPlayerOwner)
+  if (
+    !game.user.isGM ||
+    (token.actor.type !== "npc" && token.actor.type !== "hazard") ||
+    token.hasPlayerOwner
+  )
     return;
 
   if (game.settings.get("pf2e-bestiary-tracking", "hide-token-names")) {
@@ -13002,7 +12962,12 @@ Hooks.on("createChatMessage", async (message) => {
       if (message.flags.pf2e.origin) {
         // Attacks | Actions | Spells
         const actor = await fromUuid(message.flags.pf2e.origin.actor);
-        if (!actor || (actor.type !== "npc" && actor.type !== "hazard") || actor.hasPlayerOwner) return;
+        if (
+          !actor ||
+          (actor.type !== "npc" && actor.type !== "hazard") ||
+          actor.hasPlayerOwner
+        )
+          return;
 
         const actorUuid = getBaseActor(actor).uuid;
         page = bestiary.pages.find((x) => x.system.uuid === actorUuid);
@@ -13046,7 +13011,12 @@ Hooks.on("createChatMessage", async (message) => {
         const actor = await fromUuid(
           `Actor.${message.flags.pf2e.context.actor}`,
         );
-        if (!actor || (actor.type !== "npc" && actor.type !== "hazard") || actor.hasPlayerOwner) return;
+        if (
+          !actor ||
+          (actor.type !== "npc" && actor.type !== "hazard") ||
+          actor.hasPlayerOwner
+        )
+          return;
 
         const actorUuid = getBaseActor(actor).uuid;
         page = bestiary.pages.find((x) => x.system.uuid === actorUuid);
@@ -13134,7 +13104,12 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
         const actor = getBaseActor(
           await fromUuid(message.flags.pf2e?.origin?.actor),
         );
-        if (!actor || (actor.type !== "npc" && actor.type !== "hazard") || actor.hasPlayerOwner) return;
+        if (
+          !actor ||
+          (actor.type !== "npc" && actor.type !== "hazard") ||
+          actor.hasPlayerOwner
+        )
+          return;
 
         const rollOptions = message.flags.pf2e.origin.rollOptions;
         const itemIdSplit =
@@ -13182,7 +13157,11 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
       } else if (actorId) {
         // Skills | Saving Throws
         const actor = game.actors.find((x) => x.id === actorId);
-        if ((actor.type !== "npc" && actor.type !== "hazard") || actor.hasPlayerOwner) return;
+        if (
+          (actor.type !== "npc" && actor.type !== "hazard") ||
+          actor.hasPlayerOwner
+        )
+          return;
 
         const actorUuid = getBaseActor(actor).uuid;
         page = bestiary.pages.find((x) => x.system.uuid === actorUuid);
@@ -13224,7 +13203,12 @@ Hooks.on("getDirectoryApplicationEntryContext", (_, buttons) => {
       if (!game.user.isGM) return false;
 
       const actor = game.actors.get(li.data().documentId);
-      if (!actor || (actor.type !== "npc" && actor.type !== "hazard") || actor.hasPlayerOwner) return false;
+      if (
+        !actor ||
+        (actor.type !== "npc" && actor.type !== "hazard") ||
+        actor.hasPlayerOwner
+      )
+        return false;
 
       return !Boolean(
         game.journal

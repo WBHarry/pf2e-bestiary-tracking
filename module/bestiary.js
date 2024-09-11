@@ -386,10 +386,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   getNPCTabs() {
-    const { npc: tabStates } = this.bestiary.getFlag(
-      "pf2e-bestiary-tracking",
-      "tabStates",
-    );
+    const tabStates = this.selected.monster?.system?.tabStates;
     const tabs = {
       general: {
         active: true,
@@ -407,7 +404,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.Influence"),
         hideable: true,
-        hidden: tabStates.influence.hidden,
+        hidden: tabStates?.influence?.hidden,
       },
       notes: {
         active: false,
@@ -2015,22 +2012,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
     if (!game.user.isGM) return;
 
-    const group = event.currentTarget.dataset.group;
     const tab = event.currentTarget.dataset.tab;
-
-    const tabStates = this.bestiary.getFlag(
-      "pf2e-bestiary-tracking",
-      "tabStates",
-    );
-    tabStates[group][tab] = {
-      ...tabStates[group][tab],
-      hidden: !tabStates[group][tab].hidden,
-    };
-    await this.bestiary.setFlag(
-      "pf2e-bestiary-tracking",
-      "tabStates",
-      tabStates,
-    );
+    await this.selected.monster.update({
+      [`system.tabStates.${tab}.hidden`]:
+        !this.selected.monster.system.tabStates[tab].hidden,
+    });
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,

@@ -170,21 +170,6 @@ export const resetBestiary = async () => {
     });
     await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
     await journal.setFlag("pf2e-bestiary-tracking", "version", currentVersion);
-    await journal.setFlag("pf2e-bestiary-tracking", "tabStates", {
-      creature: {
-        statistics: { hidden: false },
-        spells: { hidden: false },
-        lore: { hidden: false },
-        notes: { hidden: false },
-      },
-      npc: {
-        general: { hidden: false },
-        influence: { hidden: true },
-        notes: { hidden: false },
-        gm: { hidden: false },
-      },
-      hazard: {},
-    });
     await journal.setFlag(
       "pf2e-bestiary-tracking",
       "image",
