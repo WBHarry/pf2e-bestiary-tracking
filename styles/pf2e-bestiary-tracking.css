@@ -775,11 +775,14 @@
   width: calc(100% - 166px);
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .tagify {
-  height: 35px;
+  min-height: 37px;
+  display: flex;
+  align-items: center;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .tagify .tagify__input {
   display: flex;
   align-items: center;
+  padding: 0;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container {
   display: flex;

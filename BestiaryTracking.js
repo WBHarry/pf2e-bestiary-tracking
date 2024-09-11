@@ -209,7 +209,7 @@ const versionCompare = (current, target) => {
   const targetSplit = target.split(".").map((x) => Number.parseInt(x));
   for (var i = 0; i < currentSplit.length; i++) {
     if (currentSplit[i] < targetSplit[i]) return true;
-    if(currentSplit[i] > targetSplit[i]) return false;
+    if (currentSplit[i] > targetSplit[i]) return false;
   }
 
   return false;
@@ -4818,7 +4818,10 @@ class NPC extends Creature {
           ),
           influence: new MappingField(
             new fields.SchemaField({
-              revealed: new fields.BooleanField({ required: true, initial: false }),
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
               points: new fields.NumberField({ required: true, integer: true }),
               description: new fields.StringField({ required: true }),
             }),
@@ -4919,10 +4922,13 @@ class NPC extends Creature {
                 acc[key] = { revealed: state };
                 return acc;
               }, {}),
-              influence: Object.keys(this.npcData.influence.influence).reduce((acc, key) => {
-                acc[key] = { revealed: state };
-                return acc;
-              }, {}),
+              influence: Object.keys(this.npcData.influence.influence).reduce(
+                (acc, key) => {
+                  acc[key] = { revealed: state };
+                  return acc;
+                },
+                {},
+              ),
               resistances: Object.keys(
                 this.npcData.influence.resistances,
               ).reduce((acc, key) => {
@@ -8710,12 +8716,18 @@ const migrateBestiaryPages = async (bestiary) => {
         await page.update({ "system.version": "0.9.13" });
       }
     }
-    if(versionCompare(page.system.version, "1.0.1")){
+    if (versionCompare(page.system.version, "1.0.1")) {
       if (page.type === "pf2e-bestiary-tracking.npc") {
         await page.update({
           "system.version": "1.0.1",
-          "system.npcData.influence.influence": Object.keys(page.system.npcData.influence.influence).reduce((acc, key) => {
-            acc[key] = { revealed: page.system.npcData.influence.influencePoints >= page.system.npcData.influence.influence[key].points };
+          "system.npcData.influence.influence": Object.keys(
+            page.system.npcData.influence.influence,
+          ).reduce((acc, key) => {
+            acc[key] = {
+              revealed:
+                page.system.npcData.influence.influencePoints >=
+                page.system.npcData.influence.influence[key].points,
+            };
             return acc;
           }, {}),
         });
