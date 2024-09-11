@@ -4710,8 +4710,8 @@ class NPC extends Creature {
       ...creatureFields,
       tabStates: new fields.SchemaField({
         influence: new fields.SchemaField({
-          hidden: new fields.BooleanField({ required: true, initial: false }),
-        })
+          hidden: new fields.BooleanField({ required: true, initial: true }),
+        }),
       }),
       npcData: new fields.SchemaField({
         simple: new fields.BooleanField({ initial: false }),
@@ -11974,7 +11974,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     if (!game.user.isGM) return;
 
     const tab = event.currentTarget.dataset.tab;
-    await this.selected.monster.update({ [`system.tabStates.${tab}.hidden`]: !this.selected.monster.system.tabStates[tab].hidden });
+    await this.selected.monster.update({
+      [`system.tabStates.${tab}.hidden`]:
+        !this.selected.monster.system.tabStates[tab].hidden,
+    });
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,

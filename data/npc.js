@@ -11,7 +11,7 @@ export class NPC extends Creature {
       ...creatureFields,
       tabStates: new fields.SchemaField({
         influence: new fields.SchemaField({
-          hidden: new fields.BooleanField({ required: true, initial: false }),
+          hidden: new fields.BooleanField({ required: true, initial: true }),
         }),
       }),
       npcData: new fields.SchemaField({

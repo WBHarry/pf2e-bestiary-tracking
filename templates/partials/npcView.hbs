@@ -370,7 +370,7 @@
                                         {{#if (and ../user.isGM this.modifier.value)}}
                                             <fieldset class="influence-modifier-inner-container {{#if this.modifier.revealed}}active{{/if}} secondary-container primary-hover-container" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.resistances." this.key ".modifier"}}" title="{{localize "PF2EBestiary.Bestiary.NPC.ToggleModifier"}}">
                                                 <legend>
-                                                    {{#if this.modifier.revealed}}<i class="fa-solid fa-slash hidden-icon"></i>{{/if}}
+                                                    {{#if (not this.modifier.revealed)}}<i class="fa-solid fa-slash hidden-icon"></i>{{/if}}
                                                     <i class="fa-solid fa-bolt-lightning"></i>
                                                 </legend>
                                                 <div>{{this.modifier.value}}</div>
