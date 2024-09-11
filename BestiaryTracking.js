@@ -45,6 +45,30 @@ const getCreaturesTypes = (traits, onlyActive) => {
   return onlyActive ? types.filter((x) => x.revealed) : types;
 };
 
+const getHazardTypes = (traits, onlyActive) => {
+  const hazardTypes = [
+    { value: 'environmental', name: CONFIG.PF2E.hazardTraits['environmental'] },
+    { value: 'haunt', name: CONFIG.PF2E.hazardTraits['haunt'] },
+    { value: 'trap', name: CONFIG.PF2E.hazardTraits['trap'] }
+  ];
+
+  const types = Object.values(traits).reduce((acc, trait) => {
+    const typeMatch = hazardTypes.find(x => x.value === trait.value);
+    if(typeMatch){
+      acc.push({
+        key: typeMatch.value,
+        revealed: trait.revealed,
+        fake: trait.fake,
+        name: typeMatch.name
+      });
+    }
+
+    return acc;
+  }, []); 
+
+  return onlyActive ? types.filter((x) => x.revealed) : types;
+};
+
 const getExpandedCreatureTypes = () => {
   const allTypes = [
     ...Object.keys(CONFIG.PF2E.creatureTypes).map((type) => ({
@@ -101,6 +125,15 @@ const getNPCCategories = () => {
       return acc;
     }, []),
   ];
+};
+
+const getHazardCategories = () => {
+  return [
+    { value: 'unknown', name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"), values: [] },
+    { value: 'environmental', name: game.i18n.localize('PF2E.TraitEnvironmental'), values: [] },    
+    { value: 'haunt', name: game.i18n.localize('PF2E.TraitHaunt'), values: [] },
+    { value: 'trap', name: game.i18n.localize('PF2E.TraitTrap'), values: [] },
+  ]
 };
 
 const getBaseActor = (actor) => {
@@ -2570,6 +2603,9 @@ const getHazardData = (actor) => {
       publication: actor.system.details.publication,
       hasHealth: actor.system.attributes.hasHealth,
       isComplex: actor.system.details.isComplex,
+      disable: { value: actor.system.details.disable },
+      routine: { value: actor.system.details.routine },
+      reset: { value: actor.system.details.reset },
       ac: {
         value: Number.parseInt(actor.system.attributes.ac.value),
         details: actor.system.attributes.ac.details,
@@ -2587,33 +2623,35 @@ const getHazardData = (actor) => {
         value: Number.parseInt(actor.system.details.level.value),
         revealed: defaultRevealed.level,
       },
-      size: actor.system.traits.size.value,
+      stealth: {
+        value: actor.system.attributes.stealth.value,
+        dc: actor.system.attributes.stealth.dc,
+        modifiers: actor.system.attributes.stealth.modifiers.filter((x) => x.slug !== "base")
+        .map((x) => ({
+          kind: x.kind,
+          label: x.label,
+          modifier: x.modifier,
+        })),
+        totalModifier: Number.parseInt(actor.system.attributes.stealth.totalModifier),
+        details: {
+          value: actor.system.attributes.stealth.details,
+        },
+      },
+      initiative: actor.system.initiative ? {
+        value: actor.system.initiative.value,
+        modifiers: actor.system.initiative.modifiers.filter((x) => x.slug !== "base")
+        .map((x) => ({
+          kind: x.kind,
+          label: x.label,
+          modifier: x.modifier,
+        })),
+        totalModifier: Number.parseInt(actor.system.initiative.totalModifier),
+      } : null,
       rarity: { value: actor.system.traits.rarity },
       traits: actor.system.traits.value.reduce((acc, trait) => {
         acc[trait] = { value: trait, revealed: defaultRevealed.traits };
         return acc;
       }, {}),
-      skills: Object.values(actor.system.skills).some((x) => x.base > 0)
-        ? Object.keys(actor.system.skills).reduce((acc, key) => {
-            const skill = actor.system.skills[key];
-            acc[key] = {
-              value: skill.base,
-              revealed: defaultRevealed.skills,
-              lore: skill.lore,
-              note: skill.note,
-              modifiers: skill.modifiers
-                .filter((x) => x.slug !== "base")
-                .map((x) => ({
-                  kind: x.kind,
-                  label: x.label,
-                  modifier: x.modifier,
-                })),
-              label: skill.label,
-              totalModifier: Number.parseInt(skill.totalModifier),
-            };
-            return acc;
-          }, {})
-        : { empty: { empty: true, value: "PF2EBestiary.Miscellaneous.None" } },
       saves: {
         fortitude: {
           value: actor.system.saves.fortitude.value,
@@ -2626,27 +2664,6 @@ const getHazardData = (actor) => {
         will: {
           value: actor.system.saves.will.value,
           revealed: defaultRevealed.saves,
-        },
-      },
-      speeds: {
-        details: {
-          name: actor.system.attributes.speed.details,
-          revealed: defaultRevealed.speeds,
-        },
-        values: {
-          land: {
-            type: "land",
-            value: actor.system.attributes.speed.value,
-            revealed: defaultRevealed.speeds,
-          },
-          ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
-            acc[speed.label] = {
-              type: speed.type,
-              value: speed.value,
-              revealed: defaultRevealed.speeds,
-            };
-            return acc;
-          }, {}),
         },
       },
       immunities:
@@ -2793,28 +2810,24 @@ const getHazardData = (actor) => {
       actions:
         itemKeys.filter(
           (action) =>
-            action.type === "action" &&
-            action.system.actionType.value !== "passive",
+            action.type === "action",
         ).length > 0
           ? itemKeys.reduce((acc, action) => {
-              if (
-                action.type === "action" &&
-                action.system.actionType.value !== "passive"
-              ) {
-                acc[action.id] = {
-                  revealed: defaultRevealed.abilities,
-                  label: action.name,
-                  category: action.system.category,
-                  deathNote: action.system.deathNote,
-                  actions: action.system.actions.value ?? "R",
-                  traits: action.system.traits.value.reduce((acc, trait) => {
-                    acc[trait] = { value: trait };
-                    return acc;
-                  }, {}),
-                  description: action.system.description.value,
-                };
-              }
-
+            if(action.type === 'action'){
+              acc[action.id] = {
+                revealed: defaultRevealed.abilities,
+                label: action.name,
+                category: action.system.category,
+                deathNote: action.system.deathNote,
+                actions: action.system.actionType.value === 'reaction' ? "R" : action.system.actionType.value === 'passive' ? '' : (action.system.actions.value ?? "R"),
+                traits: action.system.traits.value.reduce((acc, trait) => {
+                  acc[trait] = { value: trait };
+                  return acc;
+                }, {}),
+                description: action.system.description.value,
+              };
+            }
+              
               return acc;
             }, {})
           : {
@@ -2826,43 +2839,9 @@ const getHazardData = (actor) => {
                 description: "",
               },
             },
-      passives:
-        itemKeys.filter(
-          (action) =>
-            action.type === "action" &&
-            action.system.actionType.value === "passive",
-        ).length > 0
-          ? itemKeys.reduce((acc, action) => {
-              if (
-                action.type === "action" &&
-                action.system.actionType.value === "passive"
-              ) {
-                acc[action.id] = {
-                  revealed: defaultRevealed.abilities,
-                  label: action.name,
-                  category: action.system.category,
-                  deathNote: action.system.deathNote,
-                  traits: action.system.traits.value.reduce((acc, trait) => {
-                    acc[trait] = { value: trait };
-                    return acc;
-                  }, {}),
-                  description: action.system.description.value,
-                };
-              }
-
-              return acc;
-            }, {})
-          : {
-              empty: {
-                empty: true,
-                label: "PF2EBestiary.Miscellaneous.None",
-                traits: {},
-                description: "",
-              },
-            },
       notes: {
-        public: {
-          value: actor.system.details.publicNotes,
+        description: {
+          value: actor.system.details.description,
           revealed: defaultRevealed.description,
         },
       },
@@ -4517,9 +4496,8 @@ class Creature extends foundry.abstract.TypeDataModel {
           acc[trait] = {
             ...this.actions[key].traits[trait],
             label:
-              CONFIG.PF2E.npcAttackTraits[
-                this.actions[key].traits[trait].value
-              ] ?? this.actions[key].traits[trait].value,
+              CONFIG.PF2E.actionTraits[this.actions[key].traits[trait].value] ??
+              this.actions[key].traits[trait].value,
             description:
               CONFIG.PF2E.traitsDescriptions[
                 this.actions[key].traits[trait].value
@@ -4542,7 +4520,7 @@ class Creature extends foundry.abstract.TypeDataModel {
           acc[trait] = {
             ...this.passives[key].traits[trait],
             label:
-              CONFIG.PF2E.npcAttackTraits[
+              CONFIG.PF2E.actionTraits[
                 this.passives[key].traits[trait].value
               ] ?? this.passives[key].traits[trait].value,
             description:
@@ -5040,6 +5018,952 @@ class NPC extends Creature {
   }
 }
 
+class Hazard extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const fields = foundry.data.fields;
+    return {
+      hidden: new fields.BooleanField({ required: true, initial: false }),
+      uuid: new fields.StringField({ required: true }),
+      version: new fields.StringField({ required: true }),
+      img: new fields.StringField({ required: true }),
+      texture: new fields.StringField({ required: true }),
+      name: toggleStringField(),
+      publication: new fields.SchemaField({
+        authors: new fields.StringField({}),
+        license: new fields.StringField({}),
+        remaster: new fields.BooleanField({}),
+        title: new fields.StringField({}),
+      }),
+      isComplex: new fields.BooleanField({ required: true }),
+      hasHealth: new fields.BooleanField({ required: true }),
+      disable: new fields.SchemaField({
+        revealed: new fields.BooleanField({ required: true, initial: false }),
+        value: new fields.HTMLField({}),
+      }),
+      routine: new fields.SchemaField({
+        revealed: new fields.BooleanField({ required: true, initial: false }),
+        value: new fields.HTMLField({}),
+      }),
+      reset: new fields.SchemaField({
+        revealed: new fields.BooleanField({ required: true, initial: false }),
+        value: new fields.HTMLField({}),
+      }),
+      ac: new fields.SchemaField({
+        revealed: new fields.BooleanField({ required: true, initial: false }),
+        value: new fields.NumberField({ required: true, integer: true, initial: 0 }),
+        custom: new fields.StringField({ nullable: true }),
+        details: new fields.StringField({}),
+      }),
+      hp: new fields.SchemaField({
+        revealed: new fields.BooleanField({ required: true, initial: false }),
+        value: new fields.NumberField({
+          required: true,
+          integer: true,
+          initial: 0,
+        }),
+        custom: new fields.StringField({ nullable: true }),
+        temp: new fields.NumberField({ integer: true }),
+        details: new fields.StringField({}),
+        negativeHealing: new fields.BooleanField({}),
+      }),
+      hardness: new fields.SchemaField({
+        revealed: new fields.BooleanField({ required: true, initial: false }),
+        custom: new fields.StringField({ nullable: true }),
+        value: new fields.NumberField({ required: true, integer: true, initial: 0 }),
+      }),
+      level: toggleNumberField(),
+      stealth: new fields.SchemaField({
+        revealed: new fields.BooleanField({ required: true, initial: false }),
+        custom: new fields.StringField({ nullable: true }),
+        value: new fields.StringField({ required: true }),
+        dc: new fields.StringField({ required: true }),
+        modifiers: new fields.ArrayField(
+          new fields.SchemaField({
+            kind: new fields.StringField({}),
+            label: new fields.StringField({}),
+            modifier: new fields.NumberField({ integer: true }),
+          }),
+          { initial: [] },
+        ),
+        totalModifier: new fields.NumberField({
+          required: false,
+          integer: true,
+        }),
+        details: new fields.SchemaField({
+          revealed: new fields.BooleanField({ required: true, initial: false }),
+          value: new fields.HTMLField({}),
+        })
+      }),
+      initiative: new fields.SchemaField({
+        revealed: new fields.BooleanField({ required: true, initial: false }),
+        custom: new fields.StringField({ nullable: true }),
+        value: new fields.StringField({ required: true }),
+        modifiers: new fields.ArrayField(
+          new fields.SchemaField({
+            kind: new fields.StringField({}),
+            label: new fields.StringField({}),
+            modifier: new fields.NumberField({ integer: true }),
+          }),
+          { initial: [] },
+        ),
+        totalModifier: new fields.NumberField({
+          required: false,
+          integer: true,
+        }),
+      }, { nullable: true }),
+      saves: new fields.SchemaField({
+        fortitude: toggleNumberField(),
+        reflex: toggleNumberField(),
+        will: toggleNumberField(),
+      }),
+      attacks: new MappingField(
+        new fields.SchemaField({
+          revealed: new fields.BooleanField({ required: true, initial: false }),
+          fake: new fields.BooleanField({}),
+          empty: new fields.BooleanField({}),
+          damageStatsRevealed: new fields.BooleanField({
+            required: true,
+            initial: false,
+          }),
+          label: new fields.StringField({ required: true }),
+          actions: new fields.StringField({ required: true }),
+          totalModifier: new fields.NumberField({ required: true }),
+          isMelee: new fields.BooleanField({ required: true }),
+          additionalEffects: new MappingField(
+            new fields.SchemaField({
+              label: new fields.StringField({ required: true }),
+              tag: new fields.StringField({ required: true }),
+            }),
+          ),
+          traits: new MappingField(
+            new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              value: new fields.StringField({ required: true }),
+              description: new fields.StringField({ required: true }),
+            }),
+          ),
+          variants: new MappingField(
+            new fields.SchemaField({
+              label: new fields.StringField({}),
+            }),
+          ),
+          damageInstances: new MappingField(
+            new fields.SchemaField({
+              revealed: new fields.BooleanField({}),
+              category: new fields.StringField({ nullable: true }),
+              damage: new fields.SchemaField({
+                value: new fields.StringField({ nullable: true }),
+              }),
+              damageType: new fields.SchemaField({
+                revealed: new fields.BooleanField({
+                  required: true,
+                  initial: false,
+                }),
+                value: new fields.StringField({ required: true }),
+              }),
+            }),
+          ),
+          rules: new fields.ObjectField({}),
+        }),
+      ),
+      actions: new MappingField(
+        new fields.SchemaField({
+          revealed: new fields.BooleanField({ required: true, initial: false }),
+          fake: new fields.BooleanField({}),
+          empty: new fields.BooleanField({}),
+          label: new fields.StringField({ required: true }),
+          category: new fields.StringField({}),
+          deathNote: new fields.BooleanField({}),
+          actions: new fields.StringField({ required: true }),
+          traits: new MappingField(
+            new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              value: new fields.StringField({ required: true }),
+            }),
+          ),
+          description: new fields.HTMLField({ required: true, initial: "" }),
+        }),
+      ),
+      immunities: new MappingField(
+        new fields.SchemaField({
+          revealed: new fields.BooleanField({ required: true, initial: false }),
+          fake: new fields.BooleanField({}),
+          empty: new fields.BooleanField({ initial: false }),
+          type: new fields.StringField({ required: true }),
+          exceptions: new MappingField(
+            new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              type: new fields.StringField({ required: true }),
+            }),
+          ),
+        }),
+      ),
+      weaknesses: new MappingField(
+        new fields.SchemaField({
+          revealed: new fields.BooleanField({ required: true, initial: false }),
+          fake: new fields.BooleanField({}),
+          empty: new fields.BooleanField({ initial: false }),
+          type: new fields.StringField({ required: true }),
+          value: new fields.NumberField({ required: true, integer: true }),
+          exceptions: new MappingField(
+            new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              type: new fields.StringField({ required: true }),
+            }),
+          ),
+        }),
+      ),
+      resistances: new MappingField(
+        new fields.SchemaField({
+          revealed: new fields.BooleanField({ required: true, initial: false }),
+          fake: new fields.BooleanField({}),
+          empty: new fields.BooleanField({ initial: false }),
+          type: new fields.StringField({ required: true }),
+          value: new fields.NumberField({ required: true, integer: true }),
+          exceptions: new MappingField(
+            new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              type: new fields.StringField({ required: true }),
+            }),
+          ),
+          doubleVs: new MappingField(
+            new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              type: new fields.StringField({ required: true }),
+            }),
+          ),
+        }),
+      ),
+      rarity: new fields.SchemaField({
+        revealed: new fields.BooleanField({ required: true, initial: false }),
+        value: new fields.StringField({ required: true }),
+      }),
+      traits: new MappingField(
+        new fields.SchemaField({
+          revealed: new fields.BooleanField({ required: true, initial: false }),
+          fake: new fields.BooleanField({ intitial: false }),
+          value: new fields.StringField({ required: true }),
+        }),
+      ),
+      notes: new fields.SchemaField({
+        description: new fields.SchemaField({
+          revealed: new fields.BooleanField({ required: true, initial: false }),
+          value: new fields.HTMLField({ required: true, initial: "" }),
+        }),
+        player: new fields.SchemaField({
+          value: new fields.HTMLField({ required: true, initial: "" }),
+        }),
+      }),
+    };
+  }
+
+  get displayImage() {
+    return game.settings.get("pf2e-bestiary-tracking", "use-token-art")
+      ? this.texture
+      : this.img;
+  }
+
+  get initialType() {
+    const types = getHazardTypes(this.traits).map((x) => x.key);
+    return types.length > 0 ? types[0] : "unknown";
+  }
+
+  get initialActiveType() {
+    const types = getHazardTypes(this.traits, true).map((x) => x.key);
+    return types.length > 0 ? types[0] : "unknown";
+  }
+
+  _getRefreshData(hazard, hazardData) {
+    const data = hazardData ?? getHazardData(hazard);
+    
+    return {
+      name: data.name,
+      system: {
+        hidden: this.hidden,
+        uuid: data.system.uuid,
+        version: data.system.version,
+        img: data.system.img,
+        texture: data.system.texture,
+        name: {
+          ...data.system.name,
+          revealed: this.name.revealed,
+          custom: this.name.custom,
+        },
+        hasHealth: data.system.hasHealth,
+        isComplex: data.system.isComplex,
+        disable: { ...data.system.disable, revealed: this.disable.revealed },
+        routine: { ...data.system.routine, revealed: this.routine.revealed },
+        reset: { ...data.system.reset, revealed: this.reset.revealed },
+        ac: {
+          ...data.system.ac,
+          revealed: this.ac.revealed,
+          custom: this.ac.custom,
+        },
+        hp: {
+          ...data.system.hp,
+          revealed: this.hp.revealed,
+          custom: this.hp.custom,
+        },
+        hardness: {
+          ...data.system.hardness,
+          revealed: this.hardness.revealed,
+          custom: this.hardness.custom,
+        },
+        level: {
+          ...data.system.level,
+          revealed: this.level.revealed,
+          custom: this.level.custom,
+        },
+        stealth: {
+          ...data.system.stealth,
+          revealed: this.stealth.revealed,
+          custom: this.stealth.custom,
+          details: {
+            ...data.system.stealth.details,
+            revealed: this.stealth.details.revealed,
+          }
+        },
+        initiative: {
+          ...data.system.initiative,
+          revealed: this.initiative.revealed,
+          custom: this.initiative.custom,
+        },
+        saves: Object.keys(data.system.saves).reduce((acc, key) => {
+          acc[key] = {
+            ...data.system.saves[key],
+            revealed: this.saves[key]
+              ? this.saves[key].revealed
+              : data.system.saves[key].revealed,
+          };
+          return acc;
+        }, {}),
+        immunities: Object.keys(data.system.immunities).reduce(
+          (acc, key) => {
+            const immunity = data.system.immunities[key];
+            const oldImmunity = this.immunities[key];
+            acc[key] = {
+              ...immunity,
+              revealed: oldImmunity ? oldImmunity.revealed : immunity.revealed,
+              exceptions: Object.keys(immunity.exceptions).reduce((acc, ex) => {
+                acc[ex] = {
+                  ...immunity.exceptions[ex],
+                  revealed: oldImmunity?.exceptions[ex]
+                    ? oldImmunity.exceptions[ex].revealed
+                    : immunity.exceptions[ex].revealed,
+                };
+                return acc;
+              }, {}),
+            };
+
+            return acc;
+          },
+          Object.keys(this.immunities).reduce((acc, key) => {
+            if (this.immunities[key].fake) acc[key] = this.immunities[key];
+            return acc;
+          }, {}),
+        ),
+        weaknesses: Object.keys(data.system.weaknesses).reduce(
+          (acc, key) => {
+            const weakness = data.system.weaknesses[key];
+            const oldWeakness = this.weaknesses[key];
+            acc[key] = {
+              ...weakness,
+              revealed: oldWeakness ? oldWeakness.revealed : weakness.revealed,
+              exceptions: Object.keys(weakness.exceptions).reduce((acc, ex) => {
+                acc[ex] = {
+                  ...weakness.exceptions[ex],
+                  revealed: oldWeakness?.exceptions[ex]
+                    ? oldWeakness.exceptions[ex].revealed
+                    : weakness.exceptions[ex].revealed,
+                };
+                return acc;
+              }, {}),
+            };
+
+            return acc;
+          },
+          Object.keys(this.weaknesses).reduce((acc, key) => {
+            if (this.weaknesses[key].fake) acc[key] = this.weaknesses[key];
+            return acc;
+          }, {}),
+        ),
+        resistances: Object.keys(data.system.resistances).reduce(
+          (acc, key) => {
+            const resistance = data.system.resistances[key];
+            const oldResistance = this.resistances[key];
+            acc[key] = {
+              ...resistance,
+              revealed: oldResistance
+                ? oldResistance.revealed
+                : resistance.revealed,
+              exceptions: Object.keys(resistance.exceptions).reduce(
+                (acc, ex) => {
+                  acc[ex] = {
+                    ...resistance.exceptions[ex],
+                    revealed: oldResistance?.exceptions[ex]
+                      ? oldResistance.exceptions[ex].revealed
+                      : resistance.exceptions[ex].revealed,
+                  };
+                  return acc;
+                },
+                {},
+              ),
+              doubleVs: Object.keys(resistance.doubleVs).reduce((acc, ex) => {
+                acc[ex] = {
+                  ...resistance.doubleVs[ex],
+                  revealed: oldResistance?.doubleVs[ex]
+                    ? oldResistance.doubleVs[ex].revealed
+                    : resistance.doubleVs[ex].revealed,
+                };
+                return acc;
+              }, {}),
+            };
+
+            return acc;
+          },
+          Object.keys(this.resistances).reduce((acc, key) => {
+            if (this.resistances[key].fake) acc[key] = this.resistances[key];
+            return acc;
+          }, {}),
+        ),
+        rarity: { ...data.system.rarity, revealed: this.rarity.revealed },
+        traits: Object.keys(data.system.traits).reduce((acc, key) => {
+          acc[key] = {
+            ...data.system.traits[key],
+            revealed: this.traits[key]
+              ? this.traits[key].revealed
+              : data.system.traits[key].revealed,
+          };
+          return acc;
+        }, {}),
+        attacks: Object.keys(data.system.attacks).reduce(
+          (acc, key) => {
+            const attack = data.system.attacks[key];
+            const oldAttack = this.attacks[key];
+            acc[key] = {
+              ...attack,
+              revealed: oldAttack?.revealed ?? attack.revealed,
+              damageStatsRevealed:
+                oldAttack?.damageStatsRevealed ?? attack.damageStatsRevealed,
+              traits: Object.keys(attack.traits).reduce((acc, trait) => {
+                acc[trait] = {
+                  ...attack.traits[trait],
+                  revealed:
+                    oldAttack.traits[trait]?.revealed ??
+                    attack.traits[trait].revealed,
+                };
+                return acc;
+              }, {}),
+              damageInstances: Object.keys(attack.damageInstances).reduce(
+                (acc, damage) => {
+                  acc[damage] = {
+                    ...attack.damageInstances[damage],
+                    revealed: oldAttack
+                      ? (oldAttack.damageInstances[damage]?.revealed ??
+                        attack.damageInstances[damage].revealed)
+                      : attack.damageInstances[damage].revealed,
+                    damageType: {
+                      ...attack.damageInstances[damage].damageType,
+                      revealed: oldAttack
+                        ? (oldAttack.damageInstances[damage]?.damageType
+                            ?.revealed ??
+                          attack.damageInstances[damage].damageType.revealed)
+                        : attack.damageInstances[damage].damageType.revealed,
+                    },
+                  };
+                  return acc;
+                },
+                {},
+              ),
+            };
+
+            return acc;
+          },
+          Object.keys(this.attacks).reduce((acc, key) => {
+            if (this.attacks[key].fake) acc[key] = this.attacks[key];
+            return acc;
+          }, {}),
+        ),
+        actions: Object.keys(data.system.actions).reduce(
+          (acc, key) => {
+            const action = data.system.actions[key];
+            const oldAction = this.actions[key];
+            acc[key] = {
+              ...action,
+              revealed: oldAction?.revealed ?? action.revealed,
+              traits: Object.keys(action.traits).reduce((acc, trait) => {
+                const oldTrait = oldAction ? oldAction.traits[trait] : null;
+                acc[trait] = {
+                  ...action.traits[trait],
+                  revealed: oldTrait?.revealed ?? action.traits[trait].revealed,
+                };
+                return acc;
+              }, {}),
+            };
+
+            return acc;
+          },
+          Object.keys(this.actions).reduce((acc, key) => {
+            if (this.actions[key].fake) acc[key] = this.actions[key];
+            return acc;
+          }, {}),
+        ),
+        notes: {
+          description: {
+            ...data.system.notes.description,
+            revealed: this.notes.description.revealed,
+          },
+          player: this.notes.player,
+        },
+      },
+    };
+  }
+
+  async refreshData() {
+    const actor = await fromUuid(this.uuid);
+    if (!actor) return;
+
+    const itemRules = {};
+    for (var subItem of actor.items) {
+      if (subItem.type === "effect") {
+        itemRules[subItem.id] = subItem.system.rules;
+        await subItem.update({ "system.rules": [] });
+      }
+    }
+
+    await this.parent.update(this._getRefreshData(actor), {
+      diff: false,
+      recursive: false,
+    });
+
+    for (var key in itemRules) {
+      await actor.items.get(key).update({ "system.rules": itemRules[key] });
+    }
+  }
+
+  _getToggleUpdate(state) {
+    return {
+      system: {
+        "name.revealed": state,
+        "ac.revealed": state,
+        "hp.revealed": state,
+        "hardness.revealed": state,
+        "level.revealed": state,
+        "disable.revealed": state,
+        "routine.revealed": state,
+        "reset.revealed": state,
+        "stealth.revealed": state,
+        "stealth.details.revealed": state,
+        initiative: this.initiative ? {
+          revealed: state,
+        } : null,
+        saves: {
+          "fortitude.revealed": state,
+          "reflex.revealed": state,
+          "will.revealed": state,
+        },
+        immunities: Object.keys(this.immunities).reduce((acc, key) => {
+          acc[key] = {
+            revealed: state,
+            exceptions: Object.keys(this.immunities[key].exceptions).reduce(
+              (acc, ex) => {
+                acc[ex] = { revealed: state };
+                return acc;
+              },
+              {},
+            ),
+          };
+
+          return acc;
+        }, {}),
+        weaknesses: Object.keys(this.weaknesses).reduce((acc, key) => {
+          acc[key] = {
+            revealed: state,
+            exceptions: Object.keys(this.weaknesses[key].exceptions).reduce(
+              (acc, ex) => {
+                acc[ex] = { revealed: state };
+                return acc;
+              },
+              {},
+            ),
+          };
+
+          return acc;
+        }, {}),
+        resistances: Object.keys(this.resistances).reduce((acc, key) => {
+          acc[key] = {
+            revealed: state,
+            exceptions: Object.keys(this.resistances[key].exceptions).reduce(
+              (acc, ex) => {
+                acc[ex] = { revealed: state };
+                return acc;
+              },
+              {},
+            ),
+            doubleVs: Object.keys(this.resistances[key].doubleVs).reduce(
+              (acc, ex) => {
+                acc[ex] = { revealed: state };
+                return acc;
+              },
+              {},
+            ),
+          };
+
+          return acc;
+        }, {}),
+        "rarity.revealed": state,
+        traits: Object.keys(this.traits).reduce((acc, key) => {
+          acc[key] = { revealed: state };
+          return acc;
+        }, {}),
+        attacks: Object.keys(this.attacks).reduce((acc, key) => {
+          acc[key] = {
+            revealed: state,
+            damageStatsRevealed: state,
+            traits: Object.keys(this.attacks[key].traits).reduce(
+              (acc, trait) => {
+                acc[trait] = { revealed: state };
+                return acc;
+              },
+              {},
+            ),
+            damageInstances: Object.keys(
+              this.attacks[key].damageInstances,
+            ).reduce((acc, damage) => {
+              acc[damage] = { damageType: { revealed: state } };
+              return acc;
+            }, {}),
+          };
+          return acc;
+        }, {}),
+        actions: Object.keys(this.actions).reduce((acc, key) => {
+          acc[key] = {
+            revealed: state,
+            traits: Object.keys(this.actions[key].traits).reduce(
+              (acc, trait) => {
+                acc[trait] = { revealed: state };
+                return acc;
+              },
+              {},
+            ),
+          };
+          return acc;
+        }, {}),
+        notes: {
+          "description.revealed": state,
+        },
+      },
+    };
+  }
+
+  async toggleEverything(state, npcView) {
+    await this.parent.update(this._getToggleUpdate(state, npcView));
+  }
+
+  prepareDerivedData() {
+    const vagueDescriptions = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "vague-descriptions",
+    );
+    const activePartyMembers = game.actors.find(
+      (x) => x.type === "party" && x.active,
+    )?.system?.details?.members;
+    const gmLevel =
+      game.user.isGM && activePartyMembers
+        ? Math.floor(
+            activePartyMembers.reduce((acc, { uuid }) => {
+              const actor = game.actors.find((x) => x.uuid === uuid);
+              if (actor?.system?.details?.level?.value) {
+                acc += actor.system.details.level.value;
+              }
+
+              return acc;
+            }, 0) / activePartyMembers.length,
+          )
+        : null;
+    const playerLevel = game.user.character
+      ? game.user.character.system.details.level.value
+      : null;
+    const contextLevel = vagueDescriptions.settings.playerBased
+      ? !Number.isNaN(gmLevel) && game.user.isGM
+        ? gmLevel
+        : (playerLevel ?? this.level.value)
+      : this.level.value;
+
+    this.hasSaves = this.saves.fortitude.value || this.saves.reflex.value || this.saves.will.value;
+
+    this.ac.category = getCategoryLabel(acTable, contextLevel, this.ac.value);
+    this.hp.category = getCategoryFromIntervals(
+      hpTable,
+      contextLevel,
+      this.hp.value,
+    );
+
+    this.saves = {
+      fortitude: {
+        ...this.saves.fortitude,
+        label: `${this.saves.fortitude.value > 0 ? "+" : ""}${this.saves.fortitude.value}`,
+        category: getCategoryLabel(
+          savingThrowPerceptionTable,
+          contextLevel,
+          this.saves.fortitude.value,
+          true,
+        ),
+      },
+      reflex: {
+        ...this.saves.reflex,
+        label: `${this.saves.reflex.value > 0 ? "+" : ""}${this.saves.reflex.value}`,
+        category: getCategoryLabel(
+          savingThrowPerceptionTable,
+          contextLevel,
+          this.saves.reflex.value,
+          true,
+        ),
+      },
+      will: {
+        ...this.saves.will,
+        label: `${this.saves.will.value > 0 ? "+" : ""}${this.saves.will.value}`,
+        category: getCategoryLabel(
+          savingThrowPerceptionTable,
+          contextLevel,
+          this.saves.will.value,
+          true,
+        ),
+      },
+    };
+
+    this.immunities = Object.keys(this.immunities).reduce((acc, key) => {
+      const exceptionKeys = Object.keys(this.immunities[key].exceptions);
+      const translatedLabel =
+        CONFIG.PF2E.immunityTypes[this.immunities[key].type];
+      acc[key] = {
+        ...this.immunities[key],
+        label: translatedLabel
+          ? translatedLabel
+          : (this.immunities[key].custom ?? this.immunities[key].type),
+        exceptions: exceptionKeys.reduce((acc, exKey, index) => {
+          const label =
+            CONFIG.PF2E.immunityTypes[
+              this.immunities[key].exceptions[exKey].type
+            ];
+          const suffix =
+            index === exceptionKeys.length - 2
+              ? game.i18n.localize("PF2EBestiary.Miscellaneous.Or")
+              : index < exceptionKeys.length - 1
+                ? ","
+                : index === exceptionKeys.length - 1
+                  ? ")"
+                  : "";
+
+          acc[exKey] = {
+            ...this.immunities[key].exceptions[exKey],
+            label: label ?? this.immunities[key].exceptions[exKey].type,
+            suffix: suffix,
+          };
+          return acc;
+        }, {}),
+      };
+
+      return acc;
+    }, {});
+
+    this.weaknesses = Object.keys(this.weaknesses).reduce((acc, key) => {
+      const exceptionKeys = Object.keys(this.weaknesses[key].exceptions);
+      const translatedLabel =
+        CONFIG.PF2E.weaknessTypes[this.weaknesses[key].type];
+
+      acc[key] = {
+        ...this.weaknesses[key],
+        label: translatedLabel
+          ? translatedLabel
+          : (this.weaknesses[key].source ?? this.weaknesses[key].type),
+        category: getCategoryLabel(
+          weaknessTable,
+          contextLevel,
+          this.weaknesses[key].value,
+          true,
+        ),
+        exceptions: exceptionKeys.reduce((acc, exKey, index) => {
+          const label =
+            CONFIG.PF2E.weaknessTypes[
+              this.weaknesses[key].exceptions[exKey].type
+            ];
+          const suffix =
+            index === exceptionKeys.length - 2
+              ? game.i18n.localize("PF2EBestiary.Miscellaneous.Or")
+              : index < exceptionKeys.length - 1
+                ? ","
+                : index === exceptionKeys.length - 1
+                  ? ")"
+                  : "";
+
+          acc[exKey] = {
+            ...this.weaknesses[key].exceptions[exKey],
+            label: label ?? this.weaknesses[key].exceptions[exKey].type,
+            suffix: suffix,
+          };
+          return acc;
+        }, {}),
+      };
+
+      return acc;
+    }, {});
+
+    this.resistances = Object.keys(this.resistances).reduce((acc, key) => {
+      const exceptionKeys = Object.keys(this.resistances[key].exceptions);
+      const doubleKeys = Object.keys(this.resistances[key].doubleVs);
+      const translatedLabel =
+        CONFIG.PF2E.resistanceTypes[this.resistances[key].type];
+
+      acc[key] = {
+        ...this.resistances[key],
+        label: translatedLabel
+          ? translatedLabel
+          : (this.resistances[key].custom ?? this.resistances[key].type),
+        category: getCategoryLabel(
+          weaknessTable,
+          contextLevel,
+          this.resistances[key].value,
+          true,
+        ),
+        exceptions: exceptionKeys.reduce((acc, exKey) => {
+          const label =
+            CONFIG.PF2E.resistanceTypes[
+              this.resistances[key].exceptions[exKey].type
+            ];
+
+          acc[exKey] = {
+            ...this.resistances[key].exceptions[exKey],
+            label: label ?? this.resistances[key].exceptions[exKey].type,
+          };
+          return acc;
+        }, {}),
+        doubleVs: doubleKeys.reduce((acc, doubleKey) => {
+          const label =
+            CONFIG.PF2E.resistanceTypes[
+              this.resistances[key].doubleVs[doubleKey].type
+            ];
+
+          acc[doubleKey] = {
+            ...this.resistances[key].doubleVs[doubleKey],
+            label: label ?? this.resistances[key].doubleVs[doubleKey].type,
+          };
+          return acc;
+        }, {}),
+      };
+
+      return acc;
+    }, {});
+
+    this.traits = Object.keys(this.traits).reduce((acc, key) => {
+      const label = CONFIG.PF2E.hazardTraits[this.traits[key].value];
+      if (label) {
+        acc[key] = {
+          ...this.traits[key],
+          label: CONFIG.PF2E.hazardTraits[this.traits[key].value],
+        };
+      }
+
+      return acc;
+    }, {});
+
+    this.attacks = Object.keys(this.attacks).reduce((acc, key) => {
+      const traitKeys = Object.keys(this.attacks[key].traits);
+      acc[key] = {
+        ...this.attacks[key],
+        category: getCategoryLabel(
+          attackTable,
+          contextLevel,
+          this.attacks[key].totalModifier,
+        ),
+        range: this.attacks[key].isMelee
+          ? "PF2E.NPCAttackMelee"
+          : "PF2E.NPCAttackRanged",
+        traits: traitKeys.reduce((acc, trait, index) => {
+          acc[trait] = {
+            ...this.attacks[key].traits[trait],
+            label:
+              CONFIG.PF2E.npcAttackTraits[
+                this.attacks[key].traits[trait].value
+              ] ?? this.attacks[key].traits[trait].value,
+            description:
+              CONFIG.PF2E.traitsDescriptions[
+                this.attacks[key].traits[trait].description
+              ] ?? this.attacks[key].traits[trait].description,
+            suffix: index !== traitKeys.length - 1 ? ",&nbsp;" : ")",
+          };
+          return acc;
+        }, {}),
+        damageInstances: Object.keys(this.attacks[key].damageInstances).reduce(
+          (acc, damage) => {
+            const instance = this.attacks[key].damageInstances[damage];
+            const average = getRollAverage(
+              new Roll(instance.damage.value).terms,
+            );
+            acc[damage] = {
+              ...instance,
+              damage: {
+                ...instance.damage,
+                category: getCategoryLabel(damageTable, contextLevel, average),
+              },
+            };
+
+            return acc;
+          },
+          {},
+        ),
+      };
+
+      return acc;
+    }, {});
+
+    this.actions = Object.keys(this.actions).reduce((acc, key) => {
+      const traitKeys = Object.keys(this.actions[key].traits);
+      acc[key] = {
+        ...this.actions[key],
+        traits: traitKeys.reduce((acc, trait, index) => {
+          acc[trait] = {
+            ...this.actions[key].traits[trait],
+            label:
+              CONFIG.PF2E.actionTraits[
+                this.actions[key].traits[trait].value
+              ] ?? this.actions[key].traits[trait].value,
+            description:
+              CONFIG.PF2E.traitsDescriptions[
+                this.actions[key].traits[trait].value
+              ] ?? "",
+            suffix: index !== traitKeys.length - 1 ? ",&nbsp;" : "",
+          };
+
+          return acc;
+        }, {}),
+      };
+
+      return acc;
+    }, {});
+
+    this.stealth.value = this.stealth.dc;
+  }
+}
+
 /*
 Tagify v4.27.0 - tags input component
 By: Yair Even-Or <vsync.design@gmail.com>
@@ -5194,7 +6118,8 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$5(
           image: this.settings.categorySettings.npc.image,
         },
         hazard: {
-          ...this.settings.categorySettings.hazard,
+          ...data.categorySettings.hazard,
+          image: this.settings.categorySettings.hazard.image,
         },
       },
     };
@@ -7824,7 +8749,7 @@ const dataTypeSetup = () => {
     ...CONFIG.JournalEntryPage.dataModels,
     "pf2e-bestiary-tracking.creature": Creature,
     "pf2e-bestiary-tracking.npc": NPC,
-    // "pf2e-bestiary-tracking.hazard": Hazard,
+    "pf2e-bestiary-tracking.hazard": Hazard,
   };
 };
 
@@ -9365,6 +10290,36 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     return tabs;
   }
 
+  getHazardTabs(){
+    const tabs = {
+      statistics: {
+        active: true,
+        cssClass: "",
+        group: "hazard",
+        id: "statistics",
+        icon: null,
+        label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Statistics"),
+      },
+      notes: {
+        active: false,
+        cssClass: "",
+        group: "hazard",
+        id: "notes",
+        icon: null,
+        label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes"),
+      }
+    };
+
+    for (const v of Object.values(tabs)) {
+      v.active = this.tabGroups[v.group]
+        ? this.tabGroups[v.group] === v.id
+        : v.active;
+      v.cssClass = v.active ? "active" : "";
+    }
+
+    return tabs;
+  }
+
   _onRender(context, options) {
     this._dragDrop = this._createDragDropHandlers.bind(this)();
   }
@@ -9383,41 +10338,68 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       };
     }
 
-    const newPassives = {};
-    for (var passiveKey of Object.keys(selected.monster.system.passives)) {
-      const description = await TextEditor.enrichHTML(
-        selected.monster.system.passives[passiveKey].description,
-      );
-      newPassives[passiveKey] = {
-        ...selected.monster.system.passives[passiveKey],
-        description,
-      };
-    }
 
-    for (var entryKey in selected.monster.system.spells.entries) {
-      const entry = selected.monster.system.spells.entries[entryKey];
-      for (var levelKey in entry.levels) {
-        for (var spellKey in entry.levels[levelKey].spells) {
-          const spell = entry.levels[levelKey].spells[spellKey];
-          spell.description = {
-            ...spell.description,
-            value: await TextEditor.enrichHTML(spell.description.value),
-          };
-        }
-      }
-    }
-
-    selected.monster.system.notes.public.value = await TextEditor.enrichHTML(
-      selected.monster.system.notes.public.value,
-    );
-    selected.monster.system.notes.private.value = await TextEditor.enrichHTML(
-      selected.monster.system.notes.private.value,
-    );
     selected.monster.system.notes.player.enriched = await TextEditor.enrichHTML(
       selected.monster.system.notes.player.value,
     );
     selected.monster.system.actions = newActions;
-    selected.monster.system.passives = newPassives;
+
+    if(selected.monster.type !== "pf2e-bestiary-tracking.hazard"){
+      selected.monster.system.notes.public.value = await TextEditor.enrichHTML(
+        selected.monster.system.notes.public.value,
+      );
+      selected.monster.system.notes.private.value = await TextEditor.enrichHTML(
+        selected.monster.system.notes.private.value,
+      );
+
+      const newPassives = {};
+      for (var passiveKey of Object.keys(selected.monster.system.passives)) {
+        const description = await TextEditor.enrichHTML(
+          selected.monster.system.passives[passiveKey].description,
+        );
+        newPassives[passiveKey] = {
+          ...selected.monster.system.passives[passiveKey],
+          description,
+        };
+      }
+
+      selected.monster.system.passives = newPassives;
+  
+      for (var entryKey in selected.monster.system.spells.entries) {
+        const entry = selected.monster.system.spells.entries[entryKey];
+        for (var levelKey in entry.levels) {
+          for (var spellKey in entry.levels[levelKey].spells) {
+            const spell = entry.levels[levelKey].spells[spellKey];
+            spell.description = {
+              ...spell.description,
+              value: await TextEditor.enrichHTML(spell.description.value),
+            };
+          }
+        }
+      }
+    }
+
+    if(selected.monster.type === "pf2e-bestiary-tracking.hazard"){
+      selected.monster.system.notes.description.value = await TextEditor.enrichHTML(
+        selected.monster.system.notes.description.value,
+      );
+
+      selected.monster.system.stealth.details.value = await TextEditor.enrichHTML(
+        selected.monster.system.stealth.details.value
+      );
+
+      selected.monster.system.disable.value = await TextEditor.enrichHTML(
+        selected.monster.system.disable.value
+      );
+
+      selected.monster.system.reset.value = await TextEditor.enrichHTML(
+        selected.monster.system.reset.value
+      );
+
+      selected.monster.system.routine.value = await TextEditor.enrichHTML(
+        selected.monster.system.routine.value
+      );
+    }
 
     if (selected.monster.type === "pf2e-bestiary-tracking.npc") {
       selected.monster.system.npcData.general.background.enrichedValue =
@@ -9452,7 +10434,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const bookmarks =
       this.selected.category === "pf2e-bestiary-tracking.creature"
         ? getExpandedCreatureTypes()
-        : getNPCCategories().filter((x) => game.user.isGM || !x.hidden);
+        : this.selected.category === 'pf2e-bestiary-tracking.npc' ? 
+        getNPCCategories().filter((x) => game.user.isGM || !x.hidden) :
+        getHazardCategories();
 
     const creatureReduce = (acc, creature) => {
       const types = getCreaturesTypes(creature.system.traits);
@@ -9502,6 +10486,32 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
             name: npc.system.name,
             hidden: npc.system.hidden,
             img: npc.system.displayImage,
+          });
+      }
+
+      return acc;
+    };
+
+    const hazardReduce = (acc, hazard) => {
+      const types = getHazardTypes(hazard.system.traits);
+
+      var usedTypes = types.map((x) => x.key);
+      if (game.user.isGM) {
+        usedTypes = types.filter((x) => !x.fake).map((x) => x.key);
+      } else {
+        usedTypes = types.filter((x) => x.revealed).map((x) => x.key);
+      }
+
+      if (usedTypes.length === 0) usedTypes = ["unknown"];
+
+      for (var type of usedTypes) {
+        acc
+          .find((x) => x.value === type)
+          ?.values?.push({
+            id: hazard.id,
+            name: hazard.system.name,
+            hidden: hazard.system.hidden,
+            img: hazard.system.displayImage,
           });
       }
 
@@ -9591,12 +10601,13 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           .reduce(
             this.selected.category === "pf2e-bestiary-tracking.creature"
               ? creatureReduce
-              : npcReduce(
+              : this.selected.category === "pf2e-bestiary-tracking.npc" ?
+                npcReduce(
                   this.bestiary.getFlag(
                     "pf2e-bestiary-tracking",
                     "npcCategories",
                   ),
-                ),
+                ) : hazardReduce,
             bookmarks,
           );
   }
@@ -9622,8 +10633,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     if (this.selected.category === "pf2e-bestiary-tracking.npc") {
       context = await this.npcPreparation(context);
-    } else {
+    } else if(this.selected.category === 'pf2e-bestiary-tracking.creature') {
       context = await this.monsterPreparation(context);
+    } else if(this.selected.category === 'pf2e-bestiary-tracking.hazard'){
+      context = await this.hazardPreparation(context);
     }
 
     return context;
@@ -9686,7 +10699,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     context.typeTitle = this.selected.type
-      ? this.selected.category === "pf2e-bestiary-tracking.monster"
+      ? this.selected.category === "pf2e-bestiary-tracking.creature"
         ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyText", {
             category: getExpandedCreatureTypes().find(
               (x) => x.value === this.selected.type,
@@ -9701,6 +10714,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
                 ).name,
               },
             )
+          : this.selected.category === 'pf2e-bestiary-tracking.hazard'
+            ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyHazardText", { category: getHazardCategories().find(x => x.value === this.selected.type).name })
           : ""
       : "";
 
@@ -9735,6 +10750,12 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       { value: "perception", name: "PF2EBestiary.Miscellaneous.Perception" },
     ];
 
+    return context;
+  };
+
+  hazardPreparation = async (context) => {
+    context.tabs = this.getHazardTabs();
+    
     return context;
   };
 
@@ -9958,10 +10979,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   static async toggleAllRevealed(_, button) {
     if (!game.user.isGM) return;
 
-    const property = foundry.utils.getProperty(
+    const property = button.dataset.path ? foundry.utils.getProperty(
       this.selected.monster,
       button.dataset.path,
-    );
+    ) : {};
     const keys = Object.keys(property);
     var allRevealed = false;
     switch (button.dataset.type) {
@@ -9979,6 +11000,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
               {},
             ),
           },
+        });
+        break;
+      case "defenses":
+        allRevealed = !(this.selected.monster.system.hp.revealed && this.selected.monster.system.hardness.revealed && this.selected.monster.system.ac.revealed);
+        await this.selected.monster.update({
+          system: {
+            hp: { revealed: allRevealed },
+            hardness: { revealed: allRevealed },
+            ac: { revealed: allRevealed }
+          }
         });
         break;
       case "senses":
@@ -10233,6 +11264,53 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
             const type =
               allTypes[Number.parseInt(elements.misinformation.value)];
+            return {
+              value: {
+                slug: slugify(type.value),
+                value: {
+                  revealed: false,
+                  label: type.label,
+                  value: type.value,
+                  fake: true,
+                },
+              },
+              errors: [],
+            };
+          },
+        };
+      case "HazardTrait":
+        const allHazardTypes = Object.keys(CONFIG.PF2E.hazardTraits).map((type) => ({
+            value: type,
+            label: CONFIG.PF2E.hazardTraits[type],
+          })).sort((a, b) => {
+          if (a.label < b.label) return -1;
+          else if (a.label > b.label) return 1;
+          else return 0;
+        });
+        return {
+          width: 400,
+          content: new foundry.data.fields.StringField({
+            label: game.i18n.format(
+              "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
+              { property: name },
+            ),
+            choices: allHazardTypes,
+            required: true,
+          }).toFormGroup(
+            {},
+            {
+              name: "misinformation",
+              localize: true,
+              nameAttr: "value",
+              labelAttr: "label",
+            },
+          ).outerHTML,
+          getValue: (elements) => {
+            if (!elements.misinformation?.value)
+              return { value: null, errors: [`Fake ${name}`] };
+
+            const type =
+              allHazardTypes[Number.parseInt(elements.misinformation.value)];
             return {
               value: {
                 slug: slugify(type.value),
@@ -10562,9 +11640,19 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       ? this.selected.monster.system.name.custom
         ? this.selected.monster.system.name.custom
         : this.selected.monster.system.name.value
-      : game.i18n.localize(
+      : (
+        this.selected.monster.type === 'pf2e-bestiary-tracking.creature' ?
+        game.i18n.localize(
           "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature",
-        );
+        ) :
+        this.selected.monster.type === 'pf2e-bestiary-tracking.npc' ? 
+        game.i18n.localize(
+          "PF2EBestiary.Bestiary.Miscellaneous.UnknownNPC",
+        ) :
+        game.i18n.localize(
+          "PF2EBestiary.Bestiary.Miscellaneous.UnknownHazard"
+        )
+      );
 
     new ImagePopout(this.selected.monster.system.displayImage, {
       title: title,
@@ -11238,7 +12326,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       return;
     }
 
-    if (!baseItem || baseItem.type !== "npc") {
+    if (!baseItem || (baseItem.type !== "npc" && baseItem.type !== "hazard")) {
       ui.notifications.error(
         game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedType"),
       );
@@ -11517,6 +12605,7 @@ Hooks.once("init", () => {
   loadTemplates([
     "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/npcView.hbs",
+    "modules/pf2e-bestiary-tracking/templates/partials/hazardView.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/toggleTextSection.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/toggleEditorSection.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs",

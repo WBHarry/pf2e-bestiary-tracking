@@ -21,6 +21,7 @@ Hooks.once("init", () => {
   loadTemplates([
     "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/npcView.hbs",
+    "modules/pf2e-bestiary-tracking/templates/partials/hazardView.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/toggleTextSection.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/toggleEditorSection.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs",

@@ -36,6 +36,8 @@
       "Level": "Level",
       "AC": "AC",
       "HP": "HP",
+      "Defenses": "Defenses",
+      "Initiative": "Initiative",
       "Immunities": "Immunities",
       "None": "None",
       "Weaknesses": "Weaknesses",
@@ -70,7 +72,8 @@
       "NPC": "NPC",
       "Add": "Add",
       "Confirm": "Confirm",
-      "Cancel": "Cancel"
+      "Cancel": "Cancel",
+      "DCLabel": "DC"
     },
     "Bestiary": {
       "Title": "Bestiary",
@@ -114,10 +117,13 @@
         "EmptyText": "No {category} creature encountered yet. Enjoy it while you can.",
         "UnknownText": "Unknown dangers are always lurking..",
         "EmptyCategoryText": "You haven't met anyone under the {category} classification",
+        "EmptyHazardText": "You haven't run into any {category} hazards. Yet.",
         "UnaffiliatedText": "You don't know any unaffiliated characters.."
       },
       "Miscellaneous": {
         "UnknownCreature": "Unknown Creature",
+        "UnknownNPC": "Unknwon NPC",
+        "UnknownHazard": "Unknown Hazard",
         "Unknown": "Unknown",
         "Unaffiliated": "Unaffiliated",
         "CategoryPlaceholder": "Add categories the NPC is affiliated with",
@@ -182,6 +188,16 @@
         "GMPlayersContainerTitle": "Players",
         "GMPlayersContainerTip": "Dropping anything on a player's image acts the same as dropping them on the player token.",
         "GMTextZoneTip": "Drag and drop a journal onto the text area to import text from it."
+      },
+      "Hazards": {
+        "Simple": "Simple",
+        "Complex": "Complex",
+        "StealthTitle": "Stealth",
+        "DescriptionTitle": "Description",
+        "DisableTitle": "Disable",
+        "ResetTitle": "Reset",
+        "RoutineTitle": "Routine",
+        "Hardness": "HRD"
       },
       "Lore": {
         "Public": "Description",

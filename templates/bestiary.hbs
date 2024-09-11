@@ -41,12 +41,11 @@
                             <h4 class="main-page-category-label primary-container">{{localize this.categorySettings.npc.name}}</h4>
                         </div>
                     </div>
-                    <div class="main-page-category-card" title="Not available yet!">
-                        <div class="main-page-category-image-container secondary-border-container inactive">
-                            <img src="{{this.categorySettings.hazard.image}}" class="inactive" />
+                    <div class="main-page-category-card">
+                        <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.hazard')}}secondary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.hazard">
+                            <img src="{{this.categorySettings.hazard.image}}" />
                             <h4 class="main-page-category-label primary-container inactive">{{localize this.categorySettings.hazard.name}}</h4>
                         </div>
-                        <i class="fa-solid fa-lock under-development primary-icon"></i>
                     </div>
                 </div>
                 {{#if (and this.user.isGM (eq this.selected.category 'pf2e-bestiary-tracking.npc'))}}
@@ -112,22 +111,42 @@
                         }}
                     {{/with}}
                 {{else}}
-                    {{#with this.selected.monster}}
-                        {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" 
-                            uuid=this.uuid
-                            selected=../selected 
-                            user=../user 
-                            vagueDescriptions=../vagueDescriptions
-                            gmNumeric=../vagueDescriptions.settings.gmNumeric 
-                            tabs=../tabs 
-                            useTokenArt=../useTokenArt 
-                            hideAbilityDescriptions=../hideAbilityDescriptions
-                            optionalFields=../optionalFields 
-                            contrastRevealedState =../contrastRevealedState 
-                            detailedInformation = ../detailedInformation
-                            npcState=../npcState
-                        }}
-                    {{/with}}
+                    {{#if (eq this.selected.category 'pf2e-bestiary-tracking.creature')}}
+                        {{#with this.selected.monster}}
+                            {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" 
+                                uuid=this.uuid
+                                selected=../selected 
+                                user=../user 
+                                vagueDescriptions=../vagueDescriptions
+                                gmNumeric=../vagueDescriptions.settings.gmNumeric 
+                                tabs=../tabs 
+                                useTokenArt=../useTokenArt 
+                                hideAbilityDescriptions=../hideAbilityDescriptions
+                                optionalFields=../optionalFields 
+                                contrastRevealedState =../contrastRevealedState 
+                                detailedInformation = ../detailedInformation
+                                npcState=../npcState
+                            }}
+                        {{/with}}
+                    {{else}}
+                        {{#with this.selected.monster}}
+                            {{> "modules/pf2e-bestiary-tracking/templates/partials/hazardView.hbs" 
+                                uuid=this.uuid
+                                selected=../selected 
+                                user=../user 
+                                vagueDescriptions=../vagueDescriptions
+                                gmNumeric=../vagueDescriptions.settings.gmNumeric 
+                                tabs=../tabs 
+                                useTokenArt=../useTokenArt 
+                                hideAbilityDescriptions=../hideAbilityDescriptions
+                                optionalFields=../optionalFields 
+                                contrastRevealedState =../contrastRevealedState 
+                                detailedInformation = ../detailedInformation
+                                npcState=../npcState
+                            }}
+                        {{/with}}
+                    {{/if}}
+
                 {{/if}}
             {{else}}
                 <div class="type-overview-container">

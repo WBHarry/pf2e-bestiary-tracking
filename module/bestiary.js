@@ -1,6 +1,8 @@
 import {
   getCreaturesTypes,
   getExpandedCreatureTypes,
+  getHazardCategories,
+  getHazardTypes,
   getNPCCategories,
   isNPC,
   slugify,
@@ -438,6 +440,36 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     return tabs;
   }
 
+  getHazardTabs() {
+    const tabs = {
+      statistics: {
+        active: true,
+        cssClass: "",
+        group: "hazard",
+        id: "statistics",
+        icon: null,
+        label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Statistics"),
+      },
+      notes: {
+        active: false,
+        cssClass: "",
+        group: "hazard",
+        id: "notes",
+        icon: null,
+        label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes"),
+      },
+    };
+
+    for (const v of Object.values(tabs)) {
+      v.active = this.tabGroups[v.group]
+        ? this.tabGroups[v.group] === v.id
+        : v.active;
+      v.cssClass = v.active ? "active" : "";
+    }
+
+    return tabs;
+  }
+
   _onRender(context, options) {
     this._dragDrop = this._createDragDropHandlers.bind(this)();
   }
@@ -456,41 +488,69 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       };
     }
 
-    const newPassives = {};
-    for (var passiveKey of Object.keys(selected.monster.system.passives)) {
-      const description = await TextEditor.enrichHTML(
-        selected.monster.system.passives[passiveKey].description,
-      );
-      newPassives[passiveKey] = {
-        ...selected.monster.system.passives[passiveKey],
-        description,
-      };
-    }
-
-    for (var entryKey in selected.monster.system.spells.entries) {
-      const entry = selected.monster.system.spells.entries[entryKey];
-      for (var levelKey in entry.levels) {
-        for (var spellKey in entry.levels[levelKey].spells) {
-          const spell = entry.levels[levelKey].spells[spellKey];
-          spell.description = {
-            ...spell.description,
-            value: await TextEditor.enrichHTML(spell.description.value),
-          };
-        }
-      }
-    }
-
-    selected.monster.system.notes.public.value = await TextEditor.enrichHTML(
-      selected.monster.system.notes.public.value,
-    );
-    selected.monster.system.notes.private.value = await TextEditor.enrichHTML(
-      selected.monster.system.notes.private.value,
-    );
     selected.monster.system.notes.player.enriched = await TextEditor.enrichHTML(
       selected.monster.system.notes.player.value,
     );
     selected.monster.system.actions = newActions;
-    selected.monster.system.passives = newPassives;
+
+    if (selected.monster.type !== "pf2e-bestiary-tracking.hazard") {
+      selected.monster.system.notes.public.value = await TextEditor.enrichHTML(
+        selected.monster.system.notes.public.value,
+      );
+      selected.monster.system.notes.private.value = await TextEditor.enrichHTML(
+        selected.monster.system.notes.private.value,
+      );
+
+      const newPassives = {};
+      for (var passiveKey of Object.keys(selected.monster.system.passives)) {
+        const description = await TextEditor.enrichHTML(
+          selected.monster.system.passives[passiveKey].description,
+        );
+        newPassives[passiveKey] = {
+          ...selected.monster.system.passives[passiveKey],
+          description,
+        };
+      }
+
+      selected.monster.system.passives = newPassives;
+
+      for (var entryKey in selected.monster.system.spells.entries) {
+        const entry = selected.monster.system.spells.entries[entryKey];
+        for (var levelKey in entry.levels) {
+          for (var spellKey in entry.levels[levelKey].spells) {
+            const spell = entry.levels[levelKey].spells[spellKey];
+            spell.description = {
+              ...spell.description,
+              value: await TextEditor.enrichHTML(spell.description.value),
+            };
+          }
+        }
+      }
+    }
+
+    if (selected.monster.type === "pf2e-bestiary-tracking.hazard") {
+      selected.monster.system.notes.description.value =
+        await TextEditor.enrichHTML(
+          selected.monster.system.notes.description.value,
+        );
+
+      selected.monster.system.stealth.details.value =
+        await TextEditor.enrichHTML(
+          selected.monster.system.stealth.details.value,
+        );
+
+      selected.monster.system.disable.value = await TextEditor.enrichHTML(
+        selected.monster.system.disable.value,
+      );
+
+      selected.monster.system.reset.value = await TextEditor.enrichHTML(
+        selected.monster.system.reset.value,
+      );
+
+      selected.monster.system.routine.value = await TextEditor.enrichHTML(
+        selected.monster.system.routine.value,
+      );
+    }
 
     if (selected.monster.type === "pf2e-bestiary-tracking.npc") {
       selected.monster.system.npcData.general.background.enrichedValue =
@@ -525,7 +585,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     const bookmarks =
       this.selected.category === "pf2e-bestiary-tracking.creature"
         ? getExpandedCreatureTypes()
-        : getNPCCategories().filter((x) => game.user.isGM || !x.hidden);
+        : this.selected.category === "pf2e-bestiary-tracking.npc"
+          ? getNPCCategories().filter((x) => game.user.isGM || !x.hidden)
+          : getHazardCategories();
 
     const creatureReduce = (acc, creature) => {
       const types = getCreaturesTypes(creature.system.traits);
@@ -575,6 +637,32 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
             name: npc.system.name,
             hidden: npc.system.hidden,
             img: npc.system.displayImage,
+          });
+      }
+
+      return acc;
+    };
+
+    const hazardReduce = (acc, hazard) => {
+      const types = getHazardTypes(hazard.system.traits);
+
+      var usedTypes = types.map((x) => x.key);
+      if (game.user.isGM) {
+        usedTypes = types.filter((x) => !x.fake).map((x) => x.key);
+      } else {
+        usedTypes = types.filter((x) => x.revealed).map((x) => x.key);
+      }
+
+      if (usedTypes.length === 0) usedTypes = ["unknown"];
+
+      for (var type of usedTypes) {
+        acc
+          .find((x) => x.value === type)
+          ?.values?.push({
+            id: hazard.id,
+            name: hazard.system.name,
+            hidden: hazard.system.hidden,
+            img: hazard.system.displayImage,
           });
       }
 
@@ -664,12 +752,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           .reduce(
             this.selected.category === "pf2e-bestiary-tracking.creature"
               ? creatureReduce
-              : npcReduce(
-                  this.bestiary.getFlag(
-                    "pf2e-bestiary-tracking",
-                    "npcCategories",
-                  ),
-                ),
+              : this.selected.category === "pf2e-bestiary-tracking.npc"
+                ? npcReduce(
+                    this.bestiary.getFlag(
+                      "pf2e-bestiary-tracking",
+                      "npcCategories",
+                    ),
+                  )
+                : hazardReduce,
             bookmarks,
           );
   }
@@ -695,8 +785,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
     if (this.selected.category === "pf2e-bestiary-tracking.npc") {
       context = await this.npcPreparation(context);
-    } else {
+    } else if (this.selected.category === "pf2e-bestiary-tracking.creature") {
       context = await this.monsterPreparation(context);
+    } else if (this.selected.category === "pf2e-bestiary-tracking.hazard") {
+      context = await this.hazardPreparation(context);
     }
 
     return context;
@@ -759,7 +851,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     context.typeTitle = this.selected.type
-      ? this.selected.category === "pf2e-bestiary-tracking.monster"
+      ? this.selected.category === "pf2e-bestiary-tracking.creature"
         ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyText", {
             category: getExpandedCreatureTypes().find(
               (x) => x.value === this.selected.type,
@@ -774,7 +866,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
                 ).name,
               },
             )
-          : ""
+          : this.selected.category === "pf2e-bestiary-tracking.hazard"
+            ? game.i18n.format(
+                "PF2EBestiary.Bestiary.CategoryView.EmptyHazardText",
+                {
+                  category: getHazardCategories().find(
+                    (x) => x.value === this.selected.type,
+                  ).name,
+                },
+              )
+            : ""
       : "";
 
     context.bookmarks = [];
@@ -807,6 +908,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       })),
       { value: "perception", name: "PF2EBestiary.Miscellaneous.Perception" },
     ];
+
+    return context;
+  };
+
+  hazardPreparation = async (context) => {
+    context.tabs = this.getHazardTabs();
 
     return context;
   };
@@ -1031,10 +1138,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   static async toggleAllRevealed(_, button) {
     if (!game.user.isGM) return;
 
-    const property = foundry.utils.getProperty(
-      this.selected.monster,
-      button.dataset.path,
-    );
+    const property = button.dataset.path
+      ? foundry.utils.getProperty(this.selected.monster, button.dataset.path)
+      : {};
     const keys = Object.keys(property);
     var allRevealed = false;
     switch (button.dataset.type) {
@@ -1051,6 +1157,20 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
               },
               {},
             ),
+          },
+        });
+        break;
+      case "defenses":
+        allRevealed = !(
+          this.selected.monster.system.hp.revealed &&
+          this.selected.monster.system.hardness.revealed &&
+          this.selected.monster.system.ac.revealed
+        );
+        await this.selected.monster.update({
+          system: {
+            hp: { revealed: allRevealed },
+            hardness: { revealed: allRevealed },
+            ac: { revealed: allRevealed },
           },
         });
         break;
@@ -1306,6 +1426,55 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
             const type =
               allTypes[Number.parseInt(elements.misinformation.value)];
+            return {
+              value: {
+                slug: slugify(type.value),
+                value: {
+                  revealed: false,
+                  label: type.label,
+                  value: type.value,
+                  fake: true,
+                },
+              },
+              errors: [],
+            };
+          },
+        };
+      case "HazardTrait":
+        const allHazardTypes = Object.keys(CONFIG.PF2E.hazardTraits)
+          .map((type) => ({
+            value: type,
+            label: CONFIG.PF2E.hazardTraits[type],
+          }))
+          .sort((a, b) => {
+            if (a.label < b.label) return -1;
+            else if (a.label > b.label) return 1;
+            else return 0;
+          });
+        return {
+          width: 400,
+          content: new foundry.data.fields.StringField({
+            label: game.i18n.format(
+              "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
+              { property: name },
+            ),
+            choices: allHazardTypes,
+            required: true,
+          }).toFormGroup(
+            {},
+            {
+              name: "misinformation",
+              localize: true,
+              nameAttr: "value",
+              labelAttr: "label",
+            },
+          ).outerHTML,
+          getValue: (elements) => {
+            if (!elements.misinformation?.value)
+              return { value: null, errors: [`Fake ${name}`] };
+
+            const type =
+              allHazardTypes[Number.parseInt(elements.misinformation.value)];
             return {
               value: {
                 slug: slugify(type.value),
@@ -1635,9 +1804,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       ? this.selected.monster.system.name.custom
         ? this.selected.monster.system.name.custom
         : this.selected.monster.system.name.value
-      : game.i18n.localize(
-          "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature",
-        );
+      : this.selected.monster.type === "pf2e-bestiary-tracking.creature"
+        ? game.i18n.localize(
+            "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature",
+          )
+        : this.selected.monster.type === "pf2e-bestiary-tracking.npc"
+          ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.UnknownNPC")
+          : game.i18n.localize(
+              "PF2EBestiary.Bestiary.Miscellaneous.UnknownHazard",
+            );
 
     new ImagePopout(this.selected.monster.system.displayImage, {
       title: title,
@@ -2311,7 +2486,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       return;
     }
 
-    if (!baseItem || baseItem.type !== "npc") {
+    if (!baseItem || (baseItem.type !== "npc" && baseItem.type !== "hazard")) {
       ui.notifications.error(
         game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedType"),
       );

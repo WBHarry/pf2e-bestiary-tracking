@@ -62,6 +62,30 @@ export const getCreaturesTypes = (traits, onlyActive) => {
   return onlyActive ? types.filter((x) => x.revealed) : types;
 };
 
+export const getHazardTypes = (traits, onlyActive) => {
+  const hazardTypes = [
+    { value: "environmental", name: CONFIG.PF2E.hazardTraits["environmental"] },
+    { value: "haunt", name: CONFIG.PF2E.hazardTraits["haunt"] },
+    { value: "trap", name: CONFIG.PF2E.hazardTraits["trap"] },
+  ];
+
+  const types = Object.values(traits).reduce((acc, trait) => {
+    const typeMatch = hazardTypes.find((x) => x.value === trait.value);
+    if (typeMatch) {
+      acc.push({
+        key: typeMatch.value,
+        revealed: trait.revealed,
+        fake: trait.fake,
+        name: typeMatch.name,
+      });
+    }
+
+    return acc;
+  }, []);
+
+  return onlyActive ? types.filter((x) => x.revealed) : types;
+};
+
 export const getExpandedCreatureTypes = () => {
   const allTypes = [
     ...Object.keys(CONFIG.PF2E.creatureTypes).map((type) => ({
@@ -117,6 +141,23 @@ export const getNPCCategories = () => {
       });
       return acc;
     }, []),
+  ];
+};
+
+export const getHazardCategories = () => {
+  return [
+    {
+      value: "unknown",
+      name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"),
+      values: [],
+    },
+    {
+      value: "environmental",
+      name: game.i18n.localize("PF2E.TraitEnvironmental"),
+      values: [],
+    },
+    { value: "haunt", name: game.i18n.localize("PF2E.TraitHaunt"), values: [] },
+    { value: "trap", name: game.i18n.localize("PF2E.TraitTrap"), values: [] },
   ];
 };
 

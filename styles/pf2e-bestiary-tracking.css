@@ -438,6 +438,19 @@
   height: 100%;
   gap: 16px;
 }
+.pf2e-bestiary-tracking.bestiary .monster-container .defenses-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .defenses-container > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  white-space: nowrap;
+}
 .pf2e-bestiary-tracking.bestiary .monster-container .data-container {
   border-radius: 6px;
   padding: 4px;
@@ -834,12 +847,10 @@
   padding: 4px;
   border-radius: 0;
   text-transform: uppercase;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
   text-overflow: ellipsis;
   text-align: center;
   flex: 0;
+  white-space: nowrap;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .right-monster-container-data,
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .right-npc-container-data {

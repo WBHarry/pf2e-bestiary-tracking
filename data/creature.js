@@ -1552,9 +1552,8 @@ export class Creature extends foundry.abstract.TypeDataModel {
           acc[trait] = {
             ...this.actions[key].traits[trait],
             label:
-              CONFIG.PF2E.npcAttackTraits[
-                this.actions[key].traits[trait].value
-              ] ?? this.actions[key].traits[trait].value,
+              CONFIG.PF2E.actionTraits[this.actions[key].traits[trait].value] ??
+              this.actions[key].traits[trait].value,
             description:
               CONFIG.PF2E.traitsDescriptions[
                 this.actions[key].traits[trait].value
@@ -1577,7 +1576,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           acc[trait] = {
             ...this.passives[key].traits[trait],
             label:
-              CONFIG.PF2E.npcAttackTraits[
+              CONFIG.PF2E.actionTraits[
                 this.passives[key].traits[trait].value
               ] ?? this.passives[key].traits[trait].value,
             description:

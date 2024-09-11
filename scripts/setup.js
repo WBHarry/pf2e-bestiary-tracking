@@ -6,6 +6,7 @@ import {
 import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import { Creature } from "../data/creature.js";
 import { NPC } from "../data/npc.js";
+import { Hazard } from "../data/hazard.js";
 import BestiaryAppearanceMenu from "../module/bestiaryAppearanceMenu.js";
 import BestiaryIntegrationMenu from "../module/bestiaryIntegrationMenu.js";
 import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
@@ -20,7 +21,7 @@ export const dataTypeSetup = () => {
     ...CONFIG.JournalEntryPage.dataModels,
     "pf2e-bestiary-tracking.creature": Creature,
     "pf2e-bestiary-tracking.npc": NPC,
-    // "pf2e-bestiary-tracking.hazard": Hazard,
+    "pf2e-bestiary-tracking.hazard": Hazard,
   };
 };
 

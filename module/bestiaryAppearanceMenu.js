@@ -129,7 +129,8 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
           image: this.settings.categorySettings.npc.image,
         },
         hazard: {
-          ...this.settings.categorySettings.hazard,
+          ...data.categorySettings.hazard,
+          image: this.settings.categorySettings.hazard.image,
         },
       },
     };

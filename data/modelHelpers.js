@@ -532,6 +532,9 @@ export const getHazardData = (actor) => {
       publication: actor.system.details.publication,
       hasHealth: actor.system.attributes.hasHealth,
       isComplex: actor.system.details.isComplex,
+      disable: { value: actor.system.details.disable },
+      routine: { value: actor.system.details.routine },
+      reset: { value: actor.system.details.reset },
       ac: {
         value: Number.parseInt(actor.system.attributes.ac.value),
         details: actor.system.attributes.ac.details,
@@ -549,33 +552,43 @@ export const getHazardData = (actor) => {
         value: Number.parseInt(actor.system.details.level.value),
         revealed: defaultRevealed.level,
       },
-      size: actor.system.traits.size.value,
+      stealth: {
+        value: actor.system.attributes.stealth.value,
+        dc: actor.system.attributes.stealth.dc,
+        modifiers: actor.system.attributes.stealth.modifiers
+          .filter((x) => x.slug !== "base")
+          .map((x) => ({
+            kind: x.kind,
+            label: x.label,
+            modifier: x.modifier,
+          })),
+        totalModifier: Number.parseInt(
+          actor.system.attributes.stealth.totalModifier,
+        ),
+        details: {
+          value: actor.system.attributes.stealth.details,
+        },
+      },
+      initiative: actor.system.initiative
+        ? {
+            value: actor.system.initiative.value,
+            modifiers: actor.system.initiative.modifiers
+              .filter((x) => x.slug !== "base")
+              .map((x) => ({
+                kind: x.kind,
+                label: x.label,
+                modifier: x.modifier,
+              })),
+            totalModifier: Number.parseInt(
+              actor.system.initiative.totalModifier,
+            ),
+          }
+        : null,
       rarity: { value: actor.system.traits.rarity },
       traits: actor.system.traits.value.reduce((acc, trait) => {
         acc[trait] = { value: trait, revealed: defaultRevealed.traits };
         return acc;
       }, {}),
-      skills: Object.values(actor.system.skills).some((x) => x.base > 0)
-        ? Object.keys(actor.system.skills).reduce((acc, key) => {
-            const skill = actor.system.skills[key];
-            acc[key] = {
-              value: skill.base,
-              revealed: defaultRevealed.skills,
-              lore: skill.lore,
-              note: skill.note,
-              modifiers: skill.modifiers
-                .filter((x) => x.slug !== "base")
-                .map((x) => ({
-                  kind: x.kind,
-                  label: x.label,
-                  modifier: x.modifier,
-                })),
-              label: skill.label,
-              totalModifier: Number.parseInt(skill.totalModifier),
-            };
-            return acc;
-          }, {})
-        : { empty: { empty: true, value: "PF2EBestiary.Miscellaneous.None" } },
       saves: {
         fortitude: {
           value: actor.system.saves.fortitude.value,
@@ -588,27 +601,6 @@ export const getHazardData = (actor) => {
         will: {
           value: actor.system.saves.will.value,
           revealed: defaultRevealed.saves,
-        },
-      },
-      speeds: {
-        details: {
-          name: actor.system.attributes.speed.details,
-          revealed: defaultRevealed.speeds,
-        },
-        values: {
-          land: {
-            type: "land",
-            value: actor.system.attributes.speed.value,
-            revealed: defaultRevealed.speeds,
-          },
-          ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
-            acc[speed.label] = {
-              type: speed.type,
-              value: speed.value,
-              revealed: defaultRevealed.speeds,
-            };
-            return acc;
-          }, {}),
         },
       },
       immunities:
@@ -753,22 +745,20 @@ export const getHazardData = (actor) => {
               },
             },
       actions:
-        itemKeys.filter(
-          (action) =>
-            action.type === "action" &&
-            action.system.actionType.value !== "passive",
-        ).length > 0
+        itemKeys.filter((action) => action.type === "action").length > 0
           ? itemKeys.reduce((acc, action) => {
-              if (
-                action.type === "action" &&
-                action.system.actionType.value !== "passive"
-              ) {
+              if (action.type === "action") {
                 acc[action.id] = {
                   revealed: defaultRevealed.abilities,
                   label: action.name,
                   category: action.system.category,
                   deathNote: action.system.deathNote,
-                  actions: action.system.actions.value ?? "R",
+                  actions:
+                    action.system.actionType.value === "reaction"
+                      ? "R"
+                      : action.system.actionType.value === "passive"
+                        ? ""
+                        : (action.system.actions.value ?? "R"),
                   traits: action.system.traits.value.reduce((acc, trait) => {
                     acc[trait] = { value: trait };
                     return acc;
@@ -788,43 +778,9 @@ export const getHazardData = (actor) => {
                 description: "",
               },
             },
-      passives:
-        itemKeys.filter(
-          (action) =>
-            action.type === "action" &&
-            action.system.actionType.value === "passive",
-        ).length > 0
-          ? itemKeys.reduce((acc, action) => {
-              if (
-                action.type === "action" &&
-                action.system.actionType.value === "passive"
-              ) {
-                acc[action.id] = {
-                  revealed: defaultRevealed.abilities,
-                  label: action.name,
-                  category: action.system.category,
-                  deathNote: action.system.deathNote,
-                  traits: action.system.traits.value.reduce((acc, trait) => {
-                    acc[trait] = { value: trait };
-                    return acc;
-                  }, {}),
-                  description: action.system.description.value,
-                };
-              }
-
-              return acc;
-            }, {})
-          : {
-              empty: {
-                empty: true,
-                label: "PF2EBestiary.Miscellaneous.None",
-                traits: {},
-                description: "",
-              },
-            },
       notes: {
-        public: {
-          value: actor.system.details.publicNotes,
+        description: {
+          value: actor.system.details.description,
           revealed: defaultRevealed.description,
         },
       },

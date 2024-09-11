@@ -136,6 +136,24 @@
                     </div>
                 </div>
             </div>
+            <div class="menu-grouper-container">
+                <label>{{localize "PF2EBestiary.Bestiary.Category.Hazards"}}</label>
+                <div class="menu-grouper">
+                    <div class="form-group">
+                        <div class="form-fields">
+                            <label>{{localize "PF2EBestiary.Miscellaneous.Title"}}</label>
+                            <div class="form-fields no-flex">
+                                <input type="text" name="categorySettings.hazard.name" value="{{localize settings.categorySettings.hazard.name}}" />
+                            </div>
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.CategorySettings.Image"}}</label>
+                            <div class="form-fields">
+                                <input type="text" value="{{localize settings.categorySettings.hazard.image}}" disabled />
+                                <button data-action="filePicker" data-path="categorySettings.hazard.image" title="Browse Files"><i class="fas fa-file-import fa-fw"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </fieldset>
 
