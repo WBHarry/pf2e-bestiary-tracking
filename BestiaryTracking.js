@@ -209,6 +209,7 @@ const versionCompare = (current, target) => {
   const targetSplit = target.split(".").map((x) => Number.parseInt(x));
   for (var i = 0; i < currentSplit.length; i++) {
     if (currentSplit[i] < targetSplit[i]) return true;
+    if(currentSplit[i] > targetSplit[i]) return false;
   }
 
   return false;
@@ -4817,6 +4818,7 @@ class NPC extends Creature {
           ),
           influence: new MappingField(
             new fields.SchemaField({
+              revealed: new fields.BooleanField({ required: true, initial: false }),
               points: new fields.NumberField({ required: true, integer: true }),
               description: new fields.StringField({ required: true }),
             }),
@@ -4914,6 +4916,10 @@ class NPC extends Creature {
               influenceSkills: Object.keys(
                 this.npcData.influence.influenceSkills,
               ).reduce((acc, key) => {
+                acc[key] = { revealed: state };
+                return acc;
+              }, {}),
+              influence: Object.keys(this.npcData.influence.influence).reduce((acc, key) => {
                 acc[key] = { revealed: state };
                 return acc;
               }, {}),
@@ -5075,19 +5081,19 @@ class NPC extends Creature {
       return acc;
     }, {});
 
-    this.npcData.influence.influence = Object.keys(
-      this.npcData.influence.influence,
-    ).reduce((acc, key) => {
-      const influence = this.npcData.influence.influence[key];
-      if (
-        game.user.isGM ||
-        this.npcData.influence.influencePoints >= influence.points
-      ) {
-        acc[key] = influence;
-      }
+    // this.npcData.influence.influence = Object.keys(
+    //   this.npcData.influence.influence,
+    // ).reduce((acc, key) => {
+    //   const influence = this.npcData.influence.influence[key];
+    //   if (
+    //     game.user.isGM ||
+    //     this.npcData.influence.influencePoints >= influence.points
+    //   ) {
+    //     acc[key] = influence;
+    //   }
 
-      return acc;
-    }, {});
+    //   return acc;
+    // }, {});
   }
 }
 
@@ -8704,6 +8710,19 @@ const migrateBestiaryPages = async (bestiary) => {
         await page.update({ "system.version": "0.9.13" });
       }
     }
+    if(versionCompare(page.system.version, "1.0.1")){
+      if (page.type === "pf2e-bestiary-tracking.npc") {
+        await page.update({
+          "system.version": "1.0.1",
+          "system.npcData.influence.influence": Object.keys(page.system.npcData.influence.influence).reduce((acc, key) => {
+            acc[key] = { revealed: page.system.npcData.influence.influencePoints >= page.system.npcData.influence.influence[key].points };
+            return acc;
+          }, {}),
+        });
+      } else {
+        await page.update({ "system.version": "1.0.1" });
+      }
+    }
   }
 };
 
@@ -8859,7 +8878,7 @@ const handleDeactivatedPages = async () => {
   }
 };
 
-const currentVersion = "1.0.0";
+const currentVersion = "1.0.1";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {

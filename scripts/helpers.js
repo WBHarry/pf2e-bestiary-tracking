@@ -226,6 +226,7 @@ export const versionCompare = (current, target) => {
   const targetSplit = target.split(".").map((x) => Number.parseInt(x));
   for (var i = 0; i < currentSplit.length; i++) {
     if (currentSplit[i] < targetSplit[i]) return true;
+    if (currentSplit[i] > targetSplit[i]) return false;
   }
 
   return false;

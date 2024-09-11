@@ -1454,6 +1454,25 @@ export const migrateBestiaryPages = async (bestiary) => {
         await page.update({ "system.version": "0.9.13" });
       }
     }
+    if (versionCompare(page.system.version, "1.0.1")) {
+      if (page.type === "pf2e-bestiary-tracking.npc") {
+        await page.update({
+          "system.version": "1.0.1",
+          "system.npcData.influence.influence": Object.keys(
+            page.system.npcData.influence.influence,
+          ).reduce((acc, key) => {
+            acc[key] = {
+              revealed:
+                page.system.npcData.influence.influencePoints >=
+                page.system.npcData.influence.influence[key].points,
+            };
+            return acc;
+          }, {}),
+        });
+      } else {
+        await page.update({ "system.version": "1.0.1" });
+      }
+    }
   }
 };
 

@@ -281,13 +281,15 @@
                             {{/each}}
                         {{else}}
                             <div class="option-field-check-container vertical">
-                                {{#if (and (not this.user.isGM) (eq (PF2EBTNrKeys this.influence.influence) 0))}}
+                                {{#if (and (not this.user.isGM) (eq (PF2EBTNrKeys this.influence.influence 'revealed') 0))}}
                                     ?
                                 {{else}}
                                     {{#each this.influence.influence}}
-                                        <div class="data-container secondary-container {{#if (lt ../this.influence.influencePoints this.points)}}automatic-lock{{/if}}">
-                                            {{#if this.points}}<strong>{{this.points}}:&nbsp;</strong>{{/if}}{{{this.description}}}
-                                        </div>
+                                        {{#if (or ../user.isGM this.revealed)}}
+                                            <div class="data-container secondary-container {{#if (not this.revealed)}}automatic-lock{{/if}} {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.influence." @key}}">
+                                                {{#if this.points}}<strong>{{this.points}}:&nbsp;</strong>{{/if}}{{{this.description}}}
+                                            </div>
+                                        {{/if}}
                                     {{/each}}
                                 {{/if}}
                             </div>

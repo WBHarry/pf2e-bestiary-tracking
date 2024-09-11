@@ -118,6 +118,10 @@ export class NPC extends Creature {
           ),
           influence: new MappingField(
             new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
               points: new fields.NumberField({ required: true, integer: true }),
               description: new fields.StringField({ required: true }),
             }),
@@ -218,6 +222,13 @@ export class NPC extends Creature {
                 acc[key] = { revealed: state };
                 return acc;
               }, {}),
+              influence: Object.keys(this.npcData.influence.influence).reduce(
+                (acc, key) => {
+                  acc[key] = { revealed: state };
+                  return acc;
+                },
+                {},
+              ),
               resistances: Object.keys(
                 this.npcData.influence.resistances,
               ).reduce((acc, key) => {
@@ -376,18 +387,18 @@ export class NPC extends Creature {
       return acc;
     }, {});
 
-    this.npcData.influence.influence = Object.keys(
-      this.npcData.influence.influence,
-    ).reduce((acc, key) => {
-      const influence = this.npcData.influence.influence[key];
-      if (
-        game.user.isGM ||
-        this.npcData.influence.influencePoints >= influence.points
-      ) {
-        acc[key] = influence;
-      }
+    // this.npcData.influence.influence = Object.keys(
+    //   this.npcData.influence.influence,
+    // ).reduce((acc, key) => {
+    //   const influence = this.npcData.influence.influence[key];
+    //   if (
+    //     game.user.isGM ||
+    //     this.npcData.influence.influencePoints >= influence.points
+    //   ) {
+    //     acc[key] = influence;
+    //   }
 
-      return acc;
-    }, {});
+    //   return acc;
+    // }, {});
   }
 }
