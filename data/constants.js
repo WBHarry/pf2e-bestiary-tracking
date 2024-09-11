@@ -58,5 +58,25 @@ export const defaultRevealing = {
     // birthplace: 'PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Birthplace',
     premise: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Premise",
   },
-  hazard: {},
+  hazard: {
+    attacks: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attacks",
+    abilities:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Abilities",
+    name: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Name",
+    traits: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Traits",
+    description:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Description",
+    level: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Level",
+    ac: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.AC",
+    hp: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.HP",
+    hardness: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Hardness",
+    disable: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Disable",
+    routine: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Routine",
+    reset: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Reset",
+    saves: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Saves",
+    iwr: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.IWR",
+    initiative:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Initiative",
+    stealth: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Stealth",
+  },
 };

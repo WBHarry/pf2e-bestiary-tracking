@@ -47,24 +47,24 @@ const getCreaturesTypes = (traits, onlyActive) => {
 
 const getHazardTypes = (traits, onlyActive) => {
   const hazardTypes = [
-    { value: 'environmental', name: CONFIG.PF2E.hazardTraits['environmental'] },
-    { value: 'haunt', name: CONFIG.PF2E.hazardTraits['haunt'] },
-    { value: 'trap', name: CONFIG.PF2E.hazardTraits['trap'] }
+    { value: "environmental", name: CONFIG.PF2E.hazardTraits["environmental"] },
+    { value: "haunt", name: CONFIG.PF2E.hazardTraits["haunt"] },
+    { value: "trap", name: CONFIG.PF2E.hazardTraits["trap"] },
   ];
 
   const types = Object.values(traits).reduce((acc, trait) => {
-    const typeMatch = hazardTypes.find(x => x.value === trait.value);
-    if(typeMatch){
+    const typeMatch = hazardTypes.find((x) => x.value === trait.value);
+    if (typeMatch) {
       acc.push({
         key: typeMatch.value,
         revealed: trait.revealed,
         fake: trait.fake,
-        name: typeMatch.name
+        name: typeMatch.name,
       });
     }
 
     return acc;
-  }, []); 
+  }, []);
 
   return onlyActive ? types.filter((x) => x.revealed) : types;
 };
@@ -129,11 +129,19 @@ const getNPCCategories = () => {
 
 const getHazardCategories = () => {
   return [
-    { value: 'unknown', name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"), values: [] },
-    { value: 'environmental', name: game.i18n.localize('PF2E.TraitEnvironmental'), values: [] },    
-    { value: 'haunt', name: game.i18n.localize('PF2E.TraitHaunt'), values: [] },
-    { value: 'trap', name: game.i18n.localize('PF2E.TraitTrap'), values: [] },
-  ]
+    {
+      value: "unknown",
+      name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"),
+      values: [],
+    },
+    {
+      value: "environmental",
+      name: game.i18n.localize("PF2E.TraitEnvironmental"),
+      values: [],
+    },
+    { value: "haunt", name: game.i18n.localize("PF2E.TraitHaunt"), values: [] },
+    { value: "trap", name: game.i18n.localize("PF2E.TraitTrap"), values: [] },
+  ];
 };
 
 const getBaseActor = (actor) => {
@@ -2224,7 +2232,7 @@ const getCreatureData = (actor) => {
             };
             return acc;
           }, {})
-        : { empty: { empty: true, value: "PF2EBestiary.Miscellaneous.None" } },
+        : { revealed: defaultRevealed.skills, empty: { empty: true, value: "PF2EBestiary.Miscellaneous.None" } },
       saves: {
         fortitude: {
           value: actor.system.saves.fortitude.value,
@@ -2302,6 +2310,7 @@ const getCreatureData = (actor) => {
               }, {})
             : {
                 empty: {
+                  revealed: defaultRevealed.languages,
                   empty: true,
                   value: "PF2EBestiary.Miscellaneous.None",
                   exceptions: {},
@@ -2327,6 +2336,7 @@ const getCreatureData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.iwr,
                 empty: true,
                 type: "PF2EBestiary.Miscellaneous.None",
                 exceptions: {},
@@ -2352,6 +2362,7 @@ const getCreatureData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.iwr,
                 empty: true,
                 type: "PF2EBestiary.Miscellaneous.None",
                 exceptions: {},
@@ -2382,6 +2393,7 @@ const getCreatureData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.iwr,
                 empty: true,
                 type: "PF2EBestiary.Miscellaneous.None",
                 exceptions: {},
@@ -2445,6 +2457,7 @@ const getCreatureData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.attacks,
                 empty: true,
                 label: "PF2EBestiary.Miscellaneous.None",
                 totalModifier: 0,
@@ -2484,6 +2497,7 @@ const getCreatureData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.abilities,
                 empty: true,
                 label: "PF2EBestiary.Miscellaneous.None",
                 actions: "",
@@ -2519,6 +2533,7 @@ const getCreatureData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.abilities,
                 empty: true,
                 label: "PF2EBestiary.Miscellaneous.None",
                 traits: {},
@@ -2603,9 +2618,9 @@ const getHazardData = (actor) => {
       publication: actor.system.details.publication,
       hasHealth: actor.system.attributes.hasHealth,
       isComplex: actor.system.details.isComplex,
-      disable: { value: actor.system.details.disable },
-      routine: { value: actor.system.details.routine },
-      reset: { value: actor.system.details.reset },
+      disable: { value: actor.system.details.disable, revealed: defaultRevealed.disable },
+      routine: { value: actor.system.details.routine, revealed: defaultRevealed.routine },
+      reset: { value: actor.system.details.reset, revealed: defaultRevealed.reset },
       ac: {
         value: Number.parseInt(actor.system.attributes.ac.value),
         details: actor.system.attributes.ac.details,
@@ -2618,7 +2633,7 @@ const getHazardData = (actor) => {
         negativeHealing: actor.system.attributes.hp.negativeHealing,
         revealed: defaultRevealed.hp,
       },
-      hardness: { value: actor.system.attributes.hardness.value },
+      hardness: { value: actor.system.attributes.hardness.value, revealed: defaultRevealed.hardness },
       level: {
         value: Number.parseInt(actor.system.details.level.value),
         revealed: defaultRevealed.level,
@@ -2626,27 +2641,38 @@ const getHazardData = (actor) => {
       stealth: {
         value: actor.system.attributes.stealth.value,
         dc: actor.system.attributes.stealth.dc,
-        modifiers: actor.system.attributes.stealth.modifiers.filter((x) => x.slug !== "base")
-        .map((x) => ({
-          kind: x.kind,
-          label: x.label,
-          modifier: x.modifier,
-        })),
-        totalModifier: Number.parseInt(actor.system.attributes.stealth.totalModifier),
+        modifiers: actor.system.attributes.stealth.modifiers
+          .filter((x) => x.slug !== "base")
+          .map((x) => ({
+            kind: x.kind,
+            label: x.label,
+            modifier: x.modifier,
+          })),
+        totalModifier: Number.parseInt(
+          actor.system.attributes.stealth.totalModifier,
+        ),
         details: {
           value: actor.system.attributes.stealth.details,
+          revealed: defaultRevealed.stealth,
         },
+        revealed: defaultRevealed.stealth,
       },
-      initiative: actor.system.initiative ? {
-        value: actor.system.initiative.value,
-        modifiers: actor.system.initiative.modifiers.filter((x) => x.slug !== "base")
-        .map((x) => ({
-          kind: x.kind,
-          label: x.label,
-          modifier: x.modifier,
-        })),
-        totalModifier: Number.parseInt(actor.system.initiative.totalModifier),
-      } : null,
+      initiative: actor.system.initiative
+        ? {
+            value: actor.system.initiative.value,
+            modifiers: actor.system.initiative.modifiers
+              .filter((x) => x.slug !== "base")
+              .map((x) => ({
+                kind: x.kind,
+                label: x.label,
+                modifier: x.modifier,
+              })),
+            totalModifier: Number.parseInt(
+              actor.system.initiative.totalModifier,
+            ),
+            revealed: defaultRevealed.initiative,
+          }
+        : null,
       rarity: { value: actor.system.traits.rarity },
       traits: actor.system.traits.value.reduce((acc, trait) => {
         acc[trait] = { value: trait, revealed: defaultRevealed.traits };
@@ -2683,6 +2709,7 @@ const getHazardData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.iwr,
                 empty: true,
                 type: "PF2EBestiary.Miscellaneous.None",
                 exceptions: {},
@@ -2706,6 +2733,7 @@ const getHazardData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.iwr,
                 empty: true,
                 type: "PF2EBestiary.Miscellaneous.None",
                 exceptions: {},
@@ -2735,6 +2763,7 @@ const getHazardData = (actor) => {
           : {
               empty: {
                 empty: true,
+                revealed: defaultRevealed.iwr,
                 type: "PF2EBestiary.Miscellaneous.None",
                 exceptions: {},
                 doubleVs: {},
@@ -2797,6 +2826,7 @@ const getHazardData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.attacks,
                 empty: true,
                 label: "PF2EBestiary.Miscellaneous.None",
                 totalModifier: 0,
@@ -2808,31 +2838,34 @@ const getHazardData = (actor) => {
               },
             },
       actions:
-        itemKeys.filter(
-          (action) =>
-            action.type === "action",
-        ).length > 0
+        itemKeys.filter((action) => action.type === "action").length > 0
           ? itemKeys.reduce((acc, action) => {
-            if(action.type === 'action'){
-              acc[action.id] = {
-                revealed: defaultRevealed.abilities,
-                label: action.name,
-                category: action.system.category,
-                deathNote: action.system.deathNote,
-                actions: action.system.actionType.value === 'reaction' ? "R" : action.system.actionType.value === 'passive' ? '' : (action.system.actions.value ?? "R"),
-                traits: action.system.traits.value.reduce((acc, trait) => {
-                  acc[trait] = { value: trait };
-                  return acc;
-                }, {}),
-                description: action.system.description.value,
-              };
-            }
-              
+              if (action.type === "action") {
+                acc[action.id] = {
+                  revealed: defaultRevealed.abilities,
+                  label: action.name,
+                  category: action.system.category,
+                  deathNote: action.system.deathNote,
+                  actions:
+                    action.system.actionType.value === "reaction"
+                      ? "R"
+                      : action.system.actionType.value === "passive"
+                        ? ""
+                        : (action.system.actions.value ?? "R"),
+                  traits: action.system.traits.value.reduce((acc, trait) => {
+                    acc[trait] = { value: trait };
+                    return acc;
+                  }, {}),
+                  description: action.system.description.value,
+                };
+              }
+
               return acc;
             }, {})
           : {
               empty: {
                 empty: true,
+                revealed: defaultRevealed.abilities,
                 label: "PF2EBestiary.Miscellaneous.None",
                 actions: "",
                 traits: {},
@@ -4631,7 +4664,27 @@ const defaultRevealing = {
     // birthplace: 'PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Birthplace',
     premise: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Premise",
   },
-  hazard: {},
+  hazard: {
+    attacks: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attacks",
+    abilities:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Abilities",
+    name: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Name",
+    traits: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Traits",
+    description:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Description",
+    level: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Level",
+    ac: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.AC",
+    hp: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.HP",
+    hardness: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Hardness",
+    disable: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Disable",
+    routine: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Routine",
+    reset: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Reset",
+    saves: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Saves",
+    iwr: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.IWR",
+    initiative:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Initiative",
+    stealth: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Stealth",
+  },
 };
 
 class NPC extends Creature {
@@ -5050,7 +5103,11 @@ class Hazard extends foundry.abstract.TypeDataModel {
       }),
       ac: new fields.SchemaField({
         revealed: new fields.BooleanField({ required: true, initial: false }),
-        value: new fields.NumberField({ required: true, integer: true, initial: 0 }),
+        value: new fields.NumberField({
+          required: true,
+          integer: true,
+          initial: 0,
+        }),
         custom: new fields.StringField({ nullable: true }),
         details: new fields.StringField({}),
       }),
@@ -5069,7 +5126,11 @@ class Hazard extends foundry.abstract.TypeDataModel {
       hardness: new fields.SchemaField({
         revealed: new fields.BooleanField({ required: true, initial: false }),
         custom: new fields.StringField({ nullable: true }),
-        value: new fields.NumberField({ required: true, integer: true, initial: 0 }),
+        value: new fields.NumberField({
+          required: true,
+          integer: true,
+          initial: 0,
+        }),
       }),
       level: toggleNumberField(),
       stealth: new fields.SchemaField({
@@ -5092,25 +5153,28 @@ class Hazard extends foundry.abstract.TypeDataModel {
         details: new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           value: new fields.HTMLField({}),
-        })
-      }),
-      initiative: new fields.SchemaField({
-        revealed: new fields.BooleanField({ required: true, initial: false }),
-        custom: new fields.StringField({ nullable: true }),
-        value: new fields.StringField({ required: true }),
-        modifiers: new fields.ArrayField(
-          new fields.SchemaField({
-            kind: new fields.StringField({}),
-            label: new fields.StringField({}),
-            modifier: new fields.NumberField({ integer: true }),
-          }),
-          { initial: [] },
-        ),
-        totalModifier: new fields.NumberField({
-          required: false,
-          integer: true,
         }),
-      }, { nullable: true }),
+      }),
+      initiative: new fields.SchemaField(
+        {
+          revealed: new fields.BooleanField({ required: true, initial: false }),
+          custom: new fields.StringField({ nullable: true }),
+          value: new fields.StringField({ required: true }),
+          modifiers: new fields.ArrayField(
+            new fields.SchemaField({
+              kind: new fields.StringField({}),
+              label: new fields.StringField({}),
+              modifier: new fields.NumberField({ integer: true }),
+            }),
+            { initial: [] },
+          ),
+          totalModifier: new fields.NumberField({
+            required: false,
+            integer: true,
+          }),
+        },
+        { nullable: true },
+      ),
       saves: new fields.SchemaField({
         fortitude: toggleNumberField(),
         reflex: toggleNumberField(),
@@ -5293,7 +5357,7 @@ class Hazard extends foundry.abstract.TypeDataModel {
 
   _getRefreshData(hazard, hazardData) {
     const data = hazardData ?? getHazardData(hazard);
-    
+
     return {
       name: data.name,
       system: {
@@ -5339,7 +5403,7 @@ class Hazard extends foundry.abstract.TypeDataModel {
           details: {
             ...data.system.stealth.details,
             revealed: this.stealth.details.revealed,
-          }
+          },
         },
         initiative: {
           ...data.system.initiative,
@@ -5572,9 +5636,11 @@ class Hazard extends foundry.abstract.TypeDataModel {
         "reset.revealed": state,
         "stealth.revealed": state,
         "stealth.details.revealed": state,
-        initiative: this.initiative ? {
-          revealed: state,
-        } : null,
+        initiative: this.initiative
+          ? {
+              revealed: state,
+            }
+          : null,
         saves: {
           "fortitude.revealed": state,
           "reflex.revealed": state,
@@ -5708,7 +5774,10 @@ class Hazard extends foundry.abstract.TypeDataModel {
         : (playerLevel ?? this.level.value)
       : this.level.value;
 
-    this.hasSaves = this.saves.fortitude.value || this.saves.reflex.value || this.saves.will.value;
+    this.hasSaves =
+      this.saves.fortitude.value ||
+      this.saves.reflex.value ||
+      this.saves.will.value;
 
     this.ac.category = getCategoryLabel(acTable, contextLevel, this.ac.value);
     this.hp.category = getCategoryFromIntervals(
@@ -5943,9 +6012,8 @@ class Hazard extends foundry.abstract.TypeDataModel {
           acc[trait] = {
             ...this.actions[key].traits[trait],
             label:
-              CONFIG.PF2E.actionTraits[
-                this.actions[key].traits[trait].value
-              ] ?? this.actions[key].traits[trait].value,
+              CONFIG.PF2E.actionTraits[this.actions[key].traits[trait].value] ??
+              this.actions[key].traits[trait].value,
             description:
               CONFIG.PF2E.traitsDescriptions[
                 this.actions[key].traits[trait].value
@@ -6309,6 +6377,7 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$4(
       toggleHiddenSettingsFields: this.toggleHiddenSettingsFields,
       toggleDefaultRevealedCreatures: this.toggleDefaultRevealedCreatures,
       toggleDefaultRevealedNPCs: this.toggleDefaultRevealedNPCs,
+      toggleDefaultRevealedHazards: this.toggleDefaultRevealedHazards,
       toggleDefaultRevealedFields: this.toggleDefaultRevealedFields,
       save: this.save,
     },
@@ -6348,6 +6417,17 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$4(
       }))
       .sort(this.categorySort);
     const npcChunks = chunkArray(npcs, Math.ceil(npcs.length / 3));
+    const hazards = Object.keys(defaultRevealed.hazard)
+    .map((propKey) => ({
+      key: propKey,
+      value: defaultRevealed.hazard[propKey],
+      name: game.i18n.localize(defaultRevealing.hazard[propKey]),
+    }))
+    .sort(this.categorySort);
+    const hazardChunks = chunkArray(
+      hazards,
+      Math.ceil(hazards.length / 3),
+    );
     context.settings.defaultRevealed = {
       creature: {
         first: creatureChunks[0],
@@ -6355,7 +6435,11 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$4(
         third: creatureChunks[2],
       },
       npc: { first: npcChunks[0], second: npcChunks[1], third: npcChunks[2] },
-      hazard: {},
+      hazard: {
+        first: hazardChunks[0],
+        second: hazardChunks[1],
+        third: hazardChunks[2],
+      },
     };
 
     context.combatRegistrationOptions = this.combatRegistrationOptions;
@@ -6431,11 +6515,27 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$4(
     this.render();
   }
 
+  static async toggleDefaultRevealedHazards() {
+    const keys = Object.keys(this.settings.defaultRevealed.hazard);
+    const enable = Object.values(this.settings.defaultRevealed.hazard).some(
+      (x) => !x,
+    );
+
+    this.settings.defaultRevealed.hazard = keys.reduce((acc, key) => {
+      acc[key] = enable;
+      return acc;
+    }, {});
+
+    this.render();
+  }
+
   static async toggleDefaultRevealedFields() {
     const keys = Object.keys(this.settings.defaultRevealed.creature);
     const npcKeys = Object.keys(this.settings.defaultRevealed.npc);
+    const hazardKeys = Object.keys(this.settings.defaultRevealed.hazard);
     const enable = Object.values(this.settings.defaultRevealed.creature)
       .concat(Object.values(this.settings.defaultRevealed.npc))
+      .concat(Object.values(this.settings.defaultRevealed.hazard))
       .some((x) => !x);
 
     this.settings.defaultRevealed.creature = keys.reduce((acc, key) => {
@@ -6444,6 +6544,11 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$4(
     }, {});
 
     this.settings.defaultRevealed.npc = npcKeys.reduce((acc, key) => {
+      acc[key] = enable;
+      return acc;
+    }, {});
+
+    this.settings.defaultRevealed.hazard = hazardKeys.reduce((acc, key) => {
       acc[key] = enable;
       return acc;
     }, {});
@@ -7665,6 +7770,33 @@ const handleDataMigration = async () => {
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
 
+  if(versionCompare(version, "1.0.0")){
+    version = "1.0.0";
+    await game.settings.set("pf2e-bestiary-tracking", "default-revealed", {
+      ...game.settings.get("pf2e-bestiary-tracking", "default-revealed"),
+      hazard: {
+        attacks: false,
+        abilities: false,
+        name: false,
+        traits: false,
+        description: false,
+        level: false,
+        ac: false,
+        hp: false,
+        hardness: false,
+        disable: false,
+        routine: false,
+        initiative: false,
+        stealth: false,
+        reset: false,
+        saves: false,
+        iwr: false,
+      },
+    });
+    
+    await game.settings.set("pf2e-bestiary-tracking", "version", version);
+  }
+
   await handleBestiaryMigration(
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );
@@ -8741,7 +8873,7 @@ const handleDeactivatedPages = async () => {
   }
 };
 
-const currentVersion = "0.9.14";
+const currentVersion = "1.0.0";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -9255,12 +9387,20 @@ const bestiaryIntegration = () => {
         premise: false,
       },
       hazard: {
+        attacks: false,
+        abilities: false,
         name: false,
         traits: false,
         description: false,
         level: false,
         ac: false,
         hp: false,
+        hardness: false,
+        disable: false,
+        routine: false,
+        initiative: false,
+        stealth: false,
+        reset: false,
         saves: false,
         iwr: false,
       },
@@ -10290,7 +10430,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     return tabs;
   }
 
-  getHazardTabs(){
+  getHazardTabs() {
     const tabs = {
       statistics: {
         active: true,
@@ -10307,7 +10447,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         id: "notes",
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes"),
-      }
+      },
     };
 
     for (const v of Object.values(tabs)) {
@@ -10338,13 +10478,12 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       };
     }
 
-
     selected.monster.system.notes.player.enriched = await TextEditor.enrichHTML(
       selected.monster.system.notes.player.value,
     );
     selected.monster.system.actions = newActions;
 
-    if(selected.monster.type !== "pf2e-bestiary-tracking.hazard"){
+    if (selected.monster.type !== "pf2e-bestiary-tracking.hazard") {
       selected.monster.system.notes.public.value = await TextEditor.enrichHTML(
         selected.monster.system.notes.public.value,
       );
@@ -10364,7 +10503,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       }
 
       selected.monster.system.passives = newPassives;
-  
+
       for (var entryKey in selected.monster.system.spells.entries) {
         const entry = selected.monster.system.spells.entries[entryKey];
         for (var levelKey in entry.levels) {
@@ -10379,25 +10518,27 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       }
     }
 
-    if(selected.monster.type === "pf2e-bestiary-tracking.hazard"){
-      selected.monster.system.notes.description.value = await TextEditor.enrichHTML(
-        selected.monster.system.notes.description.value,
-      );
+    if (selected.monster.type === "pf2e-bestiary-tracking.hazard") {
+      selected.monster.system.notes.description.value =
+        await TextEditor.enrichHTML(
+          selected.monster.system.notes.description.value,
+        );
 
-      selected.monster.system.stealth.details.value = await TextEditor.enrichHTML(
-        selected.monster.system.stealth.details.value
-      );
+      selected.monster.system.stealth.details.value =
+        await TextEditor.enrichHTML(
+          selected.monster.system.stealth.details.value,
+        );
 
       selected.monster.system.disable.value = await TextEditor.enrichHTML(
-        selected.monster.system.disable.value
+        selected.monster.system.disable.value,
       );
 
       selected.monster.system.reset.value = await TextEditor.enrichHTML(
-        selected.monster.system.reset.value
+        selected.monster.system.reset.value,
       );
 
       selected.monster.system.routine.value = await TextEditor.enrichHTML(
-        selected.monster.system.routine.value
+        selected.monster.system.routine.value,
       );
     }
 
@@ -10434,9 +10575,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const bookmarks =
       this.selected.category === "pf2e-bestiary-tracking.creature"
         ? getExpandedCreatureTypes()
-        : this.selected.category === 'pf2e-bestiary-tracking.npc' ? 
-        getNPCCategories().filter((x) => game.user.isGM || !x.hidden) :
-        getHazardCategories();
+        : this.selected.category === "pf2e-bestiary-tracking.npc"
+          ? getNPCCategories().filter((x) => game.user.isGM || !x.hidden)
+          : getHazardCategories();
 
     const creatureReduce = (acc, creature) => {
       const types = getCreaturesTypes(creature.system.traits);
@@ -10601,13 +10742,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           .reduce(
             this.selected.category === "pf2e-bestiary-tracking.creature"
               ? creatureReduce
-              : this.selected.category === "pf2e-bestiary-tracking.npc" ?
-                npcReduce(
-                  this.bestiary.getFlag(
-                    "pf2e-bestiary-tracking",
-                    "npcCategories",
-                  ),
-                ) : hazardReduce,
+              : this.selected.category === "pf2e-bestiary-tracking.npc"
+                ? npcReduce(
+                    this.bestiary.getFlag(
+                      "pf2e-bestiary-tracking",
+                      "npcCategories",
+                    ),
+                  )
+                : hazardReduce,
             bookmarks,
           );
   }
@@ -10633,9 +10775,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     if (this.selected.category === "pf2e-bestiary-tracking.npc") {
       context = await this.npcPreparation(context);
-    } else if(this.selected.category === 'pf2e-bestiary-tracking.creature') {
+    } else if (this.selected.category === "pf2e-bestiary-tracking.creature") {
       context = await this.monsterPreparation(context);
-    } else if(this.selected.category === 'pf2e-bestiary-tracking.hazard'){
+    } else if (this.selected.category === "pf2e-bestiary-tracking.hazard") {
       context = await this.hazardPreparation(context);
     }
 
@@ -10714,9 +10856,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
                 ).name,
               },
             )
-          : this.selected.category === 'pf2e-bestiary-tracking.hazard'
-            ? game.i18n.format("PF2EBestiary.Bestiary.CategoryView.EmptyHazardText", { category: getHazardCategories().find(x => x.value === this.selected.type).name })
-          : ""
+          : this.selected.category === "pf2e-bestiary-tracking.hazard"
+            ? game.i18n.format(
+                "PF2EBestiary.Bestiary.CategoryView.EmptyHazardText",
+                {
+                  category: getHazardCategories().find(
+                    (x) => x.value === this.selected.type,
+                  ).name,
+                },
+              )
+            : ""
       : "";
 
     context.bookmarks = [];
@@ -10755,7 +10904,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   hazardPreparation = async (context) => {
     context.tabs = this.getHazardTabs();
-    
+
     return context;
   };
 
@@ -10979,10 +11128,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   static async toggleAllRevealed(_, button) {
     if (!game.user.isGM) return;
 
-    const property = button.dataset.path ? foundry.utils.getProperty(
-      this.selected.monster,
-      button.dataset.path,
-    ) : {};
+    const property = button.dataset.path
+      ? foundry.utils.getProperty(this.selected.monster, button.dataset.path)
+      : {};
     const keys = Object.keys(property);
     var allRevealed = false;
     switch (button.dataset.type) {
@@ -11003,13 +11151,17 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         });
         break;
       case "defenses":
-        allRevealed = !(this.selected.monster.system.hp.revealed && this.selected.monster.system.hardness.revealed && this.selected.monster.system.ac.revealed);
+        allRevealed = !(
+          this.selected.monster.system.hp.revealed &&
+          this.selected.monster.system.hardness.revealed &&
+          this.selected.monster.system.ac.revealed
+        );
         await this.selected.monster.update({
           system: {
             hp: { revealed: allRevealed },
             hardness: { revealed: allRevealed },
-            ac: { revealed: allRevealed }
-          }
+            ac: { revealed: allRevealed },
+          },
         });
         break;
       case "senses":
@@ -11279,14 +11431,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           },
         };
       case "HazardTrait":
-        const allHazardTypes = Object.keys(CONFIG.PF2E.hazardTraits).map((type) => ({
+        const allHazardTypes = Object.keys(CONFIG.PF2E.hazardTraits)
+          .map((type) => ({
             value: type,
             label: CONFIG.PF2E.hazardTraits[type],
-          })).sort((a, b) => {
-          if (a.label < b.label) return -1;
-          else if (a.label > b.label) return 1;
-          else return 0;
-        });
+          }))
+          .sort((a, b) => {
+            if (a.label < b.label) return -1;
+            else if (a.label > b.label) return 1;
+            else return 0;
+          });
         return {
           width: 400,
           content: new foundry.data.fields.StringField({
@@ -11640,19 +11794,15 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       ? this.selected.monster.system.name.custom
         ? this.selected.monster.system.name.custom
         : this.selected.monster.system.name.value
-      : (
-        this.selected.monster.type === 'pf2e-bestiary-tracking.creature' ?
-        game.i18n.localize(
-          "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature",
-        ) :
-        this.selected.monster.type === 'pf2e-bestiary-tracking.npc' ? 
-        game.i18n.localize(
-          "PF2EBestiary.Bestiary.Miscellaneous.UnknownNPC",
-        ) :
-        game.i18n.localize(
-          "PF2EBestiary.Bestiary.Miscellaneous.UnknownHazard"
-        )
-      );
+      : this.selected.monster.type === "pf2e-bestiary-tracking.creature"
+        ? game.i18n.localize(
+            "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature",
+          )
+        : this.selected.monster.type === "pf2e-bestiary-tracking.npc"
+          ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.UnknownNPC")
+          : game.i18n.localize(
+              "PF2EBestiary.Bestiary.Miscellaneous.UnknownHazard",
+            );
 
     new ImagePopout(this.selected.monster.system.displayImage, {
       title: title,
@@ -12626,7 +12776,7 @@ Hooks.once("setup", () => {
       "Token.prototype._onClickLeft2",
       function (wrapped, ...args) {
         const baseActor = args[0].currentTarget.document.baseActor;
-        if (baseActor.type !== "npc") {
+        if (baseActor.type !== "npc" && baseActor.type !== "hazard") {
           return wrapped(...args);
         }
 
@@ -12709,7 +12859,7 @@ Hooks.on("combatStart", async (encounter) => {
 
     if (automaticCombatSetting === 1) {
       for (var combatant of encounter.combatants.filter(
-        (combatant) => combatant?.actor?.type === "npc",
+        (combatant) => (combatant?.actor?.type === "npc" || combatant?.actor?.type === "hazard"),
       )) {
         const successful = await PF2EBestiary.addMonster(
           combatant.token.baseActor,
@@ -12784,7 +12934,7 @@ Hooks.on("xdy-pf2e-workbench.tokenCreateMystification", (token) => {
 });
 
 Hooks.on("preCreateToken", async (token) => {
-  if (!game.user.isGM || token.actor.type !== "npc" || token.hasPlayerOwner)
+  if (!game.user.isGM || (token.actor.type !== "npc" && token.actor.type !== "hazard") || token.hasPlayerOwner)
     return;
 
   if (game.settings.get("pf2e-bestiary-tracking", "hide-token-names")) {
@@ -12852,7 +13002,7 @@ Hooks.on("createChatMessage", async (message) => {
       if (message.flags.pf2e.origin) {
         // Attacks | Actions | Spells
         const actor = await fromUuid(message.flags.pf2e.origin.actor);
-        if (!actor || actor.type !== "npc" || actor.hasPlayerOwner) return;
+        if (!actor || (actor.type !== "npc" && actor.type !== "hazard") || actor.hasPlayerOwner) return;
 
         const actorUuid = getBaseActor(actor).uuid;
         page = bestiary.pages.find((x) => x.system.uuid === actorUuid);
@@ -12896,7 +13046,7 @@ Hooks.on("createChatMessage", async (message) => {
         const actor = await fromUuid(
           `Actor.${message.flags.pf2e.context.actor}`,
         );
-        if (!actor || actor.type !== "npc" || actor.hasPlayerOwner) return;
+        if (!actor || (actor.type !== "npc" && actor.type !== "hazard") || actor.hasPlayerOwner) return;
 
         const actorUuid = getBaseActor(actor).uuid;
         page = bestiary.pages.find((x) => x.system.uuid === actorUuid);
@@ -12984,7 +13134,7 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
         const actor = getBaseActor(
           await fromUuid(message.flags.pf2e?.origin?.actor),
         );
-        if (!actor || actor.type !== "npc" || actor.hasPlayerOwner) return;
+        if (!actor || (actor.type !== "npc" && actor.type !== "hazard") || actor.hasPlayerOwner) return;
 
         const rollOptions = message.flags.pf2e.origin.rollOptions;
         const itemIdSplit =
@@ -13032,7 +13182,7 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
       } else if (actorId) {
         // Skills | Saving Throws
         const actor = game.actors.find((x) => x.id === actorId);
-        if (actor.type !== "npc" || actor.hasPlayerOwner) return;
+        if ((actor.type !== "npc" && actor.type !== "hazard") || actor.hasPlayerOwner) return;
 
         const actorUuid = getBaseActor(actor).uuid;
         page = bestiary.pages.find((x) => x.system.uuid === actorUuid);
@@ -13074,7 +13224,7 @@ Hooks.on("getDirectoryApplicationEntryContext", (_, buttons) => {
       if (!game.user.isGM) return false;
 
       const actor = game.actors.get(li.data().documentId);
-      if (!actor || actor.type !== "npc" || actor.hasPlayerOwner) return false;
+      if (!actor || (actor.type !== "npc" && actor.type !== "hazard") || actor.hasPlayerOwner) return false;
 
       return !Boolean(
         game.journal

@@ -42,7 +42,7 @@ Hooks.once("setup", () => {
       "Token.prototype._onClickLeft2",
       function (wrapped, ...args) {
         const baseActor = args[0].currentTarget.document.baseActor;
-        if (baseActor.type !== "npc") {
+        if (baseActor.type !== "npc" && baseActor.type !== "hazard") {
           return wrapped(...args);
         }
 
@@ -125,7 +125,9 @@ Hooks.on("combatStart", async (encounter) => {
 
     if (automaticCombatSetting === 1) {
       for (var combatant of encounter.combatants.filter(
-        (combatant) => combatant?.actor?.type === "npc",
+        (combatant) =>
+          combatant?.actor?.type === "npc" ||
+          combatant?.actor?.type === "hazard",
       )) {
         const successful = await PF2EBestiary.addMonster(
           combatant.token.baseActor,
@@ -200,7 +202,11 @@ Hooks.on("xdy-pf2e-workbench.tokenCreateMystification", (token) => {
 });
 
 Hooks.on("preCreateToken", async (token) => {
-  if (!game.user.isGM || token.actor.type !== "npc" || token.hasPlayerOwner)
+  if (
+    !game.user.isGM ||
+    (token.actor.type !== "npc" && token.actor.type !== "hazard") ||
+    token.hasPlayerOwner
+  )
     return;
 
   if (game.settings.get("pf2e-bestiary-tracking", "hide-token-names")) {
@@ -268,7 +274,12 @@ Hooks.on("createChatMessage", async (message) => {
       if (message.flags.pf2e.origin) {
         // Attacks | Actions | Spells
         const actor = await fromUuid(message.flags.pf2e.origin.actor);
-        if (!actor || actor.type !== "npc" || actor.hasPlayerOwner) return;
+        if (
+          !actor ||
+          (actor.type !== "npc" && actor.type !== "hazard") ||
+          actor.hasPlayerOwner
+        )
+          return;
 
         const actorUuid = getBaseActor(actor).uuid;
         page = bestiary.pages.find((x) => x.system.uuid === actorUuid);
@@ -312,7 +323,12 @@ Hooks.on("createChatMessage", async (message) => {
         const actor = await fromUuid(
           `Actor.${message.flags.pf2e.context.actor}`,
         );
-        if (!actor || actor.type !== "npc" || actor.hasPlayerOwner) return;
+        if (
+          !actor ||
+          (actor.type !== "npc" && actor.type !== "hazard") ||
+          actor.hasPlayerOwner
+        )
+          return;
 
         const actorUuid = getBaseActor(actor).uuid;
         page = bestiary.pages.find((x) => x.system.uuid === actorUuid);
@@ -400,7 +416,12 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
         const actor = getBaseActor(
           await fromUuid(message.flags.pf2e?.origin?.actor),
         );
-        if (!actor || actor.type !== "npc" || actor.hasPlayerOwner) return;
+        if (
+          !actor ||
+          (actor.type !== "npc" && actor.type !== "hazard") ||
+          actor.hasPlayerOwner
+        )
+          return;
 
         const rollOptions = message.flags.pf2e.origin.rollOptions;
         const itemIdSplit =
@@ -448,7 +469,11 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
       } else if (actorId) {
         // Skills | Saving Throws
         const actor = game.actors.find((x) => x.id === actorId);
-        if (actor.type !== "npc" || actor.hasPlayerOwner) return;
+        if (
+          (actor.type !== "npc" && actor.type !== "hazard") ||
+          actor.hasPlayerOwner
+        )
+          return;
 
         const actorUuid = getBaseActor(actor).uuid;
         page = bestiary.pages.find((x) => x.system.uuid === actorUuid);
@@ -490,7 +515,12 @@ Hooks.on("getDirectoryApplicationEntryContext", (_, buttons) => {
       if (!game.user.isGM) return false;
 
       const actor = game.actors.get(li.data().documentId);
-      if (!actor || actor.type !== "npc" || actor.hasPlayerOwner) return false;
+      if (
+        !actor ||
+        (actor.type !== "npc" && actor.type !== "hazard") ||
+        actor.hasPlayerOwner
+      )
+        return false;
 
       return !Boolean(
         game.journal

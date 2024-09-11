@@ -153,7 +153,10 @@ export const getCreatureData = (actor) => {
             };
             return acc;
           }, {})
-        : { empty: { empty: true, value: "PF2EBestiary.Miscellaneous.None" } },
+        : {
+            revealed: defaultRevealed.skills,
+            empty: { empty: true, value: "PF2EBestiary.Miscellaneous.None" },
+          },
       saves: {
         fortitude: {
           value: actor.system.saves.fortitude.value,
@@ -231,6 +234,7 @@ export const getCreatureData = (actor) => {
               }, {})
             : {
                 empty: {
+                  revealed: defaultRevealed.languages,
                   empty: true,
                   value: "PF2EBestiary.Miscellaneous.None",
                   exceptions: {},
@@ -256,6 +260,7 @@ export const getCreatureData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.iwr,
                 empty: true,
                 type: "PF2EBestiary.Miscellaneous.None",
                 exceptions: {},
@@ -281,6 +286,7 @@ export const getCreatureData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.iwr,
                 empty: true,
                 type: "PF2EBestiary.Miscellaneous.None",
                 exceptions: {},
@@ -311,6 +317,7 @@ export const getCreatureData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.iwr,
                 empty: true,
                 type: "PF2EBestiary.Miscellaneous.None",
                 exceptions: {},
@@ -374,6 +381,7 @@ export const getCreatureData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.attacks,
                 empty: true,
                 label: "PF2EBestiary.Miscellaneous.None",
                 totalModifier: 0,
@@ -413,6 +421,7 @@ export const getCreatureData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.abilities,
                 empty: true,
                 label: "PF2EBestiary.Miscellaneous.None",
                 actions: "",
@@ -448,6 +457,7 @@ export const getCreatureData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.abilities,
                 empty: true,
                 label: "PF2EBestiary.Miscellaneous.None",
                 traits: {},
@@ -532,9 +542,18 @@ export const getHazardData = (actor) => {
       publication: actor.system.details.publication,
       hasHealth: actor.system.attributes.hasHealth,
       isComplex: actor.system.details.isComplex,
-      disable: { value: actor.system.details.disable },
-      routine: { value: actor.system.details.routine },
-      reset: { value: actor.system.details.reset },
+      disable: {
+        value: actor.system.details.disable,
+        revealed: defaultRevealed.disable,
+      },
+      routine: {
+        value: actor.system.details.routine,
+        revealed: defaultRevealed.routine,
+      },
+      reset: {
+        value: actor.system.details.reset,
+        revealed: defaultRevealed.reset,
+      },
       ac: {
         value: Number.parseInt(actor.system.attributes.ac.value),
         details: actor.system.attributes.ac.details,
@@ -547,7 +566,10 @@ export const getHazardData = (actor) => {
         negativeHealing: actor.system.attributes.hp.negativeHealing,
         revealed: defaultRevealed.hp,
       },
-      hardness: { value: actor.system.attributes.hardness.value },
+      hardness: {
+        value: actor.system.attributes.hardness.value,
+        revealed: defaultRevealed.hardness,
+      },
       level: {
         value: Number.parseInt(actor.system.details.level.value),
         revealed: defaultRevealed.level,
@@ -567,7 +589,9 @@ export const getHazardData = (actor) => {
         ),
         details: {
           value: actor.system.attributes.stealth.details,
+          revealed: defaultRevealed.stealth,
         },
+        revealed: defaultRevealed.stealth,
       },
       initiative: actor.system.initiative
         ? {
@@ -582,6 +606,7 @@ export const getHazardData = (actor) => {
             totalModifier: Number.parseInt(
               actor.system.initiative.totalModifier,
             ),
+            revealed: defaultRevealed.initiative,
           }
         : null,
       rarity: { value: actor.system.traits.rarity },
@@ -620,6 +645,7 @@ export const getHazardData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.iwr,
                 empty: true,
                 type: "PF2EBestiary.Miscellaneous.None",
                 exceptions: {},
@@ -643,6 +669,7 @@ export const getHazardData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.iwr,
                 empty: true,
                 type: "PF2EBestiary.Miscellaneous.None",
                 exceptions: {},
@@ -672,6 +699,7 @@ export const getHazardData = (actor) => {
           : {
               empty: {
                 empty: true,
+                revealed: defaultRevealed.iwr,
                 type: "PF2EBestiary.Miscellaneous.None",
                 exceptions: {},
                 doubleVs: {},
@@ -734,6 +762,7 @@ export const getHazardData = (actor) => {
             }, {})
           : {
               empty: {
+                revealed: defaultRevealed.attacks,
                 empty: true,
                 label: "PF2EBestiary.Miscellaneous.None",
                 totalModifier: 0,
@@ -772,6 +801,7 @@ export const getHazardData = (actor) => {
           : {
               empty: {
                 empty: true,
+                revealed: defaultRevealed.abilities,
                 label: "PF2EBestiary.Miscellaneous.None",
                 actions: "",
                 traits: {},

@@ -378,6 +378,7 @@
           "Title": "Default Revealed Properties",
           "Creature": "Creature",
           "NPC": "NPC",
+          "Hazard": "Hazard",
           "Name": "Name",
           "Traits": "Traits",
           "Attributes": "Attributes",
@@ -400,7 +401,13 @@
           "Background": "Background",
           "Height": "Height",
           "Weight": "Weight",
-          "Premise": "Premise (Influence)"
+          "Premise": "Premise (Influence)",
+          "Hardness": "Hardness",
+          "Disable": "Disable",
+          "Routine": "Routine",
+          "Reset": "Reset",
+          "Initiative": "Initiative",
+          "Stealth": "Stealth"
         }
       }
     },

@@ -90,6 +90,7 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
       toggleHiddenSettingsFields: this.toggleHiddenSettingsFields,
       toggleDefaultRevealedCreatures: this.toggleDefaultRevealedCreatures,
       toggleDefaultRevealedNPCs: this.toggleDefaultRevealedNPCs,
+      toggleDefaultRevealedHazards: this.toggleDefaultRevealedHazards,
       toggleDefaultRevealedFields: this.toggleDefaultRevealedFields,
       save: this.save,
     },
@@ -129,6 +130,14 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
       }))
       .sort(this.categorySort);
     const npcChunks = chunkArray(npcs, Math.ceil(npcs.length / 3));
+    const hazards = Object.keys(defaultRevealed.hazard)
+      .map((propKey) => ({
+        key: propKey,
+        value: defaultRevealed.hazard[propKey],
+        name: game.i18n.localize(defaultRevealing.hazard[propKey]),
+      }))
+      .sort(this.categorySort);
+    const hazardChunks = chunkArray(hazards, Math.ceil(hazards.length / 3));
     context.settings.defaultRevealed = {
       creature: {
         first: creatureChunks[0],
@@ -136,7 +145,11 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
         third: creatureChunks[2],
       },
       npc: { first: npcChunks[0], second: npcChunks[1], third: npcChunks[2] },
-      hazard: {},
+      hazard: {
+        first: hazardChunks[0],
+        second: hazardChunks[1],
+        third: hazardChunks[2],
+      },
     };
 
     context.combatRegistrationOptions = this.combatRegistrationOptions;
@@ -212,11 +225,27 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
     this.render();
   }
 
+  static async toggleDefaultRevealedHazards() {
+    const keys = Object.keys(this.settings.defaultRevealed.hazard);
+    const enable = Object.values(this.settings.defaultRevealed.hazard).some(
+      (x) => !x,
+    );
+
+    this.settings.defaultRevealed.hazard = keys.reduce((acc, key) => {
+      acc[key] = enable;
+      return acc;
+    }, {});
+
+    this.render();
+  }
+
   static async toggleDefaultRevealedFields() {
     const keys = Object.keys(this.settings.defaultRevealed.creature);
     const npcKeys = Object.keys(this.settings.defaultRevealed.npc);
+    const hazardKeys = Object.keys(this.settings.defaultRevealed.hazard);
     const enable = Object.values(this.settings.defaultRevealed.creature)
       .concat(Object.values(this.settings.defaultRevealed.npc))
+      .concat(Object.values(this.settings.defaultRevealed.hazard))
       .some((x) => !x);
 
     this.settings.defaultRevealed.creature = keys.reduce((acc, key) => {
@@ -225,6 +254,11 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
     }, {});
 
     this.settings.defaultRevealed.npc = npcKeys.reduce((acc, key) => {
+      acc[key] = enable;
+      return acc;
+    }, {});
+
+    this.settings.defaultRevealed.hazard = hazardKeys.reduce((acc, key) => {
       acc[key] = enable;
       return acc;
     }, {});
