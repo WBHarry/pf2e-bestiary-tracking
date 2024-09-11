@@ -10931,6 +10931,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   async removeBookmark(event) {
+    const confirmed = await Dialog.confirm({
+      title: game.i18n.localize("PF2EBestiary.Bestiary.RemoveBookmarkTitle"),
+      content: game.i18n.format("PF2EBestiary.Bestiary.RemoveBookmarkText", { category: event.currentTarget.dataset.bookmarkName }),
+      yes: () => true,
+      no: () => false,
+    });
+
+    if (!confirmed) return null;
+
+    
     if (event.currentTarget.dataset.bookmark === "unaffiliated") return;
     for (var npc of this.bestiary.pages.filter((page) => {
       return page.system.npcData?.categories.some(

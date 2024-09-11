@@ -241,7 +241,9 @@
         "GMOnly": "This is a GM only function.",
         "AddedToBestiary": "[{creatures}] were added to the Bestiary",
         "AlreadyExistsInBestiary": "[{creatures}] already exists in the Bestiary."
-      }
+      },
+      "RemoveBookmarkTitle": "Remove Category",
+      "RemoveBookmarkText": "Are you sure you want to remove the {category} category?"
     },
     "Menus": {
       "Title": "Bestiary Tracking",

@@ -194,6 +194,7 @@
                     class="bookmark {{#if (eq ../selected.category 'pf2e-bestiary-tracking.npc')}}npc{{/if}} primary-container {{#if (eq ../selected.type this.value)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys this.values) 0)}} empty{{else}} active{{/if}}" 
                     data-action="selectBookmark" 
                     data-bookmark="{{this.value}}"
+                    data-bookmark-name="{{this.name}}"
                     data-position="{{this.position}}"
                 >
                     {{this.name}}
