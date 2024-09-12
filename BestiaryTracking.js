@@ -2103,9 +2103,9 @@ const getCreatureData = (actor) => {
     "default-revealed",
   );
 
-  const { images: imageHiddenState } = game.settings.get(
+  const { creature: imageSettings } = game.settings.get(
     "pf2e-bestiary-tracking",
-    "hidden-settings",
+    "image-settings",
   );
 
   const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
@@ -2193,7 +2193,7 @@ const getCreatureData = (actor) => {
       version: currentVersion,
       img: actor.img,
       texture: actor.prototypeToken.texture.src,
-      imageState: { hideState: imageHiddenState },
+      imageState: { hideState: imageSettings.hideState },
       name: { value: actor.name, revealed: defaultRevealed.name },
       hardness: { value: actor.system.attributes.hardness.value },
       allSaves: { value: actor.system.attributes.allSaves?.value },
@@ -2568,6 +2568,12 @@ const getNPCData = (actor) => {
     "pf2e-bestiary-tracking",
     "default-revealed",
   );
+
+  const { npc: imageSettings } = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "image-settings",
+  );
+
   const creatureData = getCreatureData(actor);
 
   return {
@@ -2577,6 +2583,9 @@ const getNPCData = (actor) => {
       ...creatureData.system,
       hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
         .npc,
+      imageState: {
+        hideState: imageSettings.hideState,
+      },
       npcData: {
         categories: [],
         general: {
@@ -2609,9 +2618,9 @@ const getHazardData = (actor) => {
     "default-revealed",
   );
 
-  const { images: imageHiddenState } = game.settings.get(
+  const { hazard: imageSettings } = game.settings.get(
     "pf2e-bestiary-tracking",
-    "hidden-settings",
+    "image-settings",
   );
 
   const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
@@ -2631,7 +2640,7 @@ const getHazardData = (actor) => {
       version: currentVersion,
       img: actor.img,
       texture: actor.prototypeToken.texture.src,
-      imageState: { hideState: imageHiddenState },
+      imageState: { hideState: imageSettings.hideState },
       name: { value: actor.name, revealed: defaultRevealed.name },
       publication: actor.system.details.publication,
       hasHealth: actor.system.attributes.hasHealth,
@@ -3445,9 +3454,16 @@ class Creature extends foundry.abstract.TypeDataModel {
   }
 
   get displayImage() {
-    return game.settings.get("pf2e-bestiary-tracking", "use-token-art")
-      ? this.texture
-      : this.img;
+    const { creature: imageSettings } = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "image-settings",
+    );
+
+    return this.imageState.hideState === 2
+      ? imageSettings.hideImage
+      : game.settings.get("pf2e-bestiary-tracking", "use-token-art")
+        ? this.texture
+        : this.img;
   }
 
   get sizeLabel() {
@@ -4733,7 +4749,25 @@ const imageHideStates = {
     value: 1,
     name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Outline",
   },
-  // hidden: { value: 2, name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Hidden" },
+  hidden: {
+    value: 2,
+    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Hidden",
+  },
+};
+
+const imageSettings = {
+  creature: {
+    hideState: 0,
+    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
+  },
+  npc: {
+    hideState: 0,
+    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
+  },
+  hazard: {
+    hideState: 0,
+    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
+  },
 };
 
 class NPC extends Creature {
@@ -4913,6 +4947,19 @@ class NPC extends Creature {
         }),
       }),
     };
+  }
+
+  get displayImage() {
+    const { npc: imageSettings } = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "image-settings",
+    );
+
+    return this.imageState.hideState === 2
+      ? imageSettings.hideImage
+      : game.settings.get("pf2e-bestiary-tracking", "use-token-art")
+        ? this.texture
+        : this.img;
   }
 
   _getRefreshData(actor) {
@@ -5412,9 +5459,16 @@ class Hazard extends foundry.abstract.TypeDataModel {
   }
 
   get displayImage() {
-    return game.settings.get("pf2e-bestiary-tracking", "use-token-art")
-      ? this.texture
-      : this.img;
+    const { hazard: imageSettings } = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "image-settings",
+    );
+
+    return this.imageState.hideState === 2
+      ? imageSettings.hideImage
+      : game.settings.get("pf2e-bestiary-tracking", "use-token-art")
+        ? this.texture
+        : this.img;
   }
 
   get initialType() {
@@ -6158,6 +6212,10 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
         "pf2e-bestiary-tracking",
         "optional-fields",
       ),
+      imageSettings: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "image-settings",
+      ),
       detailedInformation: game.settings.get(
         "pf2e-bestiary-tracking",
         "detailed-information-toggles",
@@ -6181,6 +6239,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
     actions: {
       resetContrastRevealedState: this.resetContrastRevealedState,
       resetCategorySettings: this.resetCategorySettings,
+      resetImageSettings: this.resetImageSettings,
       toggleOptionalFields: this.toggleOptionalFields,
       toggleDetailedInformation: this.toggleDetailedInformation,
       filePicker: this.filePicker,
@@ -6236,6 +6295,8 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
         : [],
     };
 
+    context.imageHideStates = imageHideStates;
+
     return context;
   }
 
@@ -6262,6 +6323,20 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
           image: this.settings.categorySettings.hazard.image,
         },
       },
+      imageSettings: {
+        creature: {
+          ...data.imageSettings.creature,
+          hideImage: this.settings.imageSettings.creature.hideImage,
+        },
+        npc: {
+          ...data.imageSettings.npc,
+          hideImage: this.settings.imageSettings.npc.hideImage,
+        },
+        hazard: {
+          ...data.imageSettings.hazard,
+          hideImage: this.settings.imageSettings.hazard.hideImage,
+        },
+      },
     };
     this.render();
   }
@@ -6280,6 +6355,11 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
 
   static async resetCategorySettings() {
     this.settings.categorySettings = { ...bestiaryCategorySettings };
+    this.render();
+  }
+
+  static async resetImageSettings() {
+    this.settings.imageSettings = { ...imageSettings };
     this.render();
   }
 
@@ -6351,6 +6431,11 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
       "pf2e-bestiary-tracking",
       "detailed-information-toggles",
       this.settings.detailedInformation,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "image-settings",
+      this.settings.imageSettings,
     );
     await game.settings.set(
       "pf2e-bestiary-tracking",
@@ -6513,7 +6598,6 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$5(
 
     context.combatRegistrationOptions = this.combatRegistrationOptions;
     context.npcRegistrationOptions = this.npcRegistrationOptions;
-    context.imageHideStates = imageHideStates;
 
     return context;
   }
@@ -6547,7 +6631,7 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$5(
   }
 
   static async toggleHiddenSettingsFields() {
-    const keys = Object.keys(this.settings.hiddenSettings).filter(x => x !== 'images');
+    const keys = Object.keys(this.settings.hiddenSettings);
     const enable = Object.values(this.settings.hiddenSettings).some((x) => !x);
     this.settings.hiddenSettings = keys.reduce((acc, key) => {
       acc[key] = enable;
@@ -9286,6 +9370,15 @@ const bestiaryAppearance = () => {
       default: [],
     },
   );
+
+  game.settings.register("pf2e-bestiary-tracking", "image-settings", {
+    name: game.i18n.localize("PF2EBestiary.Settings.ImageSettings.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.ImageSettings.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: imageSettings,
+  });
 };
 
 const bestiaryIntegration = () => {
@@ -9406,7 +9499,6 @@ const bestiaryIntegration = () => {
       npc: true,
       hazard: false,
       npcCategories: true,
-      images: 0
     },
   });
 
@@ -12124,14 +12216,19 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   static async imageMenu() {
     new Promise((resolve, reject) => {
       new AvatarMenu(this.selected.monster, resolve, reject).render(true);
-    }).then(async (update) => {
+    }).then(
+      async (update) => {
         await this.selected.monster.update(update);
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
           action: socketEvent.UpdateBestiary,
           data: {},
         });
         Hooks.callAll(socketEvent.UpdateBestiary, {});
-      }, () => { return });
+      },
+      () => {
+        return;
+      },
+    );
   }
 
   async hideTab(event) {
@@ -12853,14 +12950,12 @@ class RegisterHandlebarsHelpers {
     return ret;
   }
 
-  static imageState(user, state){
-    switch(state){
+  static imageState(user, state) {
+    switch (state) {
       case 0:
-        return '';
+        return "";
       case 1:
-        return user.isGM ? 'partial-outline' : 'outline';
-      case 2:
-        return 'hidden-image';
+        return user.isGM ? "partial-outline" : "outline";
     }
   }
 
@@ -13441,12 +13536,27 @@ Hooks.on("renderDependencyResolution", (dependencyResolution, html) => {
 });
 
 Hooks.on("renderImagePopout", (app, html) => {
-  const bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
-  const existingPage = bestiary.pages.find(x => x.system.uuid === app.options.uuid);
-  if(existingPage){
+  const bestiary = game.journal.get(
+    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+  );
+  const existingPage = bestiary.pages.find(
+    (x) => x.system.uuid === app.options.uuid,
+  );
+  if (existingPage) {
     const hideState = existingPage.system.imageState.hideState;
-    const image = $(html).find('figure img');
+    const image = $(html).find("figure img");
     image.addClass(RegisterHandlebarsHelpers.imageState(game.user, hideState));
+
+    if(existingPage.system.imageState.hideState === 2){
+      const imageSettings = game.settings.get(
+        "pf2e-bestiary-tracking", "image-settings",
+      );
+
+      const hideImage = existingPage.type === 'pf2e-bestiary-tracking.creature' ? imageSettings.creature.hideImage :
+        existingPage.type === 'pf2e-bestiary-tracking.npc' ? imageSettings.npc.hideImage :
+        existingPage.type === 'pf2e-bestiary-tracking.hazard' ? imageSettings.hazard.hideImage : image.currentSrc;
+      image[0].currentSrc = `${image[0].baseURI.split('game')[0]}${hideImage}`;
+    }
   }
 });
 //# sourceMappingURL=BestiaryTracking.js.map

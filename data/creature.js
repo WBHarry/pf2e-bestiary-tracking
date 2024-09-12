@@ -438,9 +438,16 @@ export class Creature extends foundry.abstract.TypeDataModel {
   }
 
   get displayImage() {
-    return game.settings.get("pf2e-bestiary-tracking", "use-token-art")
-      ? this.texture
-      : this.img;
+    const { creature: imageSettings } = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "image-settings",
+    );
+
+    return this.imageState.hideState === 2
+      ? imageSettings.hideImage
+      : game.settings.get("pf2e-bestiary-tracking", "use-token-art")
+        ? this.texture
+        : this.img;
   }
 
   get sizeLabel() {

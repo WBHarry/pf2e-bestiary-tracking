@@ -182,6 +182,19 @@ export class NPC extends Creature {
     };
   }
 
+  get displayImage() {
+    const { npc: imageSettings } = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "image-settings",
+    );
+
+    return this.imageState.hideState === 2
+      ? imageSettings.hideImage
+      : game.settings.get("pf2e-bestiary-tracking", "use-token-art")
+        ? this.texture
+        : this.img;
+  }
+
   _getRefreshData(actor) {
     const data = getNPCData(actor);
     const creatureData = super._getRefreshData(actor, data);

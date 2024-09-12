@@ -3,6 +3,7 @@ import {
   revealedState,
 } from "../data/bestiaryAppearance.js";
 import Tagify from "@yaireo/tagify";
+import { imageHideStates, imageSettings } from "../data/constants.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -29,6 +30,10 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
         "pf2e-bestiary-tracking",
         "optional-fields",
       ),
+      imageSettings: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "image-settings",
+      ),
       detailedInformation: game.settings.get(
         "pf2e-bestiary-tracking",
         "detailed-information-toggles",
@@ -52,6 +57,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
     actions: {
       resetContrastRevealedState: this.resetContrastRevealedState,
       resetCategorySettings: this.resetCategorySettings,
+      resetImageSettings: this.resetImageSettings,
       toggleOptionalFields: this.toggleOptionalFields,
       toggleDetailedInformation: this.toggleDetailedInformation,
       filePicker: this.filePicker,
@@ -107,6 +113,8 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
         : [],
     };
 
+    context.imageHideStates = imageHideStates;
+
     return context;
   }
 
@@ -133,6 +141,20 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
           image: this.settings.categorySettings.hazard.image,
         },
       },
+      imageSettings: {
+        creature: {
+          ...data.imageSettings.creature,
+          hideImage: this.settings.imageSettings.creature.hideImage,
+        },
+        npc: {
+          ...data.imageSettings.npc,
+          hideImage: this.settings.imageSettings.npc.hideImage,
+        },
+        hazard: {
+          ...data.imageSettings.hazard,
+          hideImage: this.settings.imageSettings.hazard.hideImage,
+        },
+      },
     };
     this.render();
   }
@@ -151,6 +173,11 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
 
   static async resetCategorySettings() {
     this.settings.categorySettings = { ...bestiaryCategorySettings };
+    this.render();
+  }
+
+  static async resetImageSettings() {
+    this.settings.imageSettings = { ...imageSettings };
     this.render();
   }
 
@@ -222,6 +249,11 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "detailed-information-toggles",
       this.settings.detailedInformation,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "image-settings",
+      this.settings.imageSettings,
     );
     await game.settings.set(
       "pf2e-bestiary-tracking",

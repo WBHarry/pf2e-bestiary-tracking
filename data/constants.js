@@ -90,5 +90,23 @@ export const imageHideStates = {
     value: 1,
     name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Outline",
   },
-  // hidden: { value: 2, name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Hidden" },
+  hidden: {
+    value: 2,
+    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Hidden",
+  },
+};
+
+export const imageSettings = {
+  creature: {
+    hideState: 0,
+    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
+  },
+  npc: {
+    hideState: 0,
+    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
+  },
+  hazard: {
+    hideState: 0,
+    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
+  },
 };

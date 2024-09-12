@@ -109,9 +109,6 @@
 .pf2e-bestiary-tracking.bestiary .monster-image.partial-outline {
   filter: brightness(0.5);
 }
-.pf2e-bestiary-tracking.bestiary .monster-image.hidden-image {
-  opacity: 0;
-}
 .pf2e-bestiary-tracking.bestiary .npc-players-container {
   height: 100%;
 }
@@ -1125,6 +1122,10 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  overflow: auto;
+}
+.bestiary-settings-menu .menu-container footer {
+  margin-right: 1px;
 }
 .bestiary-settings-menu .bestiary-customization-container {
   display: flex;

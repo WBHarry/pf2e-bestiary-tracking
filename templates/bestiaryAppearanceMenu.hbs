@@ -10,6 +10,7 @@
         </div>
     </fieldset>
    
+   <div class="menu-grouper">
     <fieldset class="menu-category">
         <legend class="pf2e-bestiary-clickable-icon" data-action="toggleOptionalFields">
             <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Name"}}</h4>
@@ -93,6 +94,94 @@
             </div>
         </div>
     </fieldset> 
+    </div>
+
+    {{!-- <fieldset class="menu-category">
+            <legend class="pf2e-bestiary-clickable-icon" data-action="toggleHiddenSettingsFields">
+                <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.Title"}}</h4>
+            </legend>
+
+            <div class="form-group">
+                <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.Creature"}}</label>
+                <div class="form-fields">
+                    <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.Creature"}}</label>
+                    <select name="settings.hiddenSettings.images">
+                        {{selectOptions this.imageHideStates selected=this.settings.hiddenSettings.images valueAttr="value" labelAttr="name" localize=true}}
+                    </select>
+                </div>
+            </div>
+    </fieldset> --}}
+
+
+    <fieldset class="menu-category">
+        <legend class="flexed">
+            <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.Title"}}</h4>
+            <i class="fa-solid fa-arrow-rotate-left pf2e-bestiary-clickable-icon" data-action="resetImageSettings"></i>
+        </legend>
+        <div class="bestiary-customization-container">
+            <div class="menu-grouper-container">
+                <label>{{localize "PF2EBestiary.Bestiary.Category.Creatures"}}</label>
+                <div class="menu-grouper">
+                    <div class="form-group">
+                        <div class="form-fields">
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.HideState"}}</label>
+                            <div class="form-fields no-flex">
+                                <select name="imageSettings.creature.hideState" data-dtype="Number">
+                                    {{selectOptions this.imageHideStates selected=this.settings.imageSettings.creature.hideState valueAttr="value" labelAttr="name" localize=true}}
+                                </select>
+                            </div>
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.HiddenImage"}}</label>
+                            <div class="form-fields">
+                                <input type="text" value="{{localize settings.imageSettings.creature.hideImage}}" disabled />
+                                <button data-action="filePicker" data-path="imageSettings.creature.hideImage" title="Browse Files"><i class="fas fa-file-import fa-fw"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-grouper-container">
+                <label>{{localize "PF2EBestiary.Bestiary.Category.NPC"}}</label>
+                <div class="menu-grouper">
+                    <div class="form-group">
+                        <div class="form-fields">
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.HideState"}}</label>
+                            <div class="form-fields no-flex">
+                                <select name="imageSettings.npc.hideState" data-dtype="Number">
+                                    {{selectOptions this.imageHideStates selected=this.settings.imageSettings.npc.hideState valueAttr="value" labelAttr="name" localize=true}}
+                                </select>
+                            </div>
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.HiddenImage"}}</label>
+                            <div class="form-fields">
+                                <input type="text" value="{{localize settings.imageSettings.npc.hideImage}}" disabled />
+                                <button data-action="filePicker" data-path="imageSettings.npc.hideImage" title="Browse Files"><i class="fas fa-file-import fa-fw"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-grouper-container">
+                <label>{{localize "PF2EBestiary.Bestiary.Category.Hazards"}}</label>
+                <div class="menu-grouper">
+                    <div class="form-group">
+                        <div class="form-fields">
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.HideState"}}</label>
+                            <div class="form-fields no-flex">
+                                <select name="imageSettings.hazard.hideState" data-dtype="Number">
+                                    {{selectOptions this.imageHideStates selected=this.settings.imageSettings.hazard.hideState valueAttr="value" labelAttr="name" localize=true}}
+                                </select>
+                            </div>
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.HiddenImage"}}</label>
+                            <div class="form-fields">
+                                <input type="text" value="{{localize settings.imageSettings.hazard.hideImage}}" disabled />
+                                <button data-action="filePicker" data-path="imageSettings.hazard.hideImage" title="Browse Files"><i class="fas fa-file-import fa-fw"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
 
     <fieldset class="menu-category">
         <legend class="flexed">
@@ -111,7 +200,7 @@
                             </div>
                             <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.CategorySettings.Image"}}</label>
                             <div class="form-fields">
-                                <input type="text" value="{{localize settings.categorySettings.creature.image}}" disabled />
+                                <input type="text" value="{{localize setting.categorySettings.creature.image}}" disabled />
                                 <button data-action="filePicker" data-path="categorySettings.creature.image" title="Browse Files"><i class="fas fa-file-import fa-fw"></i></button>
                             </div>
                         </div>

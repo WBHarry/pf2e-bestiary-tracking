@@ -154,7 +154,6 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
 
     context.combatRegistrationOptions = this.combatRegistrationOptions;
     context.npcRegistrationOptions = this.npcRegistrationOptions;
-    context.imageHideStates = imageHideStates;
 
     return context;
   }
@@ -188,9 +187,7 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
   }
 
   static async toggleHiddenSettingsFields() {
-    const keys = Object.keys(this.settings.hiddenSettings).filter(
-      (x) => x !== "images",
-    );
+    const keys = Object.keys(this.settings.hiddenSettings);
     const enable = Object.values(this.settings.hiddenSettings).some((x) => !x);
     this.settings.hiddenSettings = keys.reduce((acc, key) => {
       acc[key] = enable;

@@ -136,8 +136,6 @@ export default class RegisterHandlebarsHelpers {
         return "";
       case 1:
         return user.isGM ? "partial-outline" : "outline";
-      case 2:
-        return "hidden-image";
     }
   }
 

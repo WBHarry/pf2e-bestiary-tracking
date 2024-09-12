@@ -347,6 +347,11 @@
           "DamageTypes": "Damage Types",
           "AbilityTraits": "Ability Traits"
         },
+        "ImageSettings": {
+          "Title": "Avatar Settings",
+          "HideState": "Default Hide State",
+          "HiddenImage": "Hidden Image"
+        },
         "AdditionalCreatureTypes": {
           "Name": "Additional Creature Types",
           "SubText": "You can add more available creature traits to choose from in the PF2E System Settings for Homebrew."

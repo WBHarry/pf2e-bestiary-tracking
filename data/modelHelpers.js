@@ -23,9 +23,9 @@ export const getCreatureData = (actor) => {
     "default-revealed",
   );
 
-  const { images: imageHiddenState } = game.settings.get(
+  const { creature: imageSettings } = game.settings.get(
     "pf2e-bestiary-tracking",
-    "hidden-settings",
+    "image-settings",
   );
 
   const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
@@ -113,7 +113,7 @@ export const getCreatureData = (actor) => {
       version: currentVersion,
       img: actor.img,
       texture: actor.prototypeToken.texture.src,
-      imageState: { hideState: imageHiddenState },
+      imageState: { hideState: imageSettings.hideState },
       name: { value: actor.name, revealed: defaultRevealed.name },
       hardness: { value: actor.system.attributes.hardness.value },
       allSaves: { value: actor.system.attributes.allSaves?.value },
@@ -488,6 +488,12 @@ export const getNPCData = (actor) => {
     "pf2e-bestiary-tracking",
     "default-revealed",
   );
+
+  const { npc: imageSettings } = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "image-settings",
+  );
+
   const creatureData = getCreatureData(actor);
 
   return {
@@ -497,6 +503,9 @@ export const getNPCData = (actor) => {
       ...creatureData.system,
       hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
         .npc,
+      imageState: {
+        hideState: imageSettings.hideState,
+      },
       npcData: {
         categories: [],
         general: {
@@ -529,9 +538,9 @@ export const getHazardData = (actor) => {
     "default-revealed",
   );
 
-  const { images: imageHiddenState } = game.settings.get(
+  const { hazard: imageSettings } = game.settings.get(
     "pf2e-bestiary-tracking",
-    "hidden-settings",
+    "image-settings",
   );
 
   const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
@@ -551,7 +560,7 @@ export const getHazardData = (actor) => {
       version: currentVersion,
       img: actor.img,
       texture: actor.prototypeToken.texture.src,
-      imageState: { hideState: imageHiddenState },
+      imageState: { hideState: imageSettings.hideState },
       name: { value: actor.name, revealed: defaultRevealed.name },
       publication: actor.system.details.publication,
       hasHealth: actor.system.attributes.hasHealth,
