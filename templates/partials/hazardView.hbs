@@ -46,7 +46,7 @@
                 <i class="fa-solid fa-forward"></i>    
                 <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Initiative"}}</div>
             </div>
-            <div class="flex-value">{{#if (or this.system.initiative.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.system.initiative}}{{else}}?{{/if}}</div>
+            <div class="flex-value">{{#if (or this.system.initiative.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.system.initiative this.vagueDescriptions.properties.initiative}}{{else}}?{{/if}}</div>
         </div>
     {{/if}}
 
@@ -349,7 +349,7 @@
                                 <i class="fa-solid fa-user-ninja"></i>
                                 <div class="flex-value">{{localize "PF2EBestiary.Bestiary.Hazards.StealthTitle"}}</div>
                                 <div class="flexrow secondary-container {{PF2EBTToggleContainer this.user this.system.stealth}}" data-action="toggleRevealed" data-path="system.stealth" data-name="{{localize "PF2EBestiary.Bestiary.Hazards.StealthTitle"}}">
-                                    <div>{{localize "PF2EBestiary.Miscellaneous.DCLabel"}} {{#if (or this.user.isGM this.system.stealth.revealed)}}{{PF2EBTMonsterValue this.system.stealth}}{{else}}?{{/if}}</div>
+                                    <div>{{localize "PF2EBestiary.Miscellaneous.DCLabel"}} {{#if (or this.user.isGM this.system.stealth.revealed)}}{{PF2EBTMonsterValue this.system.stealth this.vagueDescriptions.properties.initiative}}{{else}}?{{/if}}</div>
                                 </div>
                             </div>
                         </div>

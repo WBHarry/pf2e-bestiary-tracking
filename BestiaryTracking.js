@@ -1876,6 +1876,253 @@ const spellAttackTable = {
   },
 };
 
+
+const stealthDisableTable = {
+  range: ["extreme", "high", "low"],
+  values: {
+    "-1": {
+      extreme: 18,
+      high: 15,
+      low: { high: 12, low: 11 },
+    },
+    0: {
+      extreme: 19,
+      high: 16,
+      low: { high: 13, low: 12 },
+    },
+    1: {
+      extreme: 20,
+      high: 17,
+      low: { high: 14, low: 13 },
+    },
+    2: {
+      extreme: 21,
+      high: 18,
+      low: { high: 15, low: 14 },
+    },
+    3: {
+      extreme: 23,
+      high: 20,
+      low: { high: 17, low: 15 },
+    },
+    4: {
+      extreme: 25,
+      high: 22,
+      low: { high: 18, low: 17 },
+    },
+    5: {
+      extreme: 26,
+      high: 23,
+      low: { high: 20, low: 18 },
+    },
+    6: {
+      extreme: 28,
+      high: 25,
+      low: { high: 21, low: 19 },
+    },
+    7: {
+      extreme: 30,
+      high: 27,
+      low: { high: 23, low: 21 },
+    },
+    8: {
+      extreme: 31,
+      high: 28,
+      low: { high: 24, low: 22 },
+    },
+    9: {
+      extreme: 33,
+      high: 30,
+      low: { high: 26, low: 23 },
+    },
+    10: {
+      extreme: 35,
+      high: 32,
+      low: { high: 27, low: 25 },
+    },
+    11: {
+      extreme: 36,
+      high: 33,
+      low: { high: 29, low: 26 },
+    },
+    12: {
+      extreme: 38,
+      high: 35,
+      low: { high: 30, low: 27 },
+    },
+    13: {
+      extreme: 40,
+      high: 37,
+      low: { high: 32, low: 29 },
+    },
+    14: {
+      extreme: 41,
+      high: 38,
+      low: { high: 33, low: 30 },
+    },
+    15: {
+      extreme: 43,
+      high: 40,
+      low: { high: 35, low: 31 },
+    },
+    16: {
+      extreme: 45,
+      high: 42,
+      low: { high: 36, low: 33 },
+    },
+    17: {
+      extreme: 46,
+      high: 43,
+      low: { high: 38, low: 34 },
+    },
+    18: {
+      extreme: 48,
+      high: 45,
+      low: { high: 39, low: 35 },
+    },
+    19: {
+      extreme: 50,
+      high: 47,
+      low: { high: 41, low: 37 },
+    },
+    20: {
+      extreme: 51,
+      high: 48,
+      low: { high: 42, low: 38 },
+    },
+    21: {
+      extreme: 53,
+      high: 50,
+      low: { high: 44, low: 39 },
+    },
+    22: {
+      extreme: 55,
+      high: 52,
+      low: { high: 45, low: 41 },
+    },
+    23: {
+      extreme: 56,
+      high: 53,
+      low: { high: 46, low: 42 },
+    },
+    24: {
+      extreme: 58,
+      high: 55,
+      low: { high: 48, low: 43 },
+    },
+  },
+};
+
+const hardnessTable = {
+  range: ["high", "low"],
+  values: {
+    "-1": {
+      high: 4,
+      low: 2,
+    },
+    0: {
+      high: 5,
+      low: 3,
+    },
+    1: {
+      high: 7,
+      low: 5,
+    },
+    2: {
+      high: 9,
+      low: 7,
+    },
+    3: {
+      high: 12,
+      low: 10,
+    },
+    4: {
+      high: 13,
+      low: 11,
+    },
+    5: {
+      high: 14,
+      low: 12,
+    },
+    6: {
+      high: 15,
+      low: 13,
+    },
+    7: {
+      high: 16,
+      low: 14,
+    },
+    8: {
+      high: 17,
+      low: 15,
+    },
+    9: {
+      high: 18,
+      low: 16,
+    },
+    10: {
+      high: 19,
+      low: 17,
+    },
+    11: {
+      high: 21,
+      low: 19,
+    },
+    12: {
+      high: 22,
+      low: 20,
+    },
+    13: {
+      high: 23,
+      low: 21,
+    },
+    14: {
+      high: 24,
+      low: 22,
+    },
+    15: {
+      high: 25,
+      low: 23,
+    },
+    16: {
+      high: 27,
+      low: 25,
+    },
+    17: {
+      high: 29,
+      low: 27,
+    },
+    18: {
+      high: 31,
+      low: 29,
+    },
+    19: {
+      high: 33,
+      low: 31,
+    },
+    20: {
+      high: 35,
+      low: 33,
+    },
+    21: {
+      high: 38,
+      low: 36,
+    },
+    22: {
+      high: 41,
+      low: 39,
+    },
+    23: {
+      high: 46,
+      low: 44,
+    },
+    24: {
+      high: 50,
+      low: 46,
+    },
+  },
+};
+
 const getCategoryLabel = (statisticsTable, level, save, short) => {
   if (save === undefined || save === null) return save;
 
@@ -4755,8 +5002,8 @@ const imageHideStates = {
   },
   sepia: {
     value: 3,
-    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Sepia"
-  }
+    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Sepia",
+  },
 };
 
 const imageSettings = {
@@ -5916,6 +6163,8 @@ class Hazard extends foundry.abstract.TypeDataModel {
       this.hp.value,
     );
 
+    this.hardness.category = getMixedCategoryLabel(hardnessTable, contextLevel, this.hardness.value);
+
     this.saves = {
       fortitude: {
         ...this.saves.fortitude,
@@ -5948,6 +6197,11 @@ class Hazard extends foundry.abstract.TypeDataModel {
         ),
       },
     };
+
+    this.stealth.category = getMixedCategoryLabel(stealthDisableTable, contextLevel, Number.parseInt(this.stealth.dc));
+    if(this.initiative){
+      this.initiative.category = getMixedCategoryLabel(stealthDisableTable, contextLevel, Number.parseInt(this.initiative.dc));
+    }
 
     this.immunities = Object.keys(this.immunities).reduce((acc, key) => {
       const exceptionKeys = Object.keys(this.immunities[key].exceptions);
@@ -9215,6 +9469,7 @@ const vagueDescriptions = () => {
       properties: {
         ac: false,
         hp: false,
+        hardness: false,
         resistances: false,
         weaknesses: false,
         saves: false,
@@ -9225,6 +9480,7 @@ const vagueDescriptions = () => {
         attacks: false,
         damage: false,
         spells: false,
+        initiative: false,
       },
       settings: {
         playerBased: false,
@@ -12960,7 +13216,8 @@ class RegisterHandlebarsHelpers {
         return user.isGM ? "partial-outline" : "outline";
       case 3:
         return "sepia";
-      default: return '';
+      default:
+        return "";
     }
   }
 

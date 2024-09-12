@@ -210,6 +210,7 @@ const vagueDescriptions = () => {
       properties: {
         ac: false,
         hp: false,
+        hardness: false,
         resistances: false,
         weaknesses: false,
         saves: false,
@@ -220,6 +221,7 @@ const vagueDescriptions = () => {
         attacks: false,
         damage: false,
         spells: false,
+        initiative: false,
       },
       settings: {
         playerBased: false,

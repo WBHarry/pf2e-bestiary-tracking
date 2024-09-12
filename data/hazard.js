@@ -4,13 +4,16 @@ import {
   attackTable,
   attributeTable,
   damageTable,
+  hardnessTable,
   hpTable,
   savingThrowPerceptionTable,
+  stealthDisableTable,
   weaknessTable,
 } from "../scripts/statisticsData";
 import {
   getCategoryFromIntervals,
   getCategoryLabel,
+  getMixedCategoryLabel,
   getRollAverage,
 } from "../scripts/statisticsHelper";
 import {
@@ -749,6 +752,12 @@ export class Hazard extends foundry.abstract.TypeDataModel {
       this.hp.value,
     );
 
+    this.hardness.category = getMixedCategoryLabel(
+      hardnessTable,
+      contextLevel,
+      this.hardness.value,
+    );
+
     this.saves = {
       fortitude: {
         ...this.saves.fortitude,
@@ -781,6 +790,19 @@ export class Hazard extends foundry.abstract.TypeDataModel {
         ),
       },
     };
+
+    this.stealth.category = getMixedCategoryLabel(
+      stealthDisableTable,
+      contextLevel,
+      Number.parseInt(this.stealth.dc),
+    );
+    if (this.initiative) {
+      this.initiative.category = getMixedCategoryLabel(
+        stealthDisableTable,
+        contextLevel,
+        Number.parseInt(this.initiative.dc),
+      );
+    }
 
     this.immunities = Object.keys(this.immunities).reduce((acc, key) => {
       const exceptionKeys = Object.keys(this.immunities[key].exceptions);

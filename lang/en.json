@@ -266,6 +266,7 @@
           "Options": {
             "AC": "AC",
             "HP": "HP",
+            "Hardness": "Hardness",
             "Immunities": "Immunities",
             "Resistances": "Resistances",
             "Weaknesses": "Weaknesses",
@@ -277,6 +278,7 @@
             "Spells": "Spells",
             "Attacks": "Attacks",
             "Damage": "Damage",
+            "Initiative": "Initiative/Stealth (Hazards)",
             "PlayerBased": "Base Descriptions On Player Level",
             "MisinformationOptions": "Vague Misinformation Categories",
             "GMNumeric": "GM Sees Exact Values"
