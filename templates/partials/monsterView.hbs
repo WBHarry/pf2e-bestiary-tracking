@@ -1,7 +1,8 @@
 <div class="monster-container flex-col">
     <div class="left-monster-container">
         <div class="monster-image-container">
-            <img class="monster-image {{#if this.useTokenArt}}token{{/if}}" src="{{this.system.displayImage}}" data-action="imagePopout" />
+            {{#if this.user.isGM}}<i class="monster-image-menu fa-solid fa-gears primary-hover-container" data-action="imageMenu"></i>{{/if}}
+            <img class="monster-image {{#if this.useTokenArt}}token{{/if}} {{PF2EBTImageState this.user this.system.imageState.hideState}}" src="{{this.system.displayImage}}" data-action="imagePopout" />
         </div>
 
         {{#if this.optionalFields.level}}

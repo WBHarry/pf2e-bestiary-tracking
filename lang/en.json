@@ -120,6 +120,11 @@
         "EmptyHazardText": "You haven't run into any {category} hazards. Yet.",
         "UnaffiliatedText": "You don't know any unaffiliated characters.."
       },
+      "AvatarMenu": {
+        "Title": "Avatar Menu",
+        "HideState": "Image Hide State",
+        "Save": "Apply Changes"
+      },
       "Miscellaneous": {
         "UnknownCreature": "Unknown Creature",
         "UnknownNPC": "Unknwon NPC",
@@ -374,7 +379,13 @@
           "Monster": "Monster",
           "NPC": "NPC",
           "Hazard": "Hazard",
-          "NPCCategories": "NPC Categories"
+          "NPCCategories": "NPC Categories",
+          "ImageHideState": {
+            "Title": "Image Initial Hidden State",
+            "Revealed": "Revealed",
+            "Outline": "Outline",
+            "Hidden": "Hidden"
+          }
         },
         "DefaultRevealed": {
           "Title": "Default Revealed Properties",

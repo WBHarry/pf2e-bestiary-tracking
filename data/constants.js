@@ -80,3 +80,15 @@ export const defaultRevealing = {
     stealth: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Stealth",
   },
 };
+
+export const imageHideStates = {
+  revealed: {
+    value: 0,
+    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Revealed",
+  },
+  outline: {
+    value: 1,
+    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Outline",
+  },
+  // hidden: { value: 2, name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Hidden" },
+};

@@ -9,6 +9,7 @@ export default class RegisterHandlebarsHelpers {
       PF2EBTToggleContainerOverride: this.toggleContainerOverride,
       PF2EBTEach: this.each,
       PF2EBTFilter: this.filter,
+      PF2EBTImageState: this.imageState,
       PF2EBTTertiary: this.tertiary,
       PF2EBTCaptialize: this.capitalize,
       PF2EBTSub: this.sub,
@@ -127,6 +128,17 @@ export default class RegisterHandlebarsHelpers {
     }
 
     return ret;
+  }
+
+  static imageState(user, state) {
+    switch (state) {
+      case 0:
+        return "";
+      case 1:
+        return user.isGM ? "partial-outline" : "outline";
+      case 2:
+        return "hidden-image";
+    }
   }
 
   static tertiary(a, b) {

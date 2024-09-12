@@ -22,6 +22,12 @@ export const getCreatureData = (actor) => {
     "pf2e-bestiary-tracking",
     "default-revealed",
   );
+
+  const { images: imageHiddenState } = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "hidden-settings",
+  );
+
   const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
   const weaknessesKeys = Object.keys(actor.system.attributes.weaknesses);
   const resistancesKeys = Object.keys(actor.system.attributes.resistances);
@@ -107,6 +113,7 @@ export const getCreatureData = (actor) => {
       version: currentVersion,
       img: actor.img,
       texture: actor.prototypeToken.texture.src,
+      imageState: { hideState: imageHiddenState },
       name: { value: actor.name, revealed: defaultRevealed.name },
       hardness: { value: actor.system.attributes.hardness.value },
       allSaves: { value: actor.system.attributes.allSaves?.value },
@@ -521,6 +528,12 @@ export const getHazardData = (actor) => {
     "pf2e-bestiary-tracking",
     "default-revealed",
   );
+
+  const { images: imageHiddenState } = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "hidden-settings",
+  );
+
   const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
   const weaknessesKeys = Object.keys(actor.system.attributes.weaknesses);
   const resistancesKeys = Object.keys(actor.system.attributes.resistances);
@@ -538,6 +551,7 @@ export const getHazardData = (actor) => {
       version: currentVersion,
       img: actor.img,
       texture: actor.prototypeToken.texture.src,
+      imageState: { hideState: imageHiddenState },
       name: { value: actor.name, revealed: defaultRevealed.name },
       publication: actor.system.details.publication,
       hasHealth: actor.system.attributes.hasHealth,

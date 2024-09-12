@@ -1,5 +1,5 @@
 import { revealedState } from "../data/bestiaryAppearance.js";
-import { defaultRevealing } from "../data/constants.js";
+import { defaultRevealing, imageHideStates } from "../data/constants.js";
 import { chunkArray } from "../scripts/helpers.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -154,6 +154,7 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
 
     context.combatRegistrationOptions = this.combatRegistrationOptions;
     context.npcRegistrationOptions = this.npcRegistrationOptions;
+    context.imageHideStates = imageHideStates;
 
     return context;
   }
@@ -187,7 +188,9 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
   }
 
   static async toggleHiddenSettingsFields() {
-    const keys = Object.keys(this.settings.hiddenSettings);
+    const keys = Object.keys(this.settings.hiddenSettings).filter(
+      (x) => x !== "images",
+    );
     const enable = Object.values(this.settings.hiddenSettings).some((x) => !x);
     this.settings.hiddenSettings = keys.reduce((acc, key) => {
       acc[key] = enable;

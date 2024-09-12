@@ -1,0 +1,17 @@
+<div>
+    <div class="flexcol">
+        <div class="form-group">
+            <label>{{localize "PF2EBestiary.Bestiary.AvatarMenu.HideState"}}</label>
+            <div class="form-fields">
+                <div class="form-fields">
+                    <select name="{{concat "system.imageState.hideState"}}">
+                        {{selectOptions this.hideStates selected=this.update.system.imageState.hideState valueAttr="value" labelAttr="name" localize=true}}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <button data-action="save">{{localize "PF2EBestiary.Bestiary.AvatarMenu.Save"}}</button>
+    </footer>
+</div>

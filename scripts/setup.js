@@ -488,6 +488,7 @@ const bestiaryIntegration = () => {
       npc: true,
       hazard: false,
       npcCategories: true,
+      images: 0,
     },
   });
 

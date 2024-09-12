@@ -11,7 +11,7 @@ import { resetBestiary } from "../scripts/macros.js";
 import { socketEvent } from "../scripts/socket.js";
 import { getCategoryRange } from "../scripts/statisticsHelper.js";
 
-import { dispositions } from "../data/constants.js";
+import { dispositions, imageHideStates } from "../data/constants.js";
 import Tagify from "@yaireo/tagify";
 import {
   getCreatureData,
@@ -20,6 +20,7 @@ import {
 } from "../data/modelHelpers.js";
 import BestiarySelection from "./bestiarySelection.js";
 import { ExpandedDragDrop } from "../scripts/expandedDragDrop.js";
+import AvatarMenu from "./avatarMenu.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -109,6 +110,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       transformCreature: this.transformCreature,
       openDocument: this.openDocument,
       removeRecallKnowledgeJournal: this.removeRecallKnowledgeJournal,
+      imageMenu: this.imageMenu,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -605,6 +607,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
             id: creature.id,
             name: creature.system.name,
             hidden: creature.system.hidden,
+            hideState: creature.system.imageState.hideState,
             img: creature.system.displayImage,
           });
       }
@@ -633,6 +636,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
             id: npc.id,
             name: npc.system.name,
             hidden: npc.system.hidden,
+            hideState: npc.system.imageState.hideState,
             img: npc.system.displayImage,
           });
       }
@@ -659,6 +663,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
             id: hazard.id,
             name: hazard.system.name,
             hidden: hazard.system.hidden,
+            hideState: hazard.system.imageState.hideState,
             img: hazard.system.displayImage,
           });
       }
@@ -1830,6 +1835,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         : this.selected.monster.system.name.revealed
           ? true
           : undefined,
+      hideState: this.selected.monster.system.imageState.hideState,
     }).render(true);
   }
 
@@ -2015,6 +2021,24 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       data: {},
     });
     Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  static async imageMenu() {
+    new Promise((resolve, reject) => {
+      new AvatarMenu(this.selected.monster, resolve, reject).render(true);
+    }).then(
+      async (update) => {
+        await this.selected.monster.update(update);
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+          action: socketEvent.UpdateBestiary,
+          data: {},
+        });
+        Hooks.callAll(socketEvent.UpdateBestiary, {});
+      },
+      () => {
+        return;
+      },
+    );
   }
 
   async hideTab(event) {

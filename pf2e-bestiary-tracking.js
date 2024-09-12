@@ -569,3 +569,17 @@ Hooks.on("renderDependencyResolution", (dependencyResolution, html) => {
         `);
   }
 });
+
+Hooks.on("renderImagePopout", (app, html) => {
+  const bestiary = game.journal.get(
+    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+  );
+  const existingPage = bestiary.pages.find(
+    (x) => x.system.uuid === app.options.uuid,
+  );
+  if (existingPage) {
+    const hideState = existingPage.system.imageState.hideState;
+    const image = $(html).find("figure img");
+    image.addClass(RegisterHandlebarsHelpers.imageState(game.user, hideState));
+  }
+});

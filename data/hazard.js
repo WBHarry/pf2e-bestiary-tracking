@@ -29,6 +29,13 @@ export class Hazard extends foundry.abstract.TypeDataModel {
       version: new fields.StringField({ required: true }),
       img: new fields.StringField({ required: true }),
       texture: new fields.StringField({ required: true }),
+      imageState: new fields.SchemaField({
+        hideState: new fields.NumberField({
+          required: true,
+          integer: true,
+          initial: 0,
+        }),
+      }),
       name: toggleStringField(),
       publication: new fields.SchemaField({
         authors: new fields.StringField({}),

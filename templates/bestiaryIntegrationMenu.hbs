@@ -95,6 +95,13 @@
             </div>
 
             <div class="form-group">
+                <label>{{localize "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.Hazard"}}</label>
+                <div class="form-fields">
+                    <input type="checkbox" name="settings.hiddenSettings.hazard" {{checked this.settings.hiddenSettings.hazard}} />
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label>{{localize "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.NPCCategories"}}</label>
                 <div class="form-fields">
                     <input type="checkbox" name="settings.hiddenSettings.npcCategories" {{checked this.settings.hiddenSettings.npcCategories}} />
@@ -102,9 +109,11 @@
             </div>
 
             <div class="form-group">
-                <label>{{localize "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.Hazard"}}</label>
+                <label>{{localize "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Title"}}</label>
                 <div class="form-fields">
-                    <input type="checkbox" name="settings.hiddenSettings.hazard" {{checked this.settings.hiddenSettings.hazard}} />
+                    <select name="settings.hiddenSettings.images">
+                        {{selectOptions this.imageHideStates selected=this.settings.hiddenSettings.images valueAttr="value" labelAttr="name" localize=true}}
+                    </select>
                 </div>
             </div>
         </fieldset>

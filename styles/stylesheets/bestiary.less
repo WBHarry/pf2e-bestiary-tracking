@@ -38,6 +38,18 @@
       flex-direction: column;
     }
 
+    .monster-image {
+      &.outline {
+        filter: brightness(0);
+      }
+      &.partial-outline {
+        filter: brightness(0.5);
+      }
+      &.hidden-image {
+        opacity: 0;
+      }
+    }
+
     .npc-players-container {
       height: 100%;
 
@@ -518,6 +530,16 @@
 
         .monster-image-container {
           position: relative;
+
+          .monster-image-menu {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 12px;
+            z-index: 5;
+            text-shadow: 0 0 6px white;
+          }
+
           .monster-image {
             height: 100%;
             border-radius: 0.5rem;

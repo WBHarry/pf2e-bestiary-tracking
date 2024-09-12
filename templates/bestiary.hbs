@@ -111,7 +111,7 @@
                         }}
                     {{/with}}
                 {{else}}
-                    {{#if (eq this.selected.category 'pf2e-bestiary-tracking.creature')}}
+                    {{#if (or (eq this.selected.category 'pf2e-bestiary-tracking.creature') (and (eq this.selected.category 'pf2e-bestiary-tracking.npc') (not this.npcState.npcView)))}}
                         {{#with this.selected.monster}}
                             {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" 
                                 uuid=this.uuid
@@ -163,7 +163,7 @@
                     {{else}}
                         {{#each this.bookmarkEntities}}
                             <div class="type-container primary-container {{#if (eq ../layout.categories.layout 1)}}trio{{/if}}{{#if (eq ../layout.categories.layout 2)}}quarter{{/if}}" data-action="selectMonster" data-monster="{{this.id}}">
-                                <img src="{{this.img}}" />
+                                <img class="monster-image {{PF2EBTImageState ../user this.hideState}}" src="{{this.img}}" />
                                 <div class="type-text-container">
                                     {{#if ../user.isGM}}
                                         {{this.name.value}}
