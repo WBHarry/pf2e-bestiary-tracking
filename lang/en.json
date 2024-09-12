@@ -122,7 +122,7 @@
       },
       "AvatarMenu": {
         "Title": "Avatar Menu",
-        "HideState": "Image Hide State",
+        "HideState": "Image Filter",
         "Save": "Apply Changes"
       },
       "Miscellaneous": {
@@ -349,7 +349,7 @@
         },
         "ImageSettings": {
           "Title": "Avatar Settings",
-          "HideState": "Default Hide State",
+          "HideState": "Default Filter",
           "HiddenImage": "Hidden Image"
         },
         "AdditionalCreatureTypes": {
@@ -389,7 +389,8 @@
             "Title": "Image Initial Hidden State",
             "Revealed": "Revealed",
             "Outline": "Outline",
-            "Hidden": "Hidden"
+            "Hidden": "Hidden",
+            "Sepia": "Sepia"
           }
         },
         "DefaultRevealed": {

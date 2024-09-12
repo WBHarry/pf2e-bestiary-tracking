@@ -94,6 +94,10 @@ export const imageHideStates = {
     value: 2,
     name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Hidden",
   },
+  sepia: {
+    value: 3,
+    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Sepia",
+  },
 };
 
 export const imageSettings = {

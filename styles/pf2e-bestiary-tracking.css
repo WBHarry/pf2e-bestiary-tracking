@@ -109,6 +109,9 @@
 .pf2e-bestiary-tracking.bestiary .monster-image.partial-outline {
   filter: brightness(0.5);
 }
+.pf2e-bestiary-tracking.bestiary .monster-image.sepia {
+  filter: sepia(1);
+}
 .pf2e-bestiary-tracking.bestiary .npc-players-container {
   height: 100%;
 }
@@ -1477,6 +1480,6 @@
 .image-popout figure img.partial-outline {
   filter: brightness(0.5);
 }
-.image-popout figure img.hidden-image {
-  opacity: 0;
+.image-popout figure img.sepia {
+  filter: sepia(1);
 }

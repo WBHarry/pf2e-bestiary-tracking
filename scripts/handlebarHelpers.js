@@ -132,10 +132,12 @@ export default class RegisterHandlebarsHelpers {
 
   static imageState(user, state) {
     switch (state) {
-      case 0:
-        return "";
       case 1:
         return user.isGM ? "partial-outline" : "outline";
+      case 3:
+        return "sepia";
+      default:
+        return "";
     }
   }
 

@@ -4753,6 +4753,10 @@ const imageHideStates = {
     value: 2,
     name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Hidden",
   },
+  sepia: {
+    value: 3,
+    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Sepia"
+  }
 };
 
 const imageSettings = {
@@ -12952,10 +12956,11 @@ class RegisterHandlebarsHelpers {
 
   static imageState(user, state) {
     switch (state) {
-      case 0:
-        return "";
       case 1:
         return user.isGM ? "partial-outline" : "outline";
+      case 3:
+        return "sepia";
+      default: return '';
     }
   }
 
@@ -13547,15 +13552,21 @@ Hooks.on("renderImagePopout", (app, html) => {
     const image = $(html).find("figure img");
     image.addClass(RegisterHandlebarsHelpers.imageState(game.user, hideState));
 
-    if(existingPage.system.imageState.hideState === 2){
+    if (existingPage.system.imageState.hideState === 2) {
       const imageSettings = game.settings.get(
-        "pf2e-bestiary-tracking", "image-settings",
+        "pf2e-bestiary-tracking",
+        "image-settings",
       );
 
-      const hideImage = existingPage.type === 'pf2e-bestiary-tracking.creature' ? imageSettings.creature.hideImage :
-        existingPage.type === 'pf2e-bestiary-tracking.npc' ? imageSettings.npc.hideImage :
-        existingPage.type === 'pf2e-bestiary-tracking.hazard' ? imageSettings.hazard.hideImage : image.currentSrc;
-      image[0].currentSrc = `${image[0].baseURI.split('game')[0]}${hideImage}`;
+      const hideImage =
+        existingPage.type === "pf2e-bestiary-tracking.creature"
+          ? imageSettings.creature.hideImage
+          : existingPage.type === "pf2e-bestiary-tracking.npc"
+            ? imageSettings.npc.hideImage
+            : existingPage.type === "pf2e-bestiary-tracking.hazard"
+              ? imageSettings.hazard.hideImage
+              : image.currentSrc;
+      image[0].currentSrc = `${image[0].baseURI.split("game")[0]}${hideImage}`;
     }
   }
 });
