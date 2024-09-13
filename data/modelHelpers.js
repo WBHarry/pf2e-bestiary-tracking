@@ -503,6 +503,8 @@ export const getNPCData = (actor) => {
     (x) => x.token.baseActor.uuid === actor.uuid,
   );
 
+  const isSimple = actor.sheet.options.classes.includes("simple");
+
   const creatureData = getCreatureData(actor);
 
   return {
@@ -517,6 +519,7 @@ export const getNPCData = (actor) => {
         hideState: imageSettings.hideState,
       },
       npcData: {
+        simple: isSimple,
         categories: [],
         general: {
           background: { value: "", revealed: defaultRevealed.background },

@@ -978,6 +978,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   async removeBookmark(event) {
+    if (
+      event.currentTarget.dataset.bookmark === "unaffiliated" ||
+      event.currentTarget.dataset.bookmark === "combat"
+    )
+      return;
+
     const confirmed = await Dialog.confirm({
       title: game.i18n.localize("PF2EBestiary.Bestiary.RemoveBookmarkTitle"),
       content: game.i18n.format("PF2EBestiary.Bestiary.RemoveBookmarkText", {
@@ -989,7 +995,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
     if (!confirmed) return null;
 
-    if (event.currentTarget.dataset.bookmark === "unaffiliated") return;
     for (var npc of this.bestiary.pages.filter((page) => {
       return page.system.npcData?.categories.some(
         (x) => x.value === event.currentTarget.dataset.bookmark,

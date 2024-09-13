@@ -201,7 +201,7 @@
                     {{this.name}}
                     {{#if this.endIcon}}<i class="{{this.endIcon}}"></i>{{/if}}
                 </div>
-                {{#if (and ../user.isGM (and (not (eq this.value 'unaffiliated')) (eq ../selected.category 'pf2e-bestiary-tracking.npc')))}}
+                {{#if (and ../user.isGM (and (and (not (eq this.value 'unaffiliated')) (not (eq this.value 'combat'))) (eq ../selected.category 'pf2e-bestiary-tracking.npc')))}}
                     <i class="hide-icon {{#if this.hidden}}fa-solid fa-eye-slash visible{{else}}fa-solid fa-eye{{/if}} primary-hover-container" data-action="toggleHideNPCCategory" data-category="{{this.value}}"></i>
                 {{/if}}
             </div>

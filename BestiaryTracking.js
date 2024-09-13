@@ -2404,7 +2404,9 @@ const getCreatureData = (actor, options) => {
   const attackKeys = Object.keys(actor.system.actions);
   const itemKeys = Array.from(actor.items);
 
-  const combatant = game.combat?.combatants?.find(x => x.token.baseActor.uuid === actor.uuid);
+  const combatant = game.combat?.combatants?.find(
+    (x) => x.token.baseActor.uuid === actor.uuid,
+  );
 
   const spellEntries = itemKeys.reduce((acc, entry) => {
     if (entry.type === "spellcastingEntry") {
@@ -2479,8 +2481,9 @@ const getCreatureData = (actor, options) => {
     name: actor.name,
     ownership: { default: 3 },
     system: {
-      hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
-        .monster || combatant?.token?.hidden,
+      hidden:
+        game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
+          .monster || combatant?.token?.hidden,
       uuid: actor.uuid,
       version: currentVersion,
       img: actor.img,
@@ -2866,7 +2869,11 @@ const getNPCData = (actor) => {
     "image-settings",
   );
 
-  const combatant = game.combat?.combatants?.find(x => x.token.baseActor.uuid === actor.uuid);
+  const combatant = game.combat?.combatants?.find(
+    (x) => x.token.baseActor.uuid === actor.uuid,
+  );
+
+  const isSimple = actor.sheet.options.classes.includes('simple');
 
   const creatureData = getCreatureData(actor);
 
@@ -2875,12 +2882,14 @@ const getNPCData = (actor) => {
     type: "pf2e-bestiary-tracking.npc",
     system: {
       ...creatureData.system,
-      hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
-        .npc || combatant?.token?.hidden,
+      hidden:
+        game.settings.get("pf2e-bestiary-tracking", "hidden-settings").npc ||
+        combatant?.token?.hidden,
       imageState: {
         hideState: imageSettings.hideState,
       },
       npcData: {
+        simple: isSimple,
         categories: [],
         general: {
           background: { value: "", revealed: defaultRevealed.background },
@@ -2917,7 +2926,9 @@ const getHazardData = (actor) => {
     "image-settings",
   );
 
-  const combatant = game.combat?.combatants?.find(x => x.token.baseActor.uuid === actor.uuid);
+  const combatant = game.combat?.combatants?.find(
+    (x) => x.token.baseActor.uuid === actor.uuid,
+  );
 
   const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
   const weaknessesKeys = Object.keys(actor.system.attributes.weaknesses);
@@ -2930,8 +2941,9 @@ const getHazardData = (actor) => {
     name: actor.name,
     ownership: { default: 3 },
     system: {
-      hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
-        .hazard || combatant?.token?.hidden,
+      hidden:
+        game.settings.get("pf2e-bestiary-tracking", "hidden-settings").hazard ||
+        combatant?.token?.hidden,
       uuid: actor.uuid,
       version: currentVersion,
       img: actor.img,
@@ -11510,6 +11522,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   async removeBookmark(event) {
+    if (event.currentTarget.dataset.bookmark === "unaffiliated" || event.currentTarget.dataset.bookmark === "combat") return;
+
     const confirmed = await Dialog.confirm({
       title: game.i18n.localize("PF2EBestiary.Bestiary.RemoveBookmarkTitle"),
       content: game.i18n.format("PF2EBestiary.Bestiary.RemoveBookmarkText", {
@@ -11521,7 +11535,6 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     if (!confirmed) return null;
 
-    if (event.currentTarget.dataset.bookmark === "unaffiliated") return;
     for (var npc of this.bestiary.pages.filter((page) => {
       return page.system.npcData?.categories.some(
         (x) => x.value === event.currentTarget.dataset.bookmark,
@@ -14071,9 +14084,11 @@ Hooks.on("renderChatMessage", (_, htmlElements) => {
 });
 
 Hooks.on("updateCombatant", async (combatant, changes) => {
-  if(changes.hidden === false){
-    const page = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking')).pages.find(x => x.system.uuid === combatant.token.baseActor.uuid);
-    if(page){
+  if (changes.hidden === false) {
+    const page = game.journal
+      .get(game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"))
+      .pages.find((x) => x.system.uuid === combatant.token.baseActor.uuid);
+    if (page) {
       await page.update({ "system.hidden": false });
       Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
