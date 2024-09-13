@@ -17,7 +17,7 @@ export const toggleNumberField = () =>
     custom: new fields.StringField({ nullable: true }),
   });
 
-export const getCreatureData = (actor) => {
+export const getCreatureData = (actor, options) => {
   const { creature: defaultRevealed } = game.settings.get(
     "pf2e-bestiary-tracking",
     "default-revealed",
@@ -33,6 +33,10 @@ export const getCreatureData = (actor) => {
   const resistancesKeys = Object.keys(actor.system.attributes.resistances);
   const attackKeys = Object.keys(actor.system.actions);
   const itemKeys = Array.from(actor.items);
+
+  const combatant = game.combat?.combatants?.find(
+    (x) => x.token.baseActor.uuid === actor.uuid,
+  );
 
   const spellEntries = itemKeys.reduce((acc, entry) => {
     if (entry.type === "spellcastingEntry") {
@@ -107,8 +111,9 @@ export const getCreatureData = (actor) => {
     name: actor.name,
     ownership: { default: 3 },
     system: {
-      hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
-        .monster,
+      hidden:
+        game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
+          .monster || combatant?.token?.hidden,
       uuid: actor.uuid,
       version: currentVersion,
       img: actor.img,
@@ -494,6 +499,10 @@ export const getNPCData = (actor) => {
     "image-settings",
   );
 
+  const combatant = game.combat?.combatants?.find(
+    (x) => x.token.baseActor.uuid === actor.uuid,
+  );
+
   const creatureData = getCreatureData(actor);
 
   return {
@@ -501,8 +510,9 @@ export const getNPCData = (actor) => {
     type: "pf2e-bestiary-tracking.npc",
     system: {
       ...creatureData.system,
-      hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
-        .npc,
+      hidden:
+        game.settings.get("pf2e-bestiary-tracking", "hidden-settings").npc ||
+        combatant?.token?.hidden,
       imageState: {
         hideState: imageSettings.hideState,
       },
@@ -543,6 +553,10 @@ export const getHazardData = (actor) => {
     "image-settings",
   );
 
+  const combatant = game.combat?.combatants?.find(
+    (x) => x.token.baseActor.uuid === actor.uuid,
+  );
+
   const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
   const weaknessesKeys = Object.keys(actor.system.attributes.weaknesses);
   const resistancesKeys = Object.keys(actor.system.attributes.resistances);
@@ -554,8 +568,9 @@ export const getHazardData = (actor) => {
     name: actor.name,
     ownership: { default: 3 },
     system: {
-      hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
-        .hazard,
+      hidden:
+        game.settings.get("pf2e-bestiary-tracking", "hidden-settings").hazard ||
+        combatant?.token?.hidden,
       uuid: actor.uuid,
       version: currentVersion,
       img: actor.img,

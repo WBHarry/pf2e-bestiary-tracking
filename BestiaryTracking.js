@@ -2387,7 +2387,7 @@ const toggleNumberField = () =>
     custom: new fields.StringField({ nullable: true }),
   });
 
-const getCreatureData = (actor) => {
+const getCreatureData = (actor, options) => {
   const { creature: defaultRevealed } = game.settings.get(
     "pf2e-bestiary-tracking",
     "default-revealed",
@@ -2403,6 +2403,8 @@ const getCreatureData = (actor) => {
   const resistancesKeys = Object.keys(actor.system.attributes.resistances);
   const attackKeys = Object.keys(actor.system.actions);
   const itemKeys = Array.from(actor.items);
+
+  const combatant = game.combat?.combatants?.find(x => x.token.baseActor.uuid === actor.uuid);
 
   const spellEntries = itemKeys.reduce((acc, entry) => {
     if (entry.type === "spellcastingEntry") {
@@ -2478,7 +2480,7 @@ const getCreatureData = (actor) => {
     ownership: { default: 3 },
     system: {
       hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
-        .monster,
+        .monster || combatant?.token?.hidden,
       uuid: actor.uuid,
       version: currentVersion,
       img: actor.img,
@@ -2864,6 +2866,8 @@ const getNPCData = (actor) => {
     "image-settings",
   );
 
+  const combatant = game.combat?.combatants?.find(x => x.token.baseActor.uuid === actor.uuid);
+
   const creatureData = getCreatureData(actor);
 
   return {
@@ -2872,7 +2876,7 @@ const getNPCData = (actor) => {
     system: {
       ...creatureData.system,
       hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
-        .npc,
+        .npc || combatant?.token?.hidden,
       imageState: {
         hideState: imageSettings.hideState,
       },
@@ -2913,6 +2917,8 @@ const getHazardData = (actor) => {
     "image-settings",
   );
 
+  const combatant = game.combat?.combatants?.find(x => x.token.baseActor.uuid === actor.uuid);
+
   const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
   const weaknessesKeys = Object.keys(actor.system.attributes.weaknesses);
   const resistancesKeys = Object.keys(actor.system.attributes.resistances);
@@ -2925,7 +2931,7 @@ const getHazardData = (actor) => {
     ownership: { default: 3 },
     system: {
       hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
-        .hazard,
+        .hazard || combatant?.token?.hidden,
       uuid: actor.uuid,
       version: currentVersion,
       img: actor.img,
@@ -10592,7 +10598,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     this._dragDrop = this._createDragDropHandlers();
 
     Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
-    Hooks.on('deleteCombat', this.onDeleteCombat);
+    Hooks.on("deleteCombat", this.onDeleteCombat);
   }
 
   get title() {
@@ -11199,26 +11205,30 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     };
 
     const reduceFunc = (npcCategories, combatants) => (acc, entity) => {
-      const inCombatType = combatants && combatants.find(x => x.token.baseActor.uuid === entity.system.uuid);
-      if(inCombatType){
-        acc.find(x => x.value === 'combat')?.values?.push({
-          id: entity.id,
-          name: entity.system.name,
-          hidden: entity.system.hidden,
-          hideState: entity.system.imageState.hideState,
-          img: entity.system.displayImage,
-        });
+      const inCombatType =
+        combatants &&
+        combatants.find((x) => x.token.baseActor.uuid === entity.system.uuid);
+      if (inCombatType) {
+        acc
+          .find((x) => x.value === "combat")
+          ?.values?.push({
+            id: entity.id,
+            name: entity.system.name,
+            hidden: entity.system.hidden,
+            hideState: entity.system.imageState.hideState,
+            img: entity.system.displayImage,
+          });
       }
 
-      if(entity.type === this.selected.category){
-        switch(entity.type){
-          case 'pf2e-bestiary-tracking.creature':
+      if (entity.type === this.selected.category) {
+        switch (entity.type) {
+          case "pf2e-bestiary-tracking.creature":
             acc = creatureReduce(acc, entity);
             break;
-          case 'pf2e-bestiary-tracking.npc':
+          case "pf2e-bestiary-tracking.npc":
             acc = npcReduce(npcCategories)(acc, entity);
             break;
-          case 'pf2e-bestiary-tracking.hazard':
+          case "pf2e-bestiary-tracking.hazard":
             acc = hazardReduce(acc, entity);
             break;
         }
@@ -11227,30 +11237,29 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       return acc;
     };
 
-    const searchFilter = entity => {
+    const searchFilter = (entity) => {
       const unknownLabel =
-            this.selected.category === "pf2e-bestiary-tracking.creature"
-              ? "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"
-              : this.selected.category === "pf2e-bestiary-tracking.npc" ? "PF2EBestiary.Bestiary.Miscellaneous.Unaffiliated"
-              : "PF2EBestiary.Bestiary.Miscellaneous.UnknownHazard";
-          const match = entity.system.name.value
-            .toLowerCase()
-            .match(this.search.name.toLowerCase());
-          const unrevealedMatch = game.i18n
-            .localize(unknownLabel)
-            .toLowerCase()
-            .match(this.search.name.toLowerCase());
-          if (
-            !this.search.name ||
-            ((entity.system.name.revealed || game.user.isGM) && match) ||
-            (!entity.system.name.revealed &&
-              !game.user.isGM &&
-              unrevealedMatch)
-          ) {
-            return true;
-          }
+        this.selected.category === "pf2e-bestiary-tracking.creature"
+          ? "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"
+          : this.selected.category === "pf2e-bestiary-tracking.npc"
+            ? "PF2EBestiary.Bestiary.Miscellaneous.Unaffiliated"
+            : "PF2EBestiary.Bestiary.Miscellaneous.UnknownHazard";
+      const match = entity.system.name.value
+        .toLowerCase()
+        .match(this.search.name.toLowerCase());
+      const unrevealedMatch = game.i18n
+        .localize(unknownLabel)
+        .toLowerCase()
+        .match(this.search.name.toLowerCase());
+      if (
+        !this.search.name ||
+        ((entity.system.name.revealed || game.user.isGM) && match) ||
+        (!entity.system.name.revealed && !game.user.isGM && unrevealedMatch)
+      ) {
+        return true;
+      }
 
-          return false;
+      return false;
     };
 
     const sortFunc = (a, b) => {
@@ -11302,25 +11311,25 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     };
 
     return !this.selected.category
-    ? []
-    : this.bestiary.pages
-        .filter((entity) => {
-          if (
-            !game.combat && (
-            entity.type !== this.selected.category)
-            || (!game.user.isGM && entity.system.hidden)
-          )
-            return false;
+      ? []
+      : this.bestiary.pages
+          .filter((entity) => {
+            if (
+              (!game.combat && entity.type !== this.selected.category) ||
+              (!game.user.isGM && entity.system.hidden)
+            )
+              return false;
 
-          return searchFilter(entity)
-        })
-        .sort(sortFunc)
-        .reduce(reduceFunc(this.bestiary.getFlag(
-          "pf2e-bestiary-tracking",
-          "npcCategories",
-        ), game.combat?.combatants),
-          bookmarks,
-        );
+            return searchFilter(entity);
+          })
+          .sort(sortFunc)
+          .reduce(
+            reduceFunc(
+              this.bestiary.getFlag("pf2e-bestiary-tracking", "npcCategories"),
+              game.combat?.combatants,
+            ),
+            bookmarks,
+          );
   }
 
   async _prepareContext(_options) {
@@ -11551,7 +11560,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     this.selected.monster = this.bestiary.pages.get(button.dataset.monster);
     this.selected.category = this.selected.monster.type;
     this.npcData.npcView =
-      this.selected.monster.type === "pf2e-bestiary-tracking.npc" && (this.selected.monster.system.npcData.simple || this.selected.type !== 'combat')
+      this.selected.monster.type === "pf2e-bestiary-tracking.npc" &&
+      (this.selected.monster.system.npcData.simple ||
+        this.selected.type !== "combat")
         ? true
         : false;
     this.tabGroups = { creature: "statistics", secondary: "general" };
@@ -13168,7 +13179,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       initialActiveType &&
       (initialActiveType === "unknown" || initialActiveType === "unaffiliated");
     if (
-      this.selected.monster && this.selected.type !== 'combat' &&
+      this.selected.monster &&
+      this.selected.type !== "combat" &&
       (unknown ||
         this.selected.type === "unknown" ||
         this.selected.type === "unaffiliated")
@@ -13185,11 +13197,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   };
 
   onDeleteCombat = () => {
-    if(this.selected.type === 'combat'){
+    if (this.selected.type === "combat") {
       this.selected.type = null;
       this.selected.monster = null;
     }
-    
+
     this.render(true);
   };
 
@@ -13211,7 +13223,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   close = async (options) => {
     Hooks.off(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
-    Hooks.off('deleteCombat', this.onDeleteCombat);
+    Hooks.off("deleteCombat", this.onDeleteCombat);
 
     return super.close(options);
   };
@@ -14054,6 +14066,16 @@ Hooks.on("renderChatMessage", (_, htmlElements) => {
       );
       const page = bestiary.pages.get(button.dataset.page);
       button.onclick = () => new PF2EBestiary(page).render(true);
+    }
+  }
+});
+
+Hooks.on("updateCombatant", async (combatant, changes) => {
+  if(changes.hidden === false){
+    const page = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking')).pages.find(x => x.system.uuid === combatant.token.baseActor.uuid);
+    if(page){
+      await page.update({ "system.hidden": false });
+      Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
   }
 });

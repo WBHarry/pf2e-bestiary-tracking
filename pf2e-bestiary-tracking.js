@@ -691,3 +691,15 @@ Hooks.on("renderChatMessage", (_, htmlElements) => {
     }
   }
 });
+
+Hooks.on("updateCombatant", async (combatant, changes) => {
+  if (changes.hidden === false) {
+    const page = game.journal
+      .get(game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"))
+      .pages.find((x) => x.system.uuid === combatant.token.baseActor.uuid);
+    if (page) {
+      await page.update({ "system.hidden": false });
+      Hooks.callAll(socketEvent.UpdateBestiary, {});
+    }
+  }
+});
