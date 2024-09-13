@@ -589,7 +589,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           ? getNPCCategories().filter((x) => game.user.isGM || !x.hidden)
           : getHazardCategories();
 
-    const creatureReduce = (acc, creature) => {
+    const creatureReduce = (combatants) => (acc, creature) => {
       const types = getCreaturesTypes(creature.system.traits);
 
       var usedTypes = types.map((x) => x.key);
@@ -600,6 +600,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       }
 
       if (usedTypes.length === 0) usedTypes = ["unknown"];
+
+      if (
+        combatants?.find((x) => x.token.baseActor.uuid === creature.system.uuid)
+      )
+        usedTypes = [...usedTypes, "combat"];
 
       for (var type of usedTypes) {
         acc
@@ -616,7 +621,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       return acc;
     };
 
-    const npcReduce = (npcCategories) => (acc, npc) => {
+    const npcReduce = (npcCategories, combatants) => (acc, npc) => {
       const categories = npc.system.npcData.categories.filter((x) => {
         const npcCategory = npcCategories.find(
           (category) => category.value === x.value,
@@ -629,6 +634,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         categories.length > 0
           ? categories.map((x) => x.value)
           : ["unaffiliated"];
+
+      if (combatants?.find((x) => x.token.baseActor.uuid === npc.system.uuid))
+        usedCategories = [...usedCategories, "combat"];
 
       for (var category of usedCategories) {
         acc
@@ -645,7 +653,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       return acc;
     };
 
-    const hazardReduce = (acc, hazard) => {
+    const hazardReduce = (combatants) => (acc, hazard) => {
       const types = getHazardTypes(hazard.system.traits);
 
       var usedTypes = types.map((x) => x.key);
@@ -656,6 +664,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       }
 
       if (usedTypes.length === 0) usedTypes = ["unknown"];
+
+      if (
+        combatants?.find((x) => x.token.baseActor.uuid === hazard.system.uuid)
+      )
+        usedTypes = [...usedTypes, "combat"];
 
       for (var type of usedTypes) {
         acc
@@ -671,6 +684,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
       return acc;
     };
+
+    const combatants = game.combat?.combatants ?? [];
 
     return !this.selected.category
       ? []
@@ -754,15 +769,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           })
           .reduce(
             this.selected.category === "pf2e-bestiary-tracking.creature"
-              ? creatureReduce
+              ? creatureReduce(game.combat?.combatants)
               : this.selected.category === "pf2e-bestiary-tracking.npc"
                 ? npcReduce(
                     this.bestiary.getFlag(
                       "pf2e-bestiary-tracking",
                       "npcCategories",
                     ),
+                    game.combat?.combatants,
                   )
-                : hazardReduce,
+                : hazardReduce(game.combat?.combatants),
             bookmarks,
           );
   }
@@ -2618,6 +2634,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     ) {
       this.selected.type = initialActiveType;
     }
+
+    const needCombatUpdate = this.selected.type === "combat" && !game.combat;
+    if (needCombatUpdate && this.selected.monster)
+      this.selected.type = initialActiveType;
+    else if (needCombatUpdate) this.selected.type = null;
 
     const saveButton = $(this.element).find(
       '.prosemirror[collaborate="true"] *[data-action="save"]',

@@ -1144,17 +1144,9 @@
         display: flex;
         justify-content: end;
 
-        // &:hover .bookmark {
-        //   width: 104px;
-        // }
-
         &:hover .hide-icon {
           opacity: 1;
         }
-
-        // &:not(:hover) .bookmark:not(.expanded) + .hide-icon.visible {
-        //   left: 20px;
-        // }
 
         .hide-icon {
           opacity: 0;
@@ -1187,6 +1179,10 @@
       padding: 0 4px;
       text-align: center;
       transition: width 0.1s ease-in-out;
+
+      &.icons {
+        justify-content: space-between;
+      }
     }
   }
 }

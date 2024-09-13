@@ -89,7 +89,16 @@ const getExpandedCreatureTypes = () => {
     else return 0;
   });
 
+  const combat = game.combat ? [{  
+    value: 'combat',
+    name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.InCombat"),
+    values: [],
+    startIcon: 'fas fa-swords',
+    endIcon: 'fas fa-swords',
+  }] : [];
+
   return [
+    ...combat,
     {
       value: "unknown",
       name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"),
@@ -106,7 +115,16 @@ const getNPCCategories = () => {
   const categories = bestiary
     .getFlag("pf2e-bestiary-tracking", "npcCategories")
     .sort((a, b) => a.position - b.position);
+  const combat = game.combat ? [{  
+    value: 'combat',
+    name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.InCombat"),
+    values: [],
+    startIcon: 'fas fa-swords',
+    endIcon: 'fas fa-swords',
+  }] : [];
+
   return [
+    ...combat,
     {
       value: "unaffiliated",
       name: game.i18n.localize(
@@ -128,7 +146,15 @@ const getNPCCategories = () => {
 };
 
 const getHazardCategories = () => {
+  const combat = game.combat ? [{  
+    value: 'combat',
+    name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.InCombat"),
+    values: [],
+    startIcon: 'fas fa-swords',
+    endIcon: 'fas fa-swords',
+  }] : [];
   return [
+    ...combat,
     {
       value: "unknown",
       name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"),
@@ -3865,9 +3891,12 @@ class Creature extends foundry.abstract.TypeDataModel {
     };
   }
 
-  get displayedName(){
-    return !this.name.revealed ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature") :
-      this.name.custom ?? this.name.value;
+  get displayedName() {
+    return !this.name.revealed
+      ? game.i18n.localize(
+          "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature",
+        )
+      : (this.name.custom ?? this.name.value);
   }
 
   _getRefreshData(actor, creatureData) {
@@ -5217,9 +5246,10 @@ class NPC extends Creature {
         : this.img;
   }
 
-  get displayedName(){
-    return !this.name.revealed ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.UnknownNPC") :
-      this.name.custom ?? this.name.value;
+  get displayedName() {
+    return !this.name.revealed
+      ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.UnknownNPC")
+      : (this.name.custom ?? this.name.value);
   }
 
   _getRefreshData(actor) {
@@ -5741,9 +5771,10 @@ class Hazard extends foundry.abstract.TypeDataModel {
     return types.length > 0 ? types[0] : "unknown";
   }
 
-  get displayedName(){
-    return !this.name.revealed ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.UnknownHazard") :
-      this.name.custom ?? this.name.value;
+  get displayedName() {
+    return !this.name.revealed
+      ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.UnknownHazard")
+      : (this.name.custom ?? this.name.value);
   }
 
   _getRefreshData(hazard, hazardData) {
@@ -11065,7 +11096,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           ? getNPCCategories().filter((x) => game.user.isGM || !x.hidden)
           : getHazardCategories();
 
-    const creatureReduce = (acc, creature) => {
+    const creatureReduce = (combatants) => (acc, creature) => {
       const types = getCreaturesTypes(creature.system.traits);
 
       var usedTypes = types.map((x) => x.key);
@@ -11076,6 +11107,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       }
 
       if (usedTypes.length === 0) usedTypes = ["unknown"];
+
+      if(combatants?.find(x => x.token.baseActor.uuid === creature.system.uuid)) usedTypes = [...usedTypes, 'combat'];
 
       for (var type of usedTypes) {
         acc
@@ -11092,7 +11125,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       return acc;
     };
 
-    const npcReduce = (npcCategories) => (acc, npc) => {
+    const npcReduce = (npcCategories, combatants) => (acc, npc) => {
       const categories = npc.system.npcData.categories.filter((x) => {
         const npcCategory = npcCategories.find(
           (category) => category.value === x.value,
@@ -11105,6 +11138,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         categories.length > 0
           ? categories.map((x) => x.value)
           : ["unaffiliated"];
+
+      if(combatants?.find(x => x.token.baseActor.uuid === npc.system.uuid)) usedCategories = [...usedCategories, 'combat'];
 
       for (var category of usedCategories) {
         acc
@@ -11121,7 +11156,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       return acc;
     };
 
-    const hazardReduce = (acc, hazard) => {
+    const hazardReduce = (combatants) => (acc, hazard) => {
       const types = getHazardTypes(hazard.system.traits);
 
       var usedTypes = types.map((x) => x.key);
@@ -11132,6 +11167,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       }
 
       if (usedTypes.length === 0) usedTypes = ["unknown"];
+
+      if(combatants?.find(x => x.token.baseActor.uuid === hazard.system.uuid)) usedTypes = [...usedTypes, 'combat'];
 
       for (var type of usedTypes) {
         acc
@@ -11147,6 +11184,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
       return acc;
     };
+
+    game.combat?.combatants ?? [];
 
     return !this.selected.category
       ? []
@@ -11230,15 +11269,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           })
           .reduce(
             this.selected.category === "pf2e-bestiary-tracking.creature"
-              ? creatureReduce
+              ? creatureReduce(game.combat?.combatants)
               : this.selected.category === "pf2e-bestiary-tracking.npc"
                 ? npcReduce(
                     this.bestiary.getFlag(
                       "pf2e-bestiary-tracking",
                       "npcCategories",
                     ),
+                    game.combat?.combatants
                   )
-                : hazardReduce,
+                : hazardReduce(game.combat?.combatants),
             bookmarks,
           );
   }
@@ -13095,6 +13135,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       this.selected.type = initialActiveType;
     }
 
+    const needCombatUpdate = this.selected.type === 'combat' && !game.combat;
+    if(needCombatUpdate && this.selected.monster) this.selected.type = initialActiveType;
+    else if (needCombatUpdate) this.selected.type = null;
+
     const saveButton = $(this.element).find(
       '.prosemirror[collaborate="true"] *[data-action="save"]',
     );
@@ -13483,7 +13527,21 @@ Hooks.on("combatStart", async (encounter) => {
           }),
         );
     }
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
+});
+
+Hooks.on("deleteCombat", () => {
+  Hooks.callAll(socketEvent.UpdateBestiary, {});
+});
+
+Hooks.on("deleteCombatant", () => {
+  Hooks.callAll(socketEvent.UpdateBestiary, {});
 });
 
 Hooks.on("updateCombatant", async (combatant, changes) => {

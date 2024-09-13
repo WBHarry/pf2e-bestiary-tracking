@@ -106,7 +106,22 @@ export const getExpandedCreatureTypes = () => {
     else return 0;
   });
 
+  const combat = game.combat
+    ? [
+        {
+          value: "combat",
+          name: game.i18n.localize(
+            "PF2EBestiary.Bestiary.Miscellaneous.InCombat",
+          ),
+          values: [],
+          startIcon: "fas fa-swords",
+          endIcon: "fas fa-swords",
+        },
+      ]
+    : [];
+
   return [
+    ...combat,
     {
       value: "unknown",
       name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"),
@@ -123,7 +138,22 @@ export const getNPCCategories = () => {
   const categories = bestiary
     .getFlag("pf2e-bestiary-tracking", "npcCategories")
     .sort((a, b) => a.position - b.position);
+  const combat = game.combat
+    ? [
+        {
+          value: "combat",
+          name: game.i18n.localize(
+            "PF2EBestiary.Bestiary.Miscellaneous.InCombat",
+          ),
+          values: [],
+          startIcon: "fas fa-swords",
+          endIcon: "fas fa-swords",
+        },
+      ]
+    : [];
+
   return [
+    ...combat,
     {
       value: "unaffiliated",
       name: game.i18n.localize(
@@ -145,7 +175,21 @@ export const getNPCCategories = () => {
 };
 
 export const getHazardCategories = () => {
+  const combat = game.combat
+    ? [
+        {
+          value: "combat",
+          name: game.i18n.localize(
+            "PF2EBestiary.Bestiary.Miscellaneous.InCombat",
+          ),
+          values: [],
+          startIcon: "fas fa-swords",
+          endIcon: "fas fa-swords",
+        },
+      ]
+    : [];
   return [
+    ...combat,
     {
       value: "unknown",
       name: game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.Unknown"),

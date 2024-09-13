@@ -131,6 +131,7 @@
         "UnknownHazard": "Unknown Hazard",
         "Unknown": "Unknown",
         "Unaffiliated": "Unaffiliated",
+        "InCombat": "In Combat",
         "CategoryPlaceholder": "Add categories the NPC is affiliated with",
         "LeftClick": "Left Click",
         "RightClick": "Right Click"

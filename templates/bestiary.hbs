@@ -191,13 +191,15 @@
         {{#each bookmarks}}
             <div class="bookmark-container {{#if (and (eq ../selected.category 'pf2e-bestiary-tracking.npc') (not (eq this.value 'unaffiliated')))}}draggable{{/if}}">
                 <div 
-                    class="bookmark {{#if (eq ../selected.category 'pf2e-bestiary-tracking.npc')}}npc{{/if}} primary-container {{#if (eq ../selected.type this.value)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys this.values) 0)}} empty{{else}} active{{/if}}" 
+                    class="bookmark {{#if (eq ../selected.category 'pf2e-bestiary-tracking.npc')}}npc{{/if}} primary-container {{#if (eq ../selected.type this.value)}} active expanded{{/if}}{{#if (eq (PF2EBTNrKeys this.values) 0)}} empty{{else}} active{{/if}} {{#if (and this.startIcon this.endIcon)}}icons{{/if}}" 
                     data-action="selectBookmark" 
                     data-bookmark="{{this.value}}"
                     data-bookmark-name="{{this.name}}"
                     data-position="{{this.position}}"
                 >
+                    {{#if this.startIcon}}<i class="{{this.startIcon}}"></i>{{/if}}
                     {{this.name}}
+                    {{#if this.endIcon}}<i class="{{this.endIcon}}"></i>{{/if}}
                 </div>
                 {{#if (and ../user.isGM (and (not (eq this.value 'unaffiliated')) (eq ../selected.category 'pf2e-bestiary-tracking.npc')))}}
                     <i class="hide-icon {{#if this.hidden}}fa-solid fa-eye-slash visible{{else}}fa-solid fa-eye{{/if}} primary-hover-container" data-action="toggleHideNPCCategory" data-category="{{this.value}}"></i>

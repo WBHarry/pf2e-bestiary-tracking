@@ -208,7 +208,21 @@ Hooks.on("combatStart", async (encounter) => {
           }),
         );
     }
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
+});
+
+Hooks.on("deleteCombat", () => {
+  Hooks.callAll(socketEvent.UpdateBestiary, {});
+});
+
+Hooks.on("deleteCombatant", () => {
+  Hooks.callAll(socketEvent.UpdateBestiary, {});
 });
 
 Hooks.on("updateCombatant", async (combatant, changes) => {
