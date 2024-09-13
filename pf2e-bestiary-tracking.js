@@ -217,10 +217,6 @@ Hooks.on("combatStart", async (encounter) => {
   }
 });
 
-Hooks.on("deleteCombat", () => {
-  Hooks.callAll(socketEvent.UpdateBestiary, {});
-});
-
 Hooks.on("deleteCombatant", () => {
   Hooks.callAll(socketEvent.UpdateBestiary, {});
 });
