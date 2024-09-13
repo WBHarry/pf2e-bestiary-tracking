@@ -195,6 +195,12 @@ export class NPC extends Creature {
         : this.img;
   }
 
+  get displayedName() {
+    return !this.name.revealed
+      ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.UnknownNPC")
+      : (this.name.custom ?? this.name.value);
+  }
+
   _getRefreshData(actor) {
     const data = getNPCData(actor);
     const creatureData = super._getRefreshData(actor, data);

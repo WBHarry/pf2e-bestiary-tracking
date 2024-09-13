@@ -42,6 +42,8 @@ async function bestiaryEnricher(match, _options) {
       "modules/pf2e-bestiary-tracking/templates/bestiaryLink.hbs",
       {
         name: page.system.name.value,
+        displayName: page.system.displayedName,
+        isGM: game.user.isGM,
         page: page.id,
       },
     );

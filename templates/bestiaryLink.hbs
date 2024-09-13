@@ -4,7 +4,13 @@
     {{else}}
         <button type="button" class="pf2e-bestiary-link pf2e-bestiary-link-button" data-page="{{this.page}}">
             <i class="fa-spaghetti-monster-flying"></i>
-            {{this.name}}
+            {{#if (and this.isGM (not (eq this.displayName this.name)))}}
+                <span>{{this.displayName}}</span>
+                <span data-visibility="gm">{{this.name}}</span>
+            {{else}}
+                <span>{{this.displayName}}</span>
+            {{/if}}
+            
         </button>
     {{/if}}
 </span>

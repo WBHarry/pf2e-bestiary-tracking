@@ -321,6 +321,12 @@ export class Hazard extends foundry.abstract.TypeDataModel {
     return types.length > 0 ? types[0] : "unknown";
   }
 
+  get displayedName() {
+    return !this.name.revealed
+      ? game.i18n.localize("PF2EBestiary.Bestiary.Miscellaneous.UnknownHazard")
+      : (this.name.custom ?? this.name.value);
+  }
+
   _getRefreshData(hazard, hazardData) {
     const data = hazardData ?? getHazardData(hazard);
 

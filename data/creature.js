@@ -603,6 +603,14 @@ export class Creature extends foundry.abstract.TypeDataModel {
     };
   }
 
+  get displayedName() {
+    return !this.name.revealed
+      ? game.i18n.localize(
+          "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature",
+        )
+      : (this.name.custom ?? this.name.value);
+  }
+
   _getRefreshData(actor, creatureData) {
     const data = creatureData ?? getCreatureData(actor);
 
