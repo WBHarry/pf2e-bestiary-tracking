@@ -306,14 +306,17 @@
                     {{/if}}
                 </div>
                 <div class="bestiary-toolbar-container">
-                    {{#if this.system.npcData}}
-                        <div class="toggle-switch-container">
+                    <div class="toggle-switch-container">
+                        {{#if this.system.npcData}}
                             <div class="toggle-switch">
                                 <i class="fa-solid fa-user"></i>
                                 <input type="checkbox" name="npcData.npcView" {{checked this.npcState.npcView}} title="{{localize "PF2EBestiary.Bestiary.NPC.NPCViewText"}}" />
                             </div>
+                        {{/if}}
+                        <div class="toggleSwitch">
+                            <i class="fa-solid fa-passport primary-hover-container" data-action="copyEntityLink" title="{{localize "PF2EBestiary.Bestiary.Info.BestiaryEntryLinkTip"}}"></i>
                         </div>
-                    {{/if}}
+                    </div>
                     <nav class="bestiary-tabs tabs">
                         {{#each this.tabs as |tab|}}
                             <a 

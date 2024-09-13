@@ -1876,7 +1876,6 @@ const spellAttackTable = {
   },
 };
 
-
 const stealthDisableTable = {
   range: ["extreme", "high", "low"],
   values: {
@@ -6163,7 +6162,11 @@ class Hazard extends foundry.abstract.TypeDataModel {
       this.hp.value,
     );
 
-    this.hardness.category = getMixedCategoryLabel(hardnessTable, contextLevel, this.hardness.value);
+    this.hardness.category = getMixedCategoryLabel(
+      hardnessTable,
+      contextLevel,
+      this.hardness.value,
+    );
 
     this.saves = {
       fortitude: {
@@ -6198,9 +6201,17 @@ class Hazard extends foundry.abstract.TypeDataModel {
       },
     };
 
-    this.stealth.category = getMixedCategoryLabel(stealthDisableTable, contextLevel, Number.parseInt(this.stealth.dc));
-    if(this.initiative){
-      this.initiative.category = getMixedCategoryLabel(stealthDisableTable, contextLevel, Number.parseInt(this.initiative.dc));
+    this.stealth.category = getMixedCategoryLabel(
+      stealthDisableTable,
+      contextLevel,
+      Number.parseInt(this.stealth.dc),
+    );
+    if (this.initiative) {
+      this.initiative.category = getMixedCategoryLabel(
+        stealthDisableTable,
+        contextLevel,
+        Number.parseInt(this.initiative.dc),
+      );
     }
 
     this.immunities = Object.keys(this.immunities).reduce((acc, key) => {
@@ -10561,6 +10572,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       openDocument: this.openDocument,
       removeRecallKnowledgeJournal: this.removeRecallKnowledgeJournal,
       imageMenu: this.imageMenu,
+      copyEntityLink: this.copyEntityLink,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -12491,6 +12503,24 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     );
   }
 
+  static async copyEntityLink(event) {
+    const bestiaryLink = `@Bestiary[${this.bestiary.id}|${this.selected.monster.system.uuid}]`;
+    if(event.altKey){
+      const cls = getDocumentClass("ChatMessage");
+        const msg = new cls({
+            user: game.user.id,
+            content: bestiaryLink,
+        });
+    
+        cls.create(msg.toObject());
+    }
+    else {
+      navigator.clipboard.writeText(bestiaryLink).then(() => {
+        ui.notifications.info(game.i18n.format("PF2EBestiary.Bestiary.Info.BestiaryEntryLink", { entity: this.selected.monster.system.name.value }));
+      });
+    }
+  }
+
   async hideTab(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -13238,12 +13268,47 @@ class RegisterHandlebarsHelpers {
   }
 }
 
+async function bestiaryEnricher(match, _options) {
+  const linkElement = document.createElement('span');   
+
+  //Currently unused, but useful if needed to be more specific
+  // const bestiaryId = match[1]; 
+
+  const bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
+  let page = bestiary.pages.find(x => x.system.uuid === match[2]);
+  if(!page){
+    for(var journal of game.journal){
+      const possiblePage = journal.pages.find(x => ['pf2e-bestiary-tracking.creature', 'pf2e-bestiary-tracking.npc', 'pf2e-bestiary-tracking.hazard'].includes(x.type) && x.system.uuid === match[2]);
+      if(possiblePage){
+        page = possiblePage;
+        break;
+      }
+    }
+  }
+  if(page){
+    linkElement.innerHTML = await renderTemplate("modules/pf2e-bestiary-tracking/templates/bestiaryLink.hbs", { 
+      name: page.system.name.value,
+      page: page.id,
+    });
+  
+    return linkElement;
+  }
+  
+  linkElement.innerHTML = await renderTemplate("modules/pf2e-bestiary-tracking/templates/bestiaryLink.hbs", { 
+    invalid: true
+  });
+
+  return linkElement;
+}
+
 Hooks.once("init", () => {
   dataTypeSetup();
   registerGameSettings();
   registerKeyBindings();
   RegisterHandlebarsHelpers.registerHelpers();
   game.socket.on(`module.pf2e-bestiary-tracking`, handleSocketEvent);
+
+  CONFIG.TextEditor.enrichers.push({pattern: /@Bestiary\[(.+)\|([^\]]+)\]/g, enricher: bestiaryEnricher});
 
   loadTemplates([
     "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs",
@@ -13824,6 +13889,28 @@ Hooks.on("renderImagePopout", (app, html) => {
               ? imageSettings.hazard.hideImage
               : image.currentSrc;
       image[0].currentSrc = `${image[0].baseURI.split("game")[0]}${hideImage}`;
+    }
+  }
+});
+
+Hooks.on("renderApplication", (_, htmlElements) => {
+  for(var element of htmlElements){
+    const buttons = $(element).find('.pf2e-bestiary-link-button');
+    for(var button of buttons){
+      const bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
+      const page = bestiary.pages.get(button.dataset.page);
+      button.onclick = () => new PF2EBestiary(page).render(true);
+    }
+  }
+});
+
+Hooks.on("renderChatMessage", (_, htmlElements) => {
+  for(var element of htmlElements){
+    const buttons = $(element).find('.pf2e-bestiary-link-button');
+    for(var button of buttons){
+      const bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
+      const page = bestiary.pages.get(button.dataset.page);
+      button.onclick = () => new PF2EBestiary(page).render(true);
     }
   }
 });

@@ -111,6 +111,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       openDocument: this.openDocument,
       removeRecallKnowledgeJournal: this.removeRecallKnowledgeJournal,
       imageMenu: this.imageMenu,
+      copyEntityLink: this.copyEntityLink,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -2039,6 +2040,27 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         return;
       },
     );
+  }
+
+  static async copyEntityLink(event) {
+    const bestiaryLink = `@Bestiary[${this.bestiary.id}|${this.selected.monster.system.uuid}]`;
+    if (event.altKey) {
+      const cls = getDocumentClass("ChatMessage");
+      const msg = new cls({
+        user: game.user.id,
+        content: bestiaryLink,
+      });
+
+      cls.create(msg.toObject());
+    } else {
+      navigator.clipboard.writeText(bestiaryLink).then(() => {
+        ui.notifications.info(
+          game.i18n.format("PF2EBestiary.Bestiary.Info.BestiaryEntryLink", {
+            entity: this.selected.monster.system.name.value,
+          }),
+        );
+      });
+    }
   }
 
   async hideTab(event) {

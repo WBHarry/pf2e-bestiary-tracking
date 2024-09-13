@@ -1483,3 +1483,16 @@
 .image-popout figure img.sepia {
   filter: sepia(1);
 }
+.pf2e-bestiary-link {
+  width: auto;
+}
+.pf2e-bestiary-link i {
+  font-family: "Font Awesome 6 Pro";
+  font-style: normal;
+  font-weight: bold;
+}
+.pf2e-bestiary-link-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

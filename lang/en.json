@@ -245,7 +245,9 @@
       "Info": {
         "GMOnly": "This is a GM only function.",
         "AddedToBestiary": "[{creatures}] were added to the Bestiary",
-        "AlreadyExistsInBestiary": "[{creatures}] already exists in the Bestiary."
+        "AlreadyExistsInBestiary": "[{creatures}] already exists in the Bestiary.",
+        "BestiaryEntryLinkTip": "Copy link (+Alt to send to chat)",
+        "BestiaryEntryLink": "Bestiary Entry {entity} copied to clipboard."
       },
       "RemoveBookmarkTitle": "Remove Category",
       "RemoveBookmarkText": "Are you sure you want to remove the {category} category?"

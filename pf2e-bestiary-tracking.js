@@ -11,12 +11,65 @@ import * as macros from "./scripts/macros.js";
 import { handleDataMigration } from "./scripts/migrationHandler.js";
 import { getBaseActor, getSpellLevel } from "./scripts/helpers.js";
 
+async function bestiaryEnricher(match, _options) {
+  const linkElement = document.createElement("span");
+
+  //Currently unused, but useful if needed to be more specific
+  // const bestiaryId = match[1];
+
+  const bestiary = game.journal.get(
+    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+  );
+  let page = bestiary.pages.find((x) => x.system.uuid === match[2]);
+  if (!page) {
+    for (var journal of game.journal) {
+      const possiblePage = journal.pages.find(
+        (x) =>
+          [
+            "pf2e-bestiary-tracking.creature",
+            "pf2e-bestiary-tracking.npc",
+            "pf2e-bestiary-tracking.hazard",
+          ].includes(x.type) && x.system.uuid === match[2],
+      );
+      if (possiblePage) {
+        page = possiblePage;
+        break;
+      }
+    }
+  }
+  if (page) {
+    linkElement.innerHTML = await renderTemplate(
+      "modules/pf2e-bestiary-tracking/templates/bestiaryLink.hbs",
+      {
+        name: page.system.name.value,
+        page: page.id,
+      },
+    );
+
+    return linkElement;
+  }
+
+  linkElement.innerHTML = await renderTemplate(
+    "modules/pf2e-bestiary-tracking/templates/bestiaryLink.hbs",
+    {
+      invalid: true,
+    },
+  );
+
+  return linkElement;
+}
+
 Hooks.once("init", () => {
   dataTypeSetup();
   registerGameSettings();
   registerKeyBindings();
   RegisterHandlebarsHelpers.registerHelpers();
   game.socket.on(`module.pf2e-bestiary-tracking`, handleSocketEvent);
+
+  CONFIG.TextEditor.enrichers.push({
+    pattern: /@Bestiary\[(.+)\|([^\]]+)\]/g,
+    enricher: bestiaryEnricher,
+  });
 
   loadTemplates([
     "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs",
@@ -597,6 +650,32 @@ Hooks.on("renderImagePopout", (app, html) => {
               ? imageSettings.hazard.hideImage
               : image.currentSrc;
       image[0].currentSrc = `${image[0].baseURI.split("game")[0]}${hideImage}`;
+    }
+  }
+});
+
+Hooks.on("renderApplication", (_, htmlElements) => {
+  for (var element of htmlElements) {
+    const buttons = $(element).find(".pf2e-bestiary-link-button");
+    for (var button of buttons) {
+      const bestiary = game.journal.get(
+        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+      );
+      const page = bestiary.pages.get(button.dataset.page);
+      button.onclick = () => new PF2EBestiary(page).render(true);
+    }
+  }
+});
+
+Hooks.on("renderChatMessage", (_, htmlElements) => {
+  for (var element of htmlElements) {
+    const buttons = $(element).find(".pf2e-bestiary-link-button");
+    for (var button of buttons) {
+      const bestiary = game.journal.get(
+        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+      );
+      const page = bestiary.pages.get(button.dataset.page);
+      button.onclick = () => new PF2EBestiary(page).render(true);
     }
   }
 });

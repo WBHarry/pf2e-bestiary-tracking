@@ -1,0 +1,10 @@
+<span>
+    {{#if this.invalid}}
+        <button type="button" class="pf2e-bestiary-link">{{localize "Invalid Bestiary Link"}}</button>
+    {{else}}
+        <button type="button" class="pf2e-bestiary-link pf2e-bestiary-link-button" data-page="{{this.page}}">
+            <i class="fa-spaghetti-monster-flying"></i>
+            {{this.name}}
+        </button>
+    {{/if}}
+</span>
