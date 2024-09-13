@@ -5,6 +5,17 @@
         </legend>
 
         <div class="form-group">
+            <label>{{localize "PF2EBestiary.Settings.NPCRegistation.Name"}}</label>
+            <div class="form-fields">
+                <div class="form-fields">
+                    <select name="settings.npcRegistration">
+                        {{selectOptions this.npcRegistrationOptions selected=this.settings.npcRegistration valueAttr="value" labelAttr="name" localize=true}}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label>{{localize "PF2EBestiary.Settings.AutomaticCombatRegistration.Name"}}</label>
             <div class="form-fields">
                 <select name="settings.creatureRegistration.automaticCombatRegistration">
@@ -225,16 +236,6 @@
                 </div>
             </div>
     </fieldset> 
-    <div class="form-group">
-        <label>{{localize "PF2EBestiary.Settings.NPCRegistation.Name"}}</label>
-        <div class="form-fields">
-            <div class="form-fields">
-                <select name="settings.npcRegistration">
-                    {{selectOptions this.npcRegistrationOptions selected=this.settings.npcRegistration valueAttr="value" labelAttr="name" localize=true}}
-                </select>
-            </div>
-        </div>
-    </div>
 
     <footer>
         <button data-action="save">{{localize "PF2EBestiary.Miscellaneous.Save"}}</button>

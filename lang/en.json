@@ -374,7 +374,7 @@
           "Hint": "Customize the way you can interact with the Bestiary"
         },
         "CreatureRegistration": {
-          "Name": "Creature Registration"
+          "Name": "Bestiary Registration"
         },
         "AutomaticRevealing": {
           "Name": "Auto Reveal When Used",

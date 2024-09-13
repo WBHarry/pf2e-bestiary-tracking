@@ -2873,7 +2873,7 @@ const getNPCData = (actor) => {
     (x) => x.token.baseActor.uuid === actor.uuid,
   );
 
-  const isSimple = actor.sheet.options.classes.includes('simple');
+  const isSimple = actor.sheet.options.classes.includes("simple");
 
   const creatureData = getCreatureData(actor);
 
@@ -11522,7 +11522,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   async removeBookmark(event) {
-    if (event.currentTarget.dataset.bookmark === "unaffiliated" || event.currentTarget.dataset.bookmark === "combat") return;
+    if (
+      event.currentTarget.dataset.bookmark === "unaffiliated" ||
+      event.currentTarget.dataset.bookmark === "combat"
+    )
+      return;
 
     const confirmed = await Dialog.confirm({
       title: game.i18n.localize("PF2EBestiary.Bestiary.RemoveBookmarkTitle"),
