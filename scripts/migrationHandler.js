@@ -1154,30 +1154,32 @@ export const handleBestiaryMigration = async (bestiary, isSave) => {
       const journalEntry = game.journal.getName(
         "pf2e-bestiary-tracking-journal-entry",
       );
-      dataBestiary = await newMigrateBestiary(async (_, monster) => {
-        if (!monster.system.details.playerNotes?.document) {
-          const existingPage = journalEntry.pages.find(
-            (x) => x.name === monster.name.value,
-          );
-          if (existingPage) {
-            await existingPage.delete();
-          }
+      if (journalEntry) {
+        dataBestiary = await newMigrateBestiary(async (_, monster) => {
+          if (!monster.system.details.playerNotes?.document) {
+            const existingPage = journalEntry.pages.find(
+              (x) => x.name === monster.name.value,
+            );
+            if (existingPage) {
+              await existingPage.delete();
+            }
 
-          const page = await journalEntry.createEmbeddedDocuments(
-            "JournalEntryPage",
-            [
-              {
-                name: monster.name.value,
-                text: {
-                  content: "",
+            const page = await journalEntry.createEmbeddedDocuments(
+              "JournalEntryPage",
+              [
+                {
+                  name: monster.name.value,
+                  text: {
+                    content: "",
+                  },
                 },
-              },
-            ],
-          );
+              ],
+            );
 
-          monster.system.details.playerNotes = { document: page[0].id };
-        }
-      }, dataBestiary);
+            monster.system.details.playerNotes = { document: page[0].id };
+          }
+        }, dataBestiary);
+      }
 
       dataBestiary.metadata.version = "0.8.9.9";
     }
@@ -1211,30 +1213,32 @@ export const handleBestiaryMigration = async (bestiary, isSave) => {
       const journalEntry = game.journal.getName(
         "pf2e-bestiary-tracking-journal-entry",
       );
-      dataBestiary = await newMigrateBestiary(async (_, monster) => {
-        if (!monster.system.details.playerNotes?.document) {
-          const existingPage = journalEntry.pages.find(
-            (x) => x.name === monster.name.value,
-          );
-          if (existingPage) {
-            await existingPage.delete();
-          }
+      if (journalEntry) {
+        dataBestiary = await newMigrateBestiary(async (_, monster) => {
+          if (!monster.system.details.playerNotes?.document) {
+            const existingPage = journalEntry.pages.find(
+              (x) => x.name === monster.name.value,
+            );
+            if (existingPage) {
+              await existingPage.delete();
+            }
 
-          const page = await journalEntry.createEmbeddedDocuments(
-            "JournalEntryPage",
-            [
-              {
-                name: monster.name.value,
-                text: {
-                  content: "",
+            const page = await journalEntry.createEmbeddedDocuments(
+              "JournalEntryPage",
+              [
+                {
+                  name: monster.name.value,
+                  text: {
+                    content: "",
+                  },
                 },
-              },
-            ],
-          );
+              ],
+            );
 
-          monster.system.details.playerNotes = { document: page[0].id };
-        }
-      }, dataBestiary);
+            monster.system.details.playerNotes = { document: page[0].id };
+          }
+        }, dataBestiary);
+      }
 
       dataBestiary.metadata.version = "0.8.11";
     }
