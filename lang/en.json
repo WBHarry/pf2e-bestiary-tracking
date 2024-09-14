@@ -472,6 +472,10 @@
       "ContrastRevealState": {
         "Name": "Contrast Reveal State",
         "Hint": "Option for GMs to see hidden/revealed fields in contrast colors"
+      },
+      "BestiaryTheme": {
+        "Name": "Bestiary Theme",
+        "Hint": "Select the visual theme for the Bestiary"
       }
     },
     "Macros": {

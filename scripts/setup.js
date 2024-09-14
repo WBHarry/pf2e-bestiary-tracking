@@ -13,8 +13,11 @@ import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
 import { imageSettings } from "../data/constants.js";
+import bestiaryThemes, {
+  bestiaryThemeChoices,
+} from "../styles/themes/themes.js";
 
-export const currentVersion = "1.0.1";
+export const currentVersion = "1.0.3";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
@@ -24,6 +27,22 @@ export const dataTypeSetup = () => {
     "pf2e-bestiary-tracking.npc": NPC,
     "pf2e-bestiary-tracking.hazard": Hazard,
   };
+};
+
+export const setupTheme = () => {
+  const theme =
+    bestiaryThemes[
+      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
+    ];
+  const root = document.querySelector(":root");
+  for (var property of Object.keys(theme)) {
+    if (property === "--pf2e-bestiary-tracking-application-image") {
+      const baseUri = document.baseURI.split("game")[0];
+      root.style.setProperty(property, `url("${baseUri}${theme[property]}")`);
+    } else {
+      root.style.setProperty(property, theme[property]);
+    }
+  }
 };
 
 export const registerKeyBindings = () => {
@@ -139,6 +158,17 @@ const configSettings = () => {
         }
       }
     },
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "bestiary-theme", {
+    name: game.i18n.localize("PF2EBestiary.Settings.BestiaryTheme.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.BestiaryTheme.Hint"),
+    scope: "client",
+    config: true,
+    type: String,
+    choices: bestiaryThemeChoices,
+    requiresReload: true,
+    default: "water",
   });
 };
 

@@ -5,6 +5,7 @@ import {
   dataTypeSetup,
   registerGameSettings,
   registerKeyBindings,
+  setupTheme,
 } from "./scripts/setup.js";
 import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
@@ -91,6 +92,8 @@ Hooks.once("ready", async () => {
 });
 
 Hooks.once("setup", () => {
+  setupTheme();
+
   if (typeof libWrapper === "function") {
     libWrapper.register(
       "pf2e-bestiary-tracking",

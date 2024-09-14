@@ -1,180 +1,61 @@
-/* REMOVE ME. Temporary as a stopgap for Dorako */
+form {
+  &.pf2e-bestiary-tracking.application {
+    background-color: var(--pf2e-bestiary-tracking-application);
+    background-image: var(--pf2e-bestiary-tracking-application-image);
+    background-size: var(--pf2e-bestiary-tracking-application-image-size);
+    background-repeat: var(--pf2e-bestiary-tracking-application-image-repeat);
 
-// .theme-dark {
-//     .pf2e-bestiary-tracking[data-dorako-ui-scope]{
-//         &.bestiary {
-//             &.application {
-//                 background-color: inherit;
-//             }
-//         }
-//     }
-// }
+    > header {
+      background: var(--pf2e-bestiary-tracking-application-header);
 
-.theme-dark {
-  .pf2e-bestiary-tracking {
-    // Background
-    &.bestiary {
-      &.application {
-        background-color: @darkApplication;
+      .header-control {
+        background: var(--button-background-color);
       }
-    }
-
-    // Containers
-    .primary-container,
-    input.primary-container {
-      background-color: @darkPrimary;
-      border-color: @darkBorder;
-      color: @darkPrimaryColor;
-
-      &.active,
-      &.active.empty {
-        background-color: @darkPrimaryAccent;
-        opacity: 1;
-      }
-
-      &.empty {
-        background-color: @darkPrimary;
-        opacity: 0.6;
-      }
-
-      .data-icon {
-        filter: none;
-      }
-    }
-
-    .secondary-container,
-    input.secondary-container {
-      background-color: @darkSecondary;
-      border-color: @darkBorder;
-      color: @darkPrimaryColor;
-
-      .data-icon {
-        filter: none;
-      }
-    }
-
-    .tertiary-container {
-      background-color: @darkTertiary;
-      border-color: @darkBorder;
-      color: @darkPrimaryColor;
-
-      &.active {
-        background-color: @darkTertiaryAccent;
-      }
-
-      .data-icon {
-        filter: none;
-      }
-    }
-
-    .spell-container {
-      &.even {
-        background: rgba(255, 255, 255, 0.1);
-      }
-    }
-
-    // Border Containers
-    .primary-border-container {
-      border-color: @darkBorder;
-    }
-
-    .secondary-border-container {
-      border-color: @darkSecondaryBorder;
-    }
-
-    .main-border-container {
-      border-color: @darkPrimary;
-    }
-
-    .bookmark {
-      &:hover {
-        background-color: @darkPrimaryAccent;
-        opacity: 1;
-      }
-    }
-
-    // Hover Containers
-    .primary-hover-container {
-      cursor: pointer;
-
-      &:hover,
-      &.active {
-        filter: drop-shadow(0 0 3px @darkMainHover);
-      }
-
-      &.border {
-        border-color: @darkMainHover;
-      }
-    }
-
-    // Tabs
-    .primary-tab {
-      &:hover {
-        text-shadow: 0 0 5px @mainHover;
-      }
-
-      &.active {
-        text-shadow: 0 0 5px @mainHover;
-      }
-    }
-
-    // Icons
-    .primary-icon {
-      color: @darkIcon;
-    }
-
-    .primary-accent-icon {
-      color: @darkAccentIcon;
     }
   }
 }
 
 .pf2e-bestiary-tracking {
-  // Background
-  &.application {
-  }
-
   // Containers
   .primary-container,
   input.primary-container {
-    background-color: @lightPrimary;
-    border-color: @lightBorder;
-    color: @lightPrimaryColor;
+    background-color: var(--pf2e-bestiary-tracking-primary);
+    border-color: var(--pf2e-bestiary-tracking-border);
+    color: var(--pf2e-bestiary-tracking-primary-color);
 
     &.active,
     &.active.empty {
-      background-color: @lightPrimaryAccent;
+      background-color: var(--pf2e-bestiary-tracking-primary-accent);
     }
 
     &.empty {
-      background-color: @lightPrimary;
+      background-color: var(--pf2e-bestiary-tracking-primary);
     }
 
     .data-icon {
-      filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg)
-        brightness(102%) contrast(102%);
+      filter: var(--pf2e-bestiary-tracking-icon-filter);
     }
   }
 
   .secondary-container,
   input.secondary-container {
-    background-color: @lightSecondary;
-    border-color: @lightBorder;
-    color: @lightPrimaryColor;
+    background-color: var(--pf2e-bestiary-tracking-secondary);
+    border-color: var(--pf2e-bestiary-tracking-border);
+    color: var(--pf2e-bestiary-tracking-primary-color);
+    background-image: var(--pf2e-bestiary-tracking-application-secondary-image);
 
     .data-icon {
-      filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg)
-        brightness(102%) contrast(102%);
+      filter: var(--pf2e-bestiary-tracking-icon-filter);
     }
   }
 
   .tertiary-container {
-    background-color: @lightTertiary;
-    border-color: @lightBorder;
-    color: @lightPrimaryColor;
+    background-color: var(--pf2e-bestiary-tracking-tertiary);
+    border-color: var(--pf2e-bestiary-tracking-border);
+    color: var(--pf2e-bestiary-tracking-primary-color);
 
     &.active {
-      background-color: @lightTertiaryAccent;
+      background-color: var(--pf2e-bestiary-tracking-tertiary-accent);
     }
 
     .data-icon {
@@ -189,17 +70,21 @@
     }
   }
 
+  .primary-outline {
+    filter: var(--pf2e-bestiary-tracking-primary-outline);
+  }
+
   // Border Containers
   .primary-border-container {
-    border-color: @lightBorder;
+    border-color: var(--pf2e-bestiary-tracking-border);
   }
 
   .secondary-border-container {
-    border-color: @lightSecondaryBorder;
+    border-color: var(--pf2e-bestiary-tracking-secondary-border);
   }
 
   .main-border-container {
-    border-color: @lightPrimary;
+    border-color: var(--pf2e-bestiary-tracking-primary);
   }
 
   // Hover Containers
@@ -207,39 +92,44 @@
     cursor: pointer;
 
     &:hover {
-      filter: drop-shadow(0 0 3px @lightMainHover);
+      filter: drop-shadow(0 0 3px var(--pf2e-bestiary-tracking-main-hover));
     }
 
     &.border {
-      border-color: @lightPrimary;
+      border-color: var(--pf2e-bestiary-tracking-primary);
     }
   }
 
   // Tabs
   .primary-tab {
     &:hover {
-      text-shadow: 0 0 5px @lightMainHover;
+      text-shadow: 0 0 5px var(--pf2e-bestiary-tracking-main-hover);
     }
 
     &.active {
-      text-shadow: 0 0 5px @lightMainHover;
+      text-shadow: 0 0 5px var(--pf2e-bestiary-tracking-main-hover);
     }
   }
 
   // Icons
   .primary-icon {
-    color: @lightIcon;
+    color: var(--pf2e-bestiary-tracking-icon);
   }
 
   .primary-accent-icon {
-    color: @lightAccentIcon;
+    color: var(--pf2e-bestiary-tracking-accent-icon);
+  }
+
+  // Text
+  .primary-text-container {
+    color: var(--pf2e-bestiary-tracking-primary-color);
   }
 
   // Misc
 
   .bookmark {
     &:hover {
-      background-color: @lightPrimaryAccent;
+      background-color: var(--pf2e-bestiary-tracking-primary-accent);
     }
   }
 }
