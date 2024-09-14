@@ -506,11 +506,53 @@
   font-weight: 500;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container {
+  min-height: 100%;
   width: 150px;
   gap: 12px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .recall-knowledge-info-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .recall-knowledge-info-container .recall-knowledge-label {
+  align-self: center;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .recall-knowledge-info-container .recall-knowledge-label i {
+  font-size: 14px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .recall-knowledge-info-container .recall-knowledge-attempt-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .recall-knowledge-info-container .recall-knowledge-attempt-container .recall-knowledge-attempt-inner-container {
+  flex: 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .recall-knowledge-info-container .recall-knowledge-attempt-container .recall-knowledge-attempt {
+  height: 16px;
+  width: 16px;
+  margin: 0 auto;
+  border-width: 2px;
+  border-style: solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .recall-knowledge-info-container .recall-knowledge-attempt-container .recall-knowledge-attempt i {
+  font-size: 10px;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .monster-image-container {
   position: relative;
@@ -627,6 +669,9 @@
   display: flex;
   flex-direction: column;
   border-radius: 6px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .data-section.full {
+  flex: 1;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .data-header {
   padding: 8px;

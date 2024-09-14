@@ -523,11 +523,73 @@
       }
 
       .left-monster-container {
+        min-height: 100%;
         width: 150px;
         gap: 12px;
         display: flex;
         flex-direction: column;
         overflow-y: auto;
+
+        .recall-knowledge-info-container {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+
+          .recall-knowledge-label {
+            align-self: center;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            i {
+              font-size: 14px;
+            }
+          }
+
+          .recall-knowledge-attempt-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+
+            .recall-knowledge-attempt-inner-container {
+              flex: 20%;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+            }
+
+            .recall-knowledge-attempt {
+              height: 16px;
+              width: 16px;
+              margin: 0 auto;
+              border-width: 2px;
+              border-style: solid;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              i {
+                font-size: 10px;
+              }
+            }
+          }
+
+          // table {
+          //   margin: 0;
+
+          //   tr {
+          //     background-color: inherit;
+          //   }
+
+          //   th, td {
+          //     padding: 0;
+          //     text-align: center;
+          //   }
+          // }
+        }
 
         .monster-image-container {
           position: relative;
@@ -668,6 +730,10 @@
         display: flex;
         flex-direction: column;
         border-radius: 6px;
+
+        &.full {
+          flex: 1;
+        }
       }
 
       .data-header {

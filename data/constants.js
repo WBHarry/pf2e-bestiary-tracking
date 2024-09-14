@@ -21,6 +21,39 @@ export const dispositions = {
   },
 };
 
+export const recallKnowledgeOutcomes = {
+  none: {
+    value: "none",
+    order: 0,
+    name: "PF2EBestiary.Miscellaneous.None",
+    icon: null,
+  },
+  criticalSuccess: {
+    value: "criticalSuccess",
+    order: 1,
+    name: "PF2EBestiary.DegreeOfSuccess.CriticalSuccess",
+    icon: "fa-solid fa-star",
+  },
+  success: {
+    value: "success",
+    order: 2,
+    name: "PF2EBestiary.DegreeOfSuccess.Success",
+    icon: "fa-solid fa-check",
+  },
+  failure: {
+    value: "failure",
+    order: 3,
+    name: "PF2EBestiary.DegreeOfSuccess.Failure",
+    icon: "fa-solid fa-x",
+  },
+  criticalFailure: {
+    value: "criticalFailure",
+    order: 4,
+    name: "PF2EBestiary.DegreeOfSuccess.CriticalFailure",
+    icon: "fa-solid fa-skull",
+  },
+};
+
 export const defaultRevealing = {
   creature: {
     name: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Name",

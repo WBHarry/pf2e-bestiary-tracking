@@ -2371,6 +2371,156 @@ const getDiceAverage = (faces, number) => {
   }
 };
 
+const dispositions = {
+  helpful: {
+    value: "helpful",
+    name: "PF2EBestiary.Bestiary.NPC.Disposition.Helpful",
+  },
+  friendly: {
+    value: "friendly",
+    name: "PF2EBestiary.Bestiary.NPC.Disposition.Friendly",
+  },
+  indifferent: {
+    value: "indifferent",
+    name: "PF2EBestiary.Bestiary.NPC.Disposition.Indifferent",
+  },
+  unfriendly: {
+    value: "unfriendly",
+    name: "PF2EBestiary.Bestiary.NPC.Disposition.Unfriendly",
+  },
+  hostile: {
+    value: "hostile",
+    name: "PF2EBestiary.Bestiary.NPC.Disposition.Hostile",
+  },
+};
+
+const recallKnowledgeOutcomes = {
+  none: {
+    value: "none",
+    order: 0,
+    name: "PF2EBestiary.Miscellaneous.None",
+    icon: null,
+  },
+  criticalSuccess: {
+    value: "criticalSuccess",
+    order: 1,
+    name: "PF2EBestiary.DegreeOfSuccess.CriticalSuccess",
+    icon: "fa-solid fa-star",
+  },
+  success: {
+    value: "success",
+    order: 2,
+    name: "PF2EBestiary.DegreeOfSuccess.Success",
+    icon: "fa-solid fa-check",
+  },
+  failure: {
+    value: "failure",
+    order: 3,
+    name: "PF2EBestiary.DegreeOfSuccess.Failure",
+    icon: "fa-solid fa-x",
+  },
+  criticalFailure: {
+    value: "criticalFailure",
+    order: 4,
+    name: "PF2EBestiary.DegreeOfSuccess.CriticalFailure",
+    icon: "fa-solid fa-skull",
+  },
+};
+
+const defaultRevealing = {
+  creature: {
+    name: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Name",
+    traits: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Traits",
+    attributes:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attributes",
+    description:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Description",
+    level: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Level",
+    ac: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.AC",
+    hp: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.HP",
+    saves: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Saves",
+    iwr: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.IWR",
+    speeds: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Speeds",
+    perception:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Perception",
+    senses: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Senses",
+    skills: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Skills",
+    languages:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Languages",
+    attacks: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attacks",
+    abilities:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Abilities",
+    spells: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Spells",
+  },
+  npc: {
+    appearance:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Appearance",
+    personality:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Personality",
+    background:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Background",
+    height: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Height",
+    weight: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Weight",
+    // birthplace: 'PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Birthplace',
+    premise: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Premise",
+  },
+  hazard: {
+    attacks: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attacks",
+    abilities:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Abilities",
+    name: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Name",
+    traits: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Traits",
+    description:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Description",
+    level: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Level",
+    ac: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.AC",
+    hp: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.HP",
+    hardness: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Hardness",
+    disable: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Disable",
+    routine: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Routine",
+    reset: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Reset",
+    saves: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Saves",
+    iwr: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.IWR",
+    initiative:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Initiative",
+    stealth: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Stealth",
+  },
+};
+
+const imageHideStates = {
+  revealed: {
+    value: 0,
+    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Revealed",
+  },
+  outline: {
+    value: 1,
+    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Outline",
+  },
+  hidden: {
+    value: 2,
+    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Hidden",
+  },
+  sepia: {
+    value: 3,
+    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Sepia",
+  },
+};
+
+const imageSettings = {
+  creature: {
+    hideState: 0,
+    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
+  },
+  npc: {
+    hideState: 0,
+    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
+  },
+  hazard: {
+    hideState: 0,
+    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
+  },
+};
+
 const fields = foundry.data.fields;
 
 const toggleStringField = () =>
@@ -3364,6 +3514,9 @@ class Creature extends foundry.abstract.TypeDataModel {
           initial: 0,
         }),
       }),
+      recallKnowledge: new MappingField(new fields.SchemaField({
+        attempts: new MappingField(new fields.StringField({ })),
+      })),
       name: toggleStringField(),
       publication: new fields.SchemaField({
         authors: new fields.StringField({}),
@@ -3933,6 +4086,52 @@ class Creature extends foundry.abstract.TypeDataModel {
           "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature",
         )
       : (this.name.custom ?? this.name.value);
+  }
+
+  get recallKnowledgeAttempts() {
+    const partyCharacters =
+      game.actors
+        .find((x) => x.type === "party" && x.active)
+        ?.system?.details?.members?.reduce((acc, x) => {
+          const actor = game.actors.find((actor) => actor.uuid === x.uuid);
+          if(actor.type !== 'character' || actor.system.traits.value.some(x => x === 'eidolon' || x === 'minion' || x === 'npc')) return acc;
+
+          let nrValues = 4;
+          if(this.recallKnowledge[actor.id] && Object.keys(this.recallKnowledge[actor.id].attempts).length > 0){
+            const filteredAttempts = Object.keys(this.recallKnowledge[actor.id].attempts).filter(x => this.recallKnowledge[actor.id].attempts[x] !== 'none');
+            const highestIndex = Number.parseInt(filteredAttempts.sort((b, a) => Number.parseInt(a) - Number.parseInt(b))[0]);
+            const exactBase = Math.max(filteredAttempts.length/4, highestIndex/4);
+            const baseNr = Math.ceil(exactBase) === exactBase ? exactBase+1 : Math.ceil(exactBase);
+            nrValues = baseNr * 4;
+          }
+
+          acc.push({
+            values: Array.from(Array(nrValues)).reduce((acc, key, index) => {
+              acc[index] =  recallKnowledgeOutcomes.none;
+              return acc;
+            }, {}),
+            id: actor.id,
+            name: actor.name,
+          });
+
+          return acc;
+        }, []) ?? [];
+
+    return partyCharacters.reduce((acc, character) => {
+      const attempts = this.recallKnowledge[character.id]?.attempts ?? {}; 
+
+      acc.push({
+        values: Object.keys(character.values).reduce((acc, key) => {
+          acc[key] = attempts[key] ? recallKnowledgeOutcomes[attempts[key]] : character.values[key];
+
+          return acc;
+        }, {}),
+        id: character.id,
+        name: character.name,
+      });
+
+      return acc;
+    }, []);
   }
 
   _getRefreshData(actor, creatureData) {
@@ -4973,123 +5172,6 @@ class Creature extends foundry.abstract.TypeDataModel {
   }
 }
 
-const dispositions = {
-  helpful: {
-    value: "helpful",
-    name: "PF2EBestiary.Bestiary.NPC.Disposition.Helpful",
-  },
-  friendly: {
-    value: "friendly",
-    name: "PF2EBestiary.Bestiary.NPC.Disposition.Friendly",
-  },
-  indifferent: {
-    value: "indifferent",
-    name: "PF2EBestiary.Bestiary.NPC.Disposition.Indifferent",
-  },
-  unfriendly: {
-    value: "unfriendly",
-    name: "PF2EBestiary.Bestiary.NPC.Disposition.Unfriendly",
-  },
-  hostile: {
-    value: "hostile",
-    name: "PF2EBestiary.Bestiary.NPC.Disposition.Hostile",
-  },
-};
-
-const defaultRevealing = {
-  creature: {
-    name: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Name",
-    traits: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Traits",
-    attributes:
-      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attributes",
-    description:
-      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Description",
-    level: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Level",
-    ac: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.AC",
-    hp: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.HP",
-    saves: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Saves",
-    iwr: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.IWR",
-    speeds: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Speeds",
-    perception:
-      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Perception",
-    senses: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Senses",
-    skills: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Skills",
-    languages:
-      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Languages",
-    attacks: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attacks",
-    abilities:
-      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Abilities",
-    spells: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Spells",
-  },
-  npc: {
-    appearance:
-      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Appearance",
-    personality:
-      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Personality",
-    background:
-      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Background",
-    height: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Height",
-    weight: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Weight",
-    // birthplace: 'PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Birthplace',
-    premise: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Premise",
-  },
-  hazard: {
-    attacks: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attacks",
-    abilities:
-      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Abilities",
-    name: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Name",
-    traits: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Traits",
-    description:
-      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Description",
-    level: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Level",
-    ac: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.AC",
-    hp: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.HP",
-    hardness: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Hardness",
-    disable: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Disable",
-    routine: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Routine",
-    reset: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Reset",
-    saves: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Saves",
-    iwr: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.IWR",
-    initiative:
-      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Initiative",
-    stealth: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Stealth",
-  },
-};
-
-const imageHideStates = {
-  revealed: {
-    value: 0,
-    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Revealed",
-  },
-  outline: {
-    value: 1,
-    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Outline",
-  },
-  hidden: {
-    value: 2,
-    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Hidden",
-  },
-  sepia: {
-    value: 3,
-    name: "PF2EBestiary.Menus.BestiaryIntegration.HiddenSettings.ImageHideState.Sepia",
-  },
-};
-
-const imageSettings = {
-  creature: {
-    hideState: 0,
-    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
-  },
-  npc: {
-    hideState: 0,
-    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
-  },
-  hazard: {
-    hideState: 0,
-    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
-  },
-};
-
 class NPC extends Creature {
   static defineSchema() {
     const fields = foundry.data.fields;
@@ -5364,18 +5446,22 @@ class NPC extends Creature {
     }
   }
 
-  get partyDispositions() {
+  get partyDispositions() { 
     const partyCharacters =
       game.actors
         .find((x) => x.type === "party" && x.active)
-        ?.system?.details?.members?.map((x) => {
+        ?.system?.details?.members?.reduce((acc, x) => {
           const actor = game.actors.find((actor) => actor.uuid === x.uuid);
-          return {
+          if(actor.type !== 'character' || actor.system.traits.value.some(x => x === 'eidolon' || x === 'minion' || x === 'npc')) return acc;
+
+          acc.push({
             value: dispositions.indifferent.value,
             id: actor.id,
             name: actor.name,
-          };
-        }) ?? [];
+          });
+
+          return acc;
+        }, []) ?? [];
     return partyCharacters.reduce((acc, character) => {
       const disposition = this.npcData.general.disposition[character.id];
       acc.push({
@@ -9539,8 +9625,12 @@ const registerKeyBindings = () => {
   });
 
   game.keybindings.register("pf2e-bestiary-tracking", "open-bestiary-combat", {
-    name: game.i18n.localize("PF2EBestiary.KeyBindings.OpenBestiaryCombat.Name"),
-    hint: game.i18n.localize("PF2EBestiary.KeyBindings.OpenBestiaryCombat.Hint"),
+    name: game.i18n.localize(
+      "PF2EBestiary.KeyBindings.OpenBestiaryCombat.Name",
+    ),
+    hint: game.i18n.localize(
+      "PF2EBestiary.KeyBindings.OpenBestiaryCombat.Hint",
+    ),
     uneditable: [],
     editable: [],
     onDown: () =>
@@ -10101,12 +10191,19 @@ const openBestiary = async () => {
 };
 
 const openBestiaryCombat = async () => {
-  if(!game.combat) {
-    ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.OpenBestiaryCombat.NoActiveCombat"));
+  if (!game.combat) {
+    ui.notifications.info(
+      game.i18n.localize(
+        "PF2EBestiary.Macros.OpenBestiaryCombat.NoActiveCombat",
+      ),
+    );
     return;
   }
 
-  new PF2EBestiary(null, { category: 'pf2e-bestiary-tracking.creature', type: 'combat' }).render(true);
+  new PF2EBestiary(null, {
+    category: "pf2e-bestiary-tracking.creature",
+    type: "combat",
+  }).render(true);
 };
 
 const showMonster = () => {
@@ -10763,7 +10860,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     this.selected = {
-      category: options?.category ?? page?.type ?? "pf2e-bestiary-tracking.creature",
+      category:
+        options?.category ?? page?.type ?? "pf2e-bestiary-tracking.creature",
       type: options?.type ?? monsterCreatureType,
       monster: page,
       abilities: [],
@@ -10836,6 +10934,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       removeRecallKnowledgeJournal: this.removeRecallKnowledgeJournal,
       imageMenu: this.imageMenu,
       copyEntityLink: this.copyEntityLink,
+      toggleRecallAttempt: this.toggleRecallAttempt,
+      resetRecallAttempts: this.resetRecallAttempts,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -11020,7 +11120,31 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     });
   };
 
-  // Could possible rerender headercontrols here?
+  changeTab(tab, group, { event, navElement, force = false, updatePosition = true } = {}) {
+    if ( !tab || !group ) throw new Error("You must pass both the tab and tab group identifier");
+    if ( (this.tabGroups[group] === tab) && !force ) return;
+
+    const tabElement = this.element.querySelector(`.tabs > [data-group="${group}"][data-tab="${tab}"]`);
+    if ( !tabElement ) throw new Error(`No matching tab element found for group "${group}" and tab "${tab}"`);
+
+    const generalSidebarActive = group === 'creature' && ['statistics', 'spells', 'lore'].includes(tab);
+
+    for ( const t of this.element.querySelectorAll(`.tabs > [data-group="${group}"]`) ) {
+      t.classList.toggle("active", (t.dataset.tab === tab));
+    }
+
+    for ( const section of this.element.querySelectorAll(`.tab[data-group="${group}"]`) ) {
+      section.classList.toggle("active", section.dataset.tab === tab || (generalSidebarActive && section.dataset.tab === 'generalSidebar'));
+    }
+    this.tabGroups[group] = tab;
+
+    if ( !updatePosition ) return;
+    const positionUpdate = {};
+    if ( this.options.position.width === "auto" ) positionUpdate.width = "auto";
+    if ( this.options.position.height === "auto" ) positionUpdate.height = "auto";
+    if ( !foundry.utils.isEmpty(positionUpdate) ) this.setPosition(positionUpdate);
+  }
+
   _updateFrame(options) {
     if (this.selected.monster) {
       super._updateFrame({ window: { controls: true } });
@@ -11073,6 +11197,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Statistics"),
       },
+      generalSidebar: {
+        active: true,
+        sidebar: true,
+        cssClass: "",
+        group: "creature",
+        id: "generalSidebar",
+        icon: null,
+      },
       spells: {
         active: false,
         cssClass: "",
@@ -11103,9 +11235,17 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     for (const v of Object.values(tabs)) {
-      v.active = this.tabGroups[v.group]
+      if(v.id === 'generalSidebar'){
+        v.active = this.tabGroups[v.group] 
+        ? ['statistics', 'spells', 'lore'].includes(this.tabGroups[v.group]) : v.active;
+      }
+      else {
+        v.active = this.tabGroups[v.group]
         ? this.tabGroups[v.group] === v.id
         : v.active;
+
+      }
+
       v.cssClass = v.active ? "active" : "";
     }
 
@@ -12828,6 +12968,30 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     }
   }
 
+  static async toggleRecallAttempt(_, button){
+    const oldValue = this.selected.monster.system.recallKnowledge[button.dataset.character]?.attempts ? this.selected.monster.system.recallKnowledge[button.dataset.character]?.attempts[button.dataset.attempt] : null;
+    await this.selected.monster.update({ [`system.recallKnowledge.${button.dataset.character}.attempts.${button.dataset.attempt}`]: oldValue ? Object.values(recallKnowledgeOutcomes).find(x => x.order === ((recallKnowledgeOutcomes[oldValue].order + 1)%5)).value : recallKnowledgeOutcomes.criticalSuccess.value });
+    
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  static async resetRecallAttempts(_, button){
+    const attempts = this.selected.monster.system.recallKnowledge[button.dataset.character]?.attempts;
+    if(!attempts) return;
+
+    await this.selected.monster.update({ [`system.recallKnowledge.-=${button.dataset.character}`]: null });
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
   async hideTab(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -13376,6 +13540,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       initialActiveType &&
       (initialActiveType === "unknown" || initialActiveType === "unaffiliated");
     if (
+      !game.user.isGM &&
       this.selected.monster &&
       this.selected.type !== "combat" &&
       (unknown ||

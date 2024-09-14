@@ -20,6 +20,12 @@
         "Hint": "Adds the currently selected or targeted creature to the bestiary"
       }
     },
+    "DegreeOfSuccess": {
+      "CriticalSuccess": "Critical Success",
+      "Success": "Success",
+      "Failure": "Failure",
+      "CriticalFailure": "Critical Failure"
+    },
     "BestiarySelection": {
       "Name": "Bestiary Selection",
       "AddBestiary": "Add New Bestiary",
@@ -138,7 +144,8 @@
         "InCombat": "In Combat",
         "CategoryPlaceholder": "Add categories the NPC is affiliated with",
         "LeftClick": "Left Click",
-        "RightClick": "Right Click"
+        "RightClick": "Right Click",
+        "RecallKnowledgeAttempts": "RK Attempts"
       },
       "Tabs": {
         "Statistics": "Stats",

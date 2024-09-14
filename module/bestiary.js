@@ -10,7 +10,7 @@ import {
 import { resetBestiary } from "../scripts/macros.js";
 import { socketEvent } from "../scripts/socket.js";
 import { getCategoryRange } from "../scripts/statisticsHelper.js";
-import { dispositions } from "../data/constants.js";
+import { dispositions, recallKnowledgeOutcomes } from "../data/constants.js";
 import Tagify from "@yaireo/tagify";
 import {
   getCreatureData,
@@ -113,6 +113,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       removeRecallKnowledgeJournal: this.removeRecallKnowledgeJournal,
       imageMenu: this.imageMenu,
       copyEntityLink: this.copyEntityLink,
+      toggleRecallAttempt: this.toggleRecallAttempt,
+      resetRecallAttempts: this.resetRecallAttempts,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -297,7 +299,51 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     });
   };
 
-  // Could possible rerender headercontrols here?
+  changeTab(
+    tab,
+    group,
+    { event, navElement, force = false, updatePosition = true } = {},
+  ) {
+    if (!tab || !group)
+      throw new Error("You must pass both the tab and tab group identifier");
+    if (this.tabGroups[group] === tab && !force) return;
+
+    const tabElement = this.element.querySelector(
+      `.tabs > [data-group="${group}"][data-tab="${tab}"]`,
+    );
+    if (!tabElement)
+      throw new Error(
+        `No matching tab element found for group "${group}" and tab "${tab}"`,
+      );
+
+    const generalSidebarActive =
+      group === "creature" && ["statistics", "spells", "lore"].includes(tab);
+
+    for (const t of this.element.querySelectorAll(
+      `.tabs > [data-group="${group}"]`,
+    )) {
+      t.classList.toggle("active", t.dataset.tab === tab);
+    }
+
+    for (const section of this.element.querySelectorAll(
+      `.tab[data-group="${group}"]`,
+    )) {
+      section.classList.toggle(
+        "active",
+        section.dataset.tab === tab ||
+          (generalSidebarActive && section.dataset.tab === "generalSidebar"),
+      );
+    }
+    this.tabGroups[group] = tab;
+
+    if (!updatePosition) return;
+    const positionUpdate = {};
+    if (this.options.position.width === "auto") positionUpdate.width = "auto";
+    if (this.options.position.height === "auto") positionUpdate.height = "auto";
+    if (!foundry.utils.isEmpty(positionUpdate))
+      this.setPosition(positionUpdate);
+  }
+
   _updateFrame(options) {
     if (this.selected.monster) {
       super._updateFrame({ window: { controls: true } });
@@ -350,6 +396,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Statistics"),
       },
+      generalSidebar: {
+        active: true,
+        sidebar: true,
+        cssClass: "",
+        group: "creature",
+        id: "generalSidebar",
+        icon: null,
+      },
       spells: {
         active: false,
         cssClass: "",
@@ -380,9 +434,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     for (const v of Object.values(tabs)) {
-      v.active = this.tabGroups[v.group]
-        ? this.tabGroups[v.group] === v.id
-        : v.active;
+      if (v.id === "generalSidebar") {
+        v.active = this.tabGroups[v.group]
+          ? ["statistics", "spells", "lore"].includes(this.tabGroups[v.group])
+          : v.active;
+      } else {
+        v.active = this.tabGroups[v.group]
+          ? this.tabGroups[v.group] === v.id
+          : v.active;
+      }
+
       v.cssClass = v.active ? "active" : "";
     }
 
@@ -2105,6 +2166,47 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     }
   }
 
+  static async toggleRecallAttempt(_, button) {
+    const oldValue = this.selected.monster.system.recallKnowledge[
+      button.dataset.character
+    ]?.attempts
+      ? this.selected.monster.system.recallKnowledge[button.dataset.character]
+          ?.attempts[button.dataset.attempt]
+      : null;
+    await this.selected.monster.update({
+      [`system.recallKnowledge.${button.dataset.character}.attempts.${button.dataset.attempt}`]:
+        oldValue
+          ? Object.values(recallKnowledgeOutcomes).find(
+              (x) =>
+                x.order === (recallKnowledgeOutcomes[oldValue].order + 1) % 5,
+            ).value
+          : recallKnowledgeOutcomes.criticalSuccess.value,
+    });
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  static async resetRecallAttempts(_, button) {
+    const attempts =
+      this.selected.monster.system.recallKnowledge[button.dataset.character]
+        ?.attempts;
+    if (!attempts) return;
+
+    await this.selected.monster.update({
+      [`system.recallKnowledge.-=${button.dataset.character}`]: null,
+    });
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
   async hideTab(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -2653,6 +2755,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       initialActiveType &&
       (initialActiveType === "unknown" || initialActiveType === "unaffiliated");
     if (
+      !game.user.isGM &&
       this.selected.monster &&
       this.selected.type !== "combat" &&
       (unknown ||

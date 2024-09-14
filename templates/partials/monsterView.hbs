@@ -1,296 +1,355 @@
 <div class="monster-container flex-col">
-    <div class="left-monster-container">
-        <div class="monster-image-container">
-            {{#if this.user.isGM}}<i class="monster-image-menu fa-solid fa-gears primary-hover-container" data-action="imageMenu"></i>{{/if}}
-            <img class="monster-image primary-outline {{#if this.useTokenArt}}token{{/if}} {{PF2EBTImageState this.user this.system.imageState.hideState}}" src="{{this.system.displayImage}}" data-action="imagePopout" />
-        </div>
+    <div class="tab {{this.tabs.generalSidebar.cssClass}}" data-group="creature" data-tab="generalSidebar">
+        <div class="left-monster-container">
+            <div class="monster-image-container">
+                {{#if this.user.isGM}}<i class="monster-image-menu fa-solid fa-gears primary-hover-container" data-action="imageMenu"></i>{{/if}}
+                <img class="monster-image primary-outline {{#if this.useTokenArt}}token{{/if}} {{PF2EBTImageState this.user this.system.imageState.hideState}}" src="{{this.system.displayImage}}" data-action="imagePopout" />
+            </div>
 
-        {{#if this.optionalFields.level}}
-            <div class="monster-left-data primary-container {{PF2EBTToggleContainer this.user this.system.level}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.level}}" data-action="toggleRevealed" data-path="system.level" data-name="{{localize "PF2EBestiary.Miscellaneous.Level"}}" data-vague-property="level">
+            {{#if this.optionalFields.level}}
+                <div class="monster-left-data primary-container {{PF2EBTToggleContainer this.user this.system.level}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.level}}" data-action="toggleRevealed" data-path="system.level" data-name="{{localize "PF2EBestiary.Miscellaneous.Level"}}" data-vague-property="level">
+                    <div class="flex-data">
+                        <i class="fa-solid fa-dragon"></i>    
+                        <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Level"}}</div>
+                    </div>
+                    <div class="flex-value">{{#if (or this.system.level.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.system.level}}{{else}}?{{/if}}</div>
+                </div>
+            {{/if}}
+
+            <div class="monster-left-data primary-container {{PF2EBTToggleContainer this.user this.system.ac}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.ac}}" data-action="toggleRevealed" data-path="system.ac" data-name="{{localize "PF2EBestiary.Miscellaneous.AC"}}" data-vague-property="ac">
                 <div class="flex-data">
-                    <i class="fa-solid fa-dragon"></i>    
-                    <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Level"}}</div>
+                    <i class="fa-solid fa-fw fa-shield-halved"></i>
+                    <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.AC"}}</div>
                 </div>
-                <div class="flex-value">{{#if (or this.system.level.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.system.level}}{{else}}?{{/if}}</div>
+                <div class="flex-value">{{#if (or this.system.ac.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.system.ac this.vagueDescriptions.properties.ac}}{{else}}?{{/if}}</div>
             </div>
-        {{/if}}
 
-        <div class="monster-left-data primary-container {{PF2EBTToggleContainer this.user this.system.ac}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.ac}}" data-action="toggleRevealed" data-path="system.ac" data-name="{{localize "PF2EBestiary.Miscellaneous.AC"}}" data-vague-property="ac">
-            <div class="flex-data">
-                <i class="fa-solid fa-fw fa-shield-halved"></i>
-                <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.AC"}}</div>
-            </div>
-            <div class="flex-value">{{#if (or this.system.ac.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.system.ac this.vagueDescriptions.properties.ac}}{{else}}?{{/if}}</div>
-        </div>
-
-         <div class="monster-left-data primary-container {{PF2EBTToggleContainer this.user this.system.hp}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.hp}}" data-action="toggleRevealed" data-path="system.hp" data-name="{{localize "PF2EBestiary.Miscellaneous.HP"}}" data-vague-property="hp">
-            <div class="flex-data">
-                <i class="fa-solid fa-heart health-icon"></i>
-                <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.HP"}}</div>
-            </div>
-            <div class="flex-value">{{#if (or this.system.hp.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.system.hp this.vagueDescriptions.properties.hp}}{{else}}?{{/if}}</div>
-        </div>
-
-        <div class="flexcol">
-            <div class="monster-left-data bestiary-left-list primary-container list-container">
-                <div class="bestiary-fakable-container">
-                    <div class="flex-data primary-hover-container" data-action="toggleAllRevealed" data-path="system.immunities">
-                        <i class="fa-solid fa-fw fa-ankh"></i>
-                        <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Immunities"}}</div>
-                    </div>
-
-                    {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.immunities" data-name="Immunity" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
+            <div class="monster-left-data primary-container {{PF2EBTToggleContainer this.user this.system.hp}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.hp}}" data-action="toggleRevealed" data-path="system.hp" data-name="{{localize "PF2EBestiary.Miscellaneous.HP"}}" data-vague-property="hp">
+                <div class="flex-data">
+                    <i class="fa-solid fa-heart health-icon"></i>
+                    <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.HP"}}</div>
                 </div>
+                <div class="flex-value">{{#if (or this.system.hp.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.system.hp this.vagueDescriptions.properties.hp}}{{else}}?{{/if}}</div>
             </div>
-            <div class="monster-data-list">
-                {{#if this.user.isGM}}
-                    {{#each this.system.immunities as |immunity key|}}
-                        <div 
-                            class="secondary-container {{PF2EBTToggleContainer ../user immunity}}" 
-                            style="{{PF2EBTToggleContainerOverride ../contrastRevealedState immunity}}" 
-                            data-action="toggleRevealed" 
-                            data-path="{{concat 'system.immunities.' key}}" 
-                            data-fake="{{immunity.fake}}">
-                            {{PF2EBTCaptialize (localize immunity.label)}}
-                            {{#if (gt (PF2EBTNrKeys immunity.exceptions) 0)}}
-                                <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
-                                {{#each immunity.exceptions as |exception index|}}
-                                    <span>
-                                        <span
-                                            class="toggle-container inner {{#if ../../detailedInformation.exceptionsDouble}}detailed{{/if}} {{#if exception.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
-                                            {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
-                                            data-path="{{concat 'system.immunities.' @../key '.exceptions.' index}}"
-                                        >{{localize exception.label}}</span>
-                                        <span>{{exception.suffix}}</span>
-                                    </span>
-                                {{/each}}
-                            {{/if}}
+
+            <div class="flexcol">
+                <div class="monster-left-data bestiary-left-list primary-container list-container">
+                    <div class="bestiary-fakable-container">
+                        <div class="flex-data primary-hover-container" data-action="toggleAllRevealed" data-path="system.immunities">
+                            <i class="fa-solid fa-fw fa-ankh"></i>
+                            <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Immunities"}}</div>
                         </div>
-                    {{/each}}
-                {{else}}
-                    {{#PF2EBTFilter 'revealed' '?' 10 this.system.immunities }}
-                        <div class="secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat 'immunities.' @key}}" data-fake="{{this.fake}}">
-                            {{PF2EBTCaptialize (localize this.label)}}
-                            {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
-                                {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}<span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>{{/if}}
-                                {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
-                                    <span>
-                                        {{localize this.label}}{{#if this.last}}){{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
-                                    </span>
-                                {{/PF2EBTFilter}}
-                            {{/if}}
-                        </div>
-                    {{/PF2EBTFilter}}
-                {{/if}}
-            </div>
-        </div>
 
-        <div class="flexcol">
-            <div class="monster-left-data primary-container list-container">
-                <div class="bestiary-fakable-container bestiary-left-list">
-                    <div class="flex-data primary-hover-container" data-action="toggleAllRevealed" data-path="system.weaknesses">
-                        <i class="fa-solid fa-fw fa-heart-broken"></i>
-                        <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Weaknesses"}}</div>
+                        {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.immunities" data-name="Immunity" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                     </div>
-
-                    {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.weaknesses" data-name="Weakness" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                 </div>
-            </div>
-            <div class="monster-data-list">
-                {{#if this.user.isGM}}
-                    {{#each this.system.weaknesses as |weakness key|}}
+                <div class="monster-data-list">
+                    {{#if this.user.isGM}}
+                        {{#each this.system.immunities as |immunity key|}}
                             <div 
-                                class="secondary-container {{PF2EBTToggleContainer ../user weakness}}" 
-                                style="{{PF2EBTToggleContainerOverride ../contrastRevealedState weakness}}"
+                                class="secondary-container {{PF2EBTToggleContainer ../user immunity}}" 
+                                style="{{PF2EBTToggleContainerOverride ../contrastRevealedState immunity}}" 
                                 data-action="toggleRevealed" 
-                                data-path="{{concat 'system.weaknesses.' key}}" 
-                                data-fake="{{weakness.fake}}"
-                            >
-                                {{#if (and ../vagueDescriptions.properties.weaknesses (and weakness.category (not ../gmNumeric)))}}{{localize this.category}}{{/if}}
-                                <span>{{PF2EBTCaptialize (localize weakness.label)}}</span>
-                                {{#if (or (not ../vagueDescriptions.properties.weaknesses) (or (not weakness.category) ../gmNumeric))}}{{this.value}}{{/if}}
-                                {{#if (gt (PF2EBTNrKeys weakness.exceptions) 0)}}
+                                data-path="{{concat 'system.immunities.' key}}" 
+                                data-fake="{{immunity.fake}}">
+                                {{PF2EBTCaptialize (localize immunity.label)}}
+                                {{#if (gt (PF2EBTNrKeys immunity.exceptions) 0)}}
                                     <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
-                                    {{#each weakness.exceptions as |exception index|}}
-                                        <span 
-                                            class="toggle-container inner {{#if ../../detailedInformation.exceptionsDouble}}detailed{{/if}} {{#if exception.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
-                                            {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
-                                            data-path="{{concat 'system.weaknesses.' @../key '.exceptions.' index}}"
-                                        >
-                                            {{localize exception.label}}
+                                    {{#each immunity.exceptions as |exception index|}}
+                                        <span>
+                                            <span
+                                                class="toggle-container inner {{#if ../../detailedInformation.exceptionsDouble}}detailed{{/if}} {{#if exception.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
+                                                {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
+                                                data-path="{{concat 'system.immunities.' @../key '.exceptions.' index}}"
+                                            >{{localize exception.label}}</span>
+                                            <span>{{exception.suffix}}</span>
                                         </span>
-                                        {{exception.suffix}}
                                     {{/each}}
                                 {{/if}}
                             </div>
-                    {{/each}}
-                {{else}}
-                    {{#PF2EBTFilter 'revealed' '?' 10 this.system.weaknesses}}
-                        <div 
-                            class="secondary-container {{PF2EBTToggleContainer ../user this}}"
-                            data-action="toggleRevealed" 
-                            data-path="{{concat 'system.weaknesses.' @key}}" 
-                            data-fake="{{this.fake}}"
-                        >
-                            {{#if (and ../vagueDescriptions.properties.weaknesses this.category)}}{{localize this.category}}{{/if}}
-                            <span>{{PF2EBTCaptialize (localize this.label)}}</span>
-                            {{#if (or (not ../vagueDescriptions.properties.weaknesses) (not this.category))}}{{this.value}}{{/if}}
-                            {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
-                                {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}<span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>{{/if}}
-                                {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
-                                    <span>
-                                        {{localize this.label}}{{#if this.last}}){{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
-                                    </span>
-                                {{/PF2EBTFilter}}
-                            {{/if}}
-                        </div>
-                    {{/PF2EBTFilter}}
-                {{/if}}
-            </div>
-        </div>
-
-        <div class="flexcol">
-            <div class="monster-left-data primary-container list-container">
-                <div class="bestiary-fakable-container bestiary-left-list">
-                    <div class="flex-data primary-hover-container" data-action="toggleAllRevealed" data-path="system.resistances">
-                        <i class="fa-solid fa-fw fa-shield-virus"></i>
-                        <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Resistances"}}</div>
-                    </div>
-
-                    {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.resistances" data-name="Resistance" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
-                </div>
-            </div>
-            <div class="monster-data-list">
-                {{#if this.user.isGM}}
-                    {{#PF2EBTEach this.system.resistances}}
-                            <div 
-                                class="secondary-container {{PF2EBTToggleContainer ../user this}}" 
-                                style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}"
-                                data-action="toggleRevealed" 
-                                data-path="{{concat 'system.resistances.' this.key}}" 
-                                data-fake="{{this.fake}}"
-                            >
-                                {{#if (and ../vagueDescriptions.properties.resistances (and this.category (not ../gmNumeric)))}}{{localize this.category}}{{/if}}
-                                <span>{{PF2EBTCaptialize (localize this.label)}}</span>
-                                {{#if (or (not ../vagueDescriptions.properties.resistances) (or (not this.category) ../gmNumeric))}}{{this.value}}{{/if}}
-                                {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}
-                                    <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
-                                    {{#PF2EBTEach this.exceptions}}
-                                        <span 
-                                            class="toggle-container inner {{#if ../../detailedInformation.exceptionsDouble}}detailed{{/if}} {{#if this.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
-                                            {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
-                                            data-path="{{concat 'system.resistances.' ../key '.exceptions.' this.key}}"
-                                        >
-                                            {{localize this.label}}
+                        {{/each}}
+                    {{else}}
+                        {{#PF2EBTFilter 'revealed' '?' 10 this.system.immunities }}
+                            <div class="secondary-container {{PF2EBTToggleContainer ../user this}}" data-action="toggleRevealed" data-path="{{concat 'immunities.' @key}}" data-fake="{{this.fake}}">
+                                {{PF2EBTCaptialize (localize this.label)}}
+                                {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
+                                    {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}<span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>{{/if}}
+                                    {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
+                                        <span>
+                                            {{localize this.label}}{{#if this.last}}){{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
                                         </span>
-                                        {{#if (and (eq this.index (PF2EBTSub (PF2EBTNrKeys ../exceptions) 1)) (eq (PF2EBTNrKeys ../doubleVs) 0))}}){{/if}}
-                                        {{#if (eq this.index (PF2EBTSub (PF2EBTNrKeys ../exceptions) 2))}}
-                                            {{localize "PF2EBestiary.Miscellaneous.Or"}}
-                                        {{else}}
-                                            {{#if (lt this.index (PF2EBTSub (PF2EBTNrKeys ../exceptions) 1))}},{{/if}}
-                                        {{/if}}
-                                    {{/PF2EBTEach}}
-                                {{/if}}
-                                {{#if (and (gt (PF2EBTNrKeys this.exceptions) 0) (gt (PF2EBTNrKeys this.doubleVs) 0))}};{{/if}}
-                                {{#if (gt (PF2EBTNrKeys this.doubleVs) 0)}}
-                                    <span>{{#if (eq (PF2EBTNrKeys this.exceptions) 0)}}({{/if}}{{localize "PF2EBestiary.Miscellaneous.Double"}}</span>
-                                    {{#PF2EBTEach this.doubleVs}}
-                                        <span 
-                                            class="toggle-container inner {{#if ../../detailedInformation.exceptionsDouble}}detailed{{/if}} {{#if this.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
-                                            {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
-                                            data-path="{{concat 'system.resistances.' ../key '.doubleVs.' this.key}}"
-                                        >
-                                            {{localize this.label}}
-                                        </span>
-                                        {{#if (eq this.index (PF2EBTSub (PF2EBTNrKeys ../doubleVs) 1))}}){{/if}}
-                                        {{#if (eq this.index (PF2EBTSub (PF2EBTNrKeys ../doubleVs) 2))}}
-                                            {{localize "PF2EBestiary.Miscellaneous.Or"}}
-                                        {{else}}
-                                            {{#if (lt this.index (PF2EBTSub (PF2EBTNrKeys ../doubleVs) 1))}},{{/if}}
-                                        {{/if}}
-                                    {{/PF2EBTEach}}
+                                    {{/PF2EBTFilter}}
                                 {{/if}}
                             </div>
-                    {{/PF2EBTEach}}
-                {{else}}
-                    {{#PF2EBTFilter 'revealed' '?' 10 this.system.resistances}}
-                        <div 
-                            class="secondary-container {{PF2EBTToggleContainer ../user this}}"
-                            data-action="toggleRevealed" 
-                            data-path="{{concat 'system.resistances.' @key}}" 
-                            data-fake="{{this.fake}}"
-                        >
-                            {{#if (and ../vagueDescriptions.properties.resistances this.category)}}{{localize this.category}}{{/if}}
-                            <span>{{PF2EBTCaptialize (localize this.label)}}</span>
-                            {{#if (or (not ../vagueDescriptions.properties.resistances) (not this.category))}}{{this.value}}{{/if}}
-                            {{#if (and (gt (PF2EBTNrKeys this.exceptions ) 0) (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0)))}}
-                                <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
-                                {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
-                                    <span>
-                                        {{localize this.label}}{{#if (and this.last (eq (PF2EBTNrKeys ../doubleVs 'revealed') 0))}}){{/if}}{{#if (and this.last (gt (PF2EBTNrKeys ../doubleVs 'revealed') 0))}};{{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
-                                    </span>
-                                {{/PF2EBTFilter}}
-                            {{/if}}
-                            
-                            {{#if (and (gt (PF2EBTNrKeys this.doubleVs) 0) (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.doubleVs 'revealed') 0)))}}
-                                <span>{{#if (eq (PF2EBTNrKeys this.exceptions 'revealed') 0)}}({{/if}}{{localize "PF2EBestiary.Miscellaneous.Double"}}</span>
-                                {{#PF2EBTFilter 'revealed' '' 0 this.doubleVs ../detailedInformation.exceptionsDouble}}
-                                    <span>
-                                        {{localize this.label}}{{#if this.last}}){{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
-                                    </span>
-                                {{/PF2EBTFilter}}
-                            {{/if}}
-                        </div>
-                    {{/PF2EBTFilter}}
-                {{/if}}
+                        {{/PF2EBTFilter}}
+                    {{/if}}
+                </div>
             </div>
-        </div>
 
-        <div class="flexcol">
-            <div class="monster-left-data bestiary-left-list primary-container list-container">
-                <div class="flex-data primary-hover-container" data-action="toggleAllRevealed" data-path="system.saves">
-                    <i class="fa-solid fa-fw fa-heart-pulse"></i>
-                    <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Saves.Title"}}</div>
+            <div class="flexcol">
+                <div class="monster-left-data primary-container list-container">
+                    <div class="bestiary-fakable-container bestiary-left-list">
+                        <div class="flex-data primary-hover-container" data-action="toggleAllRevealed" data-path="system.weaknesses">
+                            <i class="fa-solid fa-fw fa-heart-broken"></i>
+                            <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Weaknesses"}}</div>
+                        </div>
+
+                        {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.weaknesses" data-name="Weakness" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
+                    </div>
+                </div>
+                <div class="monster-data-list">
+                    {{#if this.user.isGM}}
+                        {{#each this.system.weaknesses as |weakness key|}}
+                                <div 
+                                    class="secondary-container {{PF2EBTToggleContainer ../user weakness}}" 
+                                    style="{{PF2EBTToggleContainerOverride ../contrastRevealedState weakness}}"
+                                    data-action="toggleRevealed" 
+                                    data-path="{{concat 'system.weaknesses.' key}}" 
+                                    data-fake="{{weakness.fake}}"
+                                >
+                                    {{#if (and ../vagueDescriptions.properties.weaknesses (and weakness.category (not ../gmNumeric)))}}{{localize this.category}}{{/if}}
+                                    <span>{{PF2EBTCaptialize (localize weakness.label)}}</span>
+                                    {{#if (or (not ../vagueDescriptions.properties.weaknesses) (or (not weakness.category) ../gmNumeric))}}{{this.value}}{{/if}}
+                                    {{#if (gt (PF2EBTNrKeys weakness.exceptions) 0)}}
+                                        <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
+                                        {{#each weakness.exceptions as |exception index|}}
+                                            <span 
+                                                class="toggle-container inner {{#if ../../detailedInformation.exceptionsDouble}}detailed{{/if}} {{#if exception.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
+                                                {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
+                                                data-path="{{concat 'system.weaknesses.' @../key '.exceptions.' index}}"
+                                            >
+                                                {{localize exception.label}}
+                                            </span>
+                                            {{exception.suffix}}
+                                        {{/each}}
+                                    {{/if}}
+                                </div>
+                        {{/each}}
+                    {{else}}
+                        {{#PF2EBTFilter 'revealed' '?' 10 this.system.weaknesses}}
+                            <div 
+                                class="secondary-container {{PF2EBTToggleContainer ../user this}}"
+                                data-action="toggleRevealed" 
+                                data-path="{{concat 'system.weaknesses.' @key}}" 
+                                data-fake="{{this.fake}}"
+                            >
+                                {{#if (and ../vagueDescriptions.properties.weaknesses this.category)}}{{localize this.category}}{{/if}}
+                                <span>{{PF2EBTCaptialize (localize this.label)}}</span>
+                                {{#if (or (not ../vagueDescriptions.properties.weaknesses) (not this.category))}}{{this.value}}{{/if}}
+                                {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
+                                    {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}<span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>{{/if}}
+                                    {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
+                                        <span>
+                                            {{localize this.label}}{{#if this.last}}){{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
+                                        </span>
+                                    {{/PF2EBTFilter}}
+                                {{/if}}
+                            </div>
+                        {{/PF2EBTFilter}}
+                    {{/if}}
                 </div>
             </div>
-            <div class="saves-container">
-                <div class="save-container">
-                    <div class="saves-title secondary-container {{PF2EBTToggleContainer this.user this.system.saves.fortitude}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.saves.fortitude}}" data-action="toggleRevealed" data-path="system.saves.fortitude" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}" data-vague-property="saves">{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}</div>
-                    <div class="saves-value">{{#if (or this.user.isGM this.system.saves.fortitude.revealed)}}{{PF2EBTMonsterValue this.system.saves.fortitude this.vagueDescriptions.properties.saves}}{{else}}?{{/if}}</div>
+
+            <div class="flexcol">
+                <div class="monster-left-data primary-container list-container">
+                    <div class="bestiary-fakable-container bestiary-left-list">
+                        <div class="flex-data primary-hover-container" data-action="toggleAllRevealed" data-path="system.resistances">
+                            <i class="fa-solid fa-fw fa-shield-virus"></i>
+                            <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Resistances"}}</div>
+                        </div>
+
+                        {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.resistances" data-name="Resistance" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
+                    </div>
                 </div>
-                <div class="save-container">
-                    <div class="saves-title secondary-container {{PF2EBTToggleContainer this.user this.system.saves.reflex}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.saves.reflex}}" data-action="toggleRevealed" data-path="system.saves.reflex" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}" data-vague-property="saves">{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}</div>
-                    <div class="saves-value">{{#if (or this.user.isGM this.system.saves.reflex.revealed)}}{{PF2EBTMonsterValue this.system.saves.reflex this.vagueDescriptions.properties.saves}}{{else}}?{{/if}}</div>
+                <div class="monster-data-list">
+                    {{#if this.user.isGM}}
+                        {{#PF2EBTEach this.system.resistances}}
+                                <div 
+                                    class="secondary-container {{PF2EBTToggleContainer ../user this}}" 
+                                    style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}"
+                                    data-action="toggleRevealed" 
+                                    data-path="{{concat 'system.resistances.' this.key}}" 
+                                    data-fake="{{this.fake}}"
+                                >
+                                    {{#if (and ../vagueDescriptions.properties.resistances (and this.category (not ../gmNumeric)))}}{{localize this.category}}{{/if}}
+                                    <span>{{PF2EBTCaptialize (localize this.label)}}</span>
+                                    {{#if (or (not ../vagueDescriptions.properties.resistances) (or (not this.category) ../gmNumeric))}}{{this.value}}{{/if}}
+                                    {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}
+                                        <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
+                                        {{#PF2EBTEach this.exceptions}}
+                                            <span 
+                                                class="toggle-container inner {{#if ../../detailedInformation.exceptionsDouble}}detailed{{/if}} {{#if this.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
+                                                {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
+                                                data-path="{{concat 'system.resistances.' ../key '.exceptions.' this.key}}"
+                                            >
+                                                {{localize this.label}}
+                                            </span>
+                                            {{#if (and (eq this.index (PF2EBTSub (PF2EBTNrKeys ../exceptions) 1)) (eq (PF2EBTNrKeys ../doubleVs) 0))}}){{/if}}
+                                            {{#if (eq this.index (PF2EBTSub (PF2EBTNrKeys ../exceptions) 2))}}
+                                                {{localize "PF2EBestiary.Miscellaneous.Or"}}
+                                            {{else}}
+                                                {{#if (lt this.index (PF2EBTSub (PF2EBTNrKeys ../exceptions) 1))}},{{/if}}
+                                            {{/if}}
+                                        {{/PF2EBTEach}}
+                                    {{/if}}
+                                    {{#if (and (gt (PF2EBTNrKeys this.exceptions) 0) (gt (PF2EBTNrKeys this.doubleVs) 0))}};{{/if}}
+                                    {{#if (gt (PF2EBTNrKeys this.doubleVs) 0)}}
+                                        <span>{{#if (eq (PF2EBTNrKeys this.exceptions) 0)}}({{/if}}{{localize "PF2EBestiary.Miscellaneous.Double"}}</span>
+                                        {{#PF2EBTEach this.doubleVs}}
+                                            <span 
+                                                class="toggle-container inner {{#if ../../detailedInformation.exceptionsDouble}}detailed{{/if}} {{#if this.revealed}}revealed{{/if}} {{#if ../../detailedInformation.exceptionsDouble}}primary-hover-container{{/if}}" 
+                                                {{#if ../../detailedInformation.exceptionsDouble}}data-action="toggleRevealed"{{/if}}
+                                                data-path="{{concat 'system.resistances.' ../key '.doubleVs.' this.key}}"
+                                            >
+                                                {{localize this.label}}
+                                            </span>
+                                            {{#if (eq this.index (PF2EBTSub (PF2EBTNrKeys ../doubleVs) 1))}}){{/if}}
+                                            {{#if (eq this.index (PF2EBTSub (PF2EBTNrKeys ../doubleVs) 2))}}
+                                                {{localize "PF2EBestiary.Miscellaneous.Or"}}
+                                            {{else}}
+                                                {{#if (lt this.index (PF2EBTSub (PF2EBTNrKeys ../doubleVs) 1))}},{{/if}}
+                                            {{/if}}
+                                        {{/PF2EBTEach}}
+                                    {{/if}}
+                                </div>
+                        {{/PF2EBTEach}}
+                    {{else}}
+                        {{#PF2EBTFilter 'revealed' '?' 10 this.system.resistances}}
+                            <div 
+                                class="secondary-container {{PF2EBTToggleContainer ../user this}}"
+                                data-action="toggleRevealed" 
+                                data-path="{{concat 'system.resistances.' @key}}" 
+                                data-fake="{{this.fake}}"
+                            >
+                                {{#if (and ../vagueDescriptions.properties.resistances this.category)}}{{localize this.category}}{{/if}}
+                                <span>{{PF2EBTCaptialize (localize this.label)}}</span>
+                                {{#if (or (not ../vagueDescriptions.properties.resistances) (not this.category))}}{{this.value}}{{/if}}
+                                {{#if (and (gt (PF2EBTNrKeys this.exceptions ) 0) (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0)))}}
+                                    <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
+                                    {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
+                                        <span>
+                                            {{localize this.label}}{{#if (and this.last (eq (PF2EBTNrKeys ../doubleVs 'revealed') 0))}}){{/if}}{{#if (and this.last (gt (PF2EBTNrKeys ../doubleVs 'revealed') 0))}};{{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
+                                        </span>
+                                    {{/PF2EBTFilter}}
+                                {{/if}}
+                                
+                                {{#if (and (gt (PF2EBTNrKeys this.doubleVs) 0) (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.doubleVs 'revealed') 0)))}}
+                                    <span>{{#if (eq (PF2EBTNrKeys this.exceptions 'revealed') 0)}}({{/if}}{{localize "PF2EBestiary.Miscellaneous.Double"}}</span>
+                                    {{#PF2EBTFilter 'revealed' '' 0 this.doubleVs ../detailedInformation.exceptionsDouble}}
+                                        <span>
+                                            {{localize this.label}}{{#if this.last}}){{/if}}{{#if (eq this.index (PF2EBTSub this.length 2))}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.Or"}}{{else}}{{#if (lt this.index (PF2EBTSub this.length 2))}},{{/if}}{{/if}}
+                                        </span>
+                                    {{/PF2EBTFilter}}
+                                {{/if}}
+                            </div>
+                        {{/PF2EBTFilter}}
+                    {{/if}}
                 </div>
-                <div class="save-container">
-                    <div class="saves-title secondary-container {{PF2EBTToggleContainer this.user this.system.saves.will}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.saves.will}}" data-action="toggleRevealed" data-path="system.saves.will" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}" data-vague-property="saves">{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}</div>
-                    <div class="saves-value">{{#if (or this.user.isGM this.system.saves.will.revealed)}}{{PF2EBTMonsterValue this.system.saves.will this.vagueDescriptions.properties.saves}}{{else}}?{{/if}}</div>
+            </div>
+
+            <div class="flexcol">
+                <div class="monster-left-data bestiary-left-list primary-container list-container">
+                    <div class="flex-data primary-hover-container" data-action="toggleAllRevealed" data-path="system.saves">
+                        <i class="fa-solid fa-fw fa-heart-pulse"></i>
+                        <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Saves.Title"}}</div>
+                    </div>
+                </div>
+                <div class="saves-container">
+                    <div class="save-container">
+                        <div class="saves-title secondary-container {{PF2EBTToggleContainer this.user this.system.saves.fortitude}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.saves.fortitude}}" data-action="toggleRevealed" data-path="system.saves.fortitude" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}" data-vague-property="saves">{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}</div>
+                        <div class="saves-value">{{#if (or this.user.isGM this.system.saves.fortitude.revealed)}}{{PF2EBTMonsterValue this.system.saves.fortitude this.vagueDescriptions.properties.saves}}{{else}}?{{/if}}</div>
+                    </div>
+                    <div class="save-container">
+                        <div class="saves-title secondary-container {{PF2EBTToggleContainer this.user this.system.saves.reflex}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.saves.reflex}}" data-action="toggleRevealed" data-path="system.saves.reflex" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}" data-vague-property="saves">{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}</div>
+                        <div class="saves-value">{{#if (or this.user.isGM this.system.saves.reflex.revealed)}}{{PF2EBTMonsterValue this.system.saves.reflex this.vagueDescriptions.properties.saves}}{{else}}?{{/if}}</div>
+                    </div>
+                    <div class="save-container">
+                        <div class="saves-title secondary-container {{PF2EBTToggleContainer this.user this.system.saves.will}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.saves.will}}" data-action="toggleRevealed" data-path="system.saves.will" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}" data-vague-property="saves">{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}</div>
+                        <div class="saves-value">{{#if (or this.user.isGM this.system.saves.will.revealed)}}{{PF2EBTMonsterValue this.system.saves.will this.vagueDescriptions.properties.saves}}{{else}}?{{/if}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="flexcol">
+                <div class="monster-left-data bestiary-left-list primary-container list-container">
+                    <div class="flex-data primary-hover-container" data-action="toggleAllRevealed" data-path="system.speeds.values" data-type="speed">
+                        <i class="fa-solid fa-fw fa-shoe-prints"></i>
+                        <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Speeds"}}</div>
+                    </div>
+                </div>
+                <div class="speeds-container">
+                    {{#if this.user.isGM}}
+                        {{#each this.system.allSpeeds as |speed key|}}
+                            <div class="speed-container data-container toggle-container {{#if speed.revealed}}revealed{{/if}} secondary-container" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState speed}}" data-action="toggleRevealed" data-path="{{concat 'system.speeds.' key}}">
+                                {{localize speed.name}}
+                                {{#if (not ../vagueDescriptions.properties.speed)}}{{speed.value}}{{/if}}
+                            </div>
+                        {{/each}}
+                    {{else}}
+                        {{#PF2EBTFilter 'revealed' '?' 10 this.system.allSpeeds}}
+                            <div class="speed-container data-container secondary-container">
+                                {{localize this.name}}
+                                {{#if (not ../vagueDescriptions.properties.speed)}}{{this.value}}{{/if}}
+                            </div>
+                        {{/PF2EBTFilter}}
+                    {{/if}}
                 </div>
             </div>
         </div>
-        <div class="flexcol">
-            <div class="monster-left-data bestiary-left-list primary-container list-container">
-                <div class="flex-data primary-hover-container" data-action="toggleAllRevealed" data-path="system.speeds.values" data-type="speed">
-                    <i class="fa-solid fa-fw fa-shoe-prints"></i>
-                    <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Speeds"}}</div>
-                </div>
+    </div>
+
+    <div class="tab {{this.tabs.notes.cssClass}}" data-group="creature" data-tab="notes">
+        <div class="left-monster-container">
+            <div class="monster-image-container">
+                {{#if this.user.isGM}}<i class="monster-image-menu fa-solid fa-gears primary-hover-container" data-action="imageMenu"></i>{{/if}}
+                <img class="monster-image primary-outline {{#if this.useTokenArt}}token{{/if}} {{PF2EBTImageState this.user this.system.imageState.hideState}}" src="{{this.system.displayImage}}" data-action="imagePopout" />
             </div>
-            <div class="speeds-container">
-                {{#if this.user.isGM}}
-                    {{#each this.system.allSpeeds as |speed key|}}
-                        <div class="speed-container data-container toggle-container {{#if speed.revealed}}revealed{{/if}} secondary-container" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState speed}}" data-action="toggleRevealed" data-path="{{concat 'system.speeds.' key}}">
-                            {{localize speed.name}}
-                            {{#if (not ../vagueDescriptions.properties.speed)}}{{speed.value}}{{/if}}
+            <div class="data-section full primary-container active">
+                <div class="data-header primary-container">
+                    <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.skills">
+                        <i class="fa-solid fa-brain"></i>
+                        <div class="flex-value">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RecallKnowledgeAttempts"}}</div>
+                    </div>
+                </div>
+                <div class="data-body primary-border-container pf2e-bestiary-standard-gap">
+                    <div class="recall-knowledge-info-container">
+                        <div class="flexcol">
+                            {{#each this.system.recallKnowledgeAttempts}}
+
+                                    <h4 class="recall-knowledge-label">
+                                        {{this.name}}
+                                        <i class="fa-solid fa-arrow-rotate-left primary-hover-container" data-action="resetRecallAttempts" data-character="{{this.id}}"></i>
+                                    </h4>
+                                    <div class="recall-knowledge-attempt-container">
+                                        {{#each this.values}}
+                                            <div class="recall-knowledge-attempt-inner-container">
+                                                <label>#{{@key}}</label>
+                                                <div class="recall-knowledge-attempt primary-border-container primary-hover-container" {{#if (not (eq this.value 'none'))}}title="{{localize this.name}}"{{/if}} data-action="toggleRecallAttempt" data-character="{{../id}}" data-attempt="{{@key}}">
+                                                    {{#if this.icon}}<i class="{{this.icon}}"></i>{{/if}}
+                                                </div>
+                                            </div>
+                                        {{/each}}
+                                    </div>
+                                    {{!-- <table>
+                                        <tr>
+                                            <th>#1</th>
+                                            <th>#2</th>
+                                            <th>#3</th>
+                                            <th>#4</th>
+                                        </tr>
+                                        <tr>
+                                            {{#each this.values}}
+                                                <td>
+                                                    <div class="recall-knowledge-attempt primary-border-container primary-hover-container" {{#if (not (eq this.value 'none'))}}title="{{localize this.name}}"{{/if}} data-action="toggleRecallAttempt" data-character="{{../id}}" data-attempt="{{@key}}">
+                                                        {{#if this.icon}}<i class="{{this.icon}}"></i>{{/if}}
+                                                    </div>
+                                                </td>
+                                            {{/each}}
+                                        </tr>
+                                    </table> --}}
+                            {{/each}}
                         </div>
-                    {{/each}}
-                {{else}}
-                    {{#PF2EBTFilter 'revealed' '?' 10 this.system.allSpeeds}}
-                        <div class="speed-container data-container secondary-container">
-                            {{localize this.name}}
-                            {{#if (not ../vagueDescriptions.properties.speed)}}{{this.value}}{{/if}}
-                        </div>
-                    {{/PF2EBTFilter}}
-                {{/if}}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -319,23 +378,25 @@
                     </div>
                     <nav class="bestiary-tabs tabs">
                         {{#each this.tabs as |tab|}}
-                            <a 
-                                class="
-                                    bestiary-tab secondary-container primary-tab {{tab.cssClass}}
-                                    {{#if (and (not ../user.isGM) (and (eq tab.id 'lore') (and (not ../notes.public.revealed) (not ../notes.private.revealed))))}} empty{{/if}}
-                                    {{#if (and (not ../user.isGM) (eq tab.id 'spells'))}}
-                                        {{#if (or (and ../spells.fake (not ../spells.fake.revealed)) (and (not ../spells.fake) (eq (PF2EBTNrKeys ../this.spells.entries 'revealed') 0)))}}
-                                        empty
+                            {{#if (not tab.sidebar)}}
+                                <a 
+                                    class="
+                                        bestiary-tab secondary-container primary-tab {{tab.cssClass}}
+                                        {{#if (and (not ../user.isGM) (and (eq tab.id 'lore') (and (not ../notes.public.revealed) (not ../notes.private.revealed))))}} empty{{/if}}
+                                        {{#if (and (not ../user.isGM) (eq tab.id 'spells'))}}
+                                            {{#if (or (and ../spells.fake (not ../spells.fake.revealed)) (and (not ../spells.fake) (eq (PF2EBTNrKeys ../this.spells.entries 'revealed') 0)))}}
+                                            empty
+                                            {{/if}}
                                         {{/if}}
-                                    {{/if}}
-                                " 
-                                data-action="tab" 
-                                data-group="{{tab.group}}" 
-                                data-tab="{{tab.id}}"
-                            >
-                                <i class="{{tab.icon}}"></i>
-                                <label>{{tab.label}}</label>
-                            </a>
+                                    " 
+                                    data-action="tab" 
+                                    data-group="{{tab.group}}" 
+                                    data-tab="{{tab.id}}"
+                                >
+                                    <i class="{{tab.icon}}"></i>
+                                    <label>{{tab.label}}</label>
+                                </a>
+                            {{/if}}
                         {{/each}}
                     </nav>
                 </div>

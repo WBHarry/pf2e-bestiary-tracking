@@ -281,14 +281,24 @@ export class NPC extends Creature {
     const partyCharacters =
       game.actors
         .find((x) => x.type === "party" && x.active)
-        ?.system?.details?.members?.map((x) => {
+        ?.system?.details?.members?.reduce((acc, x) => {
           const actor = game.actors.find((actor) => actor.uuid === x.uuid);
-          return {
+          if (
+            actor.type !== "character" ||
+            actor.system.traits.value.some(
+              (x) => x === "eidolon" || x === "minion" || x === "npc",
+            )
+          )
+            return acc;
+
+          acc.push({
             value: dispositions.indifferent.value,
             id: actor.id,
             name: actor.name,
-          };
-        }) ?? [];
+          });
+
+          return acc;
+        }, []) ?? [];
     return partyCharacters.reduce((acc, character) => {
       const disposition = this.npcData.general.disposition[character.id];
       acc.push({
