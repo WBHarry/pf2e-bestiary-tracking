@@ -9447,7 +9447,7 @@ const handleBestiaryMigration = async (bestiary, isSave) => {
       const journalEntry = game.journal.getName(
         "pf2e-bestiary-tracking-journal-entry",
       );
-      if(journalEntry){
+      if (journalEntry) {
         dataBestiary = await newMigrateBestiary(async (_, monster) => {
           if (!monster.system.details.playerNotes?.document) {
             const existingPage = journalEntry.pages.find(
@@ -9506,7 +9506,7 @@ const handleBestiaryMigration = async (bestiary, isSave) => {
       const journalEntry = game.journal.getName(
         "pf2e-bestiary-tracking-journal-entry",
       );
-      if(journalEntry){
+      if (journalEntry) {
         dataBestiary = await newMigrateBestiary(async (_, monster) => {
           if (!monster.system.details.playerNotes?.document) {
             const existingPage = journalEntry.pages.find(

@@ -105,6 +105,7 @@
         "Greeting": "Welcome to the Bestiary!",
         "PlayersSection": {
           "Title": "For Players",
+          "ThemingTip": "Select your favorite visual theme for the Bestiary in the module settings",
           "NavigationTip": "Navigate between different creature types using the bookmarks on the left.",
           "MacroTip": "Check the module's compendium and add useful macros to your hotbar."
         },
