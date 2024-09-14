@@ -10060,7 +10060,7 @@ const bestiaryThemeChoices = {
   // parchment: 'Parchment',
 };
 
-const currentVersion = "1.0.3";
+const currentVersion = "1.0.4";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -10231,7 +10231,7 @@ const configSettings = () => {
     type: String,
     choices: bestiaryThemeChoices,
     requiresReload: true,
-    default: "water",
+    default: "coreLight",
   });
 };
 
