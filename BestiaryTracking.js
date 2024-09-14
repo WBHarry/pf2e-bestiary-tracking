@@ -9367,128 +9367,133 @@ const handleDeactivatedPages = async () => {
 };
 
 const coreDark = {
-    '--pf2e-bestiary-tracking-application-image': 'none',
-    '--pf2e-bestiary-tracking-application': 'rgba(11, 10, 19, 0.9)',
-    '--pf2e-bestiary-tracking-secondary-application': '#431b1b',
-    '--pf2e-bestiary-tracking-primary': '#5e0000',
-    '--pf2e-bestiary-tracking-secondary': '#4b4b8c',
-    '--pf2e-bestiary-tracking-tertiary': '#007149',
-    '--pf2e-bestiary-tracking-primary-accent': '#760000',
-    '--pf2e-bestiary-tracking-tertiary-accent': '#76963f',
-    '--pf2e-bestiary-tracking-primary-color': 'white',
-    '--pf2e-bestiary-tracking-icon-filter': 'none',
-    '--pf2e-bestiary-tracking-main-hover': 'white',
-    '--pf2e-bestiary-tracking-border': '#ababab',
-    '--pf2e-bestiary-tracking-secondary-border': 'gold',
-    '--pf2e-bestiary-tracking-icon': 'rgb(247, 243, 232)',
-    '--pf2e-bestiary-tracking-accent-icon': 'gold',
+  "--pf2e-bestiary-tracking-application-image": "none",
+  "--pf2e-bestiary-tracking-application": "rgba(11, 10, 19, 0.9)",
+  "--pf2e-bestiary-tracking-secondary-application": "#431b1b",
+  "--pf2e-bestiary-tracking-primary": "#5e0000",
+  "--pf2e-bestiary-tracking-secondary": "#4b4b8c",
+  "--pf2e-bestiary-tracking-tertiary": "#007149",
+  "--pf2e-bestiary-tracking-primary-accent": "#760000",
+  "--pf2e-bestiary-tracking-tertiary-accent": "#76963f",
+  "--pf2e-bestiary-tracking-primary-color": "white",
+  "--pf2e-bestiary-tracking-icon-filter": "none",
+  "--pf2e-bestiary-tracking-main-hover": "white",
+  "--pf2e-bestiary-tracking-border": "#ababab",
+  "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-icon": "rgb(247, 243, 232)",
+  "--pf2e-bestiary-tracking-accent-icon": "gold",
 };
 
 const coreLight = {
-    '--pf2e-bestiary-tracking-application-image': '../ui/parchment.jpg',
-    '--pf2e-bestiary-tracking-application-header': 'rgb(68, 68, 68)',
-    '--pf2e-bestiary-tracking-application-image-repeat': 'repeat',
-    '--pf2e-bestiary-tracking-application': 'initial',
-    '--pf2e-bestiary-tracking-secondary-application': '#b8cccb',
-    '--pf2e-bestiary-tracking-primary': '#d4bdac',
-    '--pf2e-bestiary-tracking-secondary': '#62b356',
-    '--pf2e-bestiary-tracking-tertiary': '#62acce',
-    '--pf2e-bestiary-tracking-primary-accent': '#fff1db',
-    '--pf2e-bestiary-tracking-tertiary-accent': '#9de0ff',
-    '--pf2e-bestiary-tracking-primary-color': 'black',
-    '--pf2e-bestiary-tracking-icon-filter': 'invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%)',
-    '--pf2e-bestiary-tracking-main-hover': '#1c8efe',
-    '--pf2e-bestiary-tracking-border': 'black',
-    '--pf2e-bestiary-tracking-secondary-border': '#82acff',
-    '--pf2e-bestiary-tracking-icon': 'black',
-    '--pf2e-bestiary-tracking-accent-icon': 'gold',
+  "--pf2e-bestiary-tracking-application-image": "../ui/parchment.jpg",
+  "--pf2e-bestiary-tracking-application-header": "rgb(68, 68, 68)",
+  "--pf2e-bestiary-tracking-application-image-repeat": "repeat",
+  "--pf2e-bestiary-tracking-application": "initial",
+  "--pf2e-bestiary-tracking-secondary-application": "#b8cccb",
+  "--pf2e-bestiary-tracking-primary": "#d4bdac",
+  "--pf2e-bestiary-tracking-secondary": "#62b356",
+  "--pf2e-bestiary-tracking-tertiary": "#62acce",
+  "--pf2e-bestiary-tracking-primary-accent": "#fff1db",
+  "--pf2e-bestiary-tracking-tertiary-accent": "#9de0ff",
+  "--pf2e-bestiary-tracking-primary-color": "black",
+  "--pf2e-bestiary-tracking-icon-filter":
+    "invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%)",
+  "--pf2e-bestiary-tracking-main-hover": "#1c8efe",
+  "--pf2e-bestiary-tracking-border": "black",
+  "--pf2e-bestiary-tracking-secondary-border": "#82acff",
+  "--pf2e-bestiary-tracking-icon": "black",
+  "--pf2e-bestiary-tracking-accent-icon": "gold",
 };
 
 const nebula = {
-    '--pf2e-bestiary-tracking-application-image': 'modules/pf2e-bestiary-tracking/assets/Space.webp',
-    '--pf2e-bestiary-tracking-application-header': 'transparent',
-    '--pf2e-bestiary-tracking-application-image-size': 'cover',
-    '--pf2e-bestiary-tracking-application-image-repeat': 'round',
-    '--pf2e-bestiary-tracking-application-secondary-image': 'linear-gradient(#8a549c, #9198e5)',
-    '--pf2e-bestiary-tracking-application': '',
-    '--pf2e-bestiary-tracking-secondary-application': '',
-    '--pf2e-bestiary-tracking-primary-outline': 'drop-shadow(0 0 3px grey)',
-    '--pf2e-bestiary-tracking-primary': '#73a9bc',
-    '--pf2e-bestiary-tracking-secondary': '#cd7e23',
-    '--pf2e-bestiary-tracking-tertiary': '#7476a6',
-    '--pf2e-bestiary-tracking-primary-accent': '#0888b5',
-    '--pf2e-bestiary-tracking-tertiary-accent': '#888bc0',
-    '--pf2e-bestiary-tracking-primary-color': 'rgb(247, 243, 232)',
-    '--pf2e-bestiary-tracking-icon-filter': 'none',
-    '--pf2e-bestiary-tracking-main-hover': '',
-    '--pf2e-bestiary-tracking-border': '#e4e41e',
-    '--pf2e-bestiary-tracking-secondary-border': 'gold',
-    '--pf2e-bestiary-tracking-icon': '',
-    '--pf2e-bestiary-tracking-accent-icon': '',
+  "--pf2e-bestiary-tracking-application-image":
+    "modules/pf2e-bestiary-tracking/assets/Space.webp",
+  "--pf2e-bestiary-tracking-application-header": "transparent",
+  "--pf2e-bestiary-tracking-application-image-size": "cover",
+  "--pf2e-bestiary-tracking-application-image-repeat": "round",
+  "--pf2e-bestiary-tracking-application-secondary-image":
+    "linear-gradient(#8a549c, #9198e5)",
+  "--pf2e-bestiary-tracking-application": "",
+  "--pf2e-bestiary-tracking-secondary-application": "",
+  "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px grey)",
+  "--pf2e-bestiary-tracking-primary": "#73a9bc",
+  "--pf2e-bestiary-tracking-secondary": "#cd7e23",
+  "--pf2e-bestiary-tracking-tertiary": "#7476a6",
+  "--pf2e-bestiary-tracking-primary-accent": "#0888b5",
+  "--pf2e-bestiary-tracking-tertiary-accent": "#888bc0",
+  "--pf2e-bestiary-tracking-primary-color": "rgb(247, 243, 232)",
+  "--pf2e-bestiary-tracking-icon-filter": "none",
+  "--pf2e-bestiary-tracking-main-hover": "",
+  "--pf2e-bestiary-tracking-border": "#e4e41e",
+  "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-icon": "",
+  "--pf2e-bestiary-tracking-accent-icon": "",
 };
 
 const viscera = {
-    '--pf2e-bestiary-tracking-application-image': 'modules/pf2e-bestiary-tracking/assets/Viscera.webp',
-    '--pf2e-bestiary-tracking-application-header': 'transparent',
-    '--pf2e-bestiary-tracking-application-image-size': 'cover',
-    '--pf2e-bestiary-tracking-application-image-repeat': 'initial',
-    '--pf2e-bestiary-tracking-application-secondary-image': '',
-    '--pf2e-bestiary-tracking-application': '',
-    '--pf2e-bestiary-tracking-secondary-application': '',
-    '--pf2e-bestiary-tracking-primary-outline': 'drop-shadow(0 0 3px grey)',
-    '--pf2e-bestiary-tracking-primary': '#813f3f',
-    '--pf2e-bestiary-tracking-secondary': '#483c70', // #ba476d
-    '--pf2e-bestiary-tracking-tertiary': 'crimson',
-    '--pf2e-bestiary-tracking-primary-accent': '#9f2828',
-    '--pf2e-bestiary-tracking-tertiary-accent': '#c12c2c',
-    '--pf2e-bestiary-tracking-primary-color': 'white',
-    '--pf2e-bestiary-tracking-icon-filter': 'none',
-    '--pf2e-bestiary-tracking-main-hover': 'red',
-    '--pf2e-bestiary-tracking-border': 'orange',
-    '--pf2e-bestiary-tracking-secondary-border': 'gold',
-    '--pf2e-bestiary-tracking-icon': '',
-    '--pf2e-bestiary-tracking-accent-icon': '',
+  "--pf2e-bestiary-tracking-application-image":
+    "modules/pf2e-bestiary-tracking/assets/Viscera.webp",
+  "--pf2e-bestiary-tracking-application-header": "transparent",
+  "--pf2e-bestiary-tracking-application-image-size": "cover",
+  "--pf2e-bestiary-tracking-application-image-repeat": "initial",
+  "--pf2e-bestiary-tracking-application-secondary-image": "",
+  "--pf2e-bestiary-tracking-application": "",
+  "--pf2e-bestiary-tracking-secondary-application": "",
+  "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px grey)",
+  "--pf2e-bestiary-tracking-primary": "#813f3f",
+  "--pf2e-bestiary-tracking-secondary": "#483c70", // #ba476d
+  "--pf2e-bestiary-tracking-tertiary": "crimson",
+  "--pf2e-bestiary-tracking-primary-accent": "#9f2828",
+  "--pf2e-bestiary-tracking-tertiary-accent": "#c12c2c",
+  "--pf2e-bestiary-tracking-primary-color": "white",
+  "--pf2e-bestiary-tracking-icon-filter": "none",
+  "--pf2e-bestiary-tracking-main-hover": "red",
+  "--pf2e-bestiary-tracking-border": "orange",
+  "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-icon": "",
+  "--pf2e-bestiary-tracking-accent-icon": "",
 };
 
 const water = {
-    '--pf2e-bestiary-tracking-application-image': 'modules/pf2e-bestiary-tracking/assets/Water.webp',
-    '--pf2e-bestiary-tracking-application-header': 'transparent',
-    '--pf2e-bestiary-tracking-application-image-size': 'cover',
-    '--pf2e-bestiary-tracking-application-image-repeat': 'initial',
-    '--pf2e-bestiary-tracking-application-secondary-image': '',
-    '--pf2e-bestiary-tracking-application': '',
-    '--pf2e-bestiary-tracking-secondary-application': '',
-    '--pf2e-bestiary-tracking-primary-outline': 'drop-shadow(0 0 3px grey)',
-    '--pf2e-bestiary-tracking-primary': '#1ca671',
-    '--pf2e-bestiary-tracking-secondary': '#8b0d8b',
-    '--pf2e-bestiary-tracking-tertiary': '#602fa1',
-    '--pf2e-bestiary-tracking-primary-accent': '#0f7e2fbf',
-    '--pf2e-bestiary-tracking-tertiary-accent': '#681ad1',
-    '--pf2e-bestiary-tracking-primary-color': 'rgb(247, 243, 232)',
-    '--pf2e-bestiary-tracking-icon-filter': 'none',
-    '--pf2e-bestiary-tracking-main-hover': 'white',
-    '--pf2e-bestiary-tracking-border': '#c7ffed',
-    '--pf2e-bestiary-tracking-secondary-border': 'gold',
-    '--pf2e-bestiary-tracking-icon': '',
-    '--pf2e-bestiary-tracking-accent-icon': '',
+  "--pf2e-bestiary-tracking-application-image":
+    "modules/pf2e-bestiary-tracking/assets/Water.webp",
+  "--pf2e-bestiary-tracking-application-header": "transparent",
+  "--pf2e-bestiary-tracking-application-image-size": "cover",
+  "--pf2e-bestiary-tracking-application-image-repeat": "initial",
+  "--pf2e-bestiary-tracking-application-secondary-image": "",
+  "--pf2e-bestiary-tracking-application": "",
+  "--pf2e-bestiary-tracking-secondary-application": "",
+  "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px grey)",
+  "--pf2e-bestiary-tracking-primary": "#1ca671",
+  "--pf2e-bestiary-tracking-secondary": "#8b0d8b",
+  "--pf2e-bestiary-tracking-tertiary": "#602fa1",
+  "--pf2e-bestiary-tracking-primary-accent": "#0f7e2fbf",
+  "--pf2e-bestiary-tracking-tertiary-accent": "#681ad1",
+  "--pf2e-bestiary-tracking-primary-color": "rgb(247, 243, 232)",
+  "--pf2e-bestiary-tracking-icon-filter": "none",
+  "--pf2e-bestiary-tracking-main-hover": "white",
+  "--pf2e-bestiary-tracking-border": "#c7ffed",
+  "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-icon": "",
+  "--pf2e-bestiary-tracking-accent-icon": "",
 };
 
 const bestiaryThemes = {
-    coreLight: coreLight,
-    coreDark: coreDark,
-    nebula: nebula,
-    viscera: viscera,
-    water: water,
-    // parchment: parchment,
+  coreLight: coreLight,
+  coreDark: coreDark,
+  nebula: nebula,
+  viscera: viscera,
+  water: water,
+  // parchment: parchment,
 };
 
 const bestiaryThemeChoices = {
-    coreLight: 'Core Light',
-    coreDark: 'Core Dark',
-    nebula: 'Nebula',
-    viscera: 'Viscera',
-    water: 'Water',
-    // parchment: 'Parchment',
+  coreLight: "Core Light",
+  coreDark: "Core Dark",
+  nebula: "Nebula",
+  viscera: "Viscera",
+  water: "Water",
+  // parchment: 'Parchment',
 };
 
 const currentVersion = "1.0.3";
@@ -9504,11 +9509,14 @@ const dataTypeSetup = () => {
 };
 
 const setupTheme = () => {
-  const theme = bestiaryThemes[game.settings.get('pf2e-bestiary-tracking', 'bestiary-theme')];
+  const theme =
+    bestiaryThemes[
+      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
+    ];
   const root = document.querySelector(":root");
-  for(var property of Object.keys(theme)){
-    if(property === '--pf2e-bestiary-tracking-application-image'){
-      const baseUri = document.baseURI.split('game')[0];
+  for (var property of Object.keys(theme)) {
+    if (property === "--pf2e-bestiary-tracking-application-image") {
+      const baseUri = document.baseURI.split("game")[0];
       root.style.setProperty(property, `url("${baseUri}${theme[property]}")`);
     } else {
       root.style.setProperty(property, theme[property]);

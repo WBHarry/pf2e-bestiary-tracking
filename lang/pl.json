@@ -1,0 +1,518 @@
+{
+  "PF2EBestiary": {
+    "Name": "Bestiariusz",
+    "BestiaryName": "Bestiariusz",
+    "KeyBindings": {
+      "OpenBestiary": {
+        "Name": "Otwórz Bestiariusz",
+        "Hint": "Otwiera bestiariusz"
+      },
+      "ShowMonster": {
+        "Name": "Pokaż potwora",
+        "Hint": "Otwiera bestiariusz aktualnie wybranej lub namierzonej istoty"
+      },
+      "AddMonster": {
+        "Name": "Dodaj potwora",
+        "Hint": "Dodaje aktualnie wybraną lub namierzoną istotę do bestiariusza"
+      }
+    },
+    "BestiarySelection": {
+      "Name": "Wybór bestiariusza",
+      "AddBestiary": "Dodaj nowy bestiariusz",
+      "MissingFolderError": "Folder Bestiariusza został usunięty. Nie można utworzyć nowego bestiariusza.",
+      "EditDialogTitle": "Edytuj Bestiariusz",
+      "BestiaryNameText": "Nazwa Bestiariusza",
+      "BestiaryImageText": "Obraz Bestiariusza",
+      "EditBestiaryTitle": "Edytuj Bestiariusz",
+      "DeleteBestiaryTitle": "Usuń Bestiariusz",
+      "DeleteBestiaryText": "Czy na pewno chcesz usunąć ten bestiariusz?",
+      "ImportOldSaves": "Importuj stare zapisane stany",
+      "OldSaveStateImported": "Stary stan zapisu został pomyślnie zaimportowany. Możesz go usunąć.",
+      "OldSaveInvalid": "Plik jest nieprawidłowy."
+    },
+    "Miscellaneous": {
+      "Name": "Nazwa",
+      "Title": "Tytuł",
+      "Level": "Poziom",
+      "AC": "KP",
+      "HP": "PW",
+      "Defenses": "Obrona",
+      "Initiative": "Inicjatywa",
+      "Immunities": "Niewrażliwości",
+      "None": "Brak",
+      "Weaknesses": "Podatności",
+      "Weakness": "Podatność",
+      "Resistances": "Odporności",
+      "Resistance": "Odporność",
+      "Saves": {
+        "Title": "Rzuty obronne",
+        "Fortitude": {
+          "Short": "Wytr."
+        },
+        "Reflex": {
+          "Short": "Refleks"
+        },
+        "Will": {
+          "Short": "Wola"
+        }
+      },
+      "Speeds": "Szybkości",
+      "Attributes": "Modyfikatory atrybutów",
+      "Perception": "Percepcja",
+      "Senses": "Zmysły",
+      "Attacks": "Ataki",
+      "Languages": "Języki",
+      "Skills": "Umiejętności",
+      "Abilities": "Zdolności",
+      "Passives": "Pasywne",
+      "Save": "Zapisz",
+      "Except": "z wyjątkiem",
+      "Double": "podwójny",
+      "Or": "lub",
+      "NPC": "BN",
+      "Add": "Dodaj",
+      "Confirm": "Potwierdź",
+      "Cancel": "Anuluj",
+      "DCLabel": "ST"
+    },
+    "Bestiary": {
+      "Title": "Bestiariusz",
+      "WindowControls": {
+        "RefreshBestiary": "Odśwież Bestiariusz",
+        "BestiarySelection": "Zmiana Bestiariusza",
+        "ResetBestiary": "Reset Bestiariusza",
+        "RevealAll": "Ujawnij stworzenie",
+        "HideAll": "Ukryj stworzenie",
+        "TransformCreature": "Przekształcenie w BN",
+        "TransformNPC": "Przekształcenie w stworzenie"
+      },
+      "Category": {
+        "Creatures": "Stworzenia",
+        "NPC": "Galeria BN",
+        "Hazards": "Zagrożenia"
+      },
+      "Welcome": {
+        "Greeting": "Witaj w Bestiariuszu!",
+        "PlayersSection": {
+          "Title": "Dla graczy",
+          "NavigationTip": "Nawiguj między różnymi typami stworzeń za pomocą zakładek po lewej stronie.",
+          "MacroTip": "Sprawdź kompendium modułu i dodaj przydatne makra do paska skrótów."
+        },
+        "GMsSection": {
+          "Title": "Dla Mistrzów Gry",
+          "AddCreaturesTip": "Dodaj nowe stworzenia napotkane przez graczy, przeciągając je do bestiariusza.",
+          "ModuleSettingsTip": "Dostosuj zachowanie modułu i sposób wyświetlania informacji o potworach w ustawieniach modułu.",
+          "ToggleInformationTip": "Przełączaj znane informacje o poszczególnych potworach w miarę zdobywania informacji przez graczy.",
+          "ToggleMisinformationTip": "Przełączanie błędnych informacji w polu. Wprowadź fałszywe informacje i usuń je w ten sam sposób.",
+          "RecallKnowledgeRulesTitle": "Zasady Przywołania Wiedzy",
+          "RecallKnowledgeJournalMissing": "Przeciągnij dziennik tutaj, aby dać graczom link do swoich zasad Przywoływania Wiedzy.",
+          "RecallKnowledgeAttachedNotification": "Dodałeś link do swoich zasad Przywoływania Wiedzy."
+        }
+      },
+      "ReturnMessages": {
+        "ReturnToCategory": "Powrót do kategorii {type}",
+        "ReturnToWelcome": "Powrót do strony głównej"
+      },
+      "CategoryView": {
+        "EmptyText": "Nie napotkano jeszcze żadnego stworzenia z kategorii {category}. Ciesz się, póki możesz.",
+        "UnknownText": "Nieznane niebezpieczeństwa zawsze czyhają...",
+        "EmptyCategoryText": "Nie spotkałeś nikogo w klasyfikacji {category}",
+        "EmptyHazardText": "Nie napotkałeś żadnych zagrożeń z kategorii {category}. Jeszcze.",
+        "UnaffiliatedText": "Nie znasz żadnych niezależnych postaci..."
+      },
+      "AvatarMenu": {
+        "Title": "Menu awatara",
+        "HideState": "Filtr obrazu",
+        "Save": "Zastosuj zmiany"
+      },
+      "Miscellaneous": {
+        "UnknownCreature": "Nieznane stworzenie",
+        "UnknownNPC": "Nieznany BN",
+        "UnknownHazard": "Nieznane zagrożenie",
+        "Unknown": "Nieznany",
+        "Unaffiliated": "Niezależny",
+        "InCombat": "W walce",
+        "CategoryPlaceholder": "Dodaj kategorie, z którymi powiązany jest BN",
+        "LeftClick": "Kliknij lewym",
+        "RightClick": "Kliknij prawym"
+      },
+      "Tabs": {
+        "Statistics": "Statystyki",
+        "Spells": "Zaklęcia",
+        "Lore": "Wiedza",
+        "Notes": "Notatki"
+      },
+      "NPCTabs": {
+        "General": "Ogólne",
+        "Influence": "Wpływ",
+        "GM": "MG"
+      },
+      "Tips": {
+        "ToggleHideTabs": "Kliknij prawym przyciskiem myszy, aby przełączyć ukrytą kartę"
+      },
+      "NPC": {
+        "NPCCategoryDescription": "Postacie niezależne są podzielone na kategorie stworzone przez MG. Możesz dodać jedną z nich poniżej. Kategorie można usuwać, klikając ich zakładki prawym przyciskiem myszy.",
+        "NewCategory": "Nowa kategoria BN",
+        "NPCViewText": "Przełącznik widoku BN",
+        "EditModeText": "Przełącznik trybu edycji",
+        "NPCSimpleText": "Prosty przełącznik BN",
+        "Dispositions": "Nastawienia",
+        "Height": "Wysokość",
+        "Weight": "Szerokość",
+        "Personality": "Osobowość",
+        "Appearance": "Wygląd",
+        "Background": "Przeszłość",
+        "Disposition": {
+          "Helpful": "Pomocny",
+          "Friendly": "Przyjazny",
+          "Indifferent": "Obojętny",
+          "Unfriendly": "Nieprzyjazny",
+          "Hostile": "Wrogi"
+        },
+        "Discovery": "Odkrycie",
+        "InfluenceSkills": "Umiejętności wywierania wpływu",
+        "Influence": "Wpływ",
+        "Weaknesses": "Podatności",
+        "Resistances": "Odporności",
+        "Penalties": "Kary",
+        "SkillLabel": "Umiejętność",
+        "DCLabel": "ST",
+        "LoreLabel": "Wiedza",
+        "DescriptionLabel": "Opis",
+        "InfluencePointsLabel": "Punkty wpływu",
+        "IWRModifierLabel": "Modyfikator",
+        "Active": "Aktywny",
+        "Inactive": "Nieaktywny",
+        "ToggleModifier": "Przełącz modyfikator",
+        "PremiseLabel": "Założenie",
+        "TransformCreatureTitle": "Przekształcenie w BN",
+        "TransformNPCTitle": "Przekształcenie w stworzenie",
+        "TransformNPCText": " Czy na pewno chcesz przekształcić tego BN w stworzenie? Wszelkie dodane dane BN zostaną utracone.",
+        "GMNotesImportTitle": "Import notatek MG z dziennika",
+        "GMNotesImportText": "Wybierz stronę, z której chcesz zaimportować tekst. Spowoduje to nadpisanie istniejącego tekstu w Notatkach MG.",
+        "GMNotesPageTitle": "Strona",
+        "GMPlayersContainerTitle": "Gracze",
+        "GMPlayersContainerTip": "Upuszczenie czegokolwiek na obrazek gracza działa tak samo, jak upuszczenie go na token gracza.",
+        "GMTextZoneTip": "Przeciągnij i upuść dziennik na obszar tekstowy, aby zaimportować z niego tekst."
+      },
+      "Hazards": {
+        "Simple": "Proste",
+        "Complex": "Złożone",
+        "StealthTitle": "Ukrycie",
+        "DescriptionTitle": "Opis",
+        "DisableTitle": "Wyłącz",
+        "ResetTitle": "Reset",
+        "RoutineTitle": "Rutyna",
+        "Hardness": "Twardość"
+      },
+      "Lore": {
+        "Public": "Opis",
+        "Private": "Prywatne notatki"
+      },
+      "PlayerNotes": {
+        "Title": "Notatki gracza"
+      },
+      "GMNotes": {
+        "Title": "Notatki MG"
+      },
+      "Misinformation": {
+        "AddMisinformation": "Dodaj błędną informację",
+        "Dialog": {
+          "Title": "Wybierz błędną informację",
+          "SelectLabel": "Fałszywa {property}",
+          "Traitlabel": "Cechy",
+          "Attack": {
+            "Range": "Zasięg",
+            "Actions": "Akcje",
+            "Damage": "Obrażenia"
+          },
+          "Ability": {
+            "Description": "Opis"
+          },
+          "Errors": {
+            "RequiredFields": "Wymagane pola nie zostały wypełnione: {fields}"
+          }
+        }
+      },
+      "UnlinkedDialog": {
+        "Title": "Obsługa tworzenia bez powiązań",
+        "Content": "Obecnemu stworzeniu brakuje aktora na świecie. Czy chciałbyś go stworzyć?"
+      },
+      "Errors": {
+        "UnsupportedType": "Nieobsługiwany typ BN!",
+        "UnsupportedCharacterType": "Postacie graczy nie są obsługiwane w bestiariuszu.",
+        "DataMissing": "Brakuje niektórych danych. Będziesz musiał ponownie zaimportować stworzenie. Przepraszamy za to!"
+      },
+      "Info": {
+        "GMOnly": "Jest to funkcja dostępna tylko dla MG.",
+        "AddedToBestiary": "[{creatures}] zostały dodane do Bestiariusza",
+        "AlreadyExistsInBestiary": "[{creatures}] już istnieje w Bestiariuszu.",
+        "BestiaryEntryLinkTip": "Kopiuj link (+Alt, aby wysłać do czatu)",
+        "BestiaryEntryLink": "Wpis z bestiariusza {entity} został skopiowany do schowka."
+      },
+      "RemoveBookmarkTitle": "Usuń kategorię",
+      "RemoveBookmarkText": "Czy na pewno chcesz usunąć kategorię {category}?"
+    },
+    "Menus": {
+      "Title": "Śledzenie Bestiariusza",
+      "Data": {
+        "Name": "Dane bestiariusza",
+        "Hint": "Dane potworów dla Bestiariusza."
+      },
+      "VagueDescriptions": {
+        "Name": "Niejasne opisy",
+        "Hint": "Przełącz, które cechy potworów powinny być wyświetlane przy użyciu wartości Wysoka/Średnia/Niska zamiast dokładnych wartości.",
+        "Menu": {
+          "Name": "Niejasne opisy",
+          "Label": "Ustawienia niejasnego opisu",
+          "Hint": "Przełącz właściwości potworów, których wartości powinny być niejasne",
+          "Options": {
+            "AC": "KP",
+            "HP": "PW",
+            "Hardness": "Twardość",
+            "Immunities": "Niewrażliwości",
+            "Resistances": "Odporności",
+            "Weaknesses": "Podatności",
+            "Saves": "Rzuty obronne",
+            "Perception": "Percepcja",
+            "Speed": "Szybkość",
+            "Attributes": "Atrybuty",
+            "Skills": "Umiejętności",
+            "Spells": "Zaklęcia",
+            "Attacks": "Ataki",
+            "Damage": "Obrażenia",
+            "Initiative": "Inicjatywa/Ukrycie (Zagrożenia)",
+            "PlayerBased": "Podstawowe opisy na poziomie gracza",
+            "MisinformationOptions": "Niejasne i błędne kategorie informacji",
+            "GMNumeric": "MG widzi dokładne wartości"
+          },
+          "Sections": {
+            "Properties": {
+              "Title": "Niejasne właściwości"
+            },
+            "Settings": {
+              "Title": "Ustawienia"
+            }
+          }
+        }
+      },
+      "BestiaryLabels": {
+        "Name": "Etykiety Bestiariusza",
+        "Hint": "Wymiana etykiet używanych w bestiariuszu na niestandardowe.",
+        "Menu": {
+          "Name": "Etykiety Bestiariusza",
+          "Label": "Ustawienia etykiet bestiariusza",
+          "Hint": "Dostosuj etykiety i używaj ich w Bestiariuszu"
+        },
+        "VagueDescriptions": {
+          "Name": "Niejasne opisy",
+          "FullOptions": {
+            "Extreme": "Ekstremalne",
+            "High": "Wysokie",
+            "Moderate": "Umiarkowane",
+            "Low": "Niskie",
+            "Terrible": "Koszmarny"
+          },
+          "ShortOptions": {
+            "Extreme": "Ekst.",
+            "High": "Wys.",
+            "Moderate": "Śr.",
+            "Low": "Nis.",
+            "Terrible": "Kos."
+          }
+        }
+      },
+      "BestiaryAppearance": {
+        "Name": "Wygląd bestiariusza",
+        "Hint": "Dostosuj wygląd Bestiariusza",
+        "Menu": {
+          "Name": "Wygląd bestiariusza",
+          "Label": "Ustawienia wyglądu bestiariusza",
+          "Hint": "Dostosuj wygląd i używane pola Bestiariusza"
+        },
+        "UseTokenArt": "Użyj tokenów artystycznych",
+        "HideAbilityDescriptions": "Ukryj opisy zdolności",
+        "ContrastRevealedState": {
+          "Name": "Kontrast ujawnionego stanu",
+          "Enabled": "Włączone",
+          "Revealed": "Ujawnione",
+          "Hidden": "Ukryte"
+        },
+        "OptionalFields": {
+          "Name": "Pola opcjonalne",
+          "Level": "Poziom stworzenia",
+          "Languages": "Znane języki",
+          "Height": "Wysokość",
+          "Weight": "Szerokość"
+        },
+        "DetailedInformation": {
+          "Name": "Przełączniki szczegółowych informacji",
+          "ExceptionsDoubleVs": "(NPO) Wyjątki i podwójne",
+          "AttackTraits": "Cechy ataku",
+          "DamageTypes": "Rodzaje obrażeń",
+          "AbilityTraits": "Cechy zdolności"
+        },
+        "ImageSettings": {
+          "Title": "Ustawienia awatara",
+          "HideState": "Domyślny filtr",
+          "HiddenImage": "Ukryty obraz"
+        },
+        "AdditionalCreatureTypes": {
+          "Name": "Dodatkowe typy stworzeń",
+          "SubText": "Możesz dodać więcej dostępnych cech stworzeń do wyboru w ustawieniach systemu PF2E dla Zasad Domowych."
+        },
+        "CategorySettings": {
+          "Title": "Dostosowywanie kategorii bestiariusza",
+          "Image": "Obraz"
+        }
+      },
+      "BestiaryIntegration": {
+        "Name": "Integracja bestiariusza",
+        "Menu": {
+          "Name": "Integracja bestiariusza",
+          "Label": "Ustawienia integracji bestiariusza",
+          "Hint": "Dostosuj sposób interakcji z Bestiariuszem"
+        },
+        "CreatureRegistration": {
+          "Name": "Rejestracja bestiariusza"
+        },
+        "AutomaticRevealing": {
+          "Name": "Automatyczne ujawnianie po użyciu",
+          "Saves": "Rzuty obronne",
+          "Skills": "Umiejętności",
+          "Attacks": "Ataki",
+          "Actions": "Akcje",
+          "Spells": "Zaklęcia"
+        },
+        "HiddenSettings": {
+          "Name": "Domyślnie ukryte przed graczami",
+          "Monster": "Potwór",
+          "NPC": "BN",
+          "Hazard": "Zagrożenie",
+          "NPCCategories": "Kategorie BN",
+          "ImageHideState": {
+            "Title": "Początkowy ukryty stan obrazu",
+            "Revealed": "Ujawnione",
+            "Outline": "Zarys",
+            "Hidden": "Ukryte",
+            "Sepia": "Sepia"
+          }
+        },
+        "DefaultRevealed": {
+          "Title": "Domyślne ujawnione właściwości",
+          "Creature": "Stworzenie",
+          "NPC": "BN",
+          "Hazard": "Zagrożenie",
+          "Name": "Nazwa",
+          "Traits": "Cechy",
+          "Attributes": "Atrybuty",
+          "Description": "Opis",
+          "AC": "KP",
+          "HP": "PW",
+          "Saves": "Rzuty obronne",
+          "IWR": "Niewrażliwości, Podatności, Odporności",
+          "Speeds": "Szybkości",
+          "Senses": "Zmysły",
+          "Skills": "Umiejętności",
+          "Attacks": "Ataki",
+          "Abilities": "Zdolności",
+          "Spells": "Zaklęcia",
+          "Perception": "Percepcja",
+          "Level": "Poziom",
+          "Languages": "Języki",
+          "Appearance": "Wygląd",
+          "Personality": "Osobowość",
+          "Background": "Przeszłość",
+          "Height": "Wysokość",
+          "Weight": "Szerokość",
+          "Premise": "Założenia (wpływy)",
+          "Hardness": "Twardość",
+          "Disable": "Wyłącz",
+          "Routine": "Rutyna",
+          "Reset": "Reset",
+          "Initiative": "Inicjatywa",
+          "Stealth": "Ukrycie"
+        }
+      }
+    },
+    "Settings": {
+      "Version": {
+        "Name": "Wersja",
+        "Hint": "Wersja modułu"
+      },
+      "AutomaticCombatRegistration": {
+        "Name": "Rejestracja w walce",
+        "Hint": "Automatyczne dodawanie nowych wrogów do Bestiariusza podczas wybranego etapu walki.",
+        "Choices": {
+          "Never": "Nigdy",
+          "StartOfCombat": "Na poczatku walki",
+          "CreatureDefeated": "Kiedy stworzenie zostanie pokonane"
+        }
+      },
+      "NPCRegistation": {
+        "Name": "Rejestracja BN",
+        "Hint": "Wybierz sposób, w jaki postacie niezależne będą rozpoznawane przez bestiariusz.",
+        "Choices": {
+          "Unique": "Według unikalnej rzadkości",
+          "Tag": "Według tagu BN"
+        }
+      },
+      "HideTokenNames": {
+        "Name": "Mistyfikacja nazw tokenów",
+        "Hint": "Ustaw nazwy tokenów na podstawie ich statusu w bestiariuszu, aby nie ujawniać informacji."
+      },
+      "AutomaticallyOpenMonster": {
+        "Name": "Automatycznie otwierany wpis do bestiariusza",
+        "Hint": "Automatycznie otwiera wpis bestiariusza dla potworów, które do niego upuścisz."
+      },
+      "DoubleClickOpen": {
+        "Name": "Podwójne kliknięcie otwiera",
+        "Hint": "Otwiera wpis Bestiariusza stworzenia po jego dwukrotnym kliknięciu (+ ALT dla MG). Gdy to ustawienie jest aktywne, wszystkie stworzenia w Bestiariuszu otrzymują poziom Własności ustawiony na „Ograniczony” dla graczy. (Wymaga modułu LibWrapper)"
+      },
+      "ContrastRevealState": {
+        "Name": "Kontrastowy stan ujawnienia",
+        "Hint": "Opcja dla MG, aby zobaczyć ukryte/ujawnione pola w kontrastowych kolorach."
+      }
+    },
+    "Macros": {
+      "ShowMonster": {
+        "NoTarget": "Nie wybrano ani nie namierzono żadnego potwora.",
+        "NoActor": "Stworzenie to nie odgrywa żadnej roli na świecie i nie jest powiązane z Bestiariuszem.",
+        "InvalidTarget": "Celem musi być istota BN!",
+        "TargetNotInBestiary": "Ten potwór nie został jeszcze dodany do bestiariusza!"
+      },
+      "AddMonster": {
+        "GMOnly": "To makro może być używane tylko przez MG.",
+        "TargetAlreadyInBestiary": "To stworzenie jest już w bestiariuszu!"
+      },
+      "ResetBestiary": {
+        "Title": "Reset Bestiariusza",
+        "Text": "Spowoduje to usunięcie wszystkich aktualnych danych z bestiariusza. Czy na pewno chcesz to zrobić?"
+      },
+      "DeactivateModule": {
+        "GMOnly": "To makro może być używane tylko przez MG.",
+        "Title": "Dezaktywacja PF2E Bestiary Tracking",
+        "Name": "Dezaktywacja modułu Bestiariusza",
+        "Text": {
+          "FirstPart": "Spowoduje to dezaktywację modułu i bezpieczne przechowywanie danych Bestiariusza w folderze dziennika BestiaryTracking bestiariusza.",
+          "SecondPart": "Jeśli usuniesz zawartość tego folderu i ponownie aktywujesz moduł, dane Bestiariusza znikną.",
+          "Link": "https://github.com/WBHarry/pf2e-bestiary-tracking/wiki/Module-Deactivation"
+        },
+        "DependencyResolutionWarning": "Zamiast tego należy użyć makra {name}, aby uniknąć błędów konsoli po dezaktywacji."
+      }
+    },
+    "Interactivity": {
+      "RevealAbility": "Ujawnienie zdolności w bestiariuszu",
+      "RegisterInBestiary": "Dodaj do Bestiariusza"
+    }
+  },
+  "TYPES": {
+    "JournalEntryPage": {
+      "pf2e-bestiary-tracking": {
+        "creature": "Stworzenie",
+        "npc": "BN",
+        "hazard": "Zagrożenie"
+      }
+    }
+  }
+}

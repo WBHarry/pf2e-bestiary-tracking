@@ -78,6 +78,11 @@
       "lang": "fr",
       "name": "French",
       "path": "lang/fr.json"
+    },
+    {
+      "lang": "pl",
+      "name": "Polish",
+      "path": "lang/pl.json"
     }
   ],
   "url": "https://github.com/WBHarry/pf2e-bestiary-tracking",
