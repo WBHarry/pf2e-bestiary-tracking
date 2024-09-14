@@ -1447,7 +1447,7 @@ form.pf2e-bestiary-tracking.application > header .header-control {
   border: 1px solid;
   border-radius: 6px;
 }
-.pf2e-bestiary-tracking .primary-editor .editor-content[contenteditable=true] {
+.pf2e-bestiary-tracking .primary-editor .editor-content[contenteditable="true"] {
   border-top: 0;
   border-top-right-radius: 0;
   border-top-left-radius: 0;

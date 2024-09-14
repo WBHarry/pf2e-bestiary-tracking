@@ -489,3 +489,354 @@ export const getNPCDataFromOld = (actor, wrongCategory) => {
     },
   };
 };
+
+export const getOldMonsterData = async (item) => {
+  const oldIsNPC = (data) => {
+    const npcRegistration = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "npc-registration",
+    );
+    return npcRegistration === 0
+      ? data.system.traits.rarity === "unique"
+      : Object.values(data.system.traits.value).find((x) =>
+          x.value ? x.value === "npc" : x === "npc",
+        );
+  };
+
+  const getIWRString = (base, isResistance) => {
+    const baseString = base.type;
+    const doubleVsString =
+      base.doubleVs?.length > 0
+        ? `double ${isResistance ? "resistance" : "weakness"} ${getMultiplesString(base.doubleVs)}`
+        : "";
+    const exceptionsString =
+      base.exceptions?.length > 0
+        ? `except ${getMultiplesString(base.exceptions)}`
+        : "";
+
+    return `${baseString}${doubleVsString || exceptionsString ? ` (${exceptionsString}${doubleVsString ? ";" : ""}${doubleVsString})` : ""}`;
+  };
+
+  if (!item || item.hasPlayerOwner || item.type !== "npc") return null;
+
+  const dataObject = item.toObject(false);
+  dataObject.uuid = item.uuid;
+  dataObject.name = { revealed: false, value: dataObject.name };
+
+  const immunityKeys = Object.keys(dataObject.system.attributes.immunities);
+  dataObject.system.attributes.immunities =
+    immunityKeys.length > 0
+      ? immunityKeys.reduce((acc, key) => {
+          const immunity = dataObject.system.attributes.immunities[key];
+          acc[getIWRString(immunity)] = {
+            ...immunity,
+            exceptions: immunity.exceptions.map((x) => ({
+              revealed: false,
+              value: x,
+            })),
+          };
+
+          return acc;
+        }, {})
+      : {
+          none: {
+            revealed: false,
+            empty: true,
+            type: game.i18n.localize("PF2EBestiary.Miscellaneous.None"),
+          },
+        };
+
+  const weaknessKeys = Object.keys(dataObject.system.attributes.weaknesses);
+  dataObject.system.attributes.weaknesses =
+    weaknessKeys.length > 0
+      ? weaknessKeys.reduce((acc, key) => {
+          const weakness = dataObject.system.attributes.weaknesses[key];
+          acc[getIWRString(weakness, false)] = {
+            ...weakness,
+            exceptions: weakness.exceptions.map((x) => ({
+              revealed: false,
+              value: x,
+            })),
+          };
+
+          return acc;
+        }, {})
+      : {
+          none: {
+            revealed: false,
+            empty: true,
+            type: game.i18n.localize("PF2EBestiary.Miscellaneous.None"),
+          },
+        };
+
+  const resistanceKeys = Object.keys(dataObject.system.attributes.resistances);
+  dataObject.system.attributes.resistances =
+    resistanceKeys.length > 0
+      ? resistanceKeys.reduce((acc, key) => {
+          const resistance = dataObject.system.attributes.resistances[key];
+          acc[getIWRString(resistance, true)] = {
+            ...resistance,
+            exceptions: resistance.exceptions.map((x) => ({
+              revealed: false,
+              value: x,
+            })),
+            doubleVs: resistance.doubleVs.map((x) => ({
+              revealed: false,
+              value: x,
+            })),
+          };
+
+          return acc;
+        }, {})
+      : {
+          none: {
+            revealed: false,
+            empty: true,
+            type: game.i18n.localize("PF2EBestiary.Miscellaneous.None"),
+          },
+        };
+
+  dataObject.system.traits.value = dataObject.system.traits.value.reduce(
+    (acc, traitKey) => {
+      acc[traitKey] = { revealed: false, value: traitKey };
+
+      return acc;
+    },
+    {},
+  );
+
+  dataObject.system.actions = Object.keys(dataObject.system.actions).reduce(
+    (acc, index) => {
+      const action = dataObject.system.actions[index];
+      acc[action.item._id] = {
+        ...action,
+        damageStatsRevealed: false,
+      };
+
+      Object.values(dataObject.items)
+        .filter((x) => x._id === action.item._id)
+        .forEach((item) => {
+          if (item.type === "melee") {
+            Object.keys(item.system.damageRolls).forEach((key) => {
+              item.system.damageRolls[key].damageType = {
+                revealed: false,
+                value: item.system.damageRolls[key].damageType,
+              };
+            });
+
+            item.system.traits.value = item.system.traits.value.map(
+              (trait) => ({ revealed: false, value: trait }),
+            );
+          } else if (item.type === "equipment") {
+            item.system.damageRolls = Object.keys(
+              action.weapon.system.damageRolls,
+            ).reduce((acc, damageKey) => {
+              acc[damageKey] = {
+                ...action.weapon.system.damageRolls[damageKey],
+                damageType: {
+                  revealed: false,
+                  value: action.weapon.system.damageRolls[damageKey].damageType,
+                },
+              };
+
+              return acc;
+            }, {});
+
+            // If this crops up more, make a general helper method to extract all types of rules.
+            item.system.rules.forEach((rule) => {
+              if (rule.key === "FlatModifier") {
+                item.system.damageRolls[
+                  `${rule.damageType}-${foundry.utils.randomID()}`
+                ] = {
+                  damageType: { revealed: false, value: rule.damageType },
+                  damage: rule.value.toString(),
+                  isFromRule: true,
+                };
+              }
+            });
+
+            item.system.traits.value = item.system.traits.value.map(
+              (trait) => ({ revealed: false, value: trait }),
+            );
+          }
+        });
+
+      return acc;
+    },
+    {},
+  );
+
+  dataObject.system.perception.details = {
+    revealed: false,
+    value: dataObject.system.perception.details,
+  };
+
+  dataObject.system.details.languages.value =
+    dataObject.system.details.languages.value.map((x) => ({
+      revealed: false,
+      value: x,
+    }));
+  dataObject.system.details.languages.details = {
+    revealed: false,
+    value: dataObject.system.details.languages.details,
+  };
+
+  dataObject.items = Object.keys(dataObject.items).reduce((acc, key) => {
+    const item = dataObject.items[key];
+    if (item.type === "spellcastingEntry") {
+      item.system.spelldc.dc = {
+        revealed: false,
+        value: item.system.spelldc.dc,
+      };
+      item.system.spelldc.value = {
+        revealed: false,
+        value: item.system.spelldc.value,
+      };
+    }
+
+    acc[item._id] = { revealed: false, ...item };
+
+    return acc;
+  }, {});
+
+  const noSpells = !Object.keys(dataObject.items).find((x) => {
+    const item = dataObject.items[x];
+    return item.type === "spellcastingEntry";
+  });
+  if (noSpells) {
+    dataObject.items["Spells-None"] = {
+      type: "spellcastingEntry",
+      _id: "Spell-None",
+      revealed: false,
+      system: {
+        spelldc: {
+          dc: { value: 0 },
+          value: { value: 0 },
+        },
+      },
+    };
+  }
+
+  if (Object.keys(dataObject.system.actions).length === 0) {
+    dataObject.system.actions["Attack-None"] = {
+      revealed: false,
+      label: "None",
+      empty: true,
+      item: {
+        system: {
+          damageRolls: {},
+        },
+        _id: "Attack-None",
+      },
+      weapon: {
+        system: {
+          traits: {
+            value: [],
+          },
+        },
+      },
+      variants: [],
+      traits: [],
+      totalModifier: 0,
+    };
+
+    dataObject.items["Attack-None"] = {
+      _id: "Attack-None",
+      empty: true,
+      type: "melee",
+      Name: "None",
+      value: "PF2E.Miscellaneous.None",
+      system: {
+        damageRolls: [],
+        traits: {
+          value: [],
+        },
+      },
+    };
+  }
+
+  var hasActions = false;
+  var hasPassives = false;
+  for (var item of Object.values(dataObject.items)) {
+    if (item.type === "action") {
+      item.system.traits.value = item.system.traits.value.map((trait) => ({
+        revealed: false,
+        value: trait,
+      }));
+
+      if (item.system.actionType.value !== "passive") hasActions = true;
+      if (item.system.actionType.value === "passive") hasPassives = true;
+    }
+  }
+
+  if (!hasActions) {
+    dataObject.items["Action-None"] = {
+      _id: "Action-None",
+      empty: true,
+      type: "action",
+      name: "None",
+      value: "PF2E.Miscellaneous.None",
+      system: {
+        actionType: { value: "action" },
+        description: {
+          value: null,
+        },
+        traits: {
+          value: [],
+        },
+      },
+    };
+  }
+  if (!hasPassives) {
+    dataObject.items["Passive-None"] = {
+      _id: "Passive-None",
+      empty: true,
+      type: "action",
+      name: "None",
+      value: "PF2E.Miscellaneous.None",
+      system: {
+        actionType: { value: "passive" },
+        description: {
+          value: null,
+        },
+        traits: {
+          value: [],
+        },
+      },
+    };
+  }
+
+  dataObject.system.details.publicNotes = {
+    revealed: false,
+    text: dataObject.system.details.publicNotes,
+  };
+  dataObject.system.details.privateNotes = {
+    revealed: false,
+    text: dataObject.system.details.privateNotes,
+  };
+
+  const hiddenSettings = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "hidden-settings",
+  );
+  if (oldIsNPC(dataObject)) {
+    dataObject.hidden = hiddenSettings.npc;
+    dataObject.npcData = {
+      categories: [],
+      general: {
+        background: { value: "", revealed: false },
+        appearance: { value: "", revealed: false },
+        personality: { value: "", revealed: false },
+        height: { value: "", revealed: false },
+        weight: { value: "", revealed: false },
+        birthplace: { value: "", revealed: false },
+        disposition: {},
+      },
+      influence: {},
+    };
+  } else {
+    dataObject.hidden = hiddenSettings.monster;
+  }
+
+  return dataObject;
+};

@@ -2,8 +2,8 @@ import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import {
   getCreatureDataFromOld,
   getNPCDataFromOld,
+  getOldMonsterData,
 } from "../data/oldModelHelpers.js";
-import PF2EBestiary from "../module/bestiary.js";
 import { currentVersion } from "./setup.js";
 import {
   acTable,
@@ -666,7 +666,7 @@ export const handleBestiaryMigration = async (bestiary, isSave) => {
       };
       for (var uuid of uuids) {
         const orig = await fromUuid(uuid);
-        const data = await PF2EBestiary.getMonsterData(orig);
+        const data = await getOldMonsterData(orig);
         const oldCreature = dataBestiary.monster[uuid];
 
         if (!data) {
