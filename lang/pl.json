@@ -1,11 +1,15 @@
 {
   "PF2EBestiary": {
-    "Name": "Bestiariusz",
+    "Name": "Bestiarium",
     "BestiaryName": "Bestiariusz",
     "KeyBindings": {
       "OpenBestiary": {
         "Name": "Otwórz Bestiariusz",
         "Hint": "Otwiera bestiariusz"
+      },
+      "OpenBestiaryCombat": {
+        "Name": "Otwarta sekcja walki Bestiariusza",
+        "Hint": "Prowadzi bezpośrednio do wszystkich istot biorących udział w walce"
       },
       "ShowMonster": {
         "Name": "Pokaż potwora",
@@ -15,6 +19,12 @@
         "Name": "Dodaj potwora",
         "Hint": "Dodaje aktualnie wybraną lub namierzoną istotę do bestiariusza"
       }
+    },
+    "DegreeOfSuccess": {
+      "CriticalSuccess": "Krytyczny Sukces",
+      "Success": "Sukces",
+      "Failure": "Porażka",
+      "CriticalFailure": "Krytyczna Porażka"
     },
     "BestiarySelection": {
       "Name": "Wybór bestiariusza",
@@ -63,7 +73,7 @@
       "Attacks": "Ataki",
       "Languages": "Języki",
       "Skills": "Umiejętności",
-      "Abilities": "Zdolności",
+      "Actions": "Akcje",
       "Passives": "Pasywne",
       "Save": "Zapisz",
       "Except": "z wyjątkiem",
@@ -95,6 +105,7 @@
         "Greeting": "Witaj w Bestiariuszu!",
         "PlayersSection": {
           "Title": "Dla graczy",
+          "ThemingTip": "Wybierz swój ulubiony motyw wizualny dla Bestiariusza w ustawieniach modułu",
           "NavigationTip": "Nawiguj między różnymi typami stworzeń za pomocą zakładek po lewej stronie.",
           "MacroTip": "Sprawdź kompendium modułu i dodaj przydatne makra do paska skrótów."
         },
@@ -134,7 +145,8 @@
         "InCombat": "W walce",
         "CategoryPlaceholder": "Dodaj kategorie, z którymi powiązany jest BN",
         "LeftClick": "Kliknij lewym",
-        "RightClick": "Kliknij prawym"
+        "RightClick": "Kliknij prawym",
+        "RecallKnowledgeAttempts": "Próby Przywołania Wiedzy"
       },
       "Tabs": {
         "Statistics": "Statystyki",
@@ -472,6 +484,10 @@
       "ContrastRevealState": {
         "Name": "Kontrastowy stan ujawnienia",
         "Hint": "Opcja dla MG, aby zobaczyć ukryte/ujawnione pola w kontrastowych kolorach."
+      },
+      "BestiaryTheme": {
+        "Name": "Motyw Bestiariusza",
+        "Hint": "Wybierz motyw wizualny dla Bestiariusza"
       }
     },
     "Macros": {
@@ -480,6 +496,9 @@
         "NoActor": "Stworzenie to nie odgrywa żadnej roli na świecie i nie jest powiązane z Bestiariuszem.",
         "InvalidTarget": "Celem musi być istota BN!",
         "TargetNotInBestiary": "Ten potwór nie został jeszcze dodany do bestiariusza!"
+      },
+      "OpenBestiaryCombat": {
+        "NoActiveCombat": "Obecnie nie toczy się żadna aktywna walka"
       },
       "AddMonster": {
         "GMOnly": "To makro może być używane tylko przez MG.",
