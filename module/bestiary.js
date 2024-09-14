@@ -422,16 +422,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       },
     };
 
-    if (!npc) {
-      tabs["notes"] = {
-        active: false,
-        cssClass: "",
-        group: "creature",
-        id: "notes",
-        icon: null,
-        label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes"),
-      };
-    }
+    tabs["notes"] = {
+      active: false,
+      cssClass: "",
+      group: "creature",
+      id: "notes",
+      icon: null,
+      label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes"),
+    };
 
     for (const v of Object.values(tabs)) {
       if (v.id === "generalSidebar") {

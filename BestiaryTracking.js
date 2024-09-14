@@ -4407,8 +4407,8 @@ class Creature extends foundry.abstract.TypeDataModel {
                 acc[trait] = {
                   ...attack.traits[trait],
                   revealed:
-                    oldAttack.traits[trait]?.revealed ??
-                    attack.traits[trait].revealed,
+                    oldAttack?.traits ? oldAttack.traits[trait]?.revealed ??
+                    attack.traits[trait].revealed :attack.traits[trait].revealed,
                 };
                 return acc;
               }, {}),
@@ -10060,7 +10060,7 @@ const bestiaryThemeChoices = {
   // parchment: 'Parchment',
 };
 
-const currentVersion = "1.0.4";
+const currentVersion = "1.0.5";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -11724,16 +11724,15 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       },
     };
 
-    if (!npc) {
-      tabs["notes"] = {
-        active: false,
-        cssClass: "",
-        group: "creature",
-        id: "notes",
-        icon: null,
-        label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes"),
-      };
-    }
+    tabs["notes"] = {
+      active: false,
+      cssClass: "",
+      group: "creature",
+      id: "notes",
+      icon: null,
+      label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes"),
+    };
+    
 
     for (const v of Object.values(tabs)) {
       if (v.id === "generalSidebar") {

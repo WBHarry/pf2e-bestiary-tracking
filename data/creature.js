@@ -933,9 +933,10 @@ export class Creature extends foundry.abstract.TypeDataModel {
               traits: Object.keys(attack.traits).reduce((acc, trait) => {
                 acc[trait] = {
                   ...attack.traits[trait],
-                  revealed:
-                    oldAttack.traits[trait]?.revealed ??
-                    attack.traits[trait].revealed,
+                  revealed: oldAttack?.traits
+                    ? (oldAttack.traits[trait]?.revealed ??
+                      attack.traits[trait].revealed)
+                    : attack.traits[trait].revealed,
                 };
                 return acc;
               }, {}),
