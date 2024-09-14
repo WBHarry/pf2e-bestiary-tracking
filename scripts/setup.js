@@ -36,7 +36,10 @@ export const setupTheme = () => {
     ];
   const root = document.querySelector(":root");
   for (var property of Object.keys(theme)) {
-    if (property === "--pf2e-bestiary-tracking-application-image") {
+    if (
+      property === "--pf2e-bestiary-tracking-application-image" &&
+      theme[property] !== "ignore"
+    ) {
       const baseUri = document.baseURI.split("game")[0];
       root.style.setProperty(property, `url("${baseUri}${theme[property]}")`);
     } else {

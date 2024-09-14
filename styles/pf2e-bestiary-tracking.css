@@ -1355,6 +1355,11 @@ form.pf2e-bestiary-tracking.application > header .header-control {
 .pf2e-bestiary-tracking input.primary-container .data-icon {
   filter: var(--pf2e-bestiary-tracking-icon-filter);
 }
+.pf2e-bestiary-tracking .primary-container-faded {
+  background-color: var(--pf2e-bestiary-tracking-primary-faded);
+  border-color: var(--pf2e-bestiary-tracking-border);
+  color: var(--pf2e-bestiary-tracking-primary-color);
+}
 .pf2e-bestiary-tracking .secondary-container,
 .pf2e-bestiary-tracking input.secondary-container {
   background-color: var(--pf2e-bestiary-tracking-secondary);
@@ -1415,6 +1420,37 @@ form.pf2e-bestiary-tracking.application > header .header-control {
 }
 .pf2e-bestiary-tracking .primary-text-container {
   color: var(--pf2e-bestiary-tracking-primary-color);
+}
+.pf2e-bestiary-tracking .primary-editor button.icon.toggle {
+  background-color: var(--pf2e-bestiary-tracking-secondary);
+  color: var(--pf2e-bestiary-tracking-primary-color);
+  border-color: var(--pf2e-bestiary-tracking-border);
+}
+.pf2e-bestiary-tracking .primary-editor menu {
+  background-color: var(--pf2e-bestiary-tracking-secondary);
+  border-color: var(--pf2e-bestiary-tracking-border);
+  border: 1px solid;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.pf2e-bestiary-tracking .primary-editor menu li button {
+  color: var(--pf2e-bestiary-tracking-primary-color);
+}
+.pf2e-bestiary-tracking .primary-editor menu li button.pm-dropdown {
+  background: var(--pf2e-bestiary-tracking-tertiary);
+}
+.pf2e-bestiary-tracking .primary-editor menu li button.pm-dropdown i.fa-chevron-down {
+  color: var(--pf2e-bestiary-tracking-primary-color);
+}
+.pf2e-bestiary-tracking .primary-editor .editor-content {
+  border-color: var(--pf2e-bestiary-tracking-border);
+  border: 1px solid;
+  border-radius: 6px;
+}
+.pf2e-bestiary-tracking .primary-editor .editor-content[contenteditable=true] {
+  border-top: 0;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
 }
 .pf2e-bestiary-tracking .bookmark:hover {
   background-color: var(--pf2e-bestiary-tracking-primary-accent);

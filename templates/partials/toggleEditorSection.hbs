@@ -7,7 +7,7 @@
     </div>
     <div class="data-body primary-border-container flex1">
         {{#if (and this.user.isGM editMode)}}
-            <prose-mirror class="data-input secondary-container" name="{{concat path ".value"}}" value="{{data.value}}">
+            <prose-mirror class="data-input primary-editor" name="{{concat path ".value"}}" value="{{data.value}}">
                 {{{data.enriched}}}
             </prose-mirror>
         {{else}}

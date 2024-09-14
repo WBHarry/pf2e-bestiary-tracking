@@ -1,7 +1,6 @@
 import coreDark from "./coreDark";
 import coreLight from "./coreLight";
 import nebula from "./nebula";
-import parchment from "./parchment";
 import viscera from "./viscera";
 import water from "./water";
 

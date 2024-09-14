@@ -3514,9 +3514,11 @@ class Creature extends foundry.abstract.TypeDataModel {
           initial: 0,
         }),
       }),
-      recallKnowledge: new MappingField(new fields.SchemaField({
-        attempts: new MappingField(new fields.StringField({ })),
-      })),
+      recallKnowledge: new MappingField(
+        new fields.SchemaField({
+          attempts: new MappingField(new fields.StringField({})),
+        }),
+      ),
       name: toggleStringField(),
       publication: new fields.SchemaField({
         authors: new fields.StringField({}),
@@ -4094,20 +4096,45 @@ class Creature extends foundry.abstract.TypeDataModel {
         .find((x) => x.type === "party" && x.active)
         ?.system?.details?.members?.reduce((acc, x) => {
           const actor = game.actors.find((actor) => actor.uuid === x.uuid);
-          if(actor.type !== 'character' || actor.system.traits.value.some(x => x === 'eidolon' || x === 'minion' || x === 'npc')) return acc;
+          if (
+            actor.type !== "character" ||
+            actor.system.traits.value.some(
+              (x) => x === "eidolon" || x === "minion" || x === "npc",
+            )
+          )
+            return acc;
 
           let nrValues = 4;
-          if(this.recallKnowledge[actor.id] && Object.keys(this.recallKnowledge[actor.id].attempts).length > 0){
-            const filteredAttempts = Object.keys(this.recallKnowledge[actor.id].attempts).filter(x => this.recallKnowledge[actor.id].attempts[x] !== 'none');
-            const highestIndex = Number.parseInt(filteredAttempts.sort((b, a) => Number.parseInt(a) - Number.parseInt(b))[0]);
-            const exactBase = Math.max(filteredAttempts.length/4, highestIndex/4);
-            const baseNr = Math.ceil(exactBase) === exactBase ? exactBase+1 : Math.ceil(exactBase);
-            nrValues = baseNr * 4;
+          if (
+            this.recallKnowledge[actor.id] &&
+            Object.keys(this.recallKnowledge[actor.id].attempts).length > 0
+          ) {
+            const filteredAttempts = Object.keys(
+              this.recallKnowledge[actor.id].attempts,
+            ).filter(
+              (x) => this.recallKnowledge[actor.id].attempts[x] !== "none",
+            );
+            if(filteredAttempts.length > 0){
+              const highestIndex = Number.parseInt(
+                filteredAttempts.sort(
+                  (b, a) => Number.parseInt(a) - Number.parseInt(b),
+                )[0],
+              );
+              const exactBase = Math.max(
+                filteredAttempts.length / 4,
+                highestIndex / 4,
+              );
+              const baseNr =
+                Math.ceil(exactBase) === exactBase
+                  ? exactBase + 1
+                  : Math.ceil(exactBase);
+              nrValues = baseNr * 4;
+            }
           }
 
           acc.push({
             values: Array.from(Array(nrValues)).reduce((acc, key, index) => {
-              acc[index] =  recallKnowledgeOutcomes.none;
+              acc[index] = recallKnowledgeOutcomes.none;
               return acc;
             }, {}),
             id: actor.id,
@@ -4118,11 +4145,13 @@ class Creature extends foundry.abstract.TypeDataModel {
         }, []) ?? [];
 
     return partyCharacters.reduce((acc, character) => {
-      const attempts = this.recallKnowledge[character.id]?.attempts ?? {}; 
+      const attempts = this.recallKnowledge[character.id]?.attempts ?? {};
 
       acc.push({
         values: Object.keys(character.values).reduce((acc, key) => {
-          acc[key] = attempts[key] ? recallKnowledgeOutcomes[attempts[key]] : character.values[key];
+          acc[key] = attempts[key]
+            ? recallKnowledgeOutcomes[attempts[key]]
+            : character.values[key];
 
           return acc;
         }, {}),
@@ -5446,13 +5475,19 @@ class NPC extends Creature {
     }
   }
 
-  get partyDispositions() { 
+  get partyDispositions() {
     const partyCharacters =
       game.actors
         .find((x) => x.type === "party" && x.active)
         ?.system?.details?.members?.reduce((acc, x) => {
           const actor = game.actors.find((actor) => actor.uuid === x.uuid);
-          if(actor.type !== 'character' || actor.system.traits.value.some(x => x === 'eidolon' || x === 'minion' || x === 'npc')) return acc;
+          if (
+            actor.type !== "character" ||
+            actor.system.traits.value.some(
+              (x) => x === "eidolon" || x === "minion" || x === "npc",
+            )
+          )
+            return acc;
 
           acc.push({
             value: dispositions.indifferent.value,
@@ -5611,6 +5646,11 @@ class Hazard extends foundry.abstract.TypeDataModel {
           initial: 0,
         }),
       }),
+      recallKnowledge: new MappingField(
+        new fields.SchemaField({
+          attempts: new MappingField(new fields.StringField({})),
+        }),
+      ),
       name: toggleStringField(),
       publication: new fields.SchemaField({
         authors: new fields.StringField({}),
@@ -5899,6 +5939,79 @@ class Hazard extends foundry.abstract.TypeDataModel {
       : (this.name.custom ?? this.name.value);
   }
 
+  get recallKnowledgeAttempts() {
+    const partyCharacters =
+      game.actors
+        .find((x) => x.type === "party" && x.active)
+        ?.system?.details?.members?.reduce((acc, x) => {
+          const actor = game.actors.find((actor) => actor.uuid === x.uuid);
+          if (
+            actor.type !== "character" ||
+            actor.system.traits.value.some(
+              (x) => x === "eidolon" || x === "minion" || x === "npc",
+            )
+          )
+            return acc;
+
+          let nrValues = 4;
+          if (
+            this.recallKnowledge[actor.id] &&
+            Object.keys(this.recallKnowledge[actor.id].attempts).length > 0
+          ) {
+            const filteredAttempts = Object.keys(
+              this.recallKnowledge[actor.id].attempts,
+            ).filter(
+              (x) => this.recallKnowledge[actor.id].attempts[x] !== "none",
+            );
+            if(filteredAttempts.length > 0){
+              const highestIndex = Number.parseInt(
+                filteredAttempts.sort(
+                  (b, a) => Number.parseInt(a) - Number.parseInt(b),
+                )[0],
+              );
+              const exactBase = Math.max(
+                filteredAttempts.length / 4,
+                highestIndex / 4,
+              );
+              const baseNr =
+                Math.ceil(exactBase) === exactBase
+                  ? exactBase + 1
+                  : Math.ceil(exactBase);
+              nrValues = baseNr * 4;
+            }
+          }
+
+          acc.push({
+            values: Array.from(Array(nrValues)).reduce((acc, key, index) => {
+              acc[index] = recallKnowledgeOutcomes.none;
+              return acc;
+            }, {}),
+            id: actor.id,
+            name: actor.name,
+          });
+
+          return acc;
+        }, []) ?? [];
+
+    return partyCharacters.reduce((acc, character) => {
+      const attempts = this.recallKnowledge[character.id]?.attempts ?? {};
+
+      acc.push({
+        values: Object.keys(character.values).reduce((acc, key) => {
+          acc[key] = attempts[key]
+            ? recallKnowledgeOutcomes[attempts[key]]
+            : character.values[key];
+
+          return acc;
+        }, {}),
+        id: character.id,
+        name: character.name,
+      });
+
+      return acc;
+    }, []);
+  }
+
   _getRefreshData(hazard, hazardData) {
     const data = hazardData ?? getHazardData(hazard);
 
@@ -5949,11 +6062,11 @@ class Hazard extends foundry.abstract.TypeDataModel {
             revealed: this.stealth.details.revealed,
           },
         },
-        initiative: {
+        initiative: data.system.initiative && !this.initiative ? data.system.initiative : data.system.initiative && this.initiative ? {
           ...data.system.initiative,
           revealed: this.initiative.revealed,
           custom: this.initiative.custom,
-        },
+        } : null,
         saves: Object.keys(data.system.saves).reduce((acc, key) => {
           acc[key] = {
             ...data.system.saves[key],
@@ -9453,10 +9566,11 @@ const handleDeactivatedPages = async () => {
 };
 
 const coreDark = {
-  "--pf2e-bestiary-tracking-application-image": "none",
+  "--pf2e-bestiary-tracking-application-image": "ignore",
   "--pf2e-bestiary-tracking-application": "rgba(11, 10, 19, 0.9)",
   "--pf2e-bestiary-tracking-secondary-application": "#431b1b",
-  "--pf2e-bestiary-tracking-primary": "#5e0000",
+  "--pf2e-bestiary-tracking-primary": "rgb(94 0 0)",
+  "--pf2e-bestiary-tracking-primary-faded": "rgb(94 0 0 / 50%)",
   "--pf2e-bestiary-tracking-secondary": "#4b4b8c",
   "--pf2e-bestiary-tracking-tertiary": "#007149",
   "--pf2e-bestiary-tracking-primary-accent": "#760000",
@@ -9476,7 +9590,8 @@ const coreLight = {
   "--pf2e-bestiary-tracking-application-image-repeat": "repeat",
   "--pf2e-bestiary-tracking-application": "initial",
   "--pf2e-bestiary-tracking-secondary-application": "#b8cccb",
-  "--pf2e-bestiary-tracking-primary": "#d4bdac",
+  "--pf2e-bestiary-tracking-primary": "rgb(212 189 172)",
+  "--pf2e-bestiary-tracking-primary-faded": "rgb(212 189 172 / 25%)",
   "--pf2e-bestiary-tracking-secondary": "#62b356",
   "--pf2e-bestiary-tracking-tertiary": "#62acce",
   "--pf2e-bestiary-tracking-primary-accent": "#fff1db",
@@ -9502,7 +9617,8 @@ const nebula = {
   "--pf2e-bestiary-tracking-application": "",
   "--pf2e-bestiary-tracking-secondary-application": "",
   "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px grey)",
-  "--pf2e-bestiary-tracking-primary": "#73a9bc",
+  "--pf2e-bestiary-tracking-primary": "rgb(115 169 188)",
+  "--pf2e-bestiary-tracking-primary-faded": "rgb(115 169 188 / 50%)",
   "--pf2e-bestiary-tracking-secondary": "#cd7e23",
   "--pf2e-bestiary-tracking-tertiary": "#7476a6",
   "--pf2e-bestiary-tracking-primary-accent": "#0888b5",
@@ -9526,8 +9642,9 @@ const viscera = {
   "--pf2e-bestiary-tracking-application": "",
   "--pf2e-bestiary-tracking-secondary-application": "",
   "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px grey)",
-  "--pf2e-bestiary-tracking-primary": "#813f3f",
-  "--pf2e-bestiary-tracking-secondary": "#483c70", // #ba476d
+  "--pf2e-bestiary-tracking-primary": "rgb(129 63 63)",
+  "--pf2e-bestiary-tracking-primary-faded": "rgb(129 63 63 / 50%)",
+  "--pf2e-bestiary-tracking-secondary": "#483c70",
   "--pf2e-bestiary-tracking-tertiary": "crimson",
   "--pf2e-bestiary-tracking-primary-accent": "#9f2828",
   "--pf2e-bestiary-tracking-tertiary-accent": "#c12c2c",
@@ -9550,7 +9667,8 @@ const water = {
   "--pf2e-bestiary-tracking-application": "",
   "--pf2e-bestiary-tracking-secondary-application": "",
   "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px grey)",
-  "--pf2e-bestiary-tracking-primary": "#1ca671",
+  "--pf2e-bestiary-tracking-primary": "rgb(28 166 113)",
+  "--pf2e-bestiary-tracking-primary-faded": "rgb(28 166 113 / 50%)",
   "--pf2e-bestiary-tracking-secondary": "#8b0d8b",
   "--pf2e-bestiary-tracking-tertiary": "#602fa1",
   "--pf2e-bestiary-tracking-primary-accent": "#0f7e2fbf",
@@ -9601,7 +9719,7 @@ const setupTheme = () => {
     ];
   const root = document.querySelector(":root");
   for (var property of Object.keys(theme)) {
-    if (property === "--pf2e-bestiary-tracking-application-image") {
+    if (property === "--pf2e-bestiary-tracking-application-image" && theme[property] !== 'ignore') {
       const baseUri = document.baseURI.split("game")[0];
       root.style.setProperty(property, `url("${baseUri}${theme[property]}")`);
     } else {
@@ -11120,29 +11238,49 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     });
   };
 
-  changeTab(tab, group, { event, navElement, force = false, updatePosition = true } = {}) {
-    if ( !tab || !group ) throw new Error("You must pass both the tab and tab group identifier");
-    if ( (this.tabGroups[group] === tab) && !force ) return;
+  changeTab(
+    tab,
+    group,
+    { event, navElement, force = false, updatePosition = true } = {},
+  ) {
+    if (!tab || !group)
+      throw new Error("You must pass both the tab and tab group identifier");
+    if (this.tabGroups[group] === tab && !force) return;
 
-    const tabElement = this.element.querySelector(`.tabs > [data-group="${group}"][data-tab="${tab}"]`);
-    if ( !tabElement ) throw new Error(`No matching tab element found for group "${group}" and tab "${tab}"`);
+    const tabElement = this.element.querySelector(
+      `.tabs > [data-group="${group}"][data-tab="${tab}"]`,
+    );
+    if (!tabElement)
+      throw new Error(
+        `No matching tab element found for group "${group}" and tab "${tab}"`,
+      );
 
-    const generalSidebarActive = group === 'creature' && ['statistics', 'spells', 'lore'].includes(tab);
+    const generalSidebarActive =
+      group === "creature" && ["statistics", "spells", "lore"].includes(tab);
 
-    for ( const t of this.element.querySelectorAll(`.tabs > [data-group="${group}"]`) ) {
-      t.classList.toggle("active", (t.dataset.tab === tab));
+    for (const t of this.element.querySelectorAll(
+      `.tabs > [data-group="${group}"]`,
+    )) {
+      t.classList.toggle("active", t.dataset.tab === tab);
     }
 
-    for ( const section of this.element.querySelectorAll(`.tab[data-group="${group}"]`) ) {
-      section.classList.toggle("active", section.dataset.tab === tab || (generalSidebarActive && section.dataset.tab === 'generalSidebar'));
+    for (const section of this.element.querySelectorAll(
+      `.tab[data-group="${group}"]`,
+    )) {
+      section.classList.toggle(
+        "active",
+        section.dataset.tab === tab ||
+          (generalSidebarActive && section.dataset.tab === "generalSidebar"),
+      );
     }
     this.tabGroups[group] = tab;
 
-    if ( !updatePosition ) return;
+    if (!updatePosition) return;
     const positionUpdate = {};
-    if ( this.options.position.width === "auto" ) positionUpdate.width = "auto";
-    if ( this.options.position.height === "auto" ) positionUpdate.height = "auto";
-    if ( !foundry.utils.isEmpty(positionUpdate) ) this.setPosition(positionUpdate);
+    if (this.options.position.width === "auto") positionUpdate.width = "auto";
+    if (this.options.position.height === "auto") positionUpdate.height = "auto";
+    if (!foundry.utils.isEmpty(positionUpdate))
+      this.setPosition(positionUpdate);
   }
 
   _updateFrame(options) {
@@ -11235,15 +11373,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     for (const v of Object.values(tabs)) {
-      if(v.id === 'generalSidebar'){
-        v.active = this.tabGroups[v.group] 
-        ? ['statistics', 'spells', 'lore'].includes(this.tabGroups[v.group]) : v.active;
-      }
-      else {
+      if (v.id === "generalSidebar") {
         v.active = this.tabGroups[v.group]
-        ? this.tabGroups[v.group] === v.id
-        : v.active;
-
+          ? ["statistics", "spells", "lore"].includes(this.tabGroups[v.group])
+          : v.active;
+      } else {
+        v.active = this.tabGroups[v.group]
+          ? this.tabGroups[v.group] === v.id
+          : v.active;
       }
 
       v.cssClass = v.active ? "active" : "";
@@ -12968,10 +13105,23 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     }
   }
 
-  static async toggleRecallAttempt(_, button){
-    const oldValue = this.selected.monster.system.recallKnowledge[button.dataset.character]?.attempts ? this.selected.monster.system.recallKnowledge[button.dataset.character]?.attempts[button.dataset.attempt] : null;
-    await this.selected.monster.update({ [`system.recallKnowledge.${button.dataset.character}.attempts.${button.dataset.attempt}`]: oldValue ? Object.values(recallKnowledgeOutcomes).find(x => x.order === ((recallKnowledgeOutcomes[oldValue].order + 1)%5)).value : recallKnowledgeOutcomes.criticalSuccess.value });
-    
+  static async toggleRecallAttempt(_, button) {
+    const oldValue = this.selected.monster.system.recallKnowledge[
+      button.dataset.character
+    ]?.attempts
+      ? this.selected.monster.system.recallKnowledge[button.dataset.character]
+          ?.attempts[button.dataset.attempt]
+      : null;
+    await this.selected.monster.update({
+      [`system.recallKnowledge.${button.dataset.character}.attempts.${button.dataset.attempt}`]:
+        oldValue
+          ? Object.values(recallKnowledgeOutcomes).find(
+              (x) =>
+                x.order === (recallKnowledgeOutcomes[oldValue].order + 1) % 5,
+            ).value
+          : recallKnowledgeOutcomes.criticalSuccess.value,
+    });
+
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,
       data: {},
@@ -12979,11 +13129,15 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
-  static async resetRecallAttempts(_, button){
-    const attempts = this.selected.monster.system.recallKnowledge[button.dataset.character]?.attempts;
-    if(!attempts) return;
+  static async resetRecallAttempts(_, button) {
+    const attempts =
+      this.selected.monster.system.recallKnowledge[button.dataset.character]
+        ?.attempts;
+    if (!attempts) return;
 
-    await this.selected.monster.update({ [`system.recallKnowledge.-=${button.dataset.character}`]: null });
+    await this.selected.monster.update({
+      [`system.recallKnowledge.-=${button.dataset.character}`]: null,
+    });
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,

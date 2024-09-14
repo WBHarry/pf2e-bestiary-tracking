@@ -37,6 +37,12 @@ form {
     }
   }
 
+  .primary-container-faded {
+    background-color: var(--pf2e-bestiary-tracking-primary-faded);
+    border-color: var(--pf2e-bestiary-tracking-border);
+    color: var(--pf2e-bestiary-tracking-primary-color);
+  }
+
   .secondary-container,
   input.secondary-container {
     background-color: var(--pf2e-bestiary-tracking-secondary);
@@ -123,6 +129,48 @@ form {
   // Text
   .primary-text-container {
     color: var(--pf2e-bestiary-tracking-primary-color);
+  }
+
+  .primary-editor {
+    button.icon.toggle {
+      background-color: var(--pf2e-bestiary-tracking-secondary);
+      color: var(--pf2e-bestiary-tracking-primary-color);
+      border-color: var(--pf2e-bestiary-tracking-border);
+    }
+
+    menu {
+      background-color: var(--pf2e-bestiary-tracking-secondary);
+      border-color: var(--pf2e-bestiary-tracking-border);
+      border: 1px solid;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+
+      li {
+        button {
+          color: var(--pf2e-bestiary-tracking-primary-color);
+
+          &.pm-dropdown {
+            background: var(--pf2e-bestiary-tracking-tertiary);
+
+            i.fa-chevron-down {
+              color: var(--pf2e-bestiary-tracking-primary-color);
+            }
+          }
+        }
+      }
+    }
+
+    .editor-content {
+      border-color: var(--pf2e-bestiary-tracking-border);
+      border: 1px solid;
+      border-radius: 6px;
+
+      &[contenteditable="true"] {
+        border-top: 0;
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+      }
+    }
   }
 
   // Misc

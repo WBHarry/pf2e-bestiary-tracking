@@ -641,20 +641,22 @@ export class Creature extends foundry.abstract.TypeDataModel {
             ).filter(
               (x) => this.recallKnowledge[actor.id].attempts[x] !== "none",
             );
-            const highestIndex = Number.parseInt(
-              filteredAttempts.sort(
-                (b, a) => Number.parseInt(a) - Number.parseInt(b),
-              )[0],
-            );
-            const exactBase = Math.max(
-              filteredAttempts.length / 4,
-              highestIndex / 4,
-            );
-            const baseNr =
-              Math.ceil(exactBase) === exactBase
-                ? exactBase + 1
-                : Math.ceil(exactBase);
-            nrValues = baseNr * 4;
+            if (filteredAttempts.length > 0) {
+              const highestIndex = Number.parseInt(
+                filteredAttempts.sort(
+                  (b, a) => Number.parseInt(a) - Number.parseInt(b),
+                )[0],
+              );
+              const exactBase = Math.max(
+                filteredAttempts.length / 4,
+                highestIndex / 4,
+              );
+              const baseNr =
+                Math.ceil(exactBase) === exactBase
+                  ? exactBase + 1
+                  : Math.ceil(exactBase);
+              nrValues = baseNr * 4;
+            }
           }
 
           acc.push({

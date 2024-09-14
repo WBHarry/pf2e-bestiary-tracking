@@ -16,6 +16,7 @@ import {
   getMixedCategoryLabel,
   getRollAverage,
 } from "../scripts/statisticsHelper";
+import { recallKnowledgeOutcomes } from "./constants";
 import {
   getHazardData,
   MappingField,
@@ -39,6 +40,11 @@ export class Hazard extends foundry.abstract.TypeDataModel {
           initial: 0,
         }),
       }),
+      recallKnowledge: new MappingField(
+        new fields.SchemaField({
+          attempts: new MappingField(new fields.StringField({})),
+        }),
+      ),
       name: toggleStringField(),
       publication: new fields.SchemaField({
         authors: new fields.StringField({}),
@@ -327,6 +333,79 @@ export class Hazard extends foundry.abstract.TypeDataModel {
       : (this.name.custom ?? this.name.value);
   }
 
+  get recallKnowledgeAttempts() {
+    const partyCharacters =
+      game.actors
+        .find((x) => x.type === "party" && x.active)
+        ?.system?.details?.members?.reduce((acc, x) => {
+          const actor = game.actors.find((actor) => actor.uuid === x.uuid);
+          if (
+            actor.type !== "character" ||
+            actor.system.traits.value.some(
+              (x) => x === "eidolon" || x === "minion" || x === "npc",
+            )
+          )
+            return acc;
+
+          let nrValues = 4;
+          if (
+            this.recallKnowledge[actor.id] &&
+            Object.keys(this.recallKnowledge[actor.id].attempts).length > 0
+          ) {
+            const filteredAttempts = Object.keys(
+              this.recallKnowledge[actor.id].attempts,
+            ).filter(
+              (x) => this.recallKnowledge[actor.id].attempts[x] !== "none",
+            );
+            if (filteredAttempts.length > 0) {
+              const highestIndex = Number.parseInt(
+                filteredAttempts.sort(
+                  (b, a) => Number.parseInt(a) - Number.parseInt(b),
+                )[0],
+              );
+              const exactBase = Math.max(
+                filteredAttempts.length / 4,
+                highestIndex / 4,
+              );
+              const baseNr =
+                Math.ceil(exactBase) === exactBase
+                  ? exactBase + 1
+                  : Math.ceil(exactBase);
+              nrValues = baseNr * 4;
+            }
+          }
+
+          acc.push({
+            values: Array.from(Array(nrValues)).reduce((acc, key, index) => {
+              acc[index] = recallKnowledgeOutcomes.none;
+              return acc;
+            }, {}),
+            id: actor.id,
+            name: actor.name,
+          });
+
+          return acc;
+        }, []) ?? [];
+
+    return partyCharacters.reduce((acc, character) => {
+      const attempts = this.recallKnowledge[character.id]?.attempts ?? {};
+
+      acc.push({
+        values: Object.keys(character.values).reduce((acc, key) => {
+          acc[key] = attempts[key]
+            ? recallKnowledgeOutcomes[attempts[key]]
+            : character.values[key];
+
+          return acc;
+        }, {}),
+        id: character.id,
+        name: character.name,
+      });
+
+      return acc;
+    }, []);
+  }
+
   _getRefreshData(hazard, hazardData) {
     const data = hazardData ?? getHazardData(hazard);
 
@@ -377,11 +456,16 @@ export class Hazard extends foundry.abstract.TypeDataModel {
             revealed: this.stealth.details.revealed,
           },
         },
-        initiative: {
-          ...data.system.initiative,
-          revealed: this.initiative.revealed,
-          custom: this.initiative.custom,
-        },
+        initiative:
+          data.system.initiative && !this.initiative
+            ? data.system.initiative
+            : data.system.initiative && this.initiative
+              ? {
+                  ...data.system.initiative,
+                  revealed: this.initiative.revealed,
+                  custom: this.initiative.custom,
+                }
+              : null,
         saves: Object.keys(data.system.saves).reduce((acc, key) => {
           acc[key] = {
             ...data.system.saves[key],

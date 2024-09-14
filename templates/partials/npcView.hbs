@@ -1,5 +1,5 @@
 <div class="monster-container">
-    <div class="left-monster-container flexcol">
+    <div class="left-monster-container">
         <div class="monster-image-container">
             {{#if this.user.isGM}}<i class="monster-image-menu fa-solid fa-gears primary-hover-container" data-action="imageMenu"></i>{{/if}}
             <img class="monster-image primary-outline {{#if this.useTokenArt}}token{{/if}} {{PF2EBTImageState this.user this.creatureData.system.imageState.hideState}}" src="{{this.creatureData.system.displayImage}}" data-action="imagePopout" />
@@ -36,9 +36,38 @@
                 </div>
             </div>
         </div>
-        <div class="tab minor {{this.tabs.notes.cssClass}}" data-group="npc" data-tab="notes">
-            <div class="flexcol">
-
+        <div class="tab {{this.tabs.notes.cssClass}}" data-group="npc" data-tab="notes">
+            <div class="left-monster-container">
+                <div class="data-section full primary-container active">
+                    <div class="data-header primary-container">
+                        <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.skills">
+                            <i class="fa-solid fa-brain"></i>
+                            <div class="flex-value">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RecallKnowledgeAttempts"}}</div>
+                        </div>
+                    </div>
+                    <div class="data-body primary-border-container pf2e-bestiary-standard-gap">
+                        <div class="recall-knowledge-info-container">
+                            <div class="flexcol">
+                                {{#each this.creatureData.system.recallKnowledgeAttempts}}
+                                    <h4 class="recall-knowledge-label">
+                                        {{this.name}}
+                                        <i class="fa-solid fa-arrow-rotate-left primary-hover-container" data-action="resetRecallAttempts" data-character="{{this.id}}"></i>
+                                    </h4>
+                                    <div class="recall-knowledge-attempt-container">
+                                        {{#each this.values}}
+                                            <div class="recall-knowledge-attempt-inner-container">
+                                                <label>#{{@key}}</label>
+                                                <div class="recall-knowledge-attempt primary-border-container primary-hover-container" {{#if (not (eq this.value 'none'))}}title="{{localize this.name}}"{{/if}} data-action="toggleRecallAttempt" data-character="{{../id}}" data-attempt="{{@key}}">
+                                                    {{#if this.icon}}<i class="{{this.icon}}"></i>{{/if}}
+                                                </div>
+                                            </div>
+                                        {{/each}}
+                                    </div>
+                                {{/each}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="tab minor {{this.tabs.gm.cssClass}}" data-group="npc" data-tab="gm">
@@ -435,11 +464,11 @@
         </div>
         <div class="tab {{this.tabs.notes.cssClass}}" data-group="npc" data-tab="notes">
             <div class="bestiary-notes-page">
-                <fieldset class="bestiary-notes-legend player-notes main-border-container">
+                <fieldset class="bestiary-notes-legend player-notes primary-container-faded">
                     <legend>
                         <div class="data-container primary-container">{{localize "PF2EBestiary.Bestiary.PlayerNotes.Title"}}</div>
                     </legend>
-                    <prose-mirror name="system.notes.player.value" data-document-u-u-i-d="{{this.creatureData.uuid}}" value="{{this.creatureData.system.notes.player.value}}" collaborate="true" toggled="true">
+                    <prose-mirror class="primary-editor" name="system.notes.player.value" data-document-u-u-i-d="{{this.creatureData.uuid}}" value="{{this.creatureData.system.notes.player.value}}" collaborate="true" toggled="true">
                         {{{this.creatureData.system.notes.player.enriched}}}
                     </prose-mirror>
                 </fieldset>
@@ -447,11 +476,11 @@
         </div> 
         <div class="tab {{this.tabs.gm.cssClass}}" data-group="npc" data-tab="gm">
             <div class="bestiary-notes-page">
-                <fieldset class="bestiary-notes-legend gm-notes main-border-container">
+                <fieldset class="bestiary-notes-legend gm-notes primary-container-faded">
                     <legend title="{{localize "PF2EBestiary.Bestiary.NPC.GMTextZoneTip"}}">
                         <div class="data-container primary-container">{{localize "PF2EBestiary.Bestiary.GMNotes.Title"}}</div>
                     </legend>
-                    <prose-mirror name="system.notes.gm.value" data-document-u-u-i-d="{{this.creatureData.uuid}}" value="{{this.creatureData.system.notes.gm.value}}" toggled="true">
+                    <prose-mirror class="primary-editor" name="system.notes.gm.value" data-document-u-u-i-d="{{this.creatureData.uuid}}" value="{{this.creatureData.system.notes.gm.value}}" toggled="true">
                         {{{this.creatureData.system.notes.gm.enriched}}}
                     </prose-mirror>
                 </fieldset>
