@@ -1,0 +1,27 @@
+{
+  "name": "Open Bestiary Combat",
+  "type": "script",
+  "command": "game.modules.get('pf2e-bestiary-tracking').macros.openBestiaryCombat();",
+  "img": "icons/sundries/books/book-open-red.webp",
+  "author": "aB9uhZjia6USkhKl",
+  "scope": "global",
+  "folder": null,
+  "ownership": {
+    "default": 0,
+    "aB9uhZjia6USkhKl": 3
+  },
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.331",
+    "systemId": "pf2e",
+    "systemVersion": "6.3.1",
+    "createdTime": 1726317922565,
+    "modifiedTime": 1726317922576,
+    "lastModifiedBy": "aB9uhZjia6USkhKl"
+  },
+  "_id": "pdSkyhe91DCNwAOw",
+  "sort": 200000,
+  "_key": "!macros!pdSkyhe91DCNwAOw"
+}

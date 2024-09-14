@@ -59,6 +59,23 @@ export const registerKeyBindings = () => {
     precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
   });
 
+  game.keybindings.register("pf2e-bestiary-tracking", "open-bestiary-combat", {
+    name: game.i18n.localize(
+      "PF2EBestiary.KeyBindings.OpenBestiaryCombat.Name",
+    ),
+    hint: game.i18n.localize(
+      "PF2EBestiary.KeyBindings.OpenBestiaryCombat.Hint",
+    ),
+    uneditable: [],
+    editable: [],
+    onDown: () =>
+      game.modules.get("pf2e-bestiary-tracking").macros.openBestiaryCombat(),
+    onUp: () => {},
+    restricted: false,
+    reservedModifiers: [],
+    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
+  });
+
   game.keybindings.register("pf2e-bestiary-tracking", "show-monster", {
     name: game.i18n.localize("PF2EBestiary.KeyBindings.ShowMonster.Name"),
     hint: game.i18n.localize("PF2EBestiary.KeyBindings.ShowMonster.Hint"),

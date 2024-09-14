@@ -6,6 +6,22 @@ export const openBestiary = async () => {
   new PF2EBestiary().render(true);
 };
 
+export const openBestiaryCombat = async () => {
+  if (!game.combat) {
+    ui.notifications.info(
+      game.i18n.localize(
+        "PF2EBestiary.Macros.OpenBestiaryCombat.NoActiveCombat",
+      ),
+    );
+    return;
+  }
+
+  new PF2EBestiary(null, {
+    category: "pf2e-bestiary-tracking.creature",
+    type: "combat",
+  }).render(true);
+};
+
 export const showMonster = () => {
   const selectedMonster =
     game.user.targets.size > 0

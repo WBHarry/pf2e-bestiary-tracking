@@ -9538,6 +9538,19 @@ const registerKeyBindings = () => {
     precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
   });
 
+  game.keybindings.register("pf2e-bestiary-tracking", "open-bestiary-combat", {
+    name: game.i18n.localize("PF2EBestiary.KeyBindings.OpenBestiaryCombat.Name"),
+    hint: game.i18n.localize("PF2EBestiary.KeyBindings.OpenBestiaryCombat.Hint"),
+    uneditable: [],
+    editable: [],
+    onDown: () =>
+      game.modules.get("pf2e-bestiary-tracking").macros.openBestiaryCombat(),
+    onUp: () => {},
+    restricted: false,
+    reservedModifiers: [],
+    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
+  });
+
   game.keybindings.register("pf2e-bestiary-tracking", "show-monster", {
     name: game.i18n.localize("PF2EBestiary.KeyBindings.ShowMonster.Name"),
     hint: game.i18n.localize("PF2EBestiary.KeyBindings.ShowMonster.Hint"),
@@ -10087,6 +10100,15 @@ const openBestiary = async () => {
   new PF2EBestiary().render(true);
 };
 
+const openBestiaryCombat = async () => {
+  if(!game.combat) {
+    ui.notifications.info(game.i18n.localize("PF2EBestiary.Macros.OpenBestiaryCombat.NoActiveCombat"));
+    return;
+  }
+
+  new PF2EBestiary(null, { category: 'pf2e-bestiary-tracking.creature', type: 'combat' }).render(true);
+};
+
 const showMonster = () => {
   const selectedMonster =
     game.user.targets.size > 0
@@ -10355,6 +10377,7 @@ var macros = /*#__PURE__*/Object.freeze({
   addMonster: addMonster,
   deactivateModule: deactivateModule,
   openBestiary: openBestiary,
+  openBestiaryCombat: openBestiaryCombat,
   resetBestiary: resetBestiary,
   showMonster: showMonster
 });
@@ -10727,7 +10750,7 @@ const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 class PF2EBestiary extends HandlebarsApplicationMixin(
   ApplicationV2,
 ) {
-  constructor(page) {
+  constructor(page, options) {
     super({});
 
     this.bestiary = game.journal.get(
@@ -10740,8 +10763,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     this.selected = {
-      category: page?.type ?? "pf2e-bestiary-tracking.creature",
-      type: monsterCreatureType,
+      category: options?.category ?? page?.type ?? "pf2e-bestiary-tracking.creature",
+      type: options?.type ?? monsterCreatureType,
       monster: page,
       abilities: [],
     };

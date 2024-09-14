@@ -26,7 +26,7 @@ const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 export default class PF2EBestiary extends HandlebarsApplicationMixin(
   ApplicationV2,
 ) {
-  constructor(page) {
+  constructor(page, options) {
     super({});
 
     this.bestiary = game.journal.get(
@@ -39,8 +39,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     this.selected = {
-      category: page?.type ?? "pf2e-bestiary-tracking.creature",
-      type: monsterCreatureType,
+      category:
+        options?.category ?? page?.type ?? "pf2e-bestiary-tracking.creature",
+      type: options?.type ?? monsterCreatureType,
       monster: page,
       abilities: [],
     };

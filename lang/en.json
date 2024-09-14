@@ -7,6 +7,10 @@
         "Name": "Open Bestiary",
         "Hint": "Opens the bestiary"
       },
+      "OpenBestiaryCombat": {
+        "Name": "Open Bestiary Combat Section",
+        "Hint": "Takes you directly to all creatures involved in combat"
+      },
       "ShowMonster": {
         "Name": "Show Monster",
         "Hint": "Opens the bestiary on the currently selected or targeted creature"
@@ -63,7 +67,7 @@
       "Attacks": "Attacks",
       "Languages": "Languages",
       "Skills": "Skills",
-      "Abilities": "Abilities",
+      "Actions": "Actions",
       "Passives": "Passives",
       "Save": "Save",
       "Except": "except",
@@ -484,6 +488,9 @@
         "NoActor": "The creature has no actor in the world and is unlinked in the Bestiary.",
         "InvalidTarget": "Target must be an NPC creature!",
         "TargetNotInBestiary": "That monster hasn't been added to the bestiary yet!"
+      },
+      "OpenBestiaryCombat": {
+        "NoActiveCombat": "There is no current active combat"
       },
       "AddMonster": {
         "GMOnly": "This macro can only be used by the GM.",
