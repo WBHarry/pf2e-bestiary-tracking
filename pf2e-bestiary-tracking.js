@@ -306,10 +306,23 @@ Hooks.on("preCreateToken", async (token) => {
   }
 });
 
-Hooks.on("renderActorDirectory", async (tab) => {
+Hooks.on("renderActorDirectory", async (tab, html) => {
   if (tab.id === "actors") {
-    const buttons = $(tab.element).find(".directory-footer.action-buttons");
+    if (!game.user.isGM) {
+      // Hazards currently not sorted out of Actors tab when they have limited view. Remove this if the system starts to handle it.
+      const actorElements = html.find(".document.actor");
+      for (var element of actorElements) {
+        var actor = game.actors.get(element.dataset.documentId);
+        if (
+          actor.type === "hazard" &&
+          (actor.ownership.default === 1 || actor.ownership[game.user.id] === 1)
+        ) {
+          $(element).remove();
+        }
+      }
+    }
 
+    const buttons = $(tab.element).find(".directory-footer.action-buttons");
     buttons.prepend(`
             <button id="pf2e-bestiary-tracker">
                 <i class="fa-solid fa-spaghetti-monster-flying" />
