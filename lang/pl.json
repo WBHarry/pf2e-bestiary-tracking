@@ -263,7 +263,9 @@
         "BestiaryEntryLink": "Wpis z bestiariusza {entity} został skopiowany do schowka."
       },
       "RemoveBookmarkTitle": "Usuń kategorię",
-      "RemoveBookmarkText": "Czy na pewno chcesz usunąć kategorię {category}?"
+      "RemoveBookmarkText": "Czy na pewno chcesz usunąć kategorię {category}?",
+      "ResetRecallAttemptsTitle": "Zresetuj liczbę prób Przywołania Wiedzy",
+      "ResetRecallAttemptsText": "Czy na pewno chcesz zresetować historię prób Przywołania Wiedzy dla {character}?"
     },
     "Menus": {
       "Title": "Śledzenie Bestiariusza",
