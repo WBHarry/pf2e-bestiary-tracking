@@ -9934,7 +9934,7 @@ const coreDark = {
   "--pf2e-bestiary-tracking-primary-faded": "rgb(94 0 0 / 50%)",
   "--pf2e-bestiary-tracking-secondary": "#4b4b8c",
   "--pf2e-bestiary-tracking-tertiary": "#007149",
-  "--pf2e-bestiary-tracking-primary-accent": "#760000",
+  "--pf2e-bestiary-tracking-primary-accent": "#ad0303",
   "--pf2e-bestiary-tracking-tertiary-accent": "#76963f",
   "--pf2e-bestiary-tracking-primary-color": "white",
   "--pf2e-bestiary-tracking-icon-filter": "none",
@@ -13492,18 +13492,19 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   static async resetRecallAttempts(event, button) {
-    if(!event.altKey){
+    if (!event.altKey) {
       const confirmed = await Dialog.confirm({
         title: game.i18n.localize(
           "PF2EBestiary.Bestiary.ResetRecallAttemptsTitle",
         ),
         content: game.i18n.format(
           "PF2EBestiary.Bestiary.ResetRecallAttemptsText",
-        { character: game.actors.get(button.dataset.character).name }),
+          { character: game.actors.get(button.dataset.character).name },
+        ),
         yes: () => true,
         no: () => false,
       });
-  
+
       if (!confirmed) return;
     }
 

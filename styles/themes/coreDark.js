@@ -6,7 +6,7 @@ const coreDark = {
   "--pf2e-bestiary-tracking-primary-faded": "rgb(94 0 0 / 50%)",
   "--pf2e-bestiary-tracking-secondary": "#4b4b8c",
   "--pf2e-bestiary-tracking-tertiary": "#007149",
-  "--pf2e-bestiary-tracking-primary-accent": "#760000",
+  "--pf2e-bestiary-tracking-primary-accent": "#ad0303",
   "--pf2e-bestiary-tracking-tertiary-accent": "#76963f",
   "--pf2e-bestiary-tracking-primary-color": "white",
   "--pf2e-bestiary-tracking-icon-filter": "none",
