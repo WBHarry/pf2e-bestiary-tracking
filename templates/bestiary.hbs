@@ -53,8 +53,8 @@
                     <div class="category-container">
                         <div class="category-section flexrow">
                             <div class="category-label flex0">{{localize "PF2EBestiary.Bestiary.NPC.NewCategory"}}</div>
-                            <input "data-container" type="text" name="npcData.newCategory.text" value="{{this.npcState.newCategory.text}}" />
-                            <button data-action="addNpcCategory" {{#if (not this.npcState.newCategory.text)}}disabled{{/if}}><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.Miscellaneous.Add"}}</button>
+                            <input class="data-container primary-container" type="text" name="npcData.newCategory.text" value="{{this.npcState.newCategory.text}}" />
+                            <button data-action="addNpcCategory" {{#if (not this.npcState.newCategory.text)}}disabled{{else}}class="primary-container"{{/if}}><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.Miscellaneous.Add"}}</button>
                         </div>
                     </div>
                 {{/if}}

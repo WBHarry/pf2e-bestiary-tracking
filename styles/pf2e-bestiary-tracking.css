@@ -1101,8 +1101,11 @@
 }
 .pf2e-bestiary-tracking.bestiary .right-bookmark-container .bookmark-container:hover .hide-icon {
   opacity: 1;
+  left: 4px;
 }
-.pf2e-bestiary-tracking.bestiary .right-bookmark-container .bookmark-container .bookmark:hover + .hide-icon,
+.pf2e-bestiary-tracking.bestiary .right-bookmark-container .bookmark-container:hover .bookmark {
+  width: 120px;
+}
 .pf2e-bestiary-tracking.bestiary .right-bookmark-container .bookmark-container .bookmark.expanded + .hide-icon {
   left: 4px;
 }
@@ -1110,7 +1113,7 @@
   opacity: 0;
   font-size: 12px;
   position: absolute;
-  left: 24px;
+  left: 20px;
   top: calc(50% - 9px);
 }
 .pf2e-bestiary-tracking.bestiary .right-bookmark-container .bookmark-container .hide-icon.visible {
@@ -1134,8 +1137,7 @@
   text-align: center;
   transition: width 0.1s ease-in-out;
 }
-.pf2e-bestiary-tracking.bestiary .bookmark.expanded,
-.pf2e-bestiary-tracking.bestiary .bookmark:hover {
+.pf2e-bestiary-tracking.bestiary .bookmark.expanded {
   width: 120px;
 }
 .pf2e-bestiary-tracking.bestiary .bookmark.icons {

@@ -1218,11 +1218,17 @@
         display: flex;
         justify-content: end;
 
-        &:hover .hide-icon {
-          opacity: 1;
+        &:hover {
+          .hide-icon {
+            opacity: 1;
+            left: 4px;
+          }
+
+          .bookmark {
+            width: 120px;
+          }
         }
 
-        .bookmark:hover + .hide-icon,
         .bookmark.expanded + .hide-icon {
           left: 4px;
         }
@@ -1231,7 +1237,7 @@
           opacity: 0;
           font-size: 12px;
           position: absolute;
-          left: 24px;
+          left: 20px;
           top: calc(50% - 9px);
 
           &.visible {
@@ -1259,8 +1265,7 @@
       text-align: center;
       transition: width 0.1s ease-in-out;
 
-      &.expanded,
-      &:hover {
+      &.expanded {
         width: 120px;
       }
 

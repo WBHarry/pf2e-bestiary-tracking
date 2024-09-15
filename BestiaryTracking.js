@@ -13324,7 +13324,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       action: socketEvent.UpdateBestiary,
       data: {},
     });
-    Hooks.callAll(socketEvent.UpdateBestiary, {});
+
+    $(button).toggleClass('fa-eye-slash');
+    $(button).toggleClass('fa-eye');
+    // Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
   static async addInfluence(_, button) {
