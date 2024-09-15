@@ -14282,7 +14282,7 @@ class RegisterHandlebarsHelpers {
   static imageState(user, state) {
     switch (state) {
       case 1:
-        return user.isGM ? "partial-outline" : "outline";
+        return "outline";
       case 3:
         return "sepia";
       default:
@@ -14603,12 +14603,15 @@ Hooks.on("preCreateToken", async (token) => {
 
 Hooks.on("renderActorDirectory", async (tab, html) => {
   if (tab.id === "actors") {
-    if(!game.user.isGM){
+    if (!game.user.isGM) {
       // Hazards currently not sorted out of Actors tab when they have limited view. Remove this if the system starts to handle it.
-      const actorElements = html.find('.document.actor');
-      for(var element of actorElements) {
+      const actorElements = html.find(".document.actor");
+      for (var element of actorElements) {
         var actor = game.actors.get(element.dataset.documentId);
-        if(actor.type === 'hazard' && (actor.ownership.default === 1 || actor.ownership[game.user.id] === 1)){
+        if (
+          actor.type === "hazard" &&
+          (actor.ownership.default === 1 || actor.ownership[game.user.id] === 1)
+        ) {
           $(element).remove();
         }
       }

@@ -106,9 +106,6 @@
 .pf2e-bestiary-tracking.bestiary .monster-image.outline {
   filter: brightness(0);
 }
-.pf2e-bestiary-tracking.bestiary .monster-image.partial-outline {
-  filter: brightness(0.5);
-}
 .pf2e-bestiary-tracking.bestiary .monster-image.sepia {
   filter: sepia(1);
 }
@@ -1524,9 +1521,6 @@ form.pf2e-bestiary-tracking.application > header .header-control {
 }
 .image-popout figure img.outline {
   filter: brightness(0);
-}
-.image-popout figure img.partial-outline {
-  filter: brightness(0.5);
 }
 .image-popout figure img.sepia {
   filter: sepia(1);
