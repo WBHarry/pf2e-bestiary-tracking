@@ -2188,7 +2188,23 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
-  static async resetRecallAttempts(_, button) {
+  static async resetRecallAttempts(event, button) {
+    if (!event.altKey) {
+      const confirmed = await Dialog.confirm({
+        title: game.i18n.localize(
+          "PF2EBestiary.Bestiary.ResetRecallAttemptsTitle",
+        ),
+        content: game.i18n.format(
+          "PF2EBestiary.Bestiary.ResetRecallAttemptsText",
+          { character: game.actors.get(button.dataset.character).name },
+        ),
+        yes: () => true,
+        no: () => false,
+      });
+
+      if (!confirmed) return;
+    }
+
     const attempts =
       this.selected.monster.system.recallKnowledge[button.dataset.character]
         ?.attempts;

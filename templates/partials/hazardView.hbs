@@ -294,8 +294,8 @@
             </div>
         </div>
 
-        <div class="tab {{this.tabs.notes.cssClass}}" data-group="hazard" data-tab="notes">
-            <div class="left-monster-container">
+        <div class="tab minor {{this.tabs.notes.cssClass}}" data-group="hazard" data-tab="notes">
+            <div class="flexcol">
                 <div class="data-section full primary-container active">
                     <div class="data-header primary-container">
                         <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.skills">
@@ -303,13 +303,12 @@
                             <div class="flex-value">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RecallKnowledgeAttempts"}}</div>
                         </div>
                     </div>
-                    <div class="data-body primary-border-container pf2e-bestiary-standard-gap">
+                    <div class="recall-knowledge-info-outer-container data-body primary-border-container pf2e-bestiary-standard-gap">
                         <div class="recall-knowledge-info-container">
-                            <div class="flexcol">
-                                {{#each this.system.recallKnowledgeAttempts}}
-                                    <h4 class="recall-knowledge-label">
+                            {{#each this.system.recallKnowledgeAttempts}}
+                                <div class="flexcol">
+                                    <h4 class="recall-knowledge-label primary-hover-container" data-action="resetRecallAttempts" data-character="{{this.id}}">
                                         {{this.name}}
-                                        <i class="fa-solid fa-arrow-rotate-left primary-hover-container" data-action="resetRecallAttempts" data-character="{{this.id}}"></i>
                                     </h4>
                                     <div class="recall-knowledge-attempt-container">
                                         {{#each this.values}}
@@ -321,8 +320,8 @@
                                             </div>
                                         {{/each}}
                                     </div>
-                                {{/each}}
-                            </div>
+                                </div>
+                            {{/each}}
                         </div>
                     </div>
                 </div>

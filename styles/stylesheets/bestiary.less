@@ -58,24 +58,31 @@
         overflow: auto;
       }
 
-      .npc-players-inner-container {
+      .npc-players-outer-container {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        position: relative;
+        gap: 8px;
+        margin: 4px 0;
 
-        img {
-          width: 112px;
-        }
+        .npc-players-inner-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          position: relative;
 
-        .npc-players-name {
-          position: absolute;
-          top: -6px;
-          width: 100%;
-          text-align: center;
-          font-size: 18px;
-          color: white;
-          text-shadow: 0 0 10px black;
+          img {
+            width: 112px;
+          }
+
+          .npc-players-name {
+            position: absolute;
+            top: -6px;
+            width: 100%;
+            text-align: center;
+            font-size: 18px;
+            color: white;
+            text-shadow: 0 0 10px black;
+          }
         }
       }
     }
@@ -97,11 +104,18 @@
       }
 
       &.minor {
-        flex: 1;
+        height: 100%;
+        overflow: hidden;
 
-        > .flexcol {
-          height: 100%;
+        > .flexcol,
+        .left-monster-container {
+          max-height: 100%;
           gap: 12px;
+          overflow: hidden;
+
+          .data-section {
+            overflow: hidden;
+          }
         }
       }
     }
@@ -530,10 +544,15 @@
         flex-direction: column;
         overflow-y: auto;
 
+        .recall-knowledge-info-outer-container {
+          overflow: auto;
+        }
+
         .recall-knowledge-info-container {
           display: flex;
           flex-direction: column;
           gap: 8px;
+          margin: 4px 0;
 
           .recall-knowledge-label {
             align-self: center;
@@ -541,6 +560,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            text-align: center;
 
             i {
               font-size: 14px;
@@ -640,7 +660,9 @@
           display: flex;
           flex-direction: column;
           align-items: center;
-          justify-content: space-evenly;
+          gap: 8px;
+          margin: 4px 0;
+          overflow: auto;
 
           .disposition-inner-container {
             display: flex;

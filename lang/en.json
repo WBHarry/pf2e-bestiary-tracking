@@ -263,7 +263,9 @@
         "BestiaryEntryLink": "Bestiary Entry {entity} copied to clipboard."
       },
       "RemoveBookmarkTitle": "Remove Category",
-      "RemoveBookmarkText": "Are you sure you want to remove the {category} category?"
+      "RemoveBookmarkText": "Are you sure you want to remove the {category} category?",
+      "ResetRecallAttemptsTitle": "Reset Recall Attempts",
+      "ResetRecallAttemptsText": "Are you sure you want to reset the recall attempt history of {character}?"
     },
     "Menus": {
       "Title": "Bestiary Tracking",

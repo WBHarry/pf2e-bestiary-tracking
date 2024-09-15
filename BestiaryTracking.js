@@ -4406,9 +4406,10 @@ class Creature extends foundry.abstract.TypeDataModel {
               traits: Object.keys(attack.traits).reduce((acc, trait) => {
                 acc[trait] = {
                   ...attack.traits[trait],
-                  revealed:
-                    oldAttack?.traits ? oldAttack.traits[trait]?.revealed ??
-                    attack.traits[trait].revealed :attack.traits[trait].revealed,
+                  revealed: oldAttack?.traits
+                    ? (oldAttack.traits[trait]?.revealed ??
+                      attack.traits[trait].revealed)
+                    : attack.traits[trait].revealed,
                 };
                 return acc;
               }, {}),
@@ -10060,7 +10061,7 @@ const bestiaryThemeChoices = {
   // parchment: 'Parchment',
 };
 
-const currentVersion = "1.0.5";
+const currentVersion = "1.0.6";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -11732,7 +11733,6 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       icon: null,
       label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes"),
     };
-    
 
     for (const v of Object.values(tabs)) {
       if (v.id === "generalSidebar") {
@@ -13491,7 +13491,22 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
-  static async resetRecallAttempts(_, button) {
+  static async resetRecallAttempts(event, button) {
+    if(!event.altKey){
+      const confirmed = await Dialog.confirm({
+        title: game.i18n.localize(
+          "PF2EBestiary.Bestiary.ResetRecallAttemptsTitle",
+        ),
+        content: game.i18n.format(
+          "PF2EBestiary.Bestiary.ResetRecallAttemptsText",
+        { character: game.actors.get(button.dataset.character).name }),
+        yes: () => true,
+        no: () => false,
+      });
+  
+      if (!confirmed) return;
+    }
+
     const attempts =
       this.selected.monster.system.recallKnowledge[button.dataset.character]
         ?.attempts;
