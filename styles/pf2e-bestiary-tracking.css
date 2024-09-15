@@ -160,7 +160,7 @@
 }
 .pf2e-bestiary-tracking.bestiary .tab.minor > .flexcol,
 .pf2e-bestiary-tracking.bestiary .tab.minor .left-monster-container {
-  max-height: 100%;
+  height: 100%;
   gap: 12px;
   overflow: hidden;
 }
