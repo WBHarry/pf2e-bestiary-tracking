@@ -10061,7 +10061,7 @@ const bestiaryThemeChoices = {
   // parchment: 'Parchment',
 };
 
-const currentVersion = "1.0.6";
+const currentVersion = "1.0.7";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
