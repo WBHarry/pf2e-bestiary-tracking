@@ -537,6 +537,7 @@
       }
 
       .left-monster-container {
+        height: 100%;
         min-height: 100%;
         width: 150px;
         gap: 12px;
@@ -1204,14 +1205,14 @@
 
     .right-bookmark-container {
       position: absolute;
-      left: -124px;
+      left: -144px;
       top: 36px;
       height: calc(100% - 36px);
       display: flex;
       flex-direction: column;
       overflow-y: auto;
       overflow-x: hidden;
-      width: 124px;
+      width: 144px;
       align-items: end;
 
       .bookmark-container {
@@ -1224,11 +1225,16 @@
           opacity: 1;
         }
 
+        .bookmark:hover + .hide-icon,
+        .bookmark.expanded + .hide-icon {
+          left: 4px;
+        }
+
         .hide-icon {
           opacity: 0;
           font-size: 12px;
           position: absolute;
-          left: 4px;
+          left: 24px;
           top: calc(50% - 9px);
 
           &.visible {
@@ -1255,6 +1261,11 @@
       padding: 0 4px;
       text-align: center;
       transition: width 0.1s ease-in-out;
+
+      &.expanded,
+      &:hover {
+        width: 120px;
+      }
 
       &.icons {
         justify-content: space-between;
