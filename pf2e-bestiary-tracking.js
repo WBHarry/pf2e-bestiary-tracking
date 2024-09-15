@@ -259,7 +259,7 @@ Hooks.on("xdy-pf2e-workbench.tokenCreateMystification", (token) => {
     );
     const actor = token.baseActor ?? token.actor;
     if (actor.uuid) {
-      const page = bestiary.pages.some((x) => x.system.uuid === actor.uuid);
+      const page = bestiary.pages.find((x) => x.system.uuid === actor.uuid);
       if (page && page.system.name.revealed) {
         return false;
       }

@@ -1193,30 +1193,48 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async handleTokenNames(monster) {
     if (game.settings.get("pf2e-bestiary-tracking", "hide-token-names")) {
-      // Make workbench mystify if active and newValue = hidden
-      // var workBenchMystifierUsed = game.modules.get("xdy-pf2e-workbench")?.active && game.settings.get('xdy-pf2e-workbench', 'npcMystifier');
-      const name =
+      var workBenchMystifierUsed =
+        game.modules.get("xdy-pf2e-workbench")?.active &&
+        game.settings.get("xdy-pf2e-workbench", "npcMystifier");
+
+      let name =
         monster.system.name.revealed && monster.system.name.custom
           ? monster.system.name.custom
           : monster.system.name.revealed && !monster.system.name.custom
             ? monster.system.name.value
             : !monster.system.name.revealed
-              ? game.i18n.localize(
-                  "PF2EBestiary.Bestiary.Miscellaneous.Unknown",
-                )
+              ? "unknown"
               : null;
 
       if (name) {
         for (var token of canvas.tokens.placeables.filter(
           (x) => x.document?.baseActor?.uuid === monster.system.uuid,
         )) {
-          await token.document.update({ name });
-        }
+          if (workBenchMystifierUsed && name === "unknown") {
+            await game.PF2eWorkbench.doMystificationFromToken(token.id); // Await does nothing atm. Needs change in workbench to be able to remove timeout.
 
-        if (game.combat) {
-          await game.combat.combatants
-            .find((x) => x.token.baseActor.uuid === monster.system.uuid)
-            ?.update({ name: name });
+            if (game.combat) {
+              setTimeout(() => {
+                game.combat.combatants
+                  .find((x) => x.token.baseActor.uuid === monster.system.uuid)
+                  ?.update({ name: token.name });
+              }, 50);
+            }
+          } else {
+            name =
+              name === "unknown"
+                ? game.i18n.localize(
+                    "PF2EBestiary.Bestiary.Miscellaneous.Unknown",
+                  )
+                : name;
+            await token.document.update({ name });
+
+            if (game.combat) {
+              await game.combat.combatants
+                .find((x) => x.token.baseActor.uuid === monster.system.uuid)
+                ?.update({ name: token.name });
+            }
+          }
         }
       }
     }
@@ -2278,7 +2296,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           [`${event.currentTarget.dataset.path}.custom`]: value,
         });
 
-        if (event.currentTarget.dataset.path === "system.name") {
+        if (
+          event.currentTarget.dataset.path === "system.name" &&
+          this.selected.monster.system.name.revealed
+        ) {
           await PF2EBestiary.handleTokenNames(this.selected.monster);
         }
 
@@ -2390,7 +2411,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         [`${event.currentTarget.dataset.path}.custom`]: null,
       });
 
-      if (event.currentTarget.dataset.path === "system.name") {
+      if (
+        event.currentTarget.dataset.path === "system.name" &&
+        this.selected.monster.system.name.revealed
+      ) {
         await PF2EBestiary.handleTokenNames(this.selected.monster);
       }
     }
