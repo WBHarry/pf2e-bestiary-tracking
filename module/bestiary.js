@@ -115,6 +115,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       copyEntityLink: this.copyEntityLink,
       toggleRecallAttempt: this.toggleRecallAttempt,
       resetRecallAttempts: this.resetRecallAttempts,
+      displayRecallKnowledgePopup: this.displayRecallKnowledgePopup,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -2241,6 +2242,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     });
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
+
+  static async displayRecallKnowledgePopup() {}
 
   async hideTab(event) {
     event.stopPropagation();

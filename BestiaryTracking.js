@@ -2166,6 +2166,52 @@ const hardnessTable = {
   },
 };
 
+const levelDCTable = {
+  0: 14,
+  1: 15,
+  2: 16,
+  3: 18,
+  4: 19,
+  5: 20,
+  6: 22,
+  7: 23,
+  8: 24,
+  9: 26,
+  10: 27,
+  11: 28,
+  12: 30,
+  13: 31,
+  14: 32,
+  15: 34,
+  16: 35,
+  17: 36,
+  18: 38,
+  19: 39,
+  20: 40,
+  21: 42,
+  22: 44,
+  23: 46,
+  24: 48,
+  25: 50,
+};
+
+const dcModificationTable = {
+  incrediblyEasy: { order: 0, value: '-10', label: 'PF2E.DCAdjustmentIncrediblyEasy' },
+  veryEasy: { order: 1, value: '-5', label: 'PF2E.DCAdjustmentVeryEasy' },
+  easy: { order: 2, value: '-2', label: 'PF2E.DCAdjustmentEasy' }, 
+  normal: { order: 3, value: '0', label: 'PF2E.DCAdjustmentNormal' },
+  hard: { order: 4, value: '2', label: 'PF2E.DCAdjustmentHard' },
+  veryHard: { order: 5, value: '5', label: 'PF2E.DCAdjustmentVeryHard' },
+  incrediblyHard: { order: 6, value: '10', label: 'PF2E.DCAdjustmentIncrediblyHard' },
+};
+
+const rarityModificationTable = {
+  common: dcModificationTable.normal,
+  uncommon: dcModificationTable.hard,
+  rare: dcModificationTable.veryHard,
+  unique: dcModificationTable.incrediblyHard,
+};
+
 const getCategoryLabel = (statisticsTable, level, save, short) => {
   if (save === undefined || save === null) return save;
 
@@ -4161,6 +4207,39 @@ class Creature extends foundry.abstract.TypeDataModel {
 
       return acc;
     }, []);
+  }
+
+  get recallKnowledgeGeneral() {
+    const label = getCreaturesTypes(this.traits).reduce((acc, type, index) => {
+      if (this.traits.length > 0 && index === this.traits.length - 1)
+        acc = `or ${acc.concat(game.i18n.localize(type.name))}`;
+      else if (index > 0)
+        acc = `, ${acc.concat(game.i18n.localize(type.name))}`;
+      else acc = acc.concat(game.i18n.localize(type.name));
+
+      return acc;
+    }, "");
+    const rarityModifier = rarityModificationTable[this.rarity.value];
+    const dc =
+      levelDCTable[this.level.value] + Number.parseInt(rarityModifier.value);
+    return `${label}: DC ${dc} (${game.i18n.localize(rarityModifier.label)})`;
+  }
+
+  get recallKnowledgeSpecific() {
+    const rarityModifier = rarityModificationTable[this.rarity.value];
+    const baseDC =
+      levelDCTable[this.level.value] + Number.parseInt(rarityModifier.value);
+
+    const applicableModDC = Object.values(dcModificationTable).find(
+      (x) => x.order === Math.max(rarityModifier.order - 1, 0),
+    );
+    const baselineModDC = Object.values(dcModificationTable).find(
+      (x) => x.order === Math.max(applicableModDC.order - 1, 0),
+    );
+    const applicableDC = baseDC + Number.parseInt(applicableModDC.value);
+    const baselineDC = baseDC + Number.parseInt(baselineModDC.value);
+
+    return `Applicable Lore: DC ${applicableDC} (${game.i18n.localize(applicableModDC.label)}) or DC ${baselineDC} (${game.i18n.localize(baselineModDC.label)})`;
   }
 
   _getRefreshData(actor, creatureData) {
@@ -11418,6 +11497,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       copyEntityLink: this.copyEntityLink,
       toggleRecallAttempt: this.toggleRecallAttempt,
       resetRecallAttempts: this.resetRecallAttempts,
+      displayRecallKnowledgePopup: this.displayRecallKnowledgePopup,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -13325,8 +13405,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       data: {},
     });
 
-    $(button).toggleClass('fa-eye-slash');
-    $(button).toggleClass('fa-eye');
+    $(button).toggleClass("fa-eye-slash");
+    $(button).toggleClass("fa-eye");
     // Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
@@ -13543,6 +13623,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       data: {},
     });
     Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  static async displayRecallKnowledgePopup(){
+
   }
 
   async hideTab(event) {

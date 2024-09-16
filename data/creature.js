@@ -4,7 +4,10 @@ import {
   attackTable,
   attributeTable,
   damageTable,
+  dcModificationTable,
   hpTable,
+  levelDCTable,
+  rarityModificationTable,
   savingThrowPerceptionTable,
   skillTable,
   spellAttackTable,
@@ -688,6 +691,39 @@ export class Creature extends foundry.abstract.TypeDataModel {
 
       return acc;
     }, []);
+  }
+
+  get recallKnowledgeGeneral() {
+    const label = getCreaturesTypes(this.traits).reduce((acc, type, index) => {
+      if (this.traits.length > 0 && index === this.traits.length - 1)
+        acc = `or ${acc.concat(game.i18n.localize(type.name))}`;
+      else if (index > 0)
+        acc = `, ${acc.concat(game.i18n.localize(type.name))}`;
+      else acc = acc.concat(game.i18n.localize(type.name));
+
+      return acc;
+    }, "");
+    const rarityModifier = rarityModificationTable[this.rarity.value];
+    const dc =
+      levelDCTable[this.level.value] + Number.parseInt(rarityModifier.value);
+    return `${label}: DC ${dc} (${game.i18n.localize(rarityModifier.label)})`;
+  }
+
+  get recallKnowledgeSpecific() {
+    const rarityModifier = rarityModificationTable[this.rarity.value];
+    const baseDC =
+      levelDCTable[this.level.value] + Number.parseInt(rarityModifier.value);
+
+    const applicableModDC = Object.values(dcModificationTable).find(
+      (x) => x.order === Math.max(rarityModifier.order - 1, 0),
+    );
+    const baselineModDC = Object.values(dcModificationTable).find(
+      (x) => x.order === Math.max(applicableModDC.order - 1, 0),
+    );
+    const applicableDC = baseDC + Number.parseInt(applicableModDC.value);
+    const baselineDC = baseDC + Number.parseInt(baselineModDC.value);
+
+    return `Applicable Lore: DC ${applicableDC} (${game.i18n.localize(applicableModDC.label)}) or DC ${baselineDC} (${game.i18n.localize(baselineModDC.label)})`;
   }
 
   _getRefreshData(actor, creatureData) {

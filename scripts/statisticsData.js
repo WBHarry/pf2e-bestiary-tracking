@@ -2001,3 +2001,80 @@ export const hardnessTable = {
     },
   },
 };
+
+export const levelDCTable = {
+  0: 14,
+  1: 15,
+  2: 16,
+  3: 18,
+  4: 19,
+  5: 20,
+  6: 22,
+  7: 23,
+  8: 24,
+  9: 26,
+  10: 27,
+  11: 28,
+  12: 30,
+  13: 31,
+  14: 32,
+  15: 34,
+  16: 35,
+  17: 36,
+  18: 38,
+  19: 39,
+  20: 40,
+  21: 42,
+  22: 44,
+  23: 46,
+  24: 48,
+  25: 50,
+};
+
+export const dcModificationTable = {
+  incrediblyEasy: {
+    order: 0,
+    value: "-10",
+    label: "PF2E.DCAdjustmentIncrediblyEasy",
+  },
+  veryEasy: { order: 1, value: "-5", label: "PF2E.DCAdjustmentVeryEasy" },
+  easy: { order: 2, value: "-2", label: "PF2E.DCAdjustmentEasy" },
+  normal: { order: 3, value: "0", label: "PF2E.DCAdjustmentNormal" },
+  hard: { order: 4, value: "2", label: "PF2E.DCAdjustmentHard" },
+  veryHard: { order: 5, value: "5", label: "PF2E.DCAdjustmentVeryHard" },
+  incrediblyHard: {
+    order: 6,
+    value: "10",
+    label: "PF2E.DCAdjustmentIncrediblyHard",
+  },
+};
+
+export const rarityModificationTable = {
+  common: dcModificationTable.normal,
+  uncommon: dcModificationTable.hard,
+  rare: dcModificationTable.veryHard,
+  unique: dcModificationTable.incrediblyHard,
+};
+
+export const identificationSkills = {
+  aberration: ["occultism"],
+  animal: ["nature"],
+  astral: ["occultism"],
+  beast: ["arcana", "nature"],
+  celestial: ["religion"],
+  construct: ["arcana", "crafting"],
+  dragon: ["arcana"],
+  dream: ["occultism"],
+  elemental: ["arcana", "nature"],
+  ethereal: ["occultism"],
+  fey: ["nature"],
+  fiend: ["religion"],
+  fungus: ["nature"],
+  monitor: ["society"],
+  ooze: ["occultism"],
+  plant: ["nature"],
+  shade: ["religion"],
+  spirit: ["occultism"],
+  time: ["occultism"],
+  undead: ["religion"],
+};

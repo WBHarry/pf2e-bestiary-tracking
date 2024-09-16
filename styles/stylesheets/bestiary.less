@@ -757,11 +757,16 @@
         display: flex;
         align-items: center;
         text-transform: uppercase;
+        white-space: nowrap;
         gap: 8px;
 
         &.full {
           width: 100%;
           justify-content: space-between;
+        }
+
+        button {
+          height: 16px;
         }
       }
 
@@ -1041,6 +1046,19 @@
           gap: 8px;
         }
 
+        .recall-knowledge-dc-container {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+
+          .recall-knowledge-dc-inner-container {
+            border-style: solid;
+            border-width: 1px;
+            padding: 2px;
+            font-size: 10px;
+          }
+        }
+
         .actions-container {
           display: flex;
           flex-direction: column;
@@ -1239,6 +1257,7 @@
           position: absolute;
           left: 20px;
           top: calc(50% - 9px);
+          transition: left 0.1s ease-in-out;
 
           &.visible {
             opacity: 1;

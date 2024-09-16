@@ -406,6 +406,27 @@
         </div>
         <div class="tab {{this.tabs.statistics.cssClass}}" data-group="creature" data-tab="statistics">
             <div class="right-monster-container-data">
+                {{#if this.user.isGM}}
+                    <div class="data-section primary-container active">
+                        <div class="data-header primary-container">
+                            <div class="data-header-label">
+                                <i class="fa-solid fa-book"></i>
+                                <div class="flex-value">{{localize "Recall Knowledge"}}</div>
+                                {{!-- <button class="secondary-container primary-hover-container" data-action="displayRecallKnowledgePopup">Attempts</button> --}}
+                            </div>
+                        </div>
+                        <div class="data-body primary-border-container">
+                            <div class="recall-knowledge-dc-container">
+                                <div class="recall-knowledge-dc-inner-container secondary-container">    
+                                    {{this.system.recallKnowledgeGeneral}}
+                                </div>
+                                <div class="recall-knowledge-dc-inner-container secondary-container">       
+                                    {{this.system.recallKnowledgeSpecific}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {{/if}}
                 <div class="data-sections">
                     <div class="data-section primary-container active">
                         <div class="data-header primary-container">

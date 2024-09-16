@@ -21,6 +21,18 @@
                         {{#if search.name}}<i class="fa-solid fa-circle-xmark clear-icon primary-hover-container" data-action="clearSearch"></i>{{/if}}
                     </div>
                 </div>
+            {{else}}
+                {{!-- <div class="flexcol">
+                    <div>{{localize "Recall Knowledge"}}</div>
+                    <div class="recall-knowledge-dc-container">
+                        <div class="recall-knowledge-dc-inner-container">    
+                            {{this.selected.monster.system.recallKnowledgeGeneral}}
+                        </div>
+                        <div class="recall-knowledge-dc-inner-container">       
+                            {{this.selected.monster.system.recallKnowledgeSpecific}}
+                        </div>
+                    </div>
+                </div> --}}
             {{/if}}
         </header>
     {{/if}}
