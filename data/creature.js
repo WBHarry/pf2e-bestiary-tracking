@@ -1,4 +1,4 @@
-import { getCreaturesTypes } from "../scripts/helpers";
+import { alphaSort, getCreaturesTypes } from "../scripts/helpers";
 import {
   acTable,
   attackTable,
@@ -6,6 +6,7 @@ import {
   damageTable,
   dcModificationTable,
   hpTable,
+  identificationSkills,
   levelDCTable,
   rarityModificationTable,
   savingThrowPerceptionTable,
@@ -694,15 +695,22 @@ export class Creature extends foundry.abstract.TypeDataModel {
   }
 
   get recallKnowledgeGeneral() {
-    const label = getCreaturesTypes(this.traits).reduce((acc, type, index) => {
-      if (this.traits.length > 0 && index === this.traits.length - 1)
-        acc = `or ${acc.concat(game.i18n.localize(type.name))}`;
-      else if (index > 0)
-        acc = `, ${acc.concat(game.i18n.localize(type.name))}`;
-      else acc = acc.concat(game.i18n.localize(type.name));
+    const skills = new Set([]);
+    getCreaturesTypes(this.traits).forEach((type) => {
+      identificationSkills[type.key].forEach((skill) => {
+        skills.add(game.i18n.localize(CONFIG.PF2E.skills[skill].label));
+      });
+    });
+    const label = Array.from(skills)
+      .sort(alphaSort)
+      .reduce((acc, skill, index) => {
+        if (skills.length > 0 && index === skills.length - 1)
+          acc = `${acc} or ${skill}`;
+        else if (index > 0) acc = `${acc}, ${skill}`;
+        else acc = acc.concat(skill);
 
-      return acc;
-    }, "");
+        return acc;
+      }, "");
     const rarityModifier = rarityModificationTable[this.rarity.value];
     const dc =
       levelDCTable[this.level.value] + Number.parseInt(rarityModifier.value);
@@ -720,8 +728,14 @@ export class Creature extends foundry.abstract.TypeDataModel {
     const baselineModDC = Object.values(dcModificationTable).find(
       (x) => x.order === Math.max(applicableModDC.order - 1, 0),
     );
-    const applicableDC = baseDC + Number.parseInt(applicableModDC.value);
-    const baselineDC = baseDC + Number.parseInt(baselineModDC.value);
+    const applicableDC =
+      baseDC +
+      (Number.parseInt(applicableModDC.value) -
+        Number.parseInt(rarityModifier.value));
+    const baselineDC =
+      applicableDC +
+      (Number.parseInt(baselineModDC.value) -
+        Number.parseInt(applicableModDC.value));
 
     return `Applicable Lore: DC ${applicableDC} (${game.i18n.localize(applicableModDC.label)}) or DC ${baselineDC} (${game.i18n.localize(baselineModDC.label)})`;
   }

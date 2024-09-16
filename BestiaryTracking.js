@@ -2196,13 +2196,21 @@ const levelDCTable = {
 };
 
 const dcModificationTable = {
-  incrediblyEasy: { order: 0, value: '-10', label: 'PF2E.DCAdjustmentIncrediblyEasy' },
-  veryEasy: { order: 1, value: '-5', label: 'PF2E.DCAdjustmentVeryEasy' },
-  easy: { order: 2, value: '-2', label: 'PF2E.DCAdjustmentEasy' }, 
-  normal: { order: 3, value: '0', label: 'PF2E.DCAdjustmentNormal' },
-  hard: { order: 4, value: '2', label: 'PF2E.DCAdjustmentHard' },
-  veryHard: { order: 5, value: '5', label: 'PF2E.DCAdjustmentVeryHard' },
-  incrediblyHard: { order: 6, value: '10', label: 'PF2E.DCAdjustmentIncrediblyHard' },
+  incrediblyEasy: {
+    order: 0,
+    value: "-10",
+    label: "PF2E.DCAdjustmentIncrediblyEasy",
+  },
+  veryEasy: { order: 1, value: "-5", label: "PF2E.DCAdjustmentVeryEasy" },
+  easy: { order: 2, value: "-2", label: "PF2E.DCAdjustmentEasy" },
+  normal: { order: 3, value: "0", label: "PF2E.DCAdjustmentNormal" },
+  hard: { order: 4, value: "2", label: "PF2E.DCAdjustmentHard" },
+  veryHard: { order: 5, value: "5", label: "PF2E.DCAdjustmentVeryHard" },
+  incrediblyHard: {
+    order: 6,
+    value: "10",
+    label: "PF2E.DCAdjustmentIncrediblyHard",
+  },
 };
 
 const rarityModificationTable = {
@@ -2210,6 +2218,29 @@ const rarityModificationTable = {
   uncommon: dcModificationTable.hard,
   rare: dcModificationTable.veryHard,
   unique: dcModificationTable.incrediblyHard,
+};
+
+const identificationSkills = {
+  aberration: ["occultism"],
+  animal: ["nature"],
+  astral: ["occultism"],
+  beast: ["arcana", "nature"],
+  celestial: ["religion"],
+  construct: ["arcana", "crafting"],
+  dragon: ["arcana"],
+  dream: ["occultism"],
+  elemental: ["arcana", "nature"],
+  ethereal: ["occultism"],
+  fey: ["nature"],
+  fiend: ["religion"],
+  fungus: ["nature"],
+  monitor: ["society"],
+  ooze: ["occultism"],
+  plant: ["nature"],
+  shade: ["religion"],
+  spirit: ["occultism"],
+  time: ["occultism"],
+  undead: ["religion"],
 };
 
 const getCategoryLabel = (statisticsTable, level, save, short) => {
@@ -4210,12 +4241,18 @@ class Creature extends foundry.abstract.TypeDataModel {
   }
 
   get recallKnowledgeGeneral() {
-    const label = getCreaturesTypes(this.traits).reduce((acc, type, index) => {
-      if (this.traits.length > 0 && index === this.traits.length - 1)
-        acc = `or ${acc.concat(game.i18n.localize(type.name))}`;
+    const skills = new Set([]);
+    getCreaturesTypes(this.traits).forEach(type => {
+      identificationSkills[type.key].forEach(skill => {
+        skills.add(game.i18n.localize(CONFIG.PF2E.skills[skill].label));
+      });
+    });
+    const label = Array.from(skills).sort(alphaSort).reduce((acc, skill, index) => {
+      if (skills.length > 0 && index === skills.length - 1)
+        acc = `${acc} or ${skill}`;
       else if (index > 0)
-        acc = `, ${acc.concat(game.i18n.localize(type.name))}`;
-      else acc = acc.concat(game.i18n.localize(type.name));
+        acc = `${acc}, ${skill}`;
+      else acc = acc.concat(skill);
 
       return acc;
     }, "");
@@ -4236,8 +4273,8 @@ class Creature extends foundry.abstract.TypeDataModel {
     const baselineModDC = Object.values(dcModificationTable).find(
       (x) => x.order === Math.max(applicableModDC.order - 1, 0),
     );
-    const applicableDC = baseDC + Number.parseInt(applicableModDC.value);
-    const baselineDC = baseDC + Number.parseInt(baselineModDC.value);
+    const applicableDC = baseDC + (Number.parseInt(applicableModDC.value) - Number.parseInt(rarityModifier.value));
+    const baselineDC = applicableDC + (Number.parseInt(baselineModDC.value) - Number.parseInt(applicableModDC.value));
 
     return `Applicable Lore: DC ${applicableDC} (${game.i18n.localize(applicableModDC.label)}) or DC ${baselineDC} (${game.i18n.localize(baselineModDC.label)})`;
   }
@@ -13625,9 +13662,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
-  static async displayRecallKnowledgePopup(){
-
-  }
+  static async displayRecallKnowledgePopup() {}
 
   async hideTab(event) {
     event.stopPropagation();
