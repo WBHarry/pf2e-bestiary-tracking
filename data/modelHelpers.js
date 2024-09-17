@@ -697,11 +697,13 @@ const getPCCreatureData = async (actor) => {
         acc[trait] = { value: trait, revealed: defaultRevealed.traits };
         return acc;
       }, {}),
-      skills: Object.values(actor.system.skills).some((x) => x.base > 0)
+      skills: Object.values(actor.system.skills).some(
+        (x) => x.totalModifier > 0,
+      )
         ? Object.keys(actor.system.skills).reduce((acc, key) => {
             const skill = actor.system.skills[key];
             acc[key] = {
-              value: skill.base,
+              value: Number.parseInt(skill.totalModifier),
               revealed: defaultRevealed.skills,
               lore: skill.lore,
               note: skill.note,

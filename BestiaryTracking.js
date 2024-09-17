@@ -268,7 +268,7 @@ const parseDamageInstancesFromFormula = (formula) => {
 
   return damageMatch.reduce((acc, match) => {
     let splitMatch = match.split(/(?<=\)) /);
-    if(splitMatch.length < 2) splitMatch = match.split(" ");
+    if (splitMatch.length < 2) splitMatch = match.split(" ");
     acc[foundry.utils.randomID()] = {
       category: null,
       damage: { value: splitMatch[0] },
@@ -3310,11 +3310,11 @@ const getPCCreatureData = async (actor) => {
         acc[trait] = { value: trait, revealed: defaultRevealed.traits };
         return acc;
       }, {}),
-      skills: Object.values(actor.system.skills).some((x) => x.base > 0)
+      skills: Object.values(actor.system.skills).some((x) => x.totalModifier > 0)
         ? Object.keys(actor.system.skills).reduce((acc, key) => {
             const skill = actor.system.skills[key];
             acc[key] = {
-              value: skill.base,
+              value: Number.parseInt(skill.totalModifier),
               revealed: defaultRevealed.skills,
               lore: skill.lore,
               note: skill.note,
@@ -11015,7 +11015,7 @@ const bestiaryThemeChoices = {
   // parchment: 'Parchment',
 };
 
-const currentVersion = "1.0.8";
+const currentVersion = "1.0.9";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {

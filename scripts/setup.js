@@ -17,7 +17,7 @@ import bestiaryThemes, {
   bestiaryThemeChoices,
 } from "../styles/themes/themes.js";
 
-export const currentVersion = "1.0.8";
+export const currentVersion = "1.0.9";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
