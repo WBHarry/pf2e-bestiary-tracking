@@ -623,7 +623,6 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  margin: 4px 0;
   overflow: auto;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .disposition-container .disposition-inner-container {
@@ -691,6 +690,11 @@
 .pf2e-bestiary-tracking.bestiary .monster-container .data-section.full {
   flex: 1;
 }
+.pf2e-bestiary-tracking.bestiary .monster-container .data-expanded-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .pf2e-bestiary-tracking.bestiary .monster-container .data-header {
   padding: 8px;
   display: flex;
@@ -713,6 +717,41 @@
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .data-header-label button {
   height: 16px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .biography-data-grouping {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .biography-data-outer-container {
+  gap: 4px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .biography-data-container {
+  display: flex;
+  flex-direction: column;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .biography-data-container .biography-data-title {
+  font-weight: bold;
+  align-self: center;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .biography-data-container .biography-data-text {
+  align-self: center;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .biography-data-fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 6px;
+  gap: 4px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .biography-data-fieldset legend {
+  font-weight: bold;
+  margin-left: auto;
+  font-size: 16px;
+  margin-right: auto;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .biography-data-fieldset .biography-data-chip {
+  min-width: calc(33% - 1px);
+  text-align: center;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .data-body {
   display: flex;

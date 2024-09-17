@@ -1,4 +1,6 @@
 import { slugify } from "../scripts/helpers";
+import { attackTable } from "../scripts/statisticsData";
+import { getCategoryLabel } from "../scripts/statisticsHelper";
 import { dispositions } from "./constants";
 import { Creature } from "./creature";
 import { getNPCData, MappingField } from "./modelHelpers";
@@ -14,6 +16,29 @@ export class NPC extends Creature {
           hidden: new fields.BooleanField({ required: true, initial: true }),
         }),
       }),
+      isFromPC: new fields.BooleanField({}),
+      pcData: new fields.SchemaField(
+        {
+          classDC: new fields.SchemaField({
+            label: new fields.StringField({ required: true }),
+            dc: new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              value: new fields.NumberField({ required: true, integer: true }),
+            }),
+            mod: new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              value: new fields.NumberField({ required: true, integer: true }),
+            }),
+          }),
+        },
+        { nullable: true, initial: null },
+      ),
       npcData: new fields.SchemaField({
         simple: new fields.BooleanField({ initial: false }),
         categories: new fields.ArrayField(
@@ -44,6 +69,68 @@ export class NPC extends Creature {
               initial: false,
             }),
             value: new fields.StringField({}),
+            data: new fields.SchemaField(
+              {
+                attitude: new fields.SchemaField({
+                  revealed: new fields.BooleanField({
+                    required: true,
+                    initial: false,
+                  }),
+                  value: new fields.StringField({}),
+                }),
+                beliefs: new fields.SchemaField({
+                  revealed: new fields.BooleanField({
+                    required: true,
+                    initial: false,
+                  }),
+                  value: new fields.StringField({}),
+                }),
+                edicts: new MappingField(
+                  new fields.SchemaField({
+                    revealed: new fields.BooleanField({
+                      required: true,
+                      initial: false,
+                    }),
+                    empty: new fields.BooleanField({ initial: false }),
+                    value: new fields.StringField({}),
+                  }),
+                  { initial: [] },
+                ),
+                anathema: new MappingField(
+                  new fields.SchemaField({
+                    revealed: new fields.BooleanField({
+                      required: true,
+                      initial: false,
+                    }),
+                    empty: new fields.BooleanField({ initial: false }),
+                    value: new fields.StringField({}),
+                  }),
+                  { initial: [] },
+                ),
+                likes: new fields.SchemaField({
+                  revealed: new fields.BooleanField({
+                    required: true,
+                    initial: false,
+                  }),
+                  value: new fields.StringField({}),
+                }),
+                dislikes: new fields.SchemaField({
+                  revealed: new fields.BooleanField({
+                    required: true,
+                    initial: false,
+                  }),
+                  value: new fields.StringField({}),
+                }),
+                catchphrases: new fields.SchemaField({
+                  revealed: new fields.BooleanField({
+                    required: true,
+                    initial: false,
+                  }),
+                  value: new fields.StringField({}),
+                }),
+              },
+              { nullable: true, initial: null },
+            ),
           }),
           height: new fields.SchemaField({
             revealed: new fields.BooleanField({
@@ -201,20 +288,151 @@ export class NPC extends Creature {
       : (this.name.custom ?? this.name.value);
   }
 
-  _getRefreshData(actor) {
-    const data = getNPCData(actor);
-    const creatureData = super._getRefreshData(actor, data);
+  async _getRefreshData(actor) {
+    const data = await getNPCData(actor, this.isFromPC);
+    const creatureData = await super._getRefreshData(actor, data);
     return {
       ...creatureData,
       system: {
         ...creatureData.system,
-        npcData: this.npcData,
+        pcData: {
+          ...data.system.pcData,
+          classDC: {
+            ...data.system.pcData.classDC,
+            dc: {
+              ...data.system.pcData.classDC.dc,
+              revealed: this.pcData.classDC.dc.revealed,
+            },
+            mod: {
+              ...data.system.pcData.classDC.mod,
+              revealed: this.pcData.classDC.mod.revealed,
+            },
+          },
+        },
+        npcData: !this.isFromPC
+          ? this.npcData
+          : {
+              ...this.npcData,
+              general: {
+                ...this.npcData.general,
+                background: {
+                  ...data.system.npcData.general.background,
+                  revealed: this.npcData.general.background.revealed,
+                },
+                appearance: {
+                  ...data.system.npcData.general.appearance,
+                  revealed: this.npcData.general.appearance.revealed,
+                },
+                height: {
+                  ...data.system.npcData.general.height,
+                  revealed: this.npcData.general.height.revealed,
+                },
+                weight: {
+                  ...data.system.npcData.general.weight,
+                  revealed: this.npcData.general.weight.revealed,
+                },
+                personality: {
+                  ...this.npcData.general.personality,
+                  data: {
+                    attitude: {
+                      ...data.system.npcData.general.personality.data.attitude,
+                      revealed:
+                        this.npcData.general.personality.data.attitude.revealed,
+                    },
+                    beliefs: {
+                      ...data.system.npcData.general.personality.data.beliefs,
+                      revealed:
+                        this.npcData.general.personality.data.beliefs.revealed,
+                    },
+                    likes: {
+                      ...data.system.npcData.general.personality.data.likes,
+                      revealed:
+                        this.npcData.general.personality.data.likes.revealed,
+                    },
+                    dislikes: {
+                      ...data.system.npcData.general.personality.data.dislikes,
+                      revealed:
+                        this.npcData.general.personality.data.dislikes.revealed,
+                    },
+                    catchphrases: {
+                      ...data.system.npcData.general.personality.data
+                        .catchphrases,
+                      revealed:
+                        this.npcData.general.personality.data.catchphrases
+                          .revealed,
+                    },
+                    edicts: Object.keys(
+                      data.system.npcData.general.personality.data.edicts,
+                    ).reduce((acc, key) => {
+                      const edict =
+                        data.system.npcData.general.personality.data.edicts[
+                          key
+                        ];
+                      acc[key] = {
+                        ...edict,
+                        revealed:
+                          Object.values(
+                            this.npcData.general.personality.data.edicts,
+                          ).find((x) => x.value === edict.value)?.revealed ??
+                          edict.revealed,
+                      };
+                      return acc;
+                    }, {}),
+                    anathema: Object.keys(
+                      data.system.npcData.general.personality.data.anathema,
+                    ).reduce((acc, key) => {
+                      const anathema =
+                        data.system.npcData.general.personality.data.anathema[
+                          key
+                        ];
+                      acc[key] = {
+                        ...anathema,
+                        revealed:
+                          Object.values(
+                            this.npcData.general.personality.data.anathema,
+                          ).find((x) => x.value === anathema.value)?.revealed ??
+                          anathema.revealed,
+                      };
+                      return acc;
+                    }, {}),
+                  },
+                },
+                birthplace: {
+                  ...data.system.npcData.general.birthplace,
+                  revealed: this.npcData.general.birthplace.revealed,
+                },
+              },
+            },
       },
     };
   }
 
   _getToggleUpdate(state, npcView) {
     if (npcView) {
+      const personalityData = this.isFromPC
+        ? {
+            "personality.data": {
+              "attitude.revealed": state,
+              "beliefs.revealed": state,
+              "likes.revealed": state,
+              "dislikes.revealed": state,
+              "catchphrases.revealed": state,
+              edicts: Object.keys(
+                this.npcData.general.personality.data.edicts,
+              ).reduce((acc, key) => {
+                acc[key] = { revealed: state };
+                return acc;
+              }, {}),
+              anathema: Object.keys(
+                this.npcData.general.personality.data.anathema,
+              ).reduce((acc, key) => {
+                acc[key] = { revealed: state };
+                return acc;
+              }, {}),
+            },
+          }
+        : {};
+
       return {
         system: {
           npcData: {
@@ -222,6 +440,7 @@ export class NPC extends Creature {
               "background.revealed": state,
               "appearance.revealed": state,
               "personality.revealed": state,
+              ...personalityData,
               "height.revealed": state,
               "weight.revealed": state,
               "birthplace.revealed": state,
@@ -273,7 +492,23 @@ export class NPC extends Creature {
         },
       };
     } else {
-      return super._getToggleUpdate(state);
+      const pcData = this.isFromPC
+        ? {
+            "pcData.classDC": {
+              "dc.revealed": state,
+              "mod.revealed": state,
+            },
+          }
+        : {};
+
+      const creatureToggleUpdate = super._getToggleUpdate(state);
+      return {
+        ...creatureToggleUpdate,
+        system: {
+          ...creatureToggleUpdate.system,
+          ...pcData,
+        },
+      };
     }
   }
 
@@ -416,18 +651,27 @@ export class NPC extends Creature {
       return acc;
     }, {});
 
-    // this.npcData.influence.influence = Object.keys(
-    //   this.npcData.influence.influence,
-    // ).reduce((acc, key) => {
-    //   const influence = this.npcData.influence.influence[key];
-    //   if (
-    //     game.user.isGM ||
-    //     this.npcData.influence.influencePoints >= influence.points
-    //   ) {
-    //     acc[key] = influence;
-    //   }
+    if (this.pcData) {
+      const vagueDescriptions = game.settings.get(
+        "pf2e-bestiary-tracking",
+        "vague-descriptions",
+      );
 
-    //   return acc;
-    // }, {});
+      const playerLevel = game.user.character
+        ? game.user.character.system.details.level.value
+        : null;
+      const contextLevel = vagueDescriptions.settings.playerBased
+        ? !Number.isNaN(gmLevel) && game.user.isGM
+          ? gmLevel
+          : (playerLevel ?? this.level.value)
+        : this.level.value;
+
+      this.pcData.classDC.mod.category = getCategoryLabel(
+        attackTable,
+        contextLevel,
+        this.pcData.classDC.mod.value,
+      );
+      this.pcData.classDC.dc.category = this.pcData.classDC.mod.category;
+    }
   }
 }

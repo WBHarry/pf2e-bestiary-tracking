@@ -83,6 +83,7 @@
       "Add": "Add",
       "Confirm": "Confirm",
       "Cancel": "Cancel",
+      "AttackLabel": "Attack",
       "DCLabel": "DC"
     },
     "Bestiary": {
@@ -357,7 +358,8 @@
           "Level": "Creature Level",
           "Languages": "Languages Known",
           "Height": "Height",
-          "Weight": "Weight"
+          "Weight": "Weight",
+          "Birthplace": "Birthplace"
         },
         "DetailedInformation": {
           "Name": "Detailed Information Toggles",

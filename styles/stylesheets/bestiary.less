@@ -659,7 +659,6 @@
           flex-direction: column;
           align-items: center;
           gap: 8px;
-          margin: 4px 0;
           overflow: auto;
 
           .disposition-inner-container {
@@ -743,6 +742,12 @@
         }
       }
 
+      .data-expanded-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
       .data-header {
         padding: 8px;
         display: flex;
@@ -767,6 +772,48 @@
 
         button {
           height: 16px;
+        }
+      }
+
+      .biography-data-grouping {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .biography-data-outer-container {
+        gap: 4px;
+      }
+      .biography-data-container {
+        display: flex;
+        flex-direction: column;
+
+        .biography-data-title {
+          font-weight: bold;
+          align-self: center;
+        }
+
+        .biography-data-text {
+          align-self: center;
+        }
+      }
+
+      .biography-data-fieldset {
+        display: flex;
+        flex-wrap: wrap;
+        border-radius: 6px;
+        gap: 4px;
+
+        legend {
+          font-weight: bold;
+          margin-left: auto;
+          font-size: 16px;
+          margin-right: auto;
+        }
+
+        .biography-data-chip {
+          min-width: calc(33% - 1px);
+          text-align: center;
         }
       }
 

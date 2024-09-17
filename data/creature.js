@@ -265,8 +265,15 @@ export class Creature extends foundry.abstract.TypeDataModel {
                 }),
                 value: new fields.StringField({ required: true }),
               }),
+              persistent: new fields.StringField({ nullable: true }),
             }),
           ),
+          bonuses: new fields.SchemaField({
+            bonus: new fields.NumberField({ integer: true, initial: 0 }),
+            bonusDamage: new fields.NumberField({ integer: true, initial: 0 }),
+            splashDamage: new fields.NumberField({ integer: true, initial: 0 }),
+            property: new fields.ObjectField({}),
+          }),
           rules: new fields.ObjectField({}),
         }),
       ),
@@ -697,9 +704,12 @@ export class Creature extends foundry.abstract.TypeDataModel {
   get recallKnowledgeGeneral() {
     const skills = new Set([]);
     getCreaturesTypes(this.traits).forEach((type) => {
-      identificationSkills[type.key].forEach((skill) => {
-        skills.add(game.i18n.localize(CONFIG.PF2E.skills[skill].label));
-      });
+      const skillValues = identificationSkills[type.key];
+      if (skillValues) {
+        skillValues.forEach((skill) => {
+          skills.add(game.i18n.localize(CONFIG.PF2E.skills[skill].label));
+        });
+      }
     });
     const label = Array.from(skills)
       .sort(alphaSort)
@@ -740,8 +750,8 @@ export class Creature extends foundry.abstract.TypeDataModel {
     return `Applicable Lore: DC ${applicableDC} (${game.i18n.localize(applicableModDC.label)}) or DC ${baselineDC} (${game.i18n.localize(baselineModDC.label)})`;
   }
 
-  _getRefreshData(actor, creatureData) {
-    const data = creatureData ?? getCreatureData(actor);
+  async _getRefreshData(actor, creatureData) {
+    const data = creatureData ?? (await getCreatureData(actor));
 
     const spells = data.system.spells.fake
       ? {
@@ -1148,7 +1158,8 @@ export class Creature extends foundry.abstract.TypeDataModel {
       }
     }
 
-    await this.parent.update(this._getRefreshData(actor), {
+    const data = await this._getRefreshData(actor);
+    await this.parent.update(data, {
       diff: false,
       recursive: false,
     });

@@ -70,7 +70,7 @@
             </div>
         </div>
         <div class="tab minor {{this.tabs.gm.cssClass}}" data-group="npc" data-tab="gm">
-            <div class="data-section primary-container npc-players-container">
+            <div class="data-section primary-container npc-players-container active">
                 <div class="data-header primary-container" title="{{localize "PF2EBestiary.Bestiary.NPC.GMPlayersContainerTip"}}">
                     <div class="data-header-label">
                         <i class="fa-solid fa-person-burst"></i>
@@ -174,9 +174,36 @@
         </div>
         <div class="tab {{this.tabs.general.cssClass}}" data-group="npc" data-tab="general">
             <div class="right-monster-container-data flexcol">
-                {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleTextSection.hbs" icon="fa-solid fa-user" title="PF2EBestiary.Bestiary.NPC.Personality" editMode=this.npcState.editMode path="system.npcData.general.personality" data=this.general.personality }}
+                {{#if this.general.personality.data}}
+                    {{> "modules/pf2e-bestiary-tracking/templates/partials/pcPersonality.hbs" }}
+                {{else}}
+                    {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleTextSection.hbs" icon="fa-solid fa-user" title="PF2EBestiary.Bestiary.NPC.Personality" editMode=this.npcState.editMode path="system.npcData.general.personality" data=this.general.personality }}
+                {{/if}}
                 {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleTextSection.hbs" icon="fa-solid fa-person-rays" title="PF2EBestiary.Bestiary.NPC.Appearance" editMode=this.npcState.editMode path="system.npcData.general.appearance" data=this.general.appearance }}
-                {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleEditorSection.hbs" icon="fa-solid fa-house-chimney" title="PF2EBestiary.Bestiary.NPC.Background" editMode=this.npcState.editMode path="system.npcData.general.background" data=this.general.background }}
+                <div class="flexcol flex1 data-section primary-container active">
+                    <div class="data-header primary-container">
+                        <div class="data-header-label {{#if this.user.isGM}}{{PF2EBTToggleContainer this.user this.general.background}}{{/if}}" data-action="toggleRevealed" data-path="system.npcData.general.background">
+                            <i class="header-icon fa-solid fa-house-chimney"></i>
+                            <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Background"}}</div>
+                        </div>
+
+                        {{#if (and this.optionalFields.birthplace this.general.birthplace.value)}}
+                            <div class="data-header-label {{#if this.user.isGM}}{{PF2EBTToggleContainer this.user this.general.birthplace}}{{/if}}" data-action="toggleRevealed" data-path="system.npcData.general.birthplace">
+                                <div class="flex-value"><strong>{{localize "Birthplace"}}:</strong></div>
+                                {{#if (or this.user.isGM this.general.birthplace.revealed)}}<div>{{this.general.birthplace.value}}</div>{{else}}?{{/if}}
+                            </div>
+                        {{/if}}
+                    </div>
+                    <div class="data-body primary-border-container flex1">
+                        {{#if (and this.user.isGM this.npcState.editMode)}}
+                            <prose-mirror class="data-input primary-editor" name="system.npcData.general.background.value" value="{{this.general.background.value}}">
+                                {{{this.general.background.enriched}}}
+                            </prose-mirror>
+                        {{else}}
+                            {{#if (or this.user.isGM this.general.background.revealed)}}{{{this.general.background.enrichedValue}}}{{else}}?{{/if}}
+                        {{/if}}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="tab {{this.tabs.influence.cssClass}}" data-group="npc" data-tab="influence">

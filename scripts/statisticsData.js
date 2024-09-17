@@ -2070,6 +2070,7 @@ export const identificationSkills = {
   fey: ["nature"],
   fiend: ["religion"],
   fungus: ["nature"],
+  humanoid: ["society"],
   monitor: ["society"],
   ooze: ["occultism"],
   plant: ["nature"],

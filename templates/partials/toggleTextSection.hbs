@@ -9,7 +9,7 @@
         {{#if (and this.user.isGM editMode)}}
             <textarea class="data-input secondary-container" name="{{concat path ".value"}}">{{data.value}}</textarea>
         {{else}}
-            {{#if (or this.user.isGM data.revealed)}}{{data.value}}{{else}}?{{/if}}
+            {{#if (or this.user.isGM data.revealed)}}{{#if data.enrichedValue}}{{{data.enrichedValue}}}{{else}}{{data.value}}{{/if}}{{else}}?{{/if}}
         {{/if}}
     </div>
 </div>

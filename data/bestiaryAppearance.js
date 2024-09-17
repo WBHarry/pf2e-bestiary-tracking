@@ -9,6 +9,7 @@ export const optionalFields = {
   languages: false,
   height: false,
   weight: false,
+  birthplace: false,
 };
 
 export const bestiaryCategorySettings = {

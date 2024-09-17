@@ -213,9 +213,11 @@ export const getBaseActor = (actor) => {
     : actor;
 };
 
-export const isNPC = (data) => {
+export const getEntityType = (data) => {
   if (data.type === "pf2e-bestiary-tracking.hazard" || data.type === "hazard")
     return "hazard";
+
+  if (data.type === "character") return "character";
 
   if (data.type === "pf2e-bestiary-tracking.npc") return "npc";
   if (
@@ -274,4 +276,22 @@ export const versionCompare = (current, target) => {
   }
 
   return false;
+};
+
+export const parseDamageInstancesFromFormula = (formula) => {
+  const damageMatch = formula.split(/ [+-] /);
+  if (!damageMatch)
+    return { category: null, damage: { value: "" }, damageType: { value: "" } };
+
+  return damageMatch.reduce((acc, match) => {
+    let splitMatch = match.match(/(?<=\)) /);
+    if (!splitMatch) splitMatch = match.split(" ");
+    acc[foundry.utils.randomID()] = {
+      category: null,
+      damage: { value: splitMatch[0] },
+      damageType: { value: splitMatch[1] },
+    };
+
+    return acc;
+  }, {});
 };

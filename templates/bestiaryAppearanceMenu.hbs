@@ -26,6 +26,15 @@
         </div>
 
         <div class="form-group">
+            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Languages"}}</label>
+            <div class="form-fields">
+                <div class="form-fields">
+                    <input type="checkbox" name="optionalFields.languages" {{checked settings.optionalFields.languages}} />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Height"}}</label>
             <div class="form-fields">
                 <div class="form-fields">
@@ -44,10 +53,10 @@
         </div>
 
         <div class="form-group">
-            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Languages"}}</label>
+            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Birthplace"}}</label>
             <div class="form-fields">
                 <div class="form-fields">
-                    <input type="checkbox" name="optionalFields.languages" {{checked settings.optionalFields.languages}} />
+                    <input type="checkbox" name="optionalFields.birthplace" {{checked settings.optionalFields.birthplace}} />
                 </div>
             </div>
         </div>
@@ -95,23 +104,6 @@
         </div>
     </fieldset> 
     </div>
-
-    {{!-- <fieldset class="menu-category">
-            <legend class="pf2e-bestiary-clickable-icon" data-action="toggleHiddenSettingsFields">
-                <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.Title"}}</h4>
-            </legend>
-
-            <div class="form-group">
-                <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.Creature"}}</label>
-                <div class="form-fields">
-                    <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.Creature"}}</label>
-                    <select name="settings.hiddenSettings.images">
-                        {{selectOptions this.imageHideStates selected=this.settings.hiddenSettings.images valueAttr="value" labelAttr="name" localize=true}}
-                    </select>
-                </div>
-            </div>
-    </fieldset> --}}
-
 
     <fieldset class="menu-category">
         <legend class="flexed">

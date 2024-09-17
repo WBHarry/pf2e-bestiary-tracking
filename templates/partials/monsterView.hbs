@@ -412,7 +412,6 @@
                             <div class="data-header-label">
                                 <i class="fa-solid fa-book"></i>
                                 <div class="flex-value">{{localize "Recall Knowledge"}}</div>
-                                {{!-- <button class="secondary-container primary-hover-container" data-action="displayRecallKnowledgePopup">Attempts</button> --}}
                             </div>
                         </div>
                         <div class="data-body primary-border-container">
@@ -688,9 +687,23 @@
                 <div class="data-section primary-container active">
                     <div class="data-header primary-container">
                         <div class="bestiary-fakable-container">
-                            <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.actions" data-type="actions">
-                                <img class="data-icon" src="icons/svg/explosion.svg" />
-                                <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Actions"}}</div>
+                            <div class="data-expanded-header">
+                                <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.actions" data-type="actions">
+                                    <img class="data-icon" src="icons/svg/explosion.svg" />
+                                    <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Actions"}}</div>
+                                </div>
+                                {{#if (and this.system.pcData this.system.pcData.classDC.dc.value)}}
+                                    {{#if (or this.user.isGM this.system.pcData.classDC.dc.revealed)}}
+                                        <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.pcData.classDC.dc}}" data-action="toggleRevealed" data-path="system.pcData.classDC.dc">
+                                            {{localize this.system.pcData.classDC.label}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.DCLabel"}}:&nbsp;{{PF2EBTMonsterValue this.system.pcData.classDC.dc this.vagueDescriptions.properties.attacks}}
+                                        </div>
+                                    {{/if}}
+                                    {{#if (or this.user.isGM this.system.pcData.classDC.mod.revealed)}}
+                                        <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.pcData.classDC.mod}}" data-action="toggleRevealed" data-path="system.pcData.classDC.mod">
+                                            {{localize this.system.pcData.classDC.label}}&nbsp;{{localize "PF2EBestiary.Miscellaneous.AttackLabel"}}:&nbsp;{{PF2EBTMonsterValue this.system.pcData.classDC.mod this.vagueDescriptions.properties.attacks}}
+                                        </div>
+                                    {{/if}}
+                                {{/if}}
                             </div>
 
                             {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.actions" data-name="Action" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}

@@ -82,6 +82,7 @@ Hooks.once("init", () => {
     "modules/pf2e-bestiary-tracking/templates/partials/toggleEditorSection.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/toggleOptionsSection.hbs",
+    "modules/pf2e-bestiary-tracking/templates/partials/pcPersonality.hbs",
   ]);
 });
 
@@ -717,5 +718,20 @@ Hooks.on("updateCombatant", async (combatant, changes) => {
       await page.update({ "system.hidden": false });
       Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
+  }
+});
+
+Hooks.on("renderDialog", (dialog, html) => {
+  if (
+    dialog.data.title ===
+    game.i18n.format("DOCUMENT.Create", {
+      type: game.i18n.localize("DOCUMENT.JournalEntry"),
+    })
+  ) {
+    const options = $(html).find("option");
+    options.each((index) => {
+      const option = options[index];
+      if (option.innerText === "BestiaryTracking Bestiares") $(option).remove();
+    });
   }
 });

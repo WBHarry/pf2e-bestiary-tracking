@@ -4,7 +4,7 @@ import {
   getHazardCategories,
   getHazardTypes,
   getNPCCategories,
-  isNPC,
+  getEntityType,
   slugify,
 } from "../scripts/helpers.js";
 import { resetBestiary } from "../scripts/macros.js";
@@ -614,6 +614,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     if (selected.monster.type === "pf2e-bestiary-tracking.npc") {
+      selected.monster.system.npcData.general.appearance.enrichedValue =
+        await TextEditor.enrichHTML(
+          selected.monster.system.npcData.general.appearance.value,
+        );
+
+      selected.monster.system.npcData.general.personality.enrichedValue =
+        await TextEditor.enrichHTML(
+          selected.monster.system.npcData.general.personality.value,
+        );
+
       selected.monster.system.npcData.general.background.enrichedValue =
         await TextEditor.enrichHTML(
           selected.monster.system.npcData.general.background.value,
@@ -1387,6 +1397,34 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         };
         await this.selected.monster.update(update, { diff: true });
         break;
+      case "personality":
+        const baseProp =
+          this.selected.monster.system.npcData.general.personality.data;
+        allRevealed =
+          baseProp.attitude.revealed &&
+          baseProp.beliefs.revealed &&
+          baseProp.likes.revealed &&
+          baseProp.dislikes.revealed &&
+          baseProp.catchphrases.revealed &&
+          Object.values(baseProp.edicts).every((x) => x.revealed) &&
+          Object.values(baseProp.anathema).every((x) => x.revealed);
+        await this.selected.monster.update({
+          "system.npcData.general.personality.data": {
+            attitude: { revealed: !allRevealed },
+            beliefs: { revealed: !allRevealed },
+            likes: { revealed: !allRevealed },
+            dislikes: { revealed: !allRevealed },
+            catchphrases: { revealed: !allRevealed },
+            edicts: Object.keys(baseProp.edicts).reduce((acc, key) => {
+              acc[key] = { revealed: !allRevealed };
+              return acc;
+            }, {}),
+            anathema: Object.keys(baseProp.anathema).reduce((acc, key) => {
+              acc[key] = { revealed: !allRevealed };
+              return acc;
+            }, {}),
+          },
+        });
       default:
         allRevealed = keys.every((key) => property[key].revealed);
         await this.selected.monster.update({
@@ -2179,7 +2217,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       navigator.clipboard.writeText(bestiaryLink).then(() => {
         ui.notifications.info(
           game.i18n.format("PF2EBestiary.Bestiary.Info.BestiaryEntryLink", {
-            entity: this.selected.monster.system.name.value,
+            entity: game.user.isGM
+              ? this.selected.monster.system.name.value
+              : this.selected.monster.system.displayedName,
           }),
         );
       });
@@ -2482,12 +2522,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     var data = null;
-    switch (isNPC(item)) {
+    switch (getEntityType(item)) {
       case "creature":
-        data = getCreatureData(item);
+        data = await getCreatureData(item);
         break;
       case "npc":
-        data = getNPCData(item);
+        data = await getNPCData(item);
         break;
       case "hazard":
         data = getHazardData(item);
@@ -2708,16 +2748,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       return;
     }
 
-    if (baseItem?.type === "character" || baseItem.hasPlayerOwner) {
-      ui.notifications.error(
-        game.i18n.localize(
-          "PF2EBestiary.Bestiary.Errors.UnsupportedCharacterType",
-        ),
-      );
-      return;
-    }
+    // if (baseItem.hasPlayerOwner) {
+    //   ui.notifications.error(
+    //     game.i18n.localize(
+    //       "PF2EBestiary.Bestiary.Errors.UnsupportedCharacterType",
+    //     ),
+    //   );
+    //   return;
+    // }
 
-    if (!baseItem || (baseItem.type !== "npc" && baseItem.type !== "hazard")) {
+    if (!baseItem || !["npc", "hazard", "character"].includes(baseItem.type)) {
       ui.notifications.error(
         game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedType"),
       );
@@ -2746,12 +2786,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       }
 
       var pageData = null;
-      switch (isNPC(item)) {
+      switch (getEntityType(item)) {
         case "creature":
-          pageData = getCreatureData(item);
+          pageData = await getCreatureData(item);
+          break;
+        case "character":
+          pageData = await getNPCData(item, true);
           break;
         case "npc":
-          pageData = getNPCData(item);
+          pageData = await getNPCData(item);
           break;
         case "hazard":
           pageData = getHazardData(item);
