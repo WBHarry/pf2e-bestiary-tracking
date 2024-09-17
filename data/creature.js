@@ -45,6 +45,29 @@ export class Creature extends foundry.abstract.TypeDataModel {
           initial: 0,
         }),
       }),
+      isFromPC: new fields.BooleanField({}),
+      pcData: new fields.SchemaField(
+        {
+          classDC: new fields.SchemaField({
+            label: new fields.StringField({ required: true }),
+            dc: new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              value: new fields.NumberField({ required: true, integer: true }),
+            }),
+            mod: new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              value: new fields.NumberField({ required: true, integer: true }),
+            }),
+          }),
+        },
+        { nullable: true, initial: null },
+      ),
       recallKnowledge: new MappingField(
         new fields.SchemaField({
           attempts: new MappingField(new fields.StringField({})),
@@ -484,6 +507,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
     return {
       perception: {
         ...this.senses.perception,
+        value: `${this.senses.perception.value >= 0 ? "+" : "-"}${this.senses.perception.value}`,
         label: "PF2E.PerceptionLabel",
         isPerception: true,
       },
@@ -751,7 +775,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
   }
 
   async _getRefreshData(actor, creatureData) {
-    const data = creatureData ?? (await getCreatureData(actor));
+    const data = creatureData ?? (await getCreatureData(actor, this.isFromPC));
 
     const spells = data.system.spells.fake
       ? {
@@ -814,6 +838,20 @@ export class Creature extends foundry.abstract.TypeDataModel {
     return {
       name: data.name,
       system: {
+        pcData: {
+          ...data.system.pcData,
+          classDC: {
+            ...data.system.pcData.classDC,
+            dc: {
+              ...data.system.pcData.classDC.dc,
+              revealed: this.pcData.classDC.dc.revealed,
+            },
+            mod: {
+              ...data.system.pcData.classDC.mod,
+              revealed: this.pcData.classDC.mod.revealed,
+            },
+          },
+        },
         hidden: this.hidden,
         uuid: data.system.uuid,
         version: data.system.version,
@@ -1199,8 +1237,18 @@ export class Creature extends foundry.abstract.TypeDataModel {
           ),
         };
 
+    const pcData = this.isFromPC
+      ? {
+          "pcData.classDC": {
+            "dc.revealed": state,
+            "mod.revealed": state,
+          },
+        }
+      : {};
+
     return {
       system: {
+        ...pcData,
         "name.revealed": state,
         "ac.revealed": state,
         "hp.revealed": state,
@@ -1787,5 +1835,23 @@ export class Creature extends foundry.abstract.TypeDataModel {
       },
       {},
     );
+
+    if (this.pcData) {
+      const playerLevel = game.user.character
+        ? game.user.character.system.details.level.value
+        : null;
+      const contextLevel = vagueDescriptions.settings.playerBased
+        ? !Number.isNaN(gmLevel) && game.user.isGM
+          ? gmLevel
+          : (playerLevel ?? this.level.value)
+        : this.level.value;
+
+      this.pcData.classDC.mod.category = getCategoryLabel(
+        attackTable,
+        contextLevel,
+        this.pcData.classDC.mod.value,
+      );
+      this.pcData.classDC.dc.category = this.pcData.classDC.mod.category;
+    }
   }
 }

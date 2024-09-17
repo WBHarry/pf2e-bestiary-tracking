@@ -97,8 +97,8 @@
         </div>
         <div class="tab minor {{this.tabs.influence.cssClass}}" data-group="npc" data-tab="influence"> {{!-- <img class="data-icon" src="icons/svg/eye.svg" /> --}}
             <div class="flexcol">
-                {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-eye" title="PF2EBestiary.Miscellaneous.Perception" editMode=this.npcState.editMode path="system.senses.perception" data=this.creatureData.system.senses.perception noEdit="true" }}
-                {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-fw fa-heart-pulse" title="PF2EBestiary.Miscellaneous.Saves.Will.Short" editMode=this.npcState.editMode path="system.saves.will" data=this.creatureData.system.saves.will noEdit="true" }}
+                {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-eye" title="PF2EBestiary.Miscellaneous.Perception" editMode=this.npcState.editMode path="system.senses.perception" data=this.creatureData.system.senses.perception noEdit="true" number="true" }}
+                {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-fw fa-heart-pulse" title="PF2EBestiary.Miscellaneous.Saves.Will.Short" editMode=this.npcState.editMode path="system.saves.will" data=this.creatureData.system.saves.will noEdit="true" number="true" }}
                 <div class="flexcol flex1 data-section primary-container active">
                     <div class="data-header primary-container">
                         <div class="data-header-label {{#if this.user.isGM}}{{PF2EBTToggleContainer this.user this.influence.premise}}"{{/if}} data-action="toggleRevealed" data-path="system.npcData.influence.premise">

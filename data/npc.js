@@ -16,29 +16,6 @@ export class NPC extends Creature {
           hidden: new fields.BooleanField({ required: true, initial: true }),
         }),
       }),
-      isFromPC: new fields.BooleanField({}),
-      pcData: new fields.SchemaField(
-        {
-          classDC: new fields.SchemaField({
-            label: new fields.StringField({ required: true }),
-            dc: new fields.SchemaField({
-              revealed: new fields.BooleanField({
-                required: true,
-                initial: false,
-              }),
-              value: new fields.NumberField({ required: true, integer: true }),
-            }),
-            mod: new fields.SchemaField({
-              revealed: new fields.BooleanField({
-                required: true,
-                initial: false,
-              }),
-              value: new fields.NumberField({ required: true, integer: true }),
-            }),
-          }),
-        },
-        { nullable: true, initial: null },
-      ),
       npcData: new fields.SchemaField({
         simple: new fields.BooleanField({ initial: false }),
         categories: new fields.ArrayField(
@@ -295,20 +272,6 @@ export class NPC extends Creature {
       ...creatureData,
       system: {
         ...creatureData.system,
-        pcData: {
-          ...data.system.pcData,
-          classDC: {
-            ...data.system.pcData.classDC,
-            dc: {
-              ...data.system.pcData.classDC.dc,
-              revealed: this.pcData.classDC.dc.revealed,
-            },
-            mod: {
-              ...data.system.pcData.classDC.mod,
-              revealed: this.pcData.classDC.mod.revealed,
-            },
-          },
-        },
         npcData: !this.isFromPC
           ? this.npcData
           : {
@@ -492,23 +455,7 @@ export class NPC extends Creature {
         },
       };
     } else {
-      const pcData = this.isFromPC
-        ? {
-            "pcData.classDC": {
-              "dc.revealed": state,
-              "mod.revealed": state,
-            },
-          }
-        : {};
-
-      const creatureToggleUpdate = super._getToggleUpdate(state);
-      return {
-        ...creatureToggleUpdate,
-        system: {
-          ...creatureToggleUpdate.system,
-          ...pcData,
-        },
-      };
+      return super._getToggleUpdate(state);
     }
   }
 
@@ -650,28 +597,5 @@ export class NPC extends Creature {
       };
       return acc;
     }, {});
-
-    if (this.pcData) {
-      const vagueDescriptions = game.settings.get(
-        "pf2e-bestiary-tracking",
-        "vague-descriptions",
-      );
-
-      const playerLevel = game.user.character
-        ? game.user.character.system.details.level.value
-        : null;
-      const contextLevel = vagueDescriptions.settings.playerBased
-        ? !Number.isNaN(gmLevel) && game.user.isGM
-          ? gmLevel
-          : (playerLevel ?? this.level.value)
-        : this.level.value;
-
-      this.pcData.classDC.mod.category = getCategoryLabel(
-        attackTable,
-        contextLevel,
-        this.pcData.classDC.mod.value,
-      );
-      this.pcData.classDC.dc.category = this.pcData.classDC.mod.category;
-    }
   }
 }

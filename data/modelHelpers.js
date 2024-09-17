@@ -656,6 +656,13 @@ const getPCCreatureData = async (actor) => {
     ownership: { default: 3 },
     system: {
       isFromPC: true,
+      pcData: {
+        classDC: {
+          label: CONFIG.PF2E.classTraits[actor.classDC.slug],
+          dc: { value: actor.classDC.dc.value },
+          mod: { value: actor.classDC.mod },
+        },
+      },
       hidden:
         game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
           .monster || combatant?.token?.hidden,
@@ -1059,16 +1066,6 @@ export const getNPCData = async (actor, pcBase) => {
       imageState: {
         hideState: imageSettings.hideState,
       },
-      isFromPC: pcBase,
-      pcData: pcBase
-        ? {
-            classDC: {
-              label: CONFIG.PF2E.classTraits[actor.classDC.slug],
-              dc: { value: actor.classDC.dc.value },
-              mod: { value: actor.classDC.mod },
-            },
-          }
-        : null,
       npcData: {
         simple: isSimple,
         categories: [],

@@ -8,7 +8,15 @@
             {{#if (and (not this.noEdit) (and this.user.isGM editMode))}}
                 <input class="data-input secondary-container" type="text" value="{{data.value}}" name="{{concat path ".value"}}" />
             {{else}}
-                {{#if (or this.user.isGM data.revealed)}}<div>{{{data.value}}}</div>{{else}}?{{/if}}
+                {{#if (or this.user.isGM data.revealed)}}
+                    {{#if this.number}}
+                        <div>{{#if (gte data.value 0)}}+{{else}}-{{/if}}{{data.value}}</div>
+                    {{else}}
+                        <div>{{data.value}}</div>
+                    {{/if}}
+                {{else}}
+                    ?
+                {{/if}}
             {{/if}}
         </div>
     </div>
