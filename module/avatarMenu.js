@@ -1,4 +1,3 @@
-import { getVagueDescriptionLabels } from "../data/bestiaryLabels.js";
 import { imageHideStates } from "../data/constants.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -15,6 +14,7 @@ export default class AvatarMenu extends HandlebarsApplicationMixin(
       system: {
         imageState: {
           hideState: entity.system.imageState.hideState,
+          hideImage: entity.system.imageState.hideImage,
         },
       },
     };
@@ -28,8 +28,10 @@ export default class AvatarMenu extends HandlebarsApplicationMixin(
     tag: "form",
     id: "pf2e-bestiary-tracking-avatar-menu",
     classes: ["avatar-menu"],
-    position: { width: 320, height: "auto" },
+    position: { width: 400, height: "auto" },
     actions: {
+      filePicker: this.filePicker,
+      clearHideImage: this.clearHideImage,
       save: this.save,
     },
     form: { handler: this.updateData, submitOnChange: true },
@@ -51,7 +53,33 @@ export default class AvatarMenu extends HandlebarsApplicationMixin(
   }
 
   static async updateData(event, element, formData) {
-    this.update = foundry.utils.expandObject(formData.object);
+    const updateData = foundry.utils.expandObject(formData.object);
+    this.update = {
+      ...updateData,
+      system: {
+        ...updateData.system,
+        imageState: {
+          ...updateData.system.imageState,
+          hideImage: this.update.system.imageState.hideImage,
+        },
+      },
+    };
+    this.render();
+  }
+
+  static async filePicker(_, button) {
+    new FilePicker({
+      type: "image",
+      title: "Image Select",
+      callback: async (path) => {
+        foundry.utils.setProperty(this.update, button.dataset.path, path);
+        this.render();
+      },
+    }).render(true);
+  }
+
+  static clearHideImage() {
+    this.update.system.imageState.hideImage = null;
     this.render();
   }
 

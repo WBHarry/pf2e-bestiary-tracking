@@ -4173,6 +4173,7 @@ class Creature extends foundry.abstract.TypeDataModel {
           integer: true,
           initial: 0,
         }),
+        hideImage: new fields.StringField({ nullable: true, initial: null }),
       }),
       isFromPC: new fields.BooleanField({}),
       pcData: new fields.SchemaField(
@@ -4613,7 +4614,7 @@ class Creature extends foundry.abstract.TypeDataModel {
     );
 
     return this.imageState.hideState === 2
-      ? imageSettings.hideImage
+      ? this.imageState.hideImage ?? imageSettings.hideImage
       : game.settings.get("pf2e-bestiary-tracking", "use-token-art")
         ? this.texture
         : this.img;
@@ -4875,8 +4876,8 @@ class Creature extends foundry.abstract.TypeDataModel {
         return acc;
       }, "");
 
-    if(!label) return null;
-      
+    if (!label) return null;
+
     const rarityModifier = rarityModificationTable[this.rarity.value];
     const dc =
       levelDCTable[this.level.value] + Number.parseInt(rarityModifier.value);
@@ -6598,6 +6599,7 @@ class Hazard extends foundry.abstract.TypeDataModel {
           integer: true,
           initial: 0,
         }),
+        hideImage: new fields.StringField({ nullable: true, initial: null }),
       }),
       recallKnowledge: new MappingField(
         new fields.SchemaField({
@@ -12225,6 +12227,7 @@ class AvatarMenu extends HandlebarsApplicationMixin$1(
       system: {
         imageState: {
           hideState: entity.system.imageState.hideState,
+          hideImage: entity.system.imageState.hideImage,
         },
       },
     };
@@ -12238,8 +12241,10 @@ class AvatarMenu extends HandlebarsApplicationMixin$1(
     tag: "form",
     id: "pf2e-bestiary-tracking-avatar-menu",
     classes: ["avatar-menu"],
-    position: { width: 320, height: "auto" },
+    position: { width: 400, height: "auto" },
     actions: {
+      filePicker: this.filePicker,
+      clearHideImage: this.clearHideImage,
       save: this.save,
     },
     form: { handler: this.updateData, submitOnChange: true },
@@ -12261,7 +12266,33 @@ class AvatarMenu extends HandlebarsApplicationMixin$1(
   }
 
   static async updateData(event, element, formData) {
-    this.update = foundry.utils.expandObject(formData.object);
+    const updateData = foundry.utils.expandObject(formData.object);
+    this.update = {
+      ...updateData,
+      system: {
+        ...updateData.system,
+        imageState: {
+          ...updateData.system.imageState,
+          hideImage: this.update.system.imageState.hideImage
+        }
+      }
+    };
+    this.render();
+  }
+
+  static async filePicker(_, button) {
+    new FilePicker({
+      type: "image",
+      title: "Image Select",
+      callback: async (path) => {
+        foundry.utils.setProperty(this.update, button.dataset.path, path);
+        this.render();
+      },
+    }).render(true);
+  }
+
+  static clearHideImage(){
+    this.update.system.imageState.hideImage = null;
     this.render();
   }
 

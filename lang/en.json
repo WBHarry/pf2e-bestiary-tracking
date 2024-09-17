@@ -135,6 +135,7 @@
       "AvatarMenu": {
         "Title": "Avatar Menu",
         "HideState": "Image Filter",
+        "HideImage": "Hide Image",
         "Save": "Apply Changes"
       },
       "Miscellaneous": {

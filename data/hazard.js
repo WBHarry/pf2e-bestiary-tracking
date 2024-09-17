@@ -39,6 +39,7 @@ export class Hazard extends foundry.abstract.TypeDataModel {
           integer: true,
           initial: 0,
         }),
+        hideImage: new fields.StringField({ nullable: true, initial: null }),
       }),
       recallKnowledge: new MappingField(
         new fields.SchemaField({

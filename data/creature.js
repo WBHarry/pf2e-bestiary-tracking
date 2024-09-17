@@ -44,6 +44,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           integer: true,
           initial: 0,
         }),
+        hideImage: new fields.StringField({ nullable: true, initial: null }),
       }),
       isFromPC: new fields.BooleanField({}),
       pcData: new fields.SchemaField(
@@ -484,7 +485,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
     );
 
     return this.imageState.hideState === 2
-      ? imageSettings.hideImage
+      ? (this.imageState.hideImage ?? imageSettings.hideImage)
       : game.settings.get("pf2e-bestiary-tracking", "use-token-art")
         ? this.texture
         : this.img;
