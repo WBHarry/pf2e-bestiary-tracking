@@ -3270,12 +3270,12 @@ const getPCCreatureData = async (actor) => {
     system: {
       isFromPC: true,
       pcData: {
-          classDC: {
-            label: CONFIG.PF2E.classTraits[actor.classDC.slug],
-            dc: { value: actor.classDC.dc.value },
-            mod: { value: actor.classDC.mod },
-          },
+        classDC: {
+          label: CONFIG.PF2E.classTraits[actor.classDC.slug],
+          dc: { value: actor.classDC.dc.value },
+          mod: { value: actor.classDC.mod },
         },
+      },
       hidden:
         game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
           .monster || combatant?.token?.hidden,
@@ -4636,7 +4636,7 @@ class Creature extends foundry.abstract.TypeDataModel {
     return {
       perception: {
         ...this.senses.perception,
-        value: `${this.senses.perception.value >= 0 ? '+' : '-'}${this.senses.perception.value}`,
+        value: `${this.senses.perception.value >= 0 ? "+" : "-"}${this.senses.perception.value}`,
         label: "PF2E.PerceptionLabel",
         isPerception: true,
       },
@@ -4874,6 +4874,9 @@ class Creature extends foundry.abstract.TypeDataModel {
 
         return acc;
       }, "");
+
+    if(!label) return null;
+      
     const rarityModifier = rarityModificationTable[this.rarity.value];
     const dc =
       levelDCTable[this.level.value] + Number.parseInt(rarityModifier.value);

@@ -422,9 +422,7 @@
                         </div>
                         <div class="data-body primary-border-container">
                             <div class="recall-knowledge-dc-container">
-                                <div class="recall-knowledge-dc-inner-container secondary-container">    
-                                    {{this.system.recallKnowledgeGeneral}}
-                                </div>
+                                {{#with this.system.recallKnowledgeGeneral}}<div class="recall-knowledge-dc-inner-container secondary-container">{{this}}</div>{{/with}}
                                 <div class="recall-knowledge-dc-inner-container secondary-container">       
                                     {{this.system.recallKnowledgeSpecific}}
                                 </div>

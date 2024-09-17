@@ -745,6 +745,9 @@ export class Creature extends foundry.abstract.TypeDataModel {
 
         return acc;
       }, "");
+
+    if (!label) return null;
+
     const rarityModifier = rarityModificationTable[this.rarity.value];
     const dc =
       levelDCTable[this.level.value] + Number.parseInt(rarityModifier.value);
