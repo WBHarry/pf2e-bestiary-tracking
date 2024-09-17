@@ -262,13 +262,13 @@ const versionCompare = (current, target) => {
 };
 
 const parseDamageInstancesFromFormula = (formula) => {
-  const damageMatch = formula.split(/ [+-] /);
+  const damageMatch = formula.split(/ (?![^(]*\))[+-] /);
   if (!damageMatch)
     return { category: null, damage: { value: "" }, damageType: { value: "" } };
 
   return damageMatch.reduce((acc, match) => {
-    let splitMatch = match.match(/(?<=\)) /);
-    if (!splitMatch) splitMatch = match.split(" ");
+    let splitMatch = match.split(/(?<=\)) /);
+    if(splitMatch.length < 2) splitMatch = match.split(" ");
     acc[foundry.utils.randomID()] = {
       category: null,
       damage: { value: splitMatch[0] },
