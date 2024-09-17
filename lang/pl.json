@@ -83,6 +83,7 @@
       "Add": "Dodaj",
       "Confirm": "Potwierdź",
       "Cancel": "Anuluj",
+      "AttackLabel": "Atak",
       "DCLabel": "ST"
     },
     "Bestiary": {
@@ -134,6 +135,7 @@
       "AvatarMenu": {
         "Title": "Menu awatara",
         "HideState": "Filtr obrazu",
+        "HideImage": "Ukryj obraz",
         "Save": "Zastosuj zmiany"
       },
       "Miscellaneous": {
@@ -357,7 +359,8 @@
           "Level": "Poziom stworzenia",
           "Languages": "Znane języki",
           "Height": "Wysokość",
-          "Weight": "Szerokość"
+          "Weight": "Szerokość",
+          "Birthplace": "Miejsce urodzenia"
         },
         "DetailedInformation": {
           "Name": "Przełączniki szczegółowych informacji",
