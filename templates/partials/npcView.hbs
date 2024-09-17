@@ -40,7 +40,7 @@
             <div class="flexcol">
                 <div class="data-section full primary-container active">
                     <div class="data-header primary-container">
-                        <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.skills">
+                        <div class="data-header-label {{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.skills">
                             <i class="fa-solid fa-brain"></i>
                             <div class="flex-value">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RecallKnowledgeAttempts"}}</div>
                         </div>
@@ -49,7 +49,7 @@
                         <div class="recall-knowledge-info-container">
                             {{#each this.creatureData.system.recallKnowledgeAttempts}}
                                 <div class="flexcol">
-                                    <h4 class="recall-knowledge-label primary-hover-container" data-action="resetRecallAttempts" data-character="{{this.id}}">
+                                    <h4 class="recall-knowledge-label {{#if ../user.isGM}}primary-hover-container{{/if}}" {{#if ../user.isGM}}data-action="resetRecallAttempts" data-character="{{this.id}}"{{/if}}>
                                         {{this.name}}
                                     </h4>
                                     <div class="recall-knowledge-attempt-container">
@@ -278,6 +278,10 @@
                                             {{/if}}
                                             <label class="option-field-label">{{localize "PF2EBestiary.Bestiary.NPC.DCLabel"}}</label>
                                             <input class="secondary-container" type="text" name={{concat "system.npcData.influence.influenceSkills." key ".dc"}} value="{{data.dc}}" />
+                                            <div class="flexcol">
+                                                <i class="fa-solid fa-caret-up primary-hover-container" data-action=""></i>
+                                                <i class="fa-solid fa-caret-down primary-hover-container" data-action="decreaseInfluence"></i>
+                                            </div>
                                             <label class="option-field-label">{{localize "PF2EBestiary.Bestiary.NPC.LoreLabel"}}</label>
                                             <input type="checkbox" name="{{concat "system.npcData.influence.influenceSkills." key ".lore"}}" {{checked data.lore}} />
                                             <i class="fa-solid fa-trash primary-hover-container option-field-icon" data-action="removeProperty" data-path="{{concat "system.npcData.influence.influenceSkills.-=" key}}"></i>

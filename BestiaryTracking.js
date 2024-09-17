@@ -4614,7 +4614,7 @@ class Creature extends foundry.abstract.TypeDataModel {
     );
 
     return this.imageState.hideState === 2
-      ? this.imageState.hideImage ?? imageSettings.hideImage
+      ? (this.imageState.hideImage ?? imageSettings.hideImage)
       : game.settings.get("pf2e-bestiary-tracking", "use-token-art")
         ? this.texture
         : this.img;
@@ -12273,9 +12273,9 @@ class AvatarMenu extends HandlebarsApplicationMixin$1(
         ...updateData.system,
         imageState: {
           ...updateData.system.imageState,
-          hideImage: this.update.system.imageState.hideImage
-        }
-      }
+          hideImage: this.update.system.imageState.hideImage,
+        },
+      },
     };
     this.render();
   }
@@ -12291,7 +12291,7 @@ class AvatarMenu extends HandlebarsApplicationMixin$1(
     }).render(true);
   }
 
-  static clearHideImage(){
+  static clearHideImage() {
     this.update.system.imageState.hideImage = null;
     this.render();
   }
