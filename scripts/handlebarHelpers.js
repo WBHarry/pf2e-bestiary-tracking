@@ -4,7 +4,6 @@ export default class RegisterHandlebarsHelpers {
       PF2EBTNrKeys: this.nrKeys,
       PF2EBTMonsterValue: this.monsterValue,
       PF2EBTSlice: this.slice,
-      PF2EBTCategoryClassTitle: this.categoryClassTitle,
       PF2EBTToggleContainer: this.toggleContainer,
       PF2EBTToggleContainerOverride: this.toggleContainerOverride,
       PF2EBTEach: this.each,

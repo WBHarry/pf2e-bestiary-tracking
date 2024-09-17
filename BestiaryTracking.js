@@ -200,7 +200,7 @@ const getEntityType = (data) => {
   if (data.type === "pf2e-bestiary-tracking.hazard" || data.type === "hazard")
     return "hazard";
 
-  if(data.type === "character") return "character";
+  if (data.type === "character") return "character";
 
   if (data.type === "pf2e-bestiary-tracking.npc") return "npc";
   if (
@@ -263,11 +263,12 @@ const versionCompare = (current, target) => {
 
 const parseDamageInstancesFromFormula = (formula) => {
   const damageMatch = formula.split(/ [+-] /);
-  if(!damageMatch) return { category: null, damage: { value: '' }, damageType: { value: '' } };
+  if (!damageMatch)
+    return { category: null, damage: { value: "" }, damageType: { value: "" } };
 
   return damageMatch.reduce((acc, match) => {
     let splitMatch = match.match(/(?<=\)) /);
-    if(!splitMatch) splitMatch = match.split(' ');
+    if (!splitMatch) splitMatch = match.split(" ");
     acc[foundry.utils.randomID()] = {
       category: null,
       damage: { value: splitMatch[0] },
@@ -2636,7 +2637,7 @@ const toggleNumberField = () =>
   });
 
 const getCreatureData = async (actor, pcBase) => {
-  if(pcBase) return await getPCCreatureData(actor);
+  if (pcBase) return await getPCCreatureData(actor);
 
   const { creature: defaultRevealed } = game.settings.get(
     "pf2e-bestiary-tracking",
@@ -3198,15 +3199,15 @@ const getPCCreatureData = async (actor) => {
   };
 
   const attacks = {};
-  for(var i = 0; i < attackKeys.length; i++){
+  for (var i = 0; i < attackKeys.length; i++) {
     var attack = actor.system.actions[attackKeys[i]];
-    
-    if(attack.slug === 'basic-unarmed') continue;
+
+    if (attack.slug === "basic-unarmed") continue;
 
     const item = actor.items.get(attack.item.id);
 
-    if (['melee', 'equipment', 'weapon'].includes(item.type)) {
-      const damage = await attack.damage({getFormula: true});
+    if (["melee", "equipment", "weapon"].includes(item.type)) {
+      const damage = await attack.damage({ getFormula: true });
       const damageInstances = parseDamageInstancesFromFormula(damage);
       attacks[attack.item.id] = {
         revealed: defaultRevealed.attacks,
@@ -3214,17 +3215,15 @@ const getPCCreatureData = async (actor) => {
         actions: attack.glyph,
         totalModifier: attack.totalModifier,
         isMelee: item.isMelee,
-        additionalEffects: attack.additionalEffects?.reduce(
-          (acc, effect) => {
+        additionalEffects:
+          attack.additionalEffects?.reduce((acc, effect) => {
             acc[effect.tag] = {
               label: effect.label,
               tag: effect.tag,
             };
 
             return acc;
-          },
-          {},
-        ) ?? {},
+          }, {}) ?? {},
         damageInstances: damageInstances,
         bonuses: {
           bonus: item.system.damage.bonus?.value,
@@ -3234,8 +3233,8 @@ const getPCCreatureData = async (actor) => {
           runes: {
             potency: item.system.runes.potency,
             striking: item.system.runes.striking,
-            property: item.system.runes.property
-          }
+            property: item.system.runes.property,
+          },
         },
         traits: item.system.traits.value.reduce((acc, trait) => {
           acc[trait] = { value: trait, description: trait };
@@ -3247,10 +3246,10 @@ const getPCCreatureData = async (actor) => {
           return acc;
         }, {}),
         rules: item.system.rules,
-    };
+      };
     }
   }
-  if(Object.keys(attacks).length === 0){
+  if (Object.keys(attacks).length === 0) {
     attacks.empty = {
       revealed: defaultRevealed.attacks,
       empty: true,
@@ -3598,23 +3597,69 @@ const getNPCData = async (actor, pcBase) => {
   const isSimple = actor.sheet.options.classes.includes("simple");
 
   const creatureData = await getCreatureData(actor, pcBase);
-  const personalityData = pcBase ? {
-    attitude: { value: actor.system.details.biography.attitude ? actor.system.details.biography.attitude : "PF2EBestiary.Miscellaneous.None", empty: Boolean(actor.system.details.biography.attitude) },
-    beliefs: { value: actor.system.details.biography.beliefs ? actor.system.details.biography.beliefs : "PF2EBestiary.Miscellaneous.None", empty: Boolean(actor.system.details.biography.beliefs) },
-    likes: { value: actor.system.details.biography.likes ? actor.system.details.biography.likes : "PF2EBestiary.Miscellaneous.None", empty: Boolean(actor.system.details.biography.likes) },
-    dislikes: { value: actor.system.details.biography.dislikes ? actor.system.details.biography.dislikes : "PF2EBestiary.Miscellaneous.None", empty: Boolean(actor.system.details.biography.dislikes) },
-    catchphrases: { value: actor.system.details.biography.catchphrases ? actor.system.details.biography.catchphrases : "PF2EBestiary.Miscellaneous.None", empty: Boolean(actor.system.details.biography.catchphrases) },
-    edicts: actor.system.details.biography.edicts.length > 0 ? actor.system.details.biography.edicts.reduce((acc, edict) => {
-      acc[foundry.utils.randomID()] = { value: edict };
+  const personalityData = pcBase
+    ? {
+        attitude: {
+          value: actor.system.details.biography.attitude
+            ? actor.system.details.biography.attitude
+            : "PF2EBestiary.Miscellaneous.None",
+          empty: Boolean(actor.system.details.biography.attitude),
+        },
+        beliefs: {
+          value: actor.system.details.biography.beliefs
+            ? actor.system.details.biography.beliefs
+            : "PF2EBestiary.Miscellaneous.None",
+          empty: Boolean(actor.system.details.biography.beliefs),
+        },
+        likes: {
+          value: actor.system.details.biography.likes
+            ? actor.system.details.biography.likes
+            : "PF2EBestiary.Miscellaneous.None",
+          empty: Boolean(actor.system.details.biography.likes),
+        },
+        dislikes: {
+          value: actor.system.details.biography.dislikes
+            ? actor.system.details.biography.dislikes
+            : "PF2EBestiary.Miscellaneous.None",
+          empty: Boolean(actor.system.details.biography.dislikes),
+        },
+        catchphrases: {
+          value: actor.system.details.biography.catchphrases
+            ? actor.system.details.biography.catchphrases
+            : "PF2EBestiary.Miscellaneous.None",
+          empty: Boolean(actor.system.details.biography.catchphrases),
+        },
+        edicts:
+          actor.system.details.biography.edicts.length > 0
+            ? actor.system.details.biography.edicts.reduce((acc, edict) => {
+                acc[foundry.utils.randomID()] = { value: edict };
 
-      return acc;
-    }, {}) : { empty: { value: "PF2EBestiary.Miscellaneous.None", empty: true } },
-    anathema: actor.system.details.biography.anathema.length > 0 ? actor.system.details.biography.anathema.reduce((acc, anathema) => {
-      acc[foundry.utils.randomID()] = { value: anathema };
+                return acc;
+              }, {})
+            : {
+                empty: {
+                  value: "PF2EBestiary.Miscellaneous.None",
+                  empty: true,
+                },
+              },
+        anathema:
+          actor.system.details.biography.anathema.length > 0
+            ? actor.system.details.biography.anathema.reduce(
+                (acc, anathema) => {
+                  acc[foundry.utils.randomID()] = { value: anathema };
 
-      return acc;
-    }, {}) : { empty: { value: "PF2EBestiary.Miscellaneous.None", empty: true } },
-  } : null;
+                  return acc;
+                },
+                {},
+              )
+            : {
+                empty: {
+                  value: "PF2EBestiary.Miscellaneous.None",
+                  empty: true,
+                },
+              },
+      }
+    : null;
 
   return {
     ...creatureData,
@@ -3628,23 +3673,44 @@ const getNPCData = async (actor, pcBase) => {
         hideState: imageSettings.hideState,
       },
       isFromPC: pcBase,
-      pcData: pcBase ? {
-        classDC: {
-          label: CONFIG.PF2E.classTraits[actor.classDC.slug],
-          dc: { value: actor.classDC.dc.value },
-          mod: { value: actor.classDC.mod },
-        }
-      } : null,
+      pcData: pcBase
+        ? {
+            classDC: {
+              label: CONFIG.PF2E.classTraits[actor.classDC.slug],
+              dc: { value: actor.classDC.dc.value },
+              mod: { value: actor.classDC.mod },
+            },
+          }
+        : null,
       npcData: {
         simple: isSimple,
         categories: [],
         general: {
-          background: { value: pcBase ? actor.system.details.biography.backstory : "", revealed: defaultRevealed.background },
-          appearance: { value: pcBase ? actor.system.details.biography.appearance : "", revealed: defaultRevealed.appearance },
-          personality: { value:  "", revealed: defaultRevealed.personality, data: personalityData },
-          height: { value: pcBase ? actor.system.details.height.value : "", revealed: defaultRevealed.height },
-          weight: { value: pcBase ? actor.system.details.weight.value : "", revealed: defaultRevealed.weight },
-          birthplace: { value: pcBase ? actor.system.details.biography.birthPlace : "", revealed: defaultRevealed.birthplace },
+          background: {
+            value: pcBase ? actor.system.details.biography.backstory : "",
+            revealed: defaultRevealed.background,
+          },
+          appearance: {
+            value: pcBase ? actor.system.details.biography.appearance : "",
+            revealed: defaultRevealed.appearance,
+          },
+          personality: {
+            value: "",
+            revealed: defaultRevealed.personality,
+            data: personalityData,
+          },
+          height: {
+            value: pcBase ? actor.system.details.height.value : "",
+            revealed: defaultRevealed.height,
+          },
+          weight: {
+            value: pcBase ? actor.system.details.weight.value : "",
+            revealed: defaultRevealed.weight,
+          },
+          birthplace: {
+            value: pcBase ? actor.system.details.biography.birthPlace : "",
+            revealed: defaultRevealed.birthplace,
+          },
           disposition: {},
         },
         influence: {
@@ -5868,19 +5934,28 @@ class NPC extends Creature {
         }),
       }),
       isFromPC: new fields.BooleanField({}),
-      pcData: new fields.SchemaField({
-        classDC: new fields.SchemaField({
-          label: new fields.StringField({ required: true }),
-          dc: new fields.SchemaField({
-            revealed: new fields.BooleanField({ required: true, initial: false }),
-            value: new fields.NumberField({ required: true, integer: true }),
+      pcData: new fields.SchemaField(
+        {
+          classDC: new fields.SchemaField({
+            label: new fields.StringField({ required: true }),
+            dc: new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              value: new fields.NumberField({ required: true, integer: true }),
+            }),
+            mod: new fields.SchemaField({
+              revealed: new fields.BooleanField({
+                required: true,
+                initial: false,
+              }),
+              value: new fields.NumberField({ required: true, integer: true }),
+            }),
           }),
-          mod: new fields.SchemaField({
-            revealed: new fields.BooleanField({ required: true, initial: false }),
-            value: new fields.NumberField({ required: true, integer: true }),
-          }),
-        }),
-      }, { nullable: true, initial: null }),
+        },
+        { nullable: true, initial: null },
+      ),
       npcData: new fields.SchemaField({
         simple: new fields.BooleanField({ initial: false }),
         categories: new fields.ArrayField(
@@ -5911,38 +5986,68 @@ class NPC extends Creature {
               initial: false,
             }),
             value: new fields.StringField({}),
-            data: new fields.SchemaField({
-              attitude: new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                value: new fields.StringField({}),
-              }),
-              beliefs: new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                value: new fields.StringField({}),
-              }),
-              edicts: new MappingField(new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                empty: new fields.BooleanField({ initial: false }),
-                value: new fields.StringField({}),
-              }), { initial: [] }),
-              anathema: new MappingField(new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                empty: new fields.BooleanField({ initial: false }),
-                value: new fields.StringField({}),
-              }), { initial: [] }),
-              likes: new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                value: new fields.StringField({}),
-              }),
-              dislikes: new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                value: new fields.StringField({}),
-              }),
-              catchphrases: new fields.SchemaField({
-                revealed: new fields.BooleanField({ required: true, initial: false }),
-                value: new fields.StringField({}),
-              }),
-            }, { nullable: true, initial: null }),
+            data: new fields.SchemaField(
+              {
+                attitude: new fields.SchemaField({
+                  revealed: new fields.BooleanField({
+                    required: true,
+                    initial: false,
+                  }),
+                  value: new fields.StringField({}),
+                }),
+                beliefs: new fields.SchemaField({
+                  revealed: new fields.BooleanField({
+                    required: true,
+                    initial: false,
+                  }),
+                  value: new fields.StringField({}),
+                }),
+                edicts: new MappingField(
+                  new fields.SchemaField({
+                    revealed: new fields.BooleanField({
+                      required: true,
+                      initial: false,
+                    }),
+                    empty: new fields.BooleanField({ initial: false }),
+                    value: new fields.StringField({}),
+                  }),
+                  { initial: [] },
+                ),
+                anathema: new MappingField(
+                  new fields.SchemaField({
+                    revealed: new fields.BooleanField({
+                      required: true,
+                      initial: false,
+                    }),
+                    empty: new fields.BooleanField({ initial: false }),
+                    value: new fields.StringField({}),
+                  }),
+                  { initial: [] },
+                ),
+                likes: new fields.SchemaField({
+                  revealed: new fields.BooleanField({
+                    required: true,
+                    initial: false,
+                  }),
+                  value: new fields.StringField({}),
+                }),
+                dislikes: new fields.SchemaField({
+                  revealed: new fields.BooleanField({
+                    required: true,
+                    initial: false,
+                  }),
+                  value: new fields.StringField({}),
+                }),
+                catchphrases: new fields.SchemaField({
+                  revealed: new fields.BooleanField({
+                    required: true,
+                    initial: false,
+                  }),
+                  value: new fields.StringField({}),
+                }),
+              },
+              { nullable: true, initial: null },
+            ),
           }),
           height: new fields.SchemaField({
             revealed: new fields.BooleanField({
@@ -6111,64 +6216,139 @@ class NPC extends Creature {
           ...data.system.pcData,
           classDC: {
             ...data.system.pcData.classDC,
-            dc: { ...data.system.pcData.classDC.dc, revealed: this.pcData.classDC.dc.revealed },
-            mod: { ...data.system.pcData.classDC.mod, revealed: this.pcData.classDC.mod.revealed },
-          }
-        },
-        npcData: !this.isFromPC ? this.npcData : {
-          ...this.npcData,
-          general: {
-            ...this.npcData.general,
-            background: { ...data.system.npcData.general.background, revealed: this.npcData.general.background.revealed },
-            appearance: { ...data.system.npcData.general.appearance, revealed: this.npcData.general.appearance.revealed },
-            height: { ...data.system.npcData.general.height, revealed: this.npcData.general.height.revealed },
-            weight: { ...data.system.npcData.general.weight, revealed: this.npcData.general.weight.revealed },
-            personality: {
-              ...this.npcData.general.personality,
-              data: {
-                attitude: { ...data.system.npcData.general.personality.data.attitude, revealed: this.npcData.general.personality.data.attitude.revealed },
-                beliefs: { ...data.system.npcData.general.personality.data.beliefs, revealed: this.npcData.general.personality.data.beliefs.revealed },
-                likes: { ...data.system.npcData.general.personality.data.likes, revealed: this.npcData.general.personality.data.likes.revealed },
-                dislikes: { ...data.system.npcData.general.personality.data.dislikes, revealed: this.npcData.general.personality.data.dislikes.revealed },
-                catchphrases: { ...data.system.npcData.general.personality.data.catchphrases, revealed: this.npcData.general.personality.data.catchphrases.revealed },
-                edicts: Object.keys(data.system.npcData.general.personality.data.edicts).reduce((acc, key) => {
-                  const edict = data.system.npcData.general.personality.data.edicts[key];
-                  acc[key] = { ...edict, revealed: Object.values(this.npcData.general.personality.data.edicts).find(x => x.value === edict.value)?.revealed ?? edict.revealed };
-                  return acc;
-                }, {}),
-                anathema: Object.keys(data.system.npcData.general.personality.data.anathema).reduce((acc, key) => {
-                  const anathema = data.system.npcData.general.personality.data.anathema[key];
-                  acc[key] = { ...anathema, revealed: Object.values(this.npcData.general.personality.data.anathema).find(x => x.value === anathema.value)?.revealed ?? anathema.revealed };
-                  return acc;
-                }, {}),
-              }
+            dc: {
+              ...data.system.pcData.classDC.dc,
+              revealed: this.pcData.classDC.dc.revealed,
             },
-            birthplace: { ...data.system.npcData.general.birthplace, revealed: this.npcData.general.birthplace.revealed },
+            mod: {
+              ...data.system.pcData.classDC.mod,
+              revealed: this.pcData.classDC.mod.revealed,
+            },
           },
         },
+        npcData: !this.isFromPC
+          ? this.npcData
+          : {
+              ...this.npcData,
+              general: {
+                ...this.npcData.general,
+                background: {
+                  ...data.system.npcData.general.background,
+                  revealed: this.npcData.general.background.revealed,
+                },
+                appearance: {
+                  ...data.system.npcData.general.appearance,
+                  revealed: this.npcData.general.appearance.revealed,
+                },
+                height: {
+                  ...data.system.npcData.general.height,
+                  revealed: this.npcData.general.height.revealed,
+                },
+                weight: {
+                  ...data.system.npcData.general.weight,
+                  revealed: this.npcData.general.weight.revealed,
+                },
+                personality: {
+                  ...this.npcData.general.personality,
+                  data: {
+                    attitude: {
+                      ...data.system.npcData.general.personality.data.attitude,
+                      revealed:
+                        this.npcData.general.personality.data.attitude.revealed,
+                    },
+                    beliefs: {
+                      ...data.system.npcData.general.personality.data.beliefs,
+                      revealed:
+                        this.npcData.general.personality.data.beliefs.revealed,
+                    },
+                    likes: {
+                      ...data.system.npcData.general.personality.data.likes,
+                      revealed:
+                        this.npcData.general.personality.data.likes.revealed,
+                    },
+                    dislikes: {
+                      ...data.system.npcData.general.personality.data.dislikes,
+                      revealed:
+                        this.npcData.general.personality.data.dislikes.revealed,
+                    },
+                    catchphrases: {
+                      ...data.system.npcData.general.personality.data
+                        .catchphrases,
+                      revealed:
+                        this.npcData.general.personality.data.catchphrases
+                          .revealed,
+                    },
+                    edicts: Object.keys(
+                      data.system.npcData.general.personality.data.edicts,
+                    ).reduce((acc, key) => {
+                      const edict =
+                        data.system.npcData.general.personality.data.edicts[
+                          key
+                        ];
+                      acc[key] = {
+                        ...edict,
+                        revealed:
+                          Object.values(
+                            this.npcData.general.personality.data.edicts,
+                          ).find((x) => x.value === edict.value)?.revealed ??
+                          edict.revealed,
+                      };
+                      return acc;
+                    }, {}),
+                    anathema: Object.keys(
+                      data.system.npcData.general.personality.data.anathema,
+                    ).reduce((acc, key) => {
+                      const anathema =
+                        data.system.npcData.general.personality.data.anathema[
+                          key
+                        ];
+                      acc[key] = {
+                        ...anathema,
+                        revealed:
+                          Object.values(
+                            this.npcData.general.personality.data.anathema,
+                          ).find((x) => x.value === anathema.value)?.revealed ??
+                          anathema.revealed,
+                      };
+                      return acc;
+                    }, {}),
+                  },
+                },
+                birthplace: {
+                  ...data.system.npcData.general.birthplace,
+                  revealed: this.npcData.general.birthplace.revealed,
+                },
+              },
+            },
       },
     };
   }
 
   _getToggleUpdate(state, npcView) {
     if (npcView) {
-      const personalityData = this.isFromPC ? {
-        "personality.data": {
-          "attitude.revealed": state,
-          "beliefs.revealed": state,
-          "likes.revealed": state,
-          "dislikes.revealed": state,
-          "catchphrases.revealed": state,
-          edicts: Object.keys(this.npcData.general.personality.data.edicts).reduce((acc, key) => {
-            acc[key] = { revealed: state };
-            return acc;
-          }, {}),
-          anathema: Object.keys(this.npcData.general.personality.data.anathema).reduce((acc, key) => {
-            acc[key] = { revealed: state };
-            return acc;
-          }, {}),
-        }
-      } : {};
+      const personalityData = this.isFromPC
+        ? {
+            "personality.data": {
+              "attitude.revealed": state,
+              "beliefs.revealed": state,
+              "likes.revealed": state,
+              "dislikes.revealed": state,
+              "catchphrases.revealed": state,
+              edicts: Object.keys(
+                this.npcData.general.personality.data.edicts,
+              ).reduce((acc, key) => {
+                acc[key] = { revealed: state };
+                return acc;
+              }, {}),
+              anathema: Object.keys(
+                this.npcData.general.personality.data.anathema,
+              ).reduce((acc, key) => {
+                acc[key] = { revealed: state };
+                return acc;
+              }, {}),
+            },
+          }
+        : {};
 
       return {
         system: {
@@ -6229,20 +6409,22 @@ class NPC extends Creature {
         },
       };
     } else {
-      const pcData = this.isFromPC ? {
-        "pcData.classDC": {
-          "dc.revealed": state,
-          "mod.revealed": state,
-        }
-      } : {};
+      const pcData = this.isFromPC
+        ? {
+            "pcData.classDC": {
+              "dc.revealed": state,
+              "mod.revealed": state,
+            },
+          }
+        : {};
 
       const creatureToggleUpdate = super._getToggleUpdate(state);
       return {
         ...creatureToggleUpdate,
         system: {
           ...creatureToggleUpdate.system,
-          ...pcData
-        }
+          ...pcData,
+        },
       };
     }
   }
@@ -6386,7 +6568,7 @@ class NPC extends Creature {
       return acc;
     }, {});
 
-    if(this.pcData){
+    if (this.pcData) {
       const vagueDescriptions = game.settings.get(
         "pf2e-bestiary-tracking",
         "vague-descriptions",
@@ -6401,7 +6583,11 @@ class NPC extends Creature {
           : (playerLevel ?? this.level.value)
         : this.level.value;
 
-      this.pcData.classDC.mod.category = getCategoryLabel(attackTable, contextLevel, this.pcData.classDC.mod.value);
+      this.pcData.classDC.mod.category = getCategoryLabel(
+        attackTable,
+        contextLevel,
+        this.pcData.classDC.mod.value,
+      );
       this.pcData.classDC.dc.category = this.pcData.classDC.mod.category;
     }
   }
@@ -12693,12 +12879,12 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     if (selected.monster.type === "pf2e-bestiary-tracking.npc") {
-      selected.monster.system.npcData.general.appearance.enrichedValue = 
+      selected.monster.system.npcData.general.appearance.enrichedValue =
         await TextEditor.enrichHTML(
           selected.monster.system.npcData.general.appearance.value,
         );
 
-      selected.monster.system.npcData.general.personality.enrichedValue = 
+      selected.monster.system.npcData.general.personality.enrichedValue =
         await TextEditor.enrichHTML(
           selected.monster.system.npcData.general.personality.value,
         );
@@ -13477,8 +13663,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         await this.selected.monster.update(update, { diff: true });
         break;
       case "personality":
-        const baseProp = this.selected.monster.system.npcData.general.personality.data;
-        allRevealed = baseProp.attitude.revealed && baseProp.beliefs.revealed && baseProp.likes.revealed && baseProp.dislikes.revealed && baseProp.catchphrases.revealed && Object.values(baseProp.edicts).every(x => x.revealed) && Object.values(baseProp.anathema).every(x => x.revealed);
+        const baseProp =
+          this.selected.monster.system.npcData.general.personality.data;
+        allRevealed =
+          baseProp.attitude.revealed &&
+          baseProp.beliefs.revealed &&
+          baseProp.likes.revealed &&
+          baseProp.dislikes.revealed &&
+          baseProp.catchphrases.revealed &&
+          Object.values(baseProp.edicts).every((x) => x.revealed) &&
+          Object.values(baseProp.anathema).every((x) => x.revealed);
         await this.selected.monster.update({
           "system.npcData.general.personality.data": {
             attitude: { revealed: !allRevealed },
@@ -14288,7 +14482,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       navigator.clipboard.writeText(bestiaryLink).then(() => {
         ui.notifications.info(
           game.i18n.format("PF2EBestiary.Bestiary.Info.BestiaryEntryLink", {
-            entity: game.user.isGM ? this.selected.monster.system.name.value : this.selected.monster.system.displayedName,
+            entity: game.user.isGM
+              ? this.selected.monster.system.name.value
+              : this.selected.monster.system.displayedName,
           }),
         );
       });
@@ -14826,7 +15022,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     //   return;
     // }
 
-    if (!baseItem || !['npc', 'hazard', 'character'].includes(baseItem.type)) {
+    if (!baseItem || !["npc", "hazard", "character"].includes(baseItem.type)) {
       ui.notifications.error(
         game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedType"),
       );
@@ -14968,7 +15164,6 @@ class RegisterHandlebarsHelpers {
       PF2EBTNrKeys: this.nrKeys,
       PF2EBTMonsterValue: this.monsterValue,
       PF2EBTSlice: this.slice,
-      PF2EBTCategoryClassTitle: this.categoryClassTitle,
       PF2EBTToggleContainer: this.toggleContainer,
       PF2EBTToggleContainerOverride: this.toggleContainerOverride,
       PF2EBTEach: this.each,
@@ -15832,11 +16027,16 @@ Hooks.on("updateCombatant", async (combatant, changes) => {
 });
 
 Hooks.on("renderDialog", (dialog, html) => {
-  if(dialog.data.title === game.i18n.format("DOCUMENT.Create", {type: game.i18n.localize("DOCUMENT.JournalEntry")})){
-    const options = $(html).find('option');
-    options.each(index => {
+  if (
+    dialog.data.title ===
+    game.i18n.format("DOCUMENT.Create", {
+      type: game.i18n.localize("DOCUMENT.JournalEntry"),
+    })
+  ) {
+    const options = $(html).find("option");
+    options.each((index) => {
       const option = options[index];
-      if(option.innerText === 'BestiaryTracking Bestiares') $(option).remove();
+      if (option.innerText === "BestiaryTracking Bestiares") $(option).remove();
     });
   }
 });

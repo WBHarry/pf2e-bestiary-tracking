@@ -55,9 +55,15 @@
                                     <div class="recall-knowledge-attempt-container">
                                         {{#each this.values}}
                                             <div class="recall-knowledge-attempt-inner-container">
-                                                <label>#{{@key}}</label>
-                                                <div class="recall-knowledge-attempt primary-border-container primary-hover-container" {{#if (not (eq this.value 'none'))}}title="{{localize this.name}}"{{/if}} data-action="toggleRecallAttempt" data-character="{{../id}}" data-attempt="{{@key}}">
-                                                    {{#if this.icon}}<i class="{{this.icon}}"></i>{{/if}}
+                                                <label>#{{add @key 1}}</label>
+                                                <div class="recall-knowledge-attempt primary-border-container {{#if ../../user.isGM}}primary-hover-container{{/if}}" {{#if ../../user.isGM}}{{#if (not (eq this.value 'none'))}}title="{{localize this.name}}"{{/if}} data-action="toggleRecallAttempt" data-character="{{../id}}" data-attempt="{{@key}}"{{/if}}>
+                                                    {{#if this.icon}}
+                                                        {{#if ../../user.isGM}}
+                                                            <i class="{{this.icon}}"></i>
+                                                        {{else}}
+                                                            <i class="fa-solid fa-x"></i>
+                                                        {{/if}}
+                                                    {{/if}}
                                                 </div>
                                             </div>
                                         {{/each}}
