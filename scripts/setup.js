@@ -17,7 +17,7 @@ import bestiaryThemes, {
   bestiaryThemeChoices,
 } from "../styles/themes/themes.js";
 
-export const currentVersion = "1.0.9";
+export const currentVersion = "1.0.10";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
@@ -307,6 +307,19 @@ const bestiaryLabels = () => {
 };
 
 const bestiaryAppearance = () => {
+  game.settings.register("pf2e-bestiary-tracking", "used-sections", {
+    name: game.i18n.localize("PF2EBestiary.Settings.UsedSections.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.UsedSections.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      creature: true,
+      npc: true,
+      hazard: true,
+    },
+  });
+
   game.settings.register("pf2e-bestiary-tracking", "use-token-art", {
     name: game.i18n.localize("PF2EBestiary.Settings.UseTokenArt.Name"),
     hint: game.i18n.localize("PF2EBestiary.Settings.UseTokenArt.Hint"),

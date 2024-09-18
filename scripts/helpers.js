@@ -217,14 +217,15 @@ export const getEntityType = (data) => {
   if (data.type === "pf2e-bestiary-tracking.hazard" || data.type === "hazard")
     return "hazard";
 
-  if (data.type === "character") return "character";
+  const usedSections = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "used-sections",
+  );
+  if (data.type === "character")
+    return usedSections.npc ? "character" : "creatureCharacter";
 
   if (data.type === "pf2e-bestiary-tracking.npc") return "npc";
-  if (
-    data.type === "pf2e-bestiary-tracking.creature" ||
-    data.type === "pf2e-bestiary-tracking.hazard"
-  )
-    return "creature";
+  if (data.type === "pf2e-bestiary-tracking.creature") return "creature";
 
   const npcRegistration = game.settings.get(
     "pf2e-bestiary-tracking",
@@ -232,11 +233,13 @@ export const getEntityType = (data) => {
   );
 
   const isNPC =
-    npcRegistration === 0
-      ? data.system.traits.rarity === "unique"
-      : Object.values(data.system.traits.value).find((x) =>
-          x.value ? x.value === "npc" : x === "npc",
-        );
+    !usedSections.creature ||
+    (usedSections.npc &&
+      (npcRegistration === 0
+        ? data.system.traits.rarity === "unique"
+        : Object.values(data.system.traits.value).find((x) =>
+            x.value ? x.value === "npc" : x === "npc",
+          )));
 
   return isNPC ? "npc" : "creature";
 };
@@ -294,4 +297,37 @@ export const parseDamageInstancesFromFormula = (formula) => {
 
     return acc;
   }, {});
+};
+
+export const getUsedBestiaryTypes = () => {
+  const usedSections = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "used-sections",
+  );
+  return Object.keys(usedSections)
+    .filter((x) => usedSections[x])
+    .map((x) => `pf2e-bestiary-tracking.${x}`);
+};
+
+export const isValidEntityType = (type) => {
+  const usedSections = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "used-sections",
+  );
+  const types = new Set();
+  for (var key of Object.keys(usedSections)) {
+    if (!usedSections[key]) continue;
+    switch (key) {
+      case "creature":
+      case "npc":
+        types.add("npc");
+        types.add("character");
+        break;
+      case "hazard":
+        types.add("hazard");
+        break;
+    }
+  }
+
+  return types.has(type);
 };

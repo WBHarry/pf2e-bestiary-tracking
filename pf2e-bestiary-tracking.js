@@ -10,7 +10,11 @@ import {
 import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
 import { handleDataMigration } from "./scripts/migrationHandler.js";
-import { getBaseActor, getSpellLevel } from "./scripts/helpers.js";
+import {
+  getBaseActor,
+  getSpellLevel,
+  isValidEntityType,
+} from "./scripts/helpers.js";
 
 async function bestiaryEnricher(match, _options) {
   const linkElement = document.createElement("span");
@@ -101,7 +105,7 @@ Hooks.once("setup", () => {
       "Token.prototype._onClickLeft2",
       function (wrapped, ...args) {
         const baseActor = args[0].currentTarget.document.baseActor;
-        if (!["npc", "character", "hazard"].includes(baseActor.type)) {
+        if (!isValidEntityType(baseActor.type)) {
           return wrapped(...args);
         }
 
@@ -184,10 +188,8 @@ Hooks.on("combatStart", async (encounter) => {
     );
 
     if (automaticCombatSetting === 1) {
-      for (var combatant of encounter.combatants.filter(
-        (combatant) =>
-          combatant?.actor?.type === "npc" ||
-          combatant?.actor?.type === "hazard",
+      for (var combatant of encounter.combatants.filter((combatant) =>
+        isValidEntityType(combatant?.actor?.type),
       )) {
         const successful = await PF2EBestiary.addMonster(
           combatant.token.baseActor,
@@ -232,7 +234,11 @@ Hooks.on("updateCombatant", async (combatant, changes) => {
       "pf2e-bestiary-tracking",
       "automatic-combat-registration",
     );
-    if (automaticCombatSetting === 2 && changes.defeated) {
+    if (
+      automaticCombatSetting === 2 &&
+      changes.defeated &&
+      isValidEntityType(combatant.token.baseActor.type)
+    ) {
       const result = await PF2EBestiary.addMonster(combatant.token.baseActor);
 
       if (result)
@@ -357,11 +363,7 @@ Hooks.on("createChatMessage", async (message) => {
       if (message.flags.pf2e.origin) {
         // Attacks | Actions | Spells
         const actor = await fromUuid(message.flags.pf2e.origin.actor);
-        if (
-          !actor ||
-          (actor.type !== "npc" && actor.type !== "hazard") ||
-          actor.hasPlayerOwner
-        )
+        if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
           return;
 
         const actorUuid = getBaseActor(actor).uuid;
@@ -406,11 +408,7 @@ Hooks.on("createChatMessage", async (message) => {
         const actor = await fromUuid(
           `Actor.${message.flags.pf2e.context.actor}`,
         );
-        if (
-          !actor ||
-          (actor.type !== "npc" && actor.type !== "hazard") ||
-          actor.hasPlayerOwner
-        )
+        if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
           return;
 
         const actorUuid = getBaseActor(actor).uuid;
@@ -499,11 +497,7 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
         const actor = getBaseActor(
           await fromUuid(message.flags.pf2e?.origin?.actor),
         );
-        if (
-          !actor ||
-          (actor.type !== "npc" && actor.type !== "hazard") ||
-          actor.hasPlayerOwner
-        )
+        if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
           return;
 
         const rollOptions = message.flags.pf2e.origin.rollOptions;
@@ -522,7 +516,10 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
             } else {
               switch (item.type) {
                 case "action":
-                  if (item.system.actionType.value === "passive")
+                  if (
+                    item.system.actionType.value === "passive" &&
+                    actor.type !== "hazard"
+                  )
                     update = { [`system.passives.${item._id}.revealed`]: true };
                   else
                     update = { [`system.actions.${item._id}.revealed`]: true };
@@ -552,11 +549,7 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
       } else if (actorId) {
         // Skills | Saving Throws
         const actor = game.actors.find((x) => x.id === actorId);
-        if (
-          (actor.type !== "npc" && actor.type !== "hazard") ||
-          actor.hasPlayerOwner
-        )
-          return;
+        if (!isValidEntityType(actor.type) || actor.hasPlayerOwner) return;
 
         const actorUuid = getBaseActor(actor).uuid;
         page = bestiary.pages.find((x) => x.system.uuid === actorUuid);
@@ -598,11 +591,7 @@ Hooks.on("getDirectoryApplicationEntryContext", (_, buttons) => {
       if (!game.user.isGM) return false;
 
       const actor = game.actors.get(li.data().documentId);
-      if (
-        !actor ||
-        (actor.type !== "npc" && actor.type !== "hazard") ||
-        actor.hasPlayerOwner
-      )
+      if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
         return false;
 
       return !Boolean(

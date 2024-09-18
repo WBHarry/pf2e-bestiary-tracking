@@ -254,7 +254,6 @@
       },
       "Errors": {
         "UnsupportedType": "Nieobsługiwany typ BN!",
-        "UnsupportedCharacterType": "Postacie graczy nie są obsługiwane w bestiariuszu.",
         "DataMissing": "Brakuje niektórych danych. Będziesz musiał ponownie zaimportować stworzenie. Przepraszamy za to!"
       },
       "Info": {

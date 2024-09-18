@@ -253,8 +253,7 @@
         "Content": "The current creature lacks an actor in the world. Would you like to create one for it?"
       },
       "Errors": {
-        "UnsupportedType": "Not a supported NPC type!",
-        "UnsupportedCharacterType": "Player Characters are not supported in the bestiary.",
+        "UnsupportedType": "Not a supported actor type!",
         "DataMissing": "Some data is missing. You'll have to reimport the creature. Sorry about that!"
       },
       "Info": {
@@ -381,6 +380,12 @@
         "CategorySettings": {
           "Title": "Bestiary Category Customization",
           "Image": "Image"
+        },
+        "UsedSections": {
+          "Name": "Used Sections Of The Bestiary",
+          "Creature": "Creatures",
+          "NPC": "NPC Gallery",
+          "Hazard": "Hazards"
         }
       },
       "BestiaryIntegration": {

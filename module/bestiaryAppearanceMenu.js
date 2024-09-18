@@ -42,6 +42,10 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
         "pf2e-bestiary-tracking",
         "bestiary-category-settings",
       ),
+      usedSections: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "used-sections",
+      ),
     };
   }
 
@@ -60,6 +64,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
       resetImageSettings: this.resetImageSettings,
       toggleOptionalFields: this.toggleOptionalFields,
       toggleDetailedInformation: this.toggleDetailedInformation,
+      toggleUsedSection: this.toggleUsedSection,
       filePicker: this.filePicker,
       save: this.save,
     },
@@ -114,6 +119,9 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
     };
 
     context.imageHideStates = imageHideStates;
+    context.nrUsedSections = Object.values(this.settings.usedSections).filter(
+      (x) => x,
+    ).length;
 
     return context;
   }
@@ -205,6 +213,20 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
     this.render();
   }
 
+  static async toggleUsedSection(_, button) {
+    const usedSections = Object.values(this.settings.usedSections).filter(
+      (x) => x,
+    );
+    if (
+      usedSections.length > 1 ||
+      !this.settings.usedSections[button.dataset.section]
+    )
+      this.settings.usedSections[button.dataset.section] =
+        !this.settings.usedSections[button.dataset.section];
+
+    this.render();
+  }
+
   static async filePicker(_, button) {
     new FilePicker({
       type: "image",
@@ -259,6 +281,11 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "bestiary-category-settings",
       this.settings.categorySettings,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "used-sections",
+      this.settings.usedSections,
     );
     this.close();
   }

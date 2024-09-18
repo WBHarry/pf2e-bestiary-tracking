@@ -1,6 +1,27 @@
 <div class="menu-container">
     <fieldset class="menu-category">
         <legend>
+            <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.UsedSections.Name"}}</h4>
+        </legend>
+        
+        <div class="menu-button-range">
+            <button class="menu-button" data-action="toggleUsedSection" data-section="creature" {{#if (and (lte nrUsedSections 1) settings.usedSections.creature)}}disabled{{/if}}>
+                <span>{{localize "PF2EBestiary.Menus.BestiaryAppearance.UsedSections.Creature"}}</span>
+                {{#if settings.usedSections.creature}}<i class="fa-regular fa-circle-check"></i>{{else}}<i class="fa-regular fa-circle"></i>{{/if}}
+            </button>
+            <button class="menu-button" data-action="toggleUsedSection" data-section="npc" {{#if (and (lte nrUsedSections 1) settings.usedSections.npc)}}disabled{{/if}}>
+                <span>{{localize "PF2EBestiary.Menus.BestiaryAppearance.UsedSections.NPC"}}</span>
+                {{#if settings.usedSections.npc}}<i class="fa-regular fa-circle-check"></i>{{else}}<i class="fa-regular fa-circle"></i>{{/if}}
+            </button>
+            <button class="menu-button" data-action="toggleUsedSection" data-section="hazard" {{#if (and (lte nrUsedSections 1) settings.usedSections.hazard)}}disabled{{/if}}>
+                <span>{{localize "PF2EBestiary.Menus.BestiaryAppearance.UsedSections.Hazard"}}</span>
+                {{#if settings.usedSections.hazard}}<i class="fa-regular fa-circle-check"></i>{{else}}<i class="fa-regular fa-circle"></i>{{/if}}
+            </button>
+        </div>
+    </fieldset>
+
+    <fieldset class="menu-category">
+        <legend>
             <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.AdditionalCreatureTypes.Name"}}</h4>
         </legend>
 

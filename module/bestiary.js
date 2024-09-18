@@ -6,6 +6,8 @@ import {
   getNPCCategories,
   getEntityType,
   slugify,
+  isValidEntityType,
+  getUsedBestiaryTypes,
 } from "../scripts/helpers.js";
 import { resetBestiary } from "../scripts/macros.js";
 import { socketEvent } from "../scripts/socket.js";
@@ -39,8 +41,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     this.selected = {
-      category:
-        options?.category ?? page?.type ?? "pf2e-bestiary-tracking.creature",
+      category: options?.category ?? page?.type ?? getUsedBestiaryTypes()[0],
       type: options?.type ?? monsterCreatureType,
       monster: page,
       abilities: {
@@ -946,6 +947,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "bestiary-category-settings",
     );
+    context.usedSections = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "used-sections",
+    );
+    context.showCategories =
+      Object.values(context.usedSections).filter((x) => x).length > 1;
 
     context.recallKnowledgeJournal = this.bestiary.getFlag(
       "pf2e-bestiary-tracking",
@@ -2745,16 +2752,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       return;
     }
 
-    // if (baseItem.hasPlayerOwner) {
-    //   ui.notifications.error(
-    //     game.i18n.localize(
-    //       "PF2EBestiary.Bestiary.Errors.UnsupportedCharacterType",
-    //     ),
-    //   );
-    //   return;
-    // }
-
-    if (!baseItem || !["npc", "hazard", "character"].includes(baseItem.type)) {
+    if (!baseItem || !isValidEntityType(baseItem.type)) {
       ui.notifications.error(
         game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedType"),
       );
@@ -2786,6 +2784,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       switch (getEntityType(item)) {
         case "creature":
           pageData = await getCreatureData(item);
+          break;
+        case "creatureCharacter":
+          pageData = await getCreatureData(item, true);
           break;
         case "character":
           pageData = await getNPCData(item, true);

@@ -42,8 +42,8 @@
     },
     "Miscellaneous": {
       "Name": "Nom",
-	  "Title": "Titre",
-	  "Level": "Niveau",
+      "Title": "Titre",
+      "Level": "Niveau",
       "AC": "CA",
       "HP": "PV",
       "Defenses": "Défenses",
@@ -93,7 +93,7 @@
         "ResetBestiary": "Réinitialiser le Bestiaire",
         "RevealAll": "Révéler la créature",
         "HideAll": "Cacher la créature",
-	        "TransformCreature": "Transformer en PNJ",
+        "TransformCreature": "Transformer en PNJ",
         "TransformNPC": "Transformer en créature"
       },
       "Category": {
@@ -105,7 +105,7 @@
         "Greeting": "Bienvenue dans le Bestiaire !",
         "PlayersSection": {
           "Title": "Pour les Joueurs",
-		  "ThemingTip": "Sélectionnez votre thème graphique préféré pour le Bestiaire dans les préférences du module.",
+          "ThemingTip": "Sélectionnez votre thème graphique préféré pour le Bestiaire dans les préférences du module.",
           "NavigationTip": "Naviguez entre les différents types de créatures en utilisant les signets à gauche.",
           "MacroTip": "Consultez le compendium du module et ajoutez des macros utiles à votre barre de raccourcis."
         },
@@ -118,252 +118,251 @@
           "RecallKnowledgeRulesTitle": "Rappel des règles",
           "RecallKnowledgeJournalMissing": "Glissez un journal ici pour donner aux joueurs un lien vers vos règles de Se Souvenir.",
           "RecallKnowledgeAttachedNotification": "Vous avez ajouté un lien vers vos règles de Se Souvenir."
-      },
-      "ReturnMessages": {
-        "ReturnToCategory": "Retour à la page de la catégorie {type}",
-        "ReturnToWelcome": "Retour à la page principale"
-      },
-      "CategoryView": {
-        "EmptyText": "Aucune {catégorie} rencontrée pour le moment. Profitez-en tant que vous le pouvez.",
-        "UnknownText": "Les dangers inconnus sont toujours à l'affût..",
-		"EmptyCategoryText": "Vous n'avez rencontré personne dans la catégorie {category}.",
-        "EmptyHazardText": "Vous n'avez rencontré aucun Dangers dans la catégorie {category}. Pour l'instant.",
-        "UnaffiliatedText": "Vous ne connaissez aucun personnage sans affiliation.."
-      },
-      "AvatarMenu": {
-        "Title": "Menu Avatar",
-        "HideState": "Filtre d'image",
-        "Save": "Appliquer les changements"																				  			   
-      },
-      "Miscellaneous": {
-        "UnknownCreature": "Créature Inconnue",
-        "UnknownNPC": "PNJ Inconnu",
-        "UnknownHazard": "Danger Inconnu",
-        "Unknown": "Inconnu",
-        "Unaffiliated": "Sans affiliation",
-        "InCombat": "En combat",
-        "CategoryPlaceholder": "Ajouter les catégories auxquelles le PNJ est affilié",						
-        "LeftClick": "Clic Gauche",
-        "RightClick": "Clic Droit",
-        "RecallKnowledgeAttempts": "Tentatives de RK"
-      },
-      "Tabs": {
-        "Statistics": "Stats",
-        "Spells": "Sorts",
-        "Lore": "Connaissances",
-        "Notes": "Notes"
-      },
-      "NPCTabs": {
-        "General": "Général",
-        "Influence": "Influence",
-        "GM": "MJ"
-      },
-      "Tips": {
-        "ToggleHideTabs": "Clic droit pour cacher un onglet"
-      },
-      "NPC": {
-        "NPCCategoryDescription": "Les PNJ sont classés dans des catégories créées par le MJ. Vous pouvez en ajouter une ci-dessous. Pour supprimer une catégorie, clic droit sur son signet.",
-        "NewCategory": "Nouvelle catégorie de PNJ",
-        "NPCViewText": "Changement de vue du PNJ",
-        "EditModeText": "Changement de mode d'édition",
-        "NPCSimpleText": "Changement simple de PNJ",
-        "Dispositions": "Dispositions",
-        "Height": "Taille",
-        "Weight": "Poids",
-        "Personality": "Personnalité",
-        "Appearance": "Apparence",
-        "Background": "Historique",
-        "Disposition": {
-          "Helpful": "Serviable",
-          "Friendly": "Amical",
-          "Indifferent": "Indifférent",
-          "Unfriendly": "Hostile",
-          "Hostile": "Agressif"
         },
-        "Discovery": "Découverte",
-        "InfluenceSkills": "Compétences d'influence",
-        "Influence": "Influence",
-        "Weaknesses": "Faiblesses",
-        "Resistances": "Résistances",
-        "Penalties": "Pénalités",
-        "SkillLabel": "Compétence",
-        "DCLabel": "DD",
-        "LoreLabel": "Connaissance",
-        "DescriptionLabel": "Description",
-        "InfluencePointsLabel": "Points d'influence",
-        "IWRModifierLabel": "Modifier",
-        "Active": "Active",
-        "Inactive": "Inactive",
-        "ToggleModifier": "Changement de modificateur",
-        "PremiseLabel": "Prémisse",
-        "TransformCreatureTitle": "Transformer en PNJ",
-        "TransformNPCTitle": "Transformer en créature",
-        "TransformNPCText": " Êtes-vous sûr de vouloir transformer ce PNJ en créature ? Toutes les données du PNJ que vous avez ajoutées seront perdues.",
-        "GMNotesImportTitle": "Importation de notes de MJ à partir du journal",
-        "GMNotesImportText": "Sélectionnez une page à partir de laquelle vous souhaitez importer du texte. Ce texte remplacera tout texte existant dans les notes du MJ.",
-        "GMNotesPageTitle": "Page",
-        "GMPlayersContainerTitle": "Joueurs",
-        "GMPlayersContainerTip": "Déposer un objet sur l'image d'un joueur revient à déposer un objet sur le token du joueur.",
-        "GMTextZoneTip": "Glissez-déposez un journal dans la zone de texte pour en importer le texte."
-      },
-      "Hazards": {
-        "Simple": "Simple",
-        "Complex": "Complexe",
-        "StealthTitle": "Discrétion",
-        "DescriptionTitle": "Description",
-        "DisableTitle": "Désactiver",
-        "ResetTitle": "Reset",
-        "RoutineTitle": "Routine",
-        "Hardness": "RD"
-      },
-      "Lore": {
-        "Public": "Description",
-        "Private": "Notes Privées"
-      },
-      "PlayerNotes": {
-        "Title": "Notes du joueur"
-      },
-      "GMNotes": {
-        "Title": "Notes du MJ"
-      },	
-      "Misinformation": {
-        "AddMisinformation": "Ajouter des informations erronées",
-        "Dialog": {
-          "Title": "Sélection des informations erronées",
-          "SelectLabel": "Fausse {propriété}",
-          "Traitlabel": "Traits",
-          "Attack": {
-            "Range": "Portée",
-            "Actions": "Actions",
-            "Damage": "Dégâts"
+        "ReturnMessages": {
+          "ReturnToCategory": "Retour à la page de la catégorie {type}",
+          "ReturnToWelcome": "Retour à la page principale"
+        },
+        "CategoryView": {
+          "EmptyText": "Aucune {catégorie} rencontrée pour le moment. Profitez-en tant que vous le pouvez.",
+          "UnknownText": "Les dangers inconnus sont toujours à l'affût..",
+          "EmptyCategoryText": "Vous n'avez rencontré personne dans la catégorie {category}.",
+          "EmptyHazardText": "Vous n'avez rencontré aucun Dangers dans la catégorie {category}. Pour l'instant.",
+          "UnaffiliatedText": "Vous ne connaissez aucun personnage sans affiliation.."
+        },
+        "AvatarMenu": {
+          "Title": "Menu Avatar",
+          "HideState": "Filtre d'image",
+          "Save": "Appliquer les changements"
+        },
+        "Miscellaneous": {
+          "UnknownCreature": "Créature Inconnue",
+          "UnknownNPC": "PNJ Inconnu",
+          "UnknownHazard": "Danger Inconnu",
+          "Unknown": "Inconnu",
+          "Unaffiliated": "Sans affiliation",
+          "InCombat": "En combat",
+          "CategoryPlaceholder": "Ajouter les catégories auxquelles le PNJ est affilié",
+          "LeftClick": "Clic Gauche",
+          "RightClick": "Clic Droit",
+          "RecallKnowledgeAttempts": "Tentatives de RK"
+        },
+        "Tabs": {
+          "Statistics": "Stats",
+          "Spells": "Sorts",
+          "Lore": "Connaissances",
+          "Notes": "Notes"
+        },
+        "NPCTabs": {
+          "General": "Général",
+          "Influence": "Influence",
+          "GM": "MJ"
+        },
+        "Tips": {
+          "ToggleHideTabs": "Clic droit pour cacher un onglet"
+        },
+        "NPC": {
+          "NPCCategoryDescription": "Les PNJ sont classés dans des catégories créées par le MJ. Vous pouvez en ajouter une ci-dessous. Pour supprimer une catégorie, clic droit sur son signet.",
+          "NewCategory": "Nouvelle catégorie de PNJ",
+          "NPCViewText": "Changement de vue du PNJ",
+          "EditModeText": "Changement de mode d'édition",
+          "NPCSimpleText": "Changement simple de PNJ",
+          "Dispositions": "Dispositions",
+          "Height": "Taille",
+          "Weight": "Poids",
+          "Personality": "Personnalité",
+          "Appearance": "Apparence",
+          "Background": "Historique",
+          "Disposition": {
+            "Helpful": "Serviable",
+            "Friendly": "Amical",
+            "Indifferent": "Indifférent",
+            "Unfriendly": "Hostile",
+            "Hostile": "Agressif"
           },
-          "Ability": {
-            "Description": "Description"
-          },
-          "Errors": {
-            "RequiredFields": "Champs requis non remplis: {champs}"
-          }
-        }
-      },
-      "UnlinkedDialog": {
-        "Title": "Gestion des créations sans liens",
-        "Content": "La créature actuelle n'a pas d'acteur dans le monde. Voulez-vous lui en créer un ?"
-      },
-      "Errors": {
-        "UnsupportedType": "Type de PNJ non pris en charge !",
-        "UnsupportedCharacterType": "Les PJs ne sont pas pris en charge dans le bestiaire.",
-        "DataMissing": "Certaines données sont manquantes. Vous devrez réimporter la créature. Désolé pour cela !"
-      },
-      "Info": {
-        "GMOnly": "Cette fonction est réservée au MJ.",
-        "AddedToBestiary": "Ajouté [{creatures}] dans le Bestiaire",
-        "AlreadyExistsInBestiary": "[{creatures}] existe déjà dans le Bestiaire.",
-		    "BestiaryEntryLinkTip": "Copier le lien (+Alt pour envoyer au chat)",
-        "BestiaryEntryLink": "Entrée {entity} du Bestiaire a été copiée dans le presse-papier."
-      },
-      "RemoveBookmarkTitle": "Supprimer la catégorie",
-      "RemoveBookmarkText": "Êtes-vous sûr de vouloir supprimer la catégorie {category} ?",
-      "ResetRecallAttemptsTitle": "Réinitialisation des tentatives de rappel",
-      "ResetRecallAttemptsText": "Êtes-vous sûr de vouloir réinitialiser l'historique des tentatives de rappel de {caractère} ?"																										
-    },
-    "Menus": {
-      "Title": "Suivi du Bestiaire",
-      "Data": {
-        "Name": "Données du Bestiaire",
-        "Hint": "Données des monstres pour le Bestiaire."
-      },
-      "VagueDescriptions": {
-        "Name": "Descriptions imprécises",
-        "Hint": "Permet d'afficher les qualités des monstres en utilisant des valeurs élevées/moyennes/faibles plutôt que des valeurs exactes.",
-        "Menu": {
-          "Name": "Descriptions imprécises",
-          "Label": "Configuration des Descriptions imprécises",
-          "Hint": "Permet d'afficher les propriétés des monstres où les valeurs doivent être imprécises",
-          "Options": {
-            "AC": "CA",
-            "HP": "PV",
-            "Immunities": "Immunités",
-            "Resistances": "Résistances",
-            "Weaknesses": "Faiblesses",
-            "Saves": "Sauvegardes",
-            "Perception": "Perception",
-            "Speed": "Vitesse",
-            "Attributes": "Attributs",
-            "Skills": "Compétences",
-            "Spells": "Sorts",
-            "Attacks": "Attaques",
-            "Damage": "Dégâts",
-            "Initiative": "Initiative/Discrétion (Dangers)",
-            "PlayerBased": "Descriptions Basées sur le Niveau du Joueur",
-            "MisinformationOptions": "Catégories d'informations erronées",
-			      "GMNumeric": "Le MJ voit les valeurs exactes"
-          },
-          "Sections": {
-            "Properties": {
-              "Title": "Propriétés imprécises"
+          "Discovery": "Découverte",
+          "InfluenceSkills": "Compétences d'influence",
+          "Influence": "Influence",
+          "Weaknesses": "Faiblesses",
+          "Resistances": "Résistances",
+          "Penalties": "Pénalités",
+          "SkillLabel": "Compétence",
+          "DCLabel": "DD",
+          "LoreLabel": "Connaissance",
+          "DescriptionLabel": "Description",
+          "InfluencePointsLabel": "Points d'influence",
+          "IWRModifierLabel": "Modifier",
+          "Active": "Active",
+          "Inactive": "Inactive",
+          "ToggleModifier": "Changement de modificateur",
+          "PremiseLabel": "Prémisse",
+          "TransformCreatureTitle": "Transformer en PNJ",
+          "TransformNPCTitle": "Transformer en créature",
+          "TransformNPCText": " Êtes-vous sûr de vouloir transformer ce PNJ en créature ? Toutes les données du PNJ que vous avez ajoutées seront perdues.",
+          "GMNotesImportTitle": "Importation de notes de MJ à partir du journal",
+          "GMNotesImportText": "Sélectionnez une page à partir de laquelle vous souhaitez importer du texte. Ce texte remplacera tout texte existant dans les notes du MJ.",
+          "GMNotesPageTitle": "Page",
+          "GMPlayersContainerTitle": "Joueurs",
+          "GMPlayersContainerTip": "Déposer un objet sur l'image d'un joueur revient à déposer un objet sur le token du joueur.",
+          "GMTextZoneTip": "Glissez-déposez un journal dans la zone de texte pour en importer le texte."
+        },
+        "Hazards": {
+          "Simple": "Simple",
+          "Complex": "Complexe",
+          "StealthTitle": "Discrétion",
+          "DescriptionTitle": "Description",
+          "DisableTitle": "Désactiver",
+          "ResetTitle": "Reset",
+          "RoutineTitle": "Routine",
+          "Hardness": "RD"
+        },
+        "Lore": {
+          "Public": "Description",
+          "Private": "Notes Privées"
+        },
+        "PlayerNotes": {
+          "Title": "Notes du joueur"
+        },
+        "GMNotes": {
+          "Title": "Notes du MJ"
+        },
+        "Misinformation": {
+          "AddMisinformation": "Ajouter des informations erronées",
+          "Dialog": {
+            "Title": "Sélection des informations erronées",
+            "SelectLabel": "Fausse {propriété}",
+            "Traitlabel": "Traits",
+            "Attack": {
+              "Range": "Portée",
+              "Actions": "Actions",
+              "Damage": "Dégâts"
             },
-            "Settings": {
-              "Title": "Paramètres"
+            "Ability": {
+              "Description": "Description"
+            },
+            "Errors": {
+              "RequiredFields": "Champs requis non remplis: {champs}"
+            }
+          }
+        },
+        "UnlinkedDialog": {
+          "Title": "Gestion des créations sans liens",
+          "Content": "La créature actuelle n'a pas d'acteur dans le monde. Voulez-vous lui en créer un ?"
+        },
+        "Errors": {
+          "UnsupportedType": "Type de PNJ non pris en charge !",
+          "DataMissing": "Certaines données sont manquantes. Vous devrez réimporter la créature. Désolé pour cela !"
+        },
+        "Info": {
+          "GMOnly": "Cette fonction est réservée au MJ.",
+          "AddedToBestiary": "Ajouté [{creatures}] dans le Bestiaire",
+          "AlreadyExistsInBestiary": "[{creatures}] existe déjà dans le Bestiaire.",
+          "BestiaryEntryLinkTip": "Copier le lien (+Alt pour envoyer au chat)",
+          "BestiaryEntryLink": "Entrée {entity} du Bestiaire a été copiée dans le presse-papier."
+        },
+        "RemoveBookmarkTitle": "Supprimer la catégorie",
+        "RemoveBookmarkText": "Êtes-vous sûr de vouloir supprimer la catégorie {category} ?",
+        "ResetRecallAttemptsTitle": "Réinitialisation des tentatives de rappel",
+        "ResetRecallAttemptsText": "Êtes-vous sûr de vouloir réinitialiser l'historique des tentatives de rappel de {caractère} ?"
+      },
+      "Menus": {
+        "Title": "Suivi du Bestiaire",
+        "Data": {
+          "Name": "Données du Bestiaire",
+          "Hint": "Données des monstres pour le Bestiaire."
+        },
+        "VagueDescriptions": {
+          "Name": "Descriptions imprécises",
+          "Hint": "Permet d'afficher les qualités des monstres en utilisant des valeurs élevées/moyennes/faibles plutôt que des valeurs exactes.",
+          "Menu": {
+            "Name": "Descriptions imprécises",
+            "Label": "Configuration des Descriptions imprécises",
+            "Hint": "Permet d'afficher les propriétés des monstres où les valeurs doivent être imprécises",
+            "Options": {
+              "AC": "CA",
+              "HP": "PV",
+              "Immunities": "Immunités",
+              "Resistances": "Résistances",
+              "Weaknesses": "Faiblesses",
+              "Saves": "Sauvegardes",
+              "Perception": "Perception",
+              "Speed": "Vitesse",
+              "Attributes": "Attributs",
+              "Skills": "Compétences",
+              "Spells": "Sorts",
+              "Attacks": "Attaques",
+              "Damage": "Dégâts",
+              "Initiative": "Initiative/Discrétion (Dangers)",
+              "PlayerBased": "Descriptions Basées sur le Niveau du Joueur",
+              "MisinformationOptions": "Catégories d'informations erronées",
+              "GMNumeric": "Le MJ voit les valeurs exactes"
+            },
+            "Sections": {
+              "Properties": {
+                "Title": "Propriétés imprécises"
+              },
+              "Settings": {
+                "Title": "Paramètres"
+              }
+            }
+          }
+        },
+        "BestiaryLabels": {
+          "Name": "Libellés du bestiaire",
+          "Hint": "Remplacer les libellés utilisés dans le bestiaire par des libellés personnalisés",
+          "Menu": {
+            "Name": "Libellés du bestiaire",
+            "Label": "Configuration des libellés du bestiaire",
+            "Hint": "Personnaliser les libellés utilisés dans le Bestiaire"
+          },
+          "VagueDescriptions": {
+            "Name": "Descriptions imprécises",
+            "FullOptions": {
+              "Extreme": "Extrême",
+              "High": "Élevée",
+              "Moderate": "Modérée",
+              "Low": "Basses",
+              "Terrible": "Effroyable"
+            },
+            "ShortOptions": {
+              "Extreme": "Ex",
+              "High": "Haut",
+              "Moderate": "Mod",
+              "Low": "Bas",
+              "Terrible": "Eff"
             }
           }
         }
       },
-      "BestiaryLabels": {
-        "Name": "Libellés du bestiaire",
-        "Hint": "Remplacer les libellés utilisés dans le bestiaire par des libellés personnalisés",
-        "Menu": {
-          "Name": "Libellés du bestiaire",
-          "Label": "Configuration des libellés du bestiaire",
-          "Hint": "Personnaliser les libellés utilisés dans le Bestiaire"
-        },
-        "VagueDescriptions": {
-          "Name": "Descriptions imprécises",
-          "FullOptions": {
-            "Extreme": "Extrême",
-            "High": "Élevée",
-            "Moderate": "Modérée",
-            "Low": "Basses",
-            "Terrible": "Effroyable"
-          },
-          "ShortOptions": {
-            "Extreme": "Ex",
-            "High": "Haut",
-            "Moderate": "Mod",
-            "Low": "Bas",
-            "Terrible": "Eff"
-          }
-        }
-      }
-    },
-    "BestiaryAppearance": {
-      "Name": "Apparence du bestiaire",
-      "Hint": "Personnalise l'apparence du Bestiaire",
-      "Menu": {
+      "BestiaryAppearance": {
         "Name": "Apparence du bestiaire",
-        "Label": "Configuration de l'apparence du bestiaire",
-        "Hint": "Customize the appearance of the Bestiary"
-      },
-      "UseTokenArt": "Utiliser l'image du token",								   				   
-      "HideAbilityDescriptions": "Cacher les descriptions des capacités",
-      "ContrastRevealedState": {
-        "Name": "Contraste révélant l'État",
-        "Enabled": "activé",
-        "Revealed": "Revélé",
-        "Hidden": "caché"
-      },
-      "OptionalFields": {
-        "Name": "Champs facultatifs",
-        "Level": "Afficher le Niveau du Monstre",
-        "Languages": "Langues connues",
+        "Hint": "Personnalise l'apparence du Bestiaire",
+        "Menu": {
+          "Name": "Apparence du bestiaire",
+          "Label": "Configuration de l'apparence du bestiaire",
+          "Hint": "Customize the appearance of the Bestiary"
+        },
+        "UseTokenArt": "Utiliser l'image du token",
+        "HideAbilityDescriptions": "Cacher les descriptions des capacités",
+        "ContrastRevealedState": {
+          "Name": "Contraste révélant l'État",
+          "Enabled": "activé",
+          "Revealed": "Revélé",
+          "Hidden": "caché"
+        },
+        "OptionalFields": {
+          "Name": "Champs facultatifs",
+          "Level": "Afficher le Niveau du Monstre",
+          "Languages": "Langues connues",
           "Height": "Taille",
-          "Weight": "Poids"			
-      },
-      "DetailedInformation": {
-        "Name": "Changement d'informations détaillées",
-        "ExceptionsDoubleVs": "(IWR) Exceptions et double",
-        "AttackTraits": "Traits d'attaque",
-        "DamageTypes": "Types de dégâts",
-        "AbilityTraits": "Aptitudes"
+          "Weight": "Poids"
+        },
+        "DetailedInformation": {
+          "Name": "Changement d'informations détaillées",
+          "ExceptionsDoubleVs": "(IWR) Exceptions et double",
+          "AttackTraits": "Traits d'attaque",
+          "DamageTypes": "Types de dégâts",
+          "AbilityTraits": "Aptitudes"
         },
         "ImageSettings": {
           "Title": "Réglages de l'avatar",
@@ -379,28 +378,28 @@
           "Image": "Image"
         }
       },
-    "BestiaryIntegration": {
+      "BestiaryIntegration": {
         "Name": "Intégration du bestiaire",
         "Menu": {
           "Name": "Intégration du bestiaire",
-        "Label": "Paramètres d'intégration du Bestiaire",
-        "Hint": "Modifier la façon dont vous pouvez interagir avec le Bestiaire"
-      },
-      "CreatureRegistration": {
-        "Name": "Enregistrement de la créature"
-      },
-      "AutomaticRevealing": {
-        "Name": "Révélation automatique",
-        "Saves": "Jets de sauvegarde",
-        "Skills": "Compétences",
-        "Attacks": "Attaques",
-        "Actions": "Actions",
-        "Spells": "Sorts"
-      },
-      "HiddenSettings": {
-        "Name": "Cacher la valeur par défaut aux joueurs",
-        "Monster": "Monstre",
-        "NPC": "PNJ",
+          "Label": "Paramètres d'intégration du Bestiaire",
+          "Hint": "Modifier la façon dont vous pouvez interagir avec le Bestiaire"
+        },
+        "CreatureRegistration": {
+          "Name": "Enregistrement de la créature"
+        },
+        "AutomaticRevealing": {
+          "Name": "Révélation automatique",
+          "Saves": "Jets de sauvegarde",
+          "Skills": "Compétences",
+          "Attacks": "Attaques",
+          "Actions": "Actions",
+          "Spells": "Sorts"
+        },
+        "HiddenSettings": {
+          "Name": "Cacher la valeur par défaut aux joueurs",
+          "Monster": "Monstre",
+          "NPC": "PNJ",
           "Hazard": "Danger",
           "NPCCategories": "Catégories de PNJ",
           "ImageHideState": {
@@ -414,8 +413,8 @@
         "DefaultRevealed": {
           "Title": "Propriétés révélées par défaut",
           "Creature": "Créature",
-          "NPC": "PNJ",	   
-        "Hazard": "Danger",
+          "NPC": "PNJ",
+          "Hazard": "Danger",
           "Name": "Name",
           "Traits": "Traits",
           "Attributes": "Attributs",
@@ -488,7 +487,7 @@
       },
       "BestiaryTheme": {
         "Name": "Thème du Bestiaire",
-        "Hint": "Sélectionner le thème graphique du Bestiaire"											  
+        "Hint": "Sélectionner le thème graphique du Bestiaire"
       }
     },
     "Macros": {
@@ -500,7 +499,7 @@
       },
       "OpenBestiaryCombat": {
         "NoActiveCombat": "Il n'y a pas de combat actif en cours"
-      },	
+      },
       "AddMonster": {
         "GMOnly": "Cette macro ne peut être utilisée que par le MJ.",
         "TargetAlreadyInBestiary": "Cette créature est déjà dans le bestiaire !"

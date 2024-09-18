@@ -200,12 +200,12 @@ const getEntityType = (data) => {
   if (data.type === "pf2e-bestiary-tracking.hazard" || data.type === "hazard")
     return "hazard";
 
-  if (data.type === "character") return "character";
+  const usedSections = game.settings.get('pf2e-bestiary-tracking', 'used-sections');
+  if (data.type === "character") return usedSections.npc ? "character" : "creatureCharacter";
 
   if (data.type === "pf2e-bestiary-tracking.npc") return "npc";
   if (
-    data.type === "pf2e-bestiary-tracking.creature" ||
-    data.type === "pf2e-bestiary-tracking.hazard"
+    data.type === "pf2e-bestiary-tracking.creature"
   )
     return "creature";
 
@@ -214,12 +214,12 @@ const getEntityType = (data) => {
     "npc-registration",
   );
 
-  const isNPC =
+  const isNPC = !usedSections.creature || (usedSections.npc && (
     npcRegistration === 0
       ? data.system.traits.rarity === "unique"
       : Object.values(data.system.traits.value).find((x) =>
           x.value ? x.value === "npc" : x === "npc",
-        );
+        )));
 
   return isNPC ? "npc" : "creature";
 };
@@ -277,6 +277,31 @@ const parseDamageInstancesFromFormula = (formula) => {
 
     return acc;
   }, {});
+};
+
+const getUsedBestiaryTypes = () => {
+  const usedSections = game.settings.get("pf2e-bestiary-tracking", "used-sections");
+  return Object.keys(usedSections).filter(x => usedSections[x]).map(x => `pf2e-bestiary-tracking.${x}`);
+};  
+
+const isValidEntityType = (type) => {
+  const usedSections = game.settings.get("pf2e-bestiary-tracking", "used-sections");
+  const types = new Set();
+  for(var key of Object.keys(usedSections)){
+    if(!usedSections[key]) continue;
+    switch(key){
+      case 'creature':
+      case 'npc':
+        types.add('npc');
+        types.add('character');
+        break;
+      case 'hazard':
+        types.add('hazard');
+        break;
+    }
+  }
+
+  return types.has(type);
 };
 
 const revealedState = {
@@ -7732,6 +7757,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
         "pf2e-bestiary-tracking",
         "bestiary-category-settings",
       ),
+      usedSections: game.settings.get("pf2e-bestiary-tracking", "used-sections"),
     };
   }
 
@@ -7750,6 +7776,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
       resetImageSettings: this.resetImageSettings,
       toggleOptionalFields: this.toggleOptionalFields,
       toggleDetailedInformation: this.toggleDetailedInformation,
+      toggleUsedSection: this.toggleUsedSection,
       filePicker: this.filePicker,
       save: this.save,
     },
@@ -7804,6 +7831,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
     };
 
     context.imageHideStates = imageHideStates;
+    context.nrUsedSections = Object.values(this.settings.usedSections).filter(x => x).length;
 
     return context;
   }
@@ -7895,6 +7923,13 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
     this.render();
   }
 
+  static async toggleUsedSection(_, button){
+    const usedSections = Object.values(this.settings.usedSections).filter(x => x);
+    if(usedSections.length > 1 || !this.settings.usedSections[button.dataset.section]) this.settings.usedSections[button.dataset.section] = !this.settings.usedSections[button.dataset.section];
+    
+    this.render();
+  }
+
   static async filePicker(_, button) {
     new FilePicker({
       type: "image",
@@ -7950,6 +7985,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
       "bestiary-category-settings",
       this.settings.categorySettings,
     );
+    await game.settings.set("pf2e-bestiary-tracking", "used-sections", this.settings.usedSections);
     this.close();
   }
 }
@@ -11018,7 +11054,7 @@ const bestiaryThemeChoices = {
   // parchment: 'Parchment',
 };
 
-const currentVersion = "1.0.9";
+const currentVersion = "1.0.10";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -11308,6 +11344,23 @@ const bestiaryLabels = () => {
 };
 
 const bestiaryAppearance = () => {
+  game.settings.register("pf2e-bestiary-tracking", "used-sections", {
+    name: game.i18n.localize(
+      "PF2EBestiary.Settings.UsedSections.Name",
+    ),
+    hint: game.i18n.localize(
+      "PF2EBestiary.Settings.UsedSections.Hint",
+    ),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      creature: true,
+      npc: true,
+      hazard: true,
+    },
+  });
+
   game.settings.register("pf2e-bestiary-tracking", "use-token-art", {
     name: game.i18n.localize("PF2EBestiary.Settings.UseTokenArt.Name"),
     hint: game.i18n.localize("PF2EBestiary.Settings.UseTokenArt.Hint"),
@@ -12329,7 +12382,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     this.selected = {
       category:
-        options?.category ?? page?.type ?? "pf2e-bestiary-tracking.creature",
+        options?.category ?? page?.type ?? getUsedBestiaryTypes()[0],
       type: options?.type ?? monsterCreatureType,
       monster: page,
       abilities: {
@@ -12370,7 +12423,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   static DEFAULT_OPTIONS = {
     tag: "form",
     id: "pf2e-bestiary-tracking-bestiary",
-    classes: ["pf2e-bestiary-tracking", "bestiary", "application-border-container"],
+    classes: [
+      "pf2e-bestiary-tracking",
+      "bestiary",
+      "application-border-container",
+    ],
     position: { width: 800, height: 800 },
     actions: {
       selectCategory: this.selectCategory,
@@ -13231,6 +13288,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "bestiary-category-settings",
     );
+    context.usedSections = game.settings.get("pf2e-bestiary-tracking", "used-sections");
+    context.showCategories = Object.values(context.usedSections).filter(x => x).length > 1;
 
     context.recallKnowledgeJournal = this.bestiary.getFlag(
       "pf2e-bestiary-tracking",
@@ -15030,16 +15089,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       return;
     }
 
-    // if (baseItem.hasPlayerOwner) {
-    //   ui.notifications.error(
-    //     game.i18n.localize(
-    //       "PF2EBestiary.Bestiary.Errors.UnsupportedCharacterType",
-    //     ),
-    //   );
-    //   return;
-    // }
-
-    if (!baseItem || !["npc", "hazard", "character"].includes(baseItem.type)) {
+    if (!baseItem || !isValidEntityType(baseItem.type)) {
       ui.notifications.error(
         game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedType"),
       );
@@ -15071,6 +15121,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       switch (getEntityType(item)) {
         case "creature":
           pageData = await getCreatureData(item);
+          break;
+        case "creatureCharacter":
+          pageData = await getCreatureData(item, true);
           break;
         case "character":
           pageData = await getNPCData(item, true);
@@ -15423,7 +15476,7 @@ Hooks.once("setup", () => {
       "Token.prototype._onClickLeft2",
       function (wrapped, ...args) {
         const baseActor = args[0].currentTarget.document.baseActor;
-        if (!["npc", "character", "hazard"].includes(baseActor.type)) {
+        if (!isValidEntityType(baseActor.type)) {
           return wrapped(...args);
         }
 
@@ -15508,8 +15561,7 @@ Hooks.on("combatStart", async (encounter) => {
     if (automaticCombatSetting === 1) {
       for (var combatant of encounter.combatants.filter(
         (combatant) =>
-          combatant?.actor?.type === "npc" ||
-          combatant?.actor?.type === "hazard",
+          isValidEntityType(combatant?.actor?.type),
       )) {
         const successful = await PF2EBestiary.addMonster(
           combatant.token.baseActor,
@@ -15554,7 +15606,7 @@ Hooks.on("updateCombatant", async (combatant, changes) => {
       "pf2e-bestiary-tracking",
       "automatic-combat-registration",
     );
-    if (automaticCombatSetting === 2 && changes.defeated) {
+    if (automaticCombatSetting === 2 && changes.defeated && isValidEntityType(combatant.token.baseActor.type)) {
       const result = await PF2EBestiary.addMonster(combatant.token.baseActor);
 
       if (result)
@@ -15681,7 +15733,7 @@ Hooks.on("createChatMessage", async (message) => {
         const actor = await fromUuid(message.flags.pf2e.origin.actor);
         if (
           !actor ||
-          (actor.type !== "npc" && actor.type !== "hazard") ||
+          !isValidEntityType(actor.type) ||
           actor.hasPlayerOwner
         )
           return;
@@ -15730,7 +15782,7 @@ Hooks.on("createChatMessage", async (message) => {
         );
         if (
           !actor ||
-          (actor.type !== "npc" && actor.type !== "hazard") ||
+          !isValidEntityType(actor.type) ||
           actor.hasPlayerOwner
         )
           return;
@@ -15823,7 +15875,7 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
         );
         if (
           !actor ||
-          (actor.type !== "npc" && actor.type !== "hazard") ||
+          !isValidEntityType(actor.type) ||
           actor.hasPlayerOwner
         )
           return;
@@ -15844,7 +15896,7 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
             } else {
               switch (item.type) {
                 case "action":
-                  if (item.system.actionType.value === "passive")
+                  if (item.system.actionType.value === "passive" && actor.type !== 'hazard')
                     update = { [`system.passives.${item._id}.revealed`]: true };
                   else
                     update = { [`system.actions.${item._id}.revealed`]: true };
@@ -15875,7 +15927,7 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
         // Skills | Saving Throws
         const actor = game.actors.find((x) => x.id === actorId);
         if (
-          (actor.type !== "npc" && actor.type !== "hazard") ||
+          !isValidEntityType(actor.type) ||
           actor.hasPlayerOwner
         )
           return;
@@ -15922,7 +15974,7 @@ Hooks.on("getDirectoryApplicationEntryContext", (_, buttons) => {
       const actor = game.actors.get(li.data().documentId);
       if (
         !actor ||
-        (actor.type !== "npc" && actor.type !== "hazard") ||
+        !isValidEntityType(actor.type) ||
         actor.hasPlayerOwner
       )
         return false;

@@ -21,18 +21,6 @@
                         {{#if search.name}}<i class="fa-solid fa-circle-xmark clear-icon primary-hover-container" data-action="clearSearch"></i>{{/if}}
                     </div>
                 </div>
-            {{else}}
-                {{!-- <div class="flexcol">
-                    <div>{{localize "Recall Knowledge"}}</div>
-                    <div class="recall-knowledge-dc-container">
-                        <div class="recall-knowledge-dc-inner-container">    
-                            {{this.selected.monster.system.recallKnowledgeGeneral}}
-                        </div>
-                        <div class="recall-knowledge-dc-inner-container">       
-                            {{this.selected.monster.system.recallKnowledgeSpecific}}
-                        </div>
-                    </div>
-                </div> --}}
             {{/if}}
         </header>
     {{/if}}
@@ -40,26 +28,34 @@
         {{#if (not this.selected.type)}}
             <h2 class="bestiary-title primary-border-container">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h2> 
             <div class="bestiary-main-page">
-                <div class="main-page-category-container">
-                    <div class="main-page-category-card">
-                        <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.creature')}}secondary-border-container{{else}}primary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.creature">
-                            <img src="{{this.categorySettings.creature.image}}" />
-                            <h4 class="main-page-category-label primary-container">{{localize this.categorySettings.creature.name}}</h4>
-                        </div>
+                {{#if this.showCategories}}
+                    <div class="main-page-category-container">
+                        {{#if this.usedSections.creature}}
+                            <div class="main-page-category-card">
+                                <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.creature')}}secondary-border-container{{else}}primary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.creature">
+                                    <img src="{{this.categorySettings.creature.image}}" />
+                                    <h4 class="main-page-category-label primary-container">{{localize this.categorySettings.creature.name}}</h4>
+                                </div>
+                            </div>
+                        {{/if}}
+                        {{#if this.usedSections.npc}}
+                            <div class="main-page-category-card">
+                                <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.npc')}}secondary-border-container{{else}}primary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.npc">
+                                    <img src="{{this.categorySettings.npc.image}}" />
+                                    <h4 class="main-page-category-label primary-container">{{localize this.categorySettings.npc.name}}</h4>
+                                </div>
+                            </div>
+                        {{/if}}
+                        {{#if this.usedSections.hazard}}
+                            <div class="main-page-category-card">
+                                <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.hazard')}}secondary-border-container{{else}}primary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.hazard">
+                                    <img src="{{this.categorySettings.hazard.image}}" />
+                                    <h4 class="main-page-category-label primary-container inactive">{{localize this.categorySettings.hazard.name}}</h4>
+                                </div>
+                            </div>
+                        {{/if}}
                     </div>
-                    <div class="main-page-category-card">
-                        <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.npc')}}secondary-border-container{{else}}primary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.npc">
-                            <img src="{{this.categorySettings.npc.image}}" />
-                            <h4 class="main-page-category-label primary-container">{{localize this.categorySettings.npc.name}}</h4>
-                        </div>
-                    </div>
-                    <div class="main-page-category-card">
-                        <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.hazard')}}secondary-border-container{{else}}primary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.hazard">
-                            <img src="{{this.categorySettings.hazard.image}}" />
-                            <h4 class="main-page-category-label primary-container inactive">{{localize this.categorySettings.hazard.name}}</h4>
-                        </div>
-                    </div>
-                </div>
+                {{/if}}
                 {{#if (and this.user.isGM (eq this.selected.category 'pf2e-bestiary-tracking.npc'))}}
                     <div style="margin-top: 8px;">{{localize "PF2EBestiary.Bestiary.NPC.NPCCategoryDescription"}}</div>
                     <div class="category-container">
