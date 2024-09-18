@@ -2961,55 +2961,53 @@ const getCreatureData = async (actor, pcBase) => {
         attackKeys.length > 0
           ? attackKeys.reduce((acc, actionKey) => {
               const attack = actor.system.actions[actionKey];
-              const item = actor.items.get(attack.item.id);
+              const item = attack.item;
 
-              if (item.type === "melee" || item.type === "equipment") {
-                acc[attack.item.id] = {
-                  revealed: defaultRevealed.attacks,
-                  label: attack.label,
-                  actions: attack.glyph,
-                  totalModifier: attack.totalModifier,
-                  isMelee: attack.weapon.isMelee,
-                  additionalEffects: attack.additionalEffects.reduce(
-                    (acc, effect) => {
-                      acc[effect.tag] = {
-                        label: effect.label,
-                        tag: effect.tag,
-                      };
-
-                      return acc;
-                    },
-                    {},
-                  ),
-                  damageInstances: Object.keys(item.system.damageRolls).reduce(
-                    (acc, damage) => {
-                      acc[damage] = {
-                        category: item.system.damageRolls[damage].category,
-                        damage: {
-                          value: item.system.damageRolls[damage].damage,
-                        },
-                        damageType: {
-                          value: item.system.damageRolls[damage].damageType,
-                        },
-                      };
-
-                      return acc;
-                    },
-                    {},
-                  ),
-                  traits: item.system.traits.value.reduce((acc, trait) => {
-                    acc[trait] = { value: trait, description: trait };
-                    return acc;
-                  }, {}),
-                  variants: attack.variants.reduce((acc, variant) => {
-                    acc[slugify(variant.label)] = { label: variant.label };
+              acc[attack.item.id] = {
+                revealed: defaultRevealed.attacks,
+                label: attack.label,
+                actions: attack.glyph,
+                totalModifier: attack.totalModifier,
+                isMelee: attack.weapon.isMelee,
+                additionalEffects: attack.additionalEffects.reduce(
+                  (acc, effect) => {
+                    acc[effect.tag] = {
+                      label: effect.label,
+                      tag: effect.tag,
+                    };
 
                     return acc;
-                  }, {}),
-                  rules: item.system.rules,
-                };
-              }
+                  },
+                  {},
+                ),
+                damageInstances: Object.keys(item.system.damageRolls).reduce(
+                  (acc, damage) => {
+                    acc[damage] = {
+                      category: item.system.damageRolls[damage].category,
+                      damage: {
+                        value: item.system.damageRolls[damage].damage,
+                      },
+                      damageType: {
+                        value: item.system.damageRolls[damage].damageType,
+                      },
+                    };
 
+                    return acc;
+                  },
+                  {},
+                ),
+                traits: item.system.traits.value.reduce((acc, trait) => {
+                  acc[trait] = { value: trait, description: trait };
+                  return acc;
+                }, {}),
+                variants: attack.variants.reduce((acc, variant) => {
+                  acc[slugify(variant.label)] = { label: variant.label };
+
+                  return acc;
+                }, {}),
+                rules: item.system.rules,
+              };
+            
               return acc;
             }, {})
           : {
@@ -3204,50 +3202,49 @@ const getPCCreatureData = async (actor) => {
 
     if (attack.slug === "basic-unarmed") continue;
 
-    const item = actor.items.get(attack.item.id);
+    const item = attack.item;
 
-    if (["melee", "equipment", "weapon"].includes(item.type)) {
-      const damage = await attack.damage({ getFormula: true });
-      const damageInstances = parseDamageInstancesFromFormula(damage);
-      attacks[attack.item.id] = {
-        revealed: defaultRevealed.attacks,
-        label: attack.label,
-        actions: attack.glyph,
-        totalModifier: attack.totalModifier,
-        isMelee: item.isMelee,
-        additionalEffects:
-          attack.additionalEffects?.reduce((acc, effect) => {
-            acc[effect.tag] = {
-              label: effect.label,
-              tag: effect.tag,
-            };
+    const damage = await attack.damage({ getFormula: true });
+    const damageInstances = parseDamageInstancesFromFormula(damage);
+    attacks[attack.item.id] = {
+      revealed: defaultRevealed.attacks,
+      label: attack.label,
+      actions: attack.glyph,
+      totalModifier: attack.totalModifier,
+      isMelee: item.isMelee,
+      additionalEffects:
+        attack.additionalEffects?.reduce((acc, effect) => {
+          acc[effect.tag] = {
+            label: effect.label,
+            tag: effect.tag,
+          };
 
-            return acc;
-          }, {}) ?? {},
-        damageInstances: damageInstances,
-        bonuses: {
-          bonus: item.system.damage.bonus?.value,
-          bonusDamage: item.system.damage.bonusDamage?.value,
-          splashDamage: item.system.splashDamage.value,
-          property: item.system.damage.property1,
-          runes: {
-            potency: item.system.runes.potency,
-            striking: item.system.runes.striking,
-            property: item.system.runes.property,
-          },
+          return acc;
+        }, {}) ?? {},
+      damageInstances: damageInstances,
+      bonuses: {
+        bonus: item.system.damage.bonus?.value,
+        bonusDamage: item.system.damage.bonusDamage?.value,
+        splashDamage: item.system.splashDamage.value,
+        property: item.system.damage.property1,
+        runes: {
+          potency: item.system.runes.potency,
+          striking: item.system.runes.striking,
+          property: item.system.runes.property,
         },
-        traits: item.system.traits.value.reduce((acc, trait) => {
-          acc[trait] = { value: trait, description: trait };
-          return acc;
-        }, {}),
-        variants: attack.variants.reduce((acc, variant) => {
-          acc[slugify(variant.label)] = { label: variant.label };
+      },
+      traits: item.system.traits.value.reduce((acc, trait) => {
+        acc[trait] = { value: trait, description: trait };
+        return acc;
+      }, {}),
+      variants: attack.variants.reduce((acc, variant) => {
+        acc[slugify(variant.label)] = { label: variant.label };
 
-          return acc;
-        }, {}),
-        rules: item.system.rules,
-      };
-    }
+        return acc;
+      }, {}),
+      rules: item.system.rules,
+    };
+    
   }
   if (Object.keys(attacks).length === 0) {
     attacks.empty = {
@@ -3310,7 +3307,9 @@ const getPCCreatureData = async (actor) => {
         acc[trait] = { value: trait, revealed: defaultRevealed.traits };
         return acc;
       }, {}),
-      skills: Object.values(actor.system.skills).some((x) => x.totalModifier > 0)
+      skills: Object.values(actor.system.skills).some(
+        (x) => x.totalModifier > 0,
+      )
         ? Object.keys(actor.system.skills).reduce((acc, key) => {
             const skill = actor.system.skills[key];
             acc[key] = {
