@@ -718,7 +718,7 @@
                             {{#each this.system.actions as |action key|}}
                                 <div class="actions-container secondary-container {{PF2EBTToggleContainer ../user action}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState action}}" data-action="toggleRevealed" data-path="{{concat 'system.actions.' key}}" data-fake="{{action.fake}}">
                                     <div class="action-container">
-                                        <div class="pf2e-bestiary-bold {{#if (and (not (eq action.name 'None')) (gt action.description.length 0))}}primary-hover-container{{/if}}" data-action="toggleAbility" data-ability="{{key}}">{{localize action.label}}</div>
+                                        <div class="pf2e-bestiary-bold {{#if (and (not (eq action.name 'None')) (gt action.description.length 0))}}primary-hover-container{{/if}}" data-action="toggleAbility" data-ability="{{key}}" data-category="actions">{{localize action.label}}</div>
                                         <span class="action-glyph">{{action.actions}}</span>
                                         {{#if (gt (PF2EBTNrKeys action.traits) 0)}}
                                             <div class="attack-traits-container">(
@@ -736,8 +736,8 @@
                                             )</div>
                                         {{/if}}
                                     </div>
-                                    <div class="action-description {{#if (includes ../selected.abilities key)}}expanded{{/if}}">
-                                        {{{action.description}}}
+                                    <div class="action-description {{#if (includes ../selected.abilities.actions key)}}expanded{{/if}}">
+                                        {{{action.enrichedDescription}}}
                                     </div>
                                 </div>
                             {{/each}}
@@ -748,6 +748,7 @@
                                         <div 
                                             class="pf2e-bestiary-bold {{#if (and (not ../hideAbilityDescriptions) (and (not (eq this.name 'None')) (gt this.description.length 0)))}}primary-hover-container{{/if}}" 
                                             {{#if (not ../hideAbilityDescriptions)}}data-action="toggleAbility"{{/if}}
+                                            data-category="actions"
                                             data-ability="{{this.key}}"
                                         >
                                             {{localize this.label}}
@@ -763,8 +764,8 @@
                                             </div>
                                         {{/if}}
                                     </div>
-                                    <div class="action-description {{#if (includes ../selected.abilities this.key)}}expanded{{/if}}">
-                                        {{{this.description}}}
+                                    <div class="action-description {{#if (includes ../selected.abilities.actions this.key)}}expanded{{/if}}">
+                                        {{{this.enrichedDescription}}}
                                     </div>
                                 </div>
                             {{/PF2EBTFilter}}
@@ -788,7 +789,7 @@
                             {{#each this.system.passives as |passive key|}}
                                 <div class="actions-container secondary-container {{PF2EBTToggleContainer ../user passive}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState passive}}" data-action="toggleRevealed" data-path="{{concat 'system.passives.' key}}" data-fake="{{passive.fake}}">
                                     <div class="action-container">
-                                        <div class="pf2e-bestiary-bold {{#if (and (not (eq passive.name 'None')) (gt passive.description.length 0))}}primary-hover-container{{/if}}" data-action="toggleAbility" data-ability="{{key}}">{{localize passive.label}}</div>
+                                        <div class="pf2e-bestiary-bold {{#if (and (not (eq passive.name 'None')) (gt passive.description.length 0))}}primary-hover-container{{/if}}" data-action="toggleAbility" data-ability="{{key}}" data-category="passives">{{localize passive.label}}</div>
                                         {{#if (gt (PF2EBTNrKeys passive.traits) 0)}}
                                             <div class="attack-traits-container">(
                                                 {{#each passive.traits as |trait index|}}
@@ -805,8 +806,8 @@
                                             )</div>
                                         {{/if}}
                                     </div>
-                                    <div class="action-description {{#if (includes ../selected.abilities key)}}expanded{{/if}}">
-                                        {{{passive.description}}}
+                                    <div class="action-description {{#if (includes ../selected.abilities.passives key)}}expanded{{/if}}">
+                                        {{{passive.enrichedDescription}}}
                                     </div>
                                 </div>
                             {{/each}}
@@ -817,6 +818,7 @@
                                         <div 
                                             class="pf2e-bestiary-bold {{#if (and (not ../hideAbilityDescriptions) (and (not (eq this.name 'None')) (gt this.description.length 0)))}}primary-hover-container{{/if}}" 
                                             {{#if (not ../hideAbilityDescriptions)}}data-action="toggleAbility"{{/if}}
+                                            data-category="passives"
                                             data-ability="{{this.key}}"
                                         >
                                             {{localize this.label}}
@@ -831,8 +833,8 @@
                                             </div>
                                         {{/if}}
                                     </div>
-                                    <div class="action-description {{#if (includes ../selected.abilities this.key)}}expanded{{/if}}">
-                                        {{{this.description}}}
+                                    <div class="action-description {{#if (includes ../selected.abilities.passives this.key)}}expanded{{/if}}">
+                                        {{{this.enrichedDescription}}}
                                     </div>
                                 </div>
                             {{/PF2EBTFilter}}
@@ -902,17 +904,17 @@
                                                         <td class="spell-name-cell body actions-container">
                                                             <div class="spell-data-container">
                                                                 <img src="{{this.img}}" />
-                                                                <div class="cell-name primary-hover-container" data-action="toggleSpell" data-spell="{{@key}}">{{this.label}}</div>
+                                                                <div class="cell-name primary-hover-container" data-action="toggleAbility" data-ability="{{@key}}" data-category="spells">{{this.label}}</div>
                                                                 <div class="action-glyph">{{{this.actions}}}</div>
                                                             </div>
                                                         </td>
                                                         <td class="spell-cell defense">{{this.defense.label}}</td>
                                                         <td class="spell-cell range">{{this.range}}</td>
                                                     </tr>
-                                                    <tr class="spell-body-row description" data-spell="{{@key}}">
+                                                    <tr class="spell-body-row description {{#if (includes ../../../selected.abilities.spells @key)}}expanded{{/if}}">
                                                         <td colspan="3">
                                                             <div class="spell-description">
-                                                                {{{this.description.value}}}
+                                                                {{{this.enrichedDescription}}}
                                                             </div>
                                                         </td>
                                                     </tr>

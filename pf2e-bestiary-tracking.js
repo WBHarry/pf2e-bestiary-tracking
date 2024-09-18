@@ -101,7 +101,7 @@ Hooks.once("setup", () => {
       "Token.prototype._onClickLeft2",
       function (wrapped, ...args) {
         const baseActor = args[0].currentTarget.document.baseActor;
-        if (baseActor.type !== "npc" && baseActor.type !== "hazard") {
+        if (!["npc", "character", "hazard"].includes(baseActor.type)) {
           return wrapped(...args);
         }
 
@@ -122,8 +122,9 @@ Hooks.once("setup", () => {
           "pf2e-bestiary-tracking",
           "doubleClickOpen",
         );
-        if (!openBestiary || (game.user.isGM && !args[0].altKey))
+        if (!openBestiary || (game.user.isGM && !args[0].altKey)) {
           return wrapped(...args);
+        }
 
         const bestiary = game.journal.get(
           game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),

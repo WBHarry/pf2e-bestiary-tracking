@@ -43,7 +43,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         options?.category ?? page?.type ?? "pf2e-bestiary-tracking.creature",
       type: options?.type ?? monsterCreatureType,
       monster: page,
-      abilities: [],
+      abilities: {
+        actions: new Set(),
+        passives: new Set(),
+        spells: new Set(),
+      },
     };
 
     // Filter 0 = Alphebetic, 1 = by level
@@ -538,116 +542,121 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   async enrichTexts(selected) {
     if (!selected.monster) return;
 
-    const newActions = {};
-    for (var actionKey of Object.keys(selected.monster.system.actions)) {
-      const description = await TextEditor.enrichHTML(
-        selected.monster.system.actions[actionKey].description,
-      );
-      newActions[actionKey] = {
-        ...selected.monster.system.actions[actionKey],
-        description,
-      };
-    }
+    if (!this.npcData.npcView) {
+      for (var actionKey of Object.keys(selected.monster.system.actions)) {
+        if (this.selected.abilities.actions.has(actionKey)) {
+          const description = await TextEditor.enrichHTML(
+            selected.monster.system.actions[actionKey].description,
+          );
 
-    selected.monster.system.notes.player.enriched = await TextEditor.enrichHTML(
-      selected.monster.system.notes.player.value,
-    );
-    selected.monster.system.actions = newActions;
-
-    if (selected.monster.type !== "pf2e-bestiary-tracking.hazard") {
-      selected.monster.system.notes.public.value = await TextEditor.enrichHTML(
-        selected.monster.system.notes.public.value,
-      );
-      selected.monster.system.notes.private.value = await TextEditor.enrichHTML(
-        selected.monster.system.notes.private.value,
-      );
-
-      const newPassives = {};
-      for (var passiveKey of Object.keys(selected.monster.system.passives)) {
-        const description = await TextEditor.enrichHTML(
-          selected.monster.system.passives[passiveKey].description,
-        );
-        newPassives[passiveKey] = {
-          ...selected.monster.system.passives[passiveKey],
-          description,
-        };
+          selected.monster.system.actions[actionKey].enrichedDescription =
+            description;
+        } else
+          selected.monster.system.actions[actionKey].enrichedDescription =
+            selected.monster.system.actions[actionKey].description;
       }
 
-      selected.monster.system.passives = newPassives;
+      selected.monster.system.notes.player.enriched =
+        await TextEditor.enrichHTML(selected.monster.system.notes.player.value);
 
-      for (var entryKey in selected.monster.system.spells.entries) {
-        const entry = selected.monster.system.spells.entries[entryKey];
-        for (var levelKey in entry.levels) {
-          for (var spellKey in entry.levels[levelKey].spells) {
-            const spell = entry.levels[levelKey].spells[spellKey];
-            spell.description = {
-              ...spell.description,
-              value: await TextEditor.enrichHTML(spell.description.value),
-            };
+      if (selected.monster.type !== "pf2e-bestiary-tracking.hazard") {
+        selected.monster.system.notes.public.value =
+          await TextEditor.enrichHTML(
+            selected.monster.system.notes.public.value,
+          );
+        selected.monster.system.notes.private.value =
+          await TextEditor.enrichHTML(
+            selected.monster.system.notes.private.value,
+          );
+
+        for (var passiveKey of Object.keys(selected.monster.system.passives)) {
+          if (this.selected.abilities.passives.has(passiveKey)) {
+            const description = await TextEditor.enrichHTML(
+              selected.monster.system.passives[passiveKey].description,
+            );
+
+            selected.monster.system.passives[passiveKey].enrichedDescription =
+              description;
+          } else
+            selected.monster.system.passives[passiveKey].enrichedDescription =
+              selected.monster.system.passives[passiveKey].description;
+        }
+
+        for (var entryKey in selected.monster.system.spells.entries) {
+          const entry = selected.monster.system.spells.entries[entryKey];
+          for (var levelKey in entry.levels) {
+            for (var spellKey in entry.levels[levelKey].spells) {
+              const spell = entry.levels[levelKey].spells[spellKey];
+              if (this.selected.abilities.spells.has(spellKey)) {
+                spell.enrichedDescription = await TextEditor.enrichHTML(
+                  spell.description.value,
+                );
+              } else spell.enrichedDescription = spell.description.value;
+            }
           }
         }
       }
-    }
 
-    if (selected.monster.type === "pf2e-bestiary-tracking.hazard") {
-      selected.monster.system.notes.description.value =
-        await TextEditor.enrichHTML(
-          selected.monster.system.notes.description.value,
-        );
-
-      selected.monster.system.stealth.details.value =
-        await TextEditor.enrichHTML(
-          selected.monster.system.stealth.details.value,
-        );
-
-      selected.monster.system.disable.value = await TextEditor.enrichHTML(
-        selected.monster.system.disable.value,
-      );
-
-      selected.monster.system.reset.value = await TextEditor.enrichHTML(
-        selected.monster.system.reset.value,
-      );
-
-      selected.monster.system.routine.value = await TextEditor.enrichHTML(
-        selected.monster.system.routine.value,
-      );
-    }
-
-    if (selected.monster.type === "pf2e-bestiary-tracking.npc") {
-      selected.monster.system.npcData.general.appearance.enrichedValue =
-        await TextEditor.enrichHTML(
-          selected.monster.system.npcData.general.appearance.value,
-        );
-
-      selected.monster.system.npcData.general.personality.enrichedValue =
-        await TextEditor.enrichHTML(
-          selected.monster.system.npcData.general.personality.value,
-        );
-
-      selected.monster.system.npcData.general.background.enrichedValue =
-        await TextEditor.enrichHTML(
-          selected.monster.system.npcData.general.background.value,
-        );
-
-      selected.monster.system.notes.gm.enriched = await TextEditor.enrichHTML(
-        selected.monster.system.notes.gm.value,
-      );
-
-      for (var key of Object.keys(
-        selected.monster.system.npcData.influence.discovery,
-      )) {
-        selected.monster.system.npcData.influence.discovery[key].label =
+      if (selected.monster.type === "pf2e-bestiary-tracking.hazard") {
+        selected.monster.system.notes.description.value =
           await TextEditor.enrichHTML(
-            selected.monster.system.npcData.influence.discovery[key].label,
+            selected.monster.system.notes.description.value,
           );
-      }
 
-      for (var key of Object.keys(
-        selected.monster.system.npcData.influence.influenceSkills,
-      )) {
-        const influence =
-          selected.monster.system.npcData.influence.influenceSkills[key];
-        influence.label = await TextEditor.enrichHTML(influence.label);
+        selected.monster.system.stealth.details.value =
+          await TextEditor.enrichHTML(
+            selected.monster.system.stealth.details.value,
+          );
+
+        selected.monster.system.disable.value = await TextEditor.enrichHTML(
+          selected.monster.system.disable.value,
+        );
+
+        selected.monster.system.reset.value = await TextEditor.enrichHTML(
+          selected.monster.system.reset.value,
+        );
+
+        selected.monster.system.routine.value = await TextEditor.enrichHTML(
+          selected.monster.system.routine.value,
+        );
+      }
+    } else {
+      if (selected.monster.type === "pf2e-bestiary-tracking.npc") {
+        selected.monster.system.npcData.general.appearance.enrichedValue =
+          await TextEditor.enrichHTML(
+            selected.monster.system.npcData.general.appearance.value,
+          );
+
+        selected.monster.system.npcData.general.personality.enrichedValue =
+          await TextEditor.enrichHTML(
+            selected.monster.system.npcData.general.personality.value,
+          );
+
+        selected.monster.system.npcData.general.background.enrichedValue =
+          await TextEditor.enrichHTML(
+            selected.monster.system.npcData.general.background.value,
+          );
+
+        selected.monster.system.notes.gm.enriched = await TextEditor.enrichHTML(
+          selected.monster.system.notes.gm.value,
+        );
+
+        for (var key of Object.keys(
+          selected.monster.system.npcData.influence.discovery,
+        )) {
+          selected.monster.system.npcData.influence.discovery[key].label =
+            await TextEditor.enrichHTML(
+              selected.monster.system.npcData.influence.discovery[key].label,
+            );
+        }
+
+        for (var key of Object.keys(
+          selected.monster.system.npcData.influence.influenceSkills,
+        )) {
+          const influence =
+            selected.monster.system.npcData.influence.influenceSkills[key];
+          influence.label = await TextEditor.enrichHTML(influence.label);
+        }
       }
     }
   }
@@ -1162,27 +1171,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   static toggleAbility(_, button) {
-    const html = $(
-      $(this.element).find(`[data-ability="${button.dataset.ability}"]`)[0],
-    )
-      .parent()
-      .parent()
-      .find(".action-description")[0];
-    html.classList.toggle("expanded");
-  }
-
-  static toggleSpell(_, button) {
-    const html = $(
-      $(this.element).find(`[data-spell="${button.dataset.spell}"]`)[0],
-    )
-      .parent()
-      .parent()
-      .parent()
-      .parent()
-      .find(
-        `.spell-body-row.description[data-spell="${button.dataset.spell}"]`,
-      )[0];
-    html.classList.toggle("expanded");
+    const category = this.selected.abilities[button.dataset.category];
+    if (category.has(button.dataset.ability))
+      category.delete(button.dataset.ability);
+    else category.add(button.dataset.ability);
+    this.render();
   }
 
   async updateNpcCategoryHidden(event) {
