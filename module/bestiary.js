@@ -81,7 +81,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   static DEFAULT_OPTIONS = {
     tag: "form",
     id: "pf2e-bestiary-tracking-bestiary",
-    classes: ["pf2e-bestiary-tracking", "bestiary"],
+    classes: [
+      "pf2e-bestiary-tracking",
+      "bestiary",
+      "application-border-container",
+    ],
     position: { width: 800, height: 800 },
     actions: {
       selectCategory: this.selectCategory,

@@ -20,6 +20,7 @@ const nebula = {
   "--pf2e-bestiary-tracking-main-hover": "",
   "--pf2e-bestiary-tracking-border": "#e4e41e",
   "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-application-border": "#e4e41e",
   "--pf2e-bestiary-tracking-icon": "",
   "--pf2e-bestiary-tracking-accent-icon": "",
 };

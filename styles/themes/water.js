@@ -19,6 +19,7 @@ const water = {
   "--pf2e-bestiary-tracking-main-hover": "white",
   "--pf2e-bestiary-tracking-border": "#c7ffed",
   "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-application-border": "#c7ffed",
   "--pf2e-bestiary-tracking-icon": "",
   "--pf2e-bestiary-tracking-accent-icon": "",
 };

@@ -10893,6 +10893,7 @@ const coreDark = {
   "--pf2e-bestiary-tracking-main-hover": "white",
   "--pf2e-bestiary-tracking-border": "#ababab",
   "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-application-border": "wheat",
   "--pf2e-bestiary-tracking-icon": "rgb(247, 243, 232)",
   "--pf2e-bestiary-tracking-accent-icon": "gold",
 };
@@ -10915,6 +10916,7 @@ const coreLight = {
   "--pf2e-bestiary-tracking-main-hover": "#1c8efe",
   "--pf2e-bestiary-tracking-border": "black",
   "--pf2e-bestiary-tracking-secondary-border": "#82acff",
+  "--pf2e-bestiary-tracking-application-border": "initial",
   "--pf2e-bestiary-tracking-icon": "black",
   "--pf2e-bestiary-tracking-accent-icon": "gold",
 };
@@ -10941,6 +10943,7 @@ const nebula = {
   "--pf2e-bestiary-tracking-main-hover": "",
   "--pf2e-bestiary-tracking-border": "#e4e41e",
   "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-application-border": "#e4e41e",
   "--pf2e-bestiary-tracking-icon": "",
   "--pf2e-bestiary-tracking-accent-icon": "",
 };
@@ -10966,6 +10969,7 @@ const viscera = {
   "--pf2e-bestiary-tracking-main-hover": "red",
   "--pf2e-bestiary-tracking-border": "orange",
   "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-application-border": "orange",
   "--pf2e-bestiary-tracking-icon": "",
   "--pf2e-bestiary-tracking-accent-icon": "",
 };
@@ -10991,6 +10995,7 @@ const water = {
   "--pf2e-bestiary-tracking-main-hover": "white",
   "--pf2e-bestiary-tracking-border": "#c7ffed",
   "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-application-border": "#c7ffed",
   "--pf2e-bestiary-tracking-icon": "",
   "--pf2e-bestiary-tracking-accent-icon": "",
 };
@@ -12365,7 +12370,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   static DEFAULT_OPTIONS = {
     tag: "form",
     id: "pf2e-bestiary-tracking-bestiary",
-    classes: ["pf2e-bestiary-tracking", "bestiary"],
+    classes: ["pf2e-bestiary-tracking", "bestiary", "application-border-container"],
     position: { width: 800, height: 800 },
     actions: {
       selectCategory: this.selectCategory,
@@ -12826,39 +12831,44 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   async enrichTexts(selected) {
     if (!selected.monster) return;
 
-    if(!this.npcData.npcView){
+    if (!this.npcData.npcView) {
       for (var actionKey of Object.keys(selected.monster.system.actions)) {
-        if(this.selected.abilities.actions.has(actionKey)){
+        if (this.selected.abilities.actions.has(actionKey)) {
           const description = await TextEditor.enrichHTML(
             selected.monster.system.actions[actionKey].description,
           );
 
-          selected.monster.system.actions[actionKey].enrichedDescription = description;
-        }
-        else selected.monster.system.actions[actionKey].enrichedDescription = selected.monster.system.actions[actionKey].description;
+          selected.monster.system.actions[actionKey].enrichedDescription =
+            description;
+        } else
+          selected.monster.system.actions[actionKey].enrichedDescription =
+            selected.monster.system.actions[actionKey].description;
       }
 
-      selected.monster.system.notes.player.enriched = await TextEditor.enrichHTML(
-        selected.monster.system.notes.player.value,
-      );
+      selected.monster.system.notes.player.enriched =
+        await TextEditor.enrichHTML(selected.monster.system.notes.player.value);
 
       if (selected.monster.type !== "pf2e-bestiary-tracking.hazard") {
-        selected.monster.system.notes.public.value = await TextEditor.enrichHTML(
-          selected.monster.system.notes.public.value,
-        );
-        selected.monster.system.notes.private.value = await TextEditor.enrichHTML(
-          selected.monster.system.notes.private.value,
-        );
+        selected.monster.system.notes.public.value =
+          await TextEditor.enrichHTML(
+            selected.monster.system.notes.public.value,
+          );
+        selected.monster.system.notes.private.value =
+          await TextEditor.enrichHTML(
+            selected.monster.system.notes.private.value,
+          );
 
         for (var passiveKey of Object.keys(selected.monster.system.passives)) {
-          if(this.selected.abilities.passives.has(passiveKey)){
+          if (this.selected.abilities.passives.has(passiveKey)) {
             const description = await TextEditor.enrichHTML(
               selected.monster.system.passives[passiveKey].description,
             );
 
-            selected.monster.system.passives[passiveKey].enrichedDescription = description;
-          }
-          else selected.monster.system.passives[passiveKey].enrichedDescription = selected.monster.system.passives[passiveKey].description;
+            selected.monster.system.passives[passiveKey].enrichedDescription =
+              description;
+          } else
+            selected.monster.system.passives[passiveKey].enrichedDescription =
+              selected.monster.system.passives[passiveKey].description;
         }
 
         for (var entryKey in selected.monster.system.spells.entries) {
@@ -12866,10 +12876,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           for (var levelKey in entry.levels) {
             for (var spellKey in entry.levels[levelKey].spells) {
               const spell = entry.levels[levelKey].spells[spellKey];
-              if(this.selected.abilities.spells.has(spellKey)){
-                spell.enrichedDescription = await TextEditor.enrichHTML(spell.description.value);
-              }
-              else spell.enrichedDescription = spell.description.value;
+              if (this.selected.abilities.spells.has(spellKey)) {
+                spell.enrichedDescription = await TextEditor.enrichHTML(
+                  spell.description.value,
+                );
+              } else spell.enrichedDescription = spell.description.value;
             }
           }
         }
@@ -12898,8 +12909,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           selected.monster.system.routine.value,
         );
       }
-    }
-    else {
+    } else {
       if (selected.monster.type === "pf2e-bestiary-tracking.npc") {
         selected.monster.system.npcData.general.appearance.enrichedValue =
           await TextEditor.enrichHTML(
@@ -13451,7 +13461,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static toggleAbility(_, button) {
     const category = this.selected.abilities[button.dataset.category];
-    if(category.has(button.dataset.ability)) category.delete(button.dataset.ability);
+    if (category.has(button.dataset.ability))
+      category.delete(button.dataset.ability);
     else category.add(button.dataset.ability);
     this.render();
   }
@@ -15412,7 +15423,7 @@ Hooks.once("setup", () => {
       "Token.prototype._onClickLeft2",
       function (wrapped, ...args) {
         const baseActor = args[0].currentTarget.document.baseActor;
-        if (!['npc', 'character', 'hazard'].includes(baseActor.type)) {
+        if (!["npc", "character", "hazard"].includes(baseActor.type)) {
           return wrapped(...args);
         }
 
@@ -15433,8 +15444,7 @@ Hooks.once("setup", () => {
           "pf2e-bestiary-tracking",
           "doubleClickOpen",
         );
-        if (!openBestiary || ((game.user.isGM) && !args[0].altKey))
-        {
+        if (!openBestiary || (game.user.isGM && !args[0].altKey)) {
           return wrapped(...args);
         }
 

@@ -19,6 +19,7 @@ const viscera = {
   "--pf2e-bestiary-tracking-main-hover": "red",
   "--pf2e-bestiary-tracking-border": "orange",
   "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-application-border": "orange",
   "--pf2e-bestiary-tracking-icon": "",
   "--pf2e-bestiary-tracking-accent-icon": "",
 };

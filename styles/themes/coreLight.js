@@ -16,6 +16,7 @@ const coreLight = {
   "--pf2e-bestiary-tracking-main-hover": "#1c8efe",
   "--pf2e-bestiary-tracking-border": "black",
   "--pf2e-bestiary-tracking-secondary-border": "#82acff",
+  "--pf2e-bestiary-tracking-application-border": "initial",
   "--pf2e-bestiary-tracking-icon": "black",
   "--pf2e-bestiary-tracking-accent-icon": "gold",
 };

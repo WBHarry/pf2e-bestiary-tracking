@@ -17,6 +17,7 @@ const parchment = {
   "--pf2e-bestiary-tracking-main-hover": "white",
   "--pf2e-bestiary-tracking-border": "#d2c3a5",
   "--pf2e-bestiary-tracking-secondary-border": "",
+  "--pf2e-bestiary-tracking-application-border": "wheat",
   "--pf2e-bestiary-tracking-icon": "",
   "--pf2e-bestiary-tracking-accent-icon": "",
 };

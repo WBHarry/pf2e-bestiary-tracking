@@ -13,6 +13,7 @@ const coreDark = {
   "--pf2e-bestiary-tracking-main-hover": "white",
   "--pf2e-bestiary-tracking-border": "#ababab",
   "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-application-border": "wheat",
   "--pf2e-bestiary-tracking-icon": "rgb(247, 243, 232)",
   "--pf2e-bestiary-tracking-accent-icon": "gold",
 };

@@ -1419,6 +1419,9 @@ form.pf2e-bestiary-tracking.application > header {
 form.pf2e-bestiary-tracking.application > header .header-control {
   background: var(--button-background-color);
 }
+.application-border-container {
+  border-color: var(--pf2e-bestiary-tracking-application-border);
+}
 .pf2e-bestiary-tracking .primary-container,
 .pf2e-bestiary-tracking input.primary-container {
   background-color: var(--pf2e-bestiary-tracking-primary);
