@@ -229,6 +229,15 @@
   top: calc(50% - 9px);
   font-size: 18px;
 }
+.pf2e-bestiary-tracking.bestiary .bestiary-header .header-button {
+  flex: 0;
+  white-space: nowrap;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-header .header-button:hover {
+  background-color: var(--pf2e-bestiary-tracking-secondary);
+  border-color: var(--pf2e-bestiary-tracking-border);
+  box-shadow: none;
+}
 .pf2e-bestiary-tracking.bestiary .bestiary-title {
   text-align: center;
 }

@@ -12,7 +12,7 @@ import BestiaryIntegrationMenu from "../module/bestiaryIntegrationMenu.js";
 import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
-import { imageSettings } from "../data/constants.js";
+import { imageSettings, toBestiaryOptions } from "../data/constants.js";
 import bestiaryThemes, {
   bestiaryThemeChoices,
 } from "../styles/themes/themes.js";
@@ -418,6 +418,17 @@ const bestiaryDisplay = () => {
       },
     },
   );
+
+  game.settings.register("pf2e-bestiary-tracking", "sheet-settings", {
+    name: game.i18n.localize("PF2EBestiary.Settings.SheetSettings.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.SheetSettings.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      toBestiaryButton: toBestiaryOptions.iconAndText.value,
+    },
+  });
 };
 
 const bestiaryAppearance = () => {

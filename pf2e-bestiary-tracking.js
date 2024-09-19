@@ -725,3 +725,63 @@ Hooks.on("renderDialog", (dialog, html) => {
     });
   }
 });
+
+Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
+  if (isValidEntityType(options.object.type)) {
+    const { toBestiaryButton } = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "sheet-settings",
+    );
+    if (toBestiaryButton > 0) {
+      buttons.unshift({
+        label: toBestiaryButton === 2 ? game.i18n.localize("To Bestiary") : "",
+        class: "pf2e-bestiary-entry-button",
+        icon: "fa-solid fa-spaghetti-monster-flying",
+        onclick: () => {
+          const bestiary = game.journal.get(
+            game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+          );
+          const page = bestiary?.pages?.find(
+            (x) => x.system.uuid === options.object.uuid,
+          );
+          if (page) {
+            new PF2EBestiary(page).render(true);
+          } else {
+            const dialog = new foundry.applications.api.DialogV2({
+              buttons: [
+                {
+                  action: "ok",
+                  label: "Yes",
+                  icon: "fas fa-check",
+                  default: true,
+                  callback: () => {
+                    PF2EBestiary.addMonster(options.object, true);
+                  },
+                },
+                {
+                  action: "cancel",
+                  label: "No",
+                  icon: "fas fa-x",
+                  default: true,
+                },
+              ],
+              content: game.i18n.localize(
+                "PF2EBestiary.Bestiary.Sheet.BestiaryAddText",
+              ),
+              rejectClose: false,
+              modal: false,
+              window: {
+                title: game.i18n.localize(
+                  "PF2EBestiary.Bestiary.Sheet.BestiaryAddTitle",
+                ),
+              },
+              position: { width: 400 },
+            });
+
+            dialog.render(true);
+          }
+        },
+      });
+    }
+  }
+});

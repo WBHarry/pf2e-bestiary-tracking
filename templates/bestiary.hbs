@@ -21,6 +21,8 @@
                         {{#if search.name}}<i class="fa-solid fa-circle-xmark clear-icon primary-hover-container" data-action="clearSearch"></i>{{/if}}
                     </div>
                 </div>
+            {{else}}
+                {{#if this.user.isGM}}<button class="header-button secondary-container primary-hover-container" data-action="openActorSheet"><i class="fa-solid fa-user"></i> {{localize "Open Actor Sheet"}}</button>{{/if}}
             {{/if}}
         </header>
     {{/if}}
@@ -94,7 +96,6 @@
                                     {{#if (and this.user.isGM this.recallKnowledgeJournal)}}<i class="recall-knowledge-unlink-icon fa-solid fa-link-slash primary-hover-container" data-action="removeRecallKnowledgeJournal"></i>{{/if}}
                                 </div>
                             </div>
-                            {{!-- {{#if (not this.recallKnowledgeJournal)}}<i class="recall-knowledge-empty-icon fa-solid fa-link-slash"></i>{{/if}} --}}
                         </div>
                     {{/if}}
                 </div>

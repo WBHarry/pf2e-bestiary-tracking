@@ -2656,6 +2656,21 @@ const imageSettings = {
   },
 };
 
+const toBestiaryOptions = {
+  no: {
+    name: "PF2EBestiary.Bestiary.Sheet.BestiaryOptions.No",
+    value: 0,
+  },
+  icon: {
+    name: "PF2EBestiary.Bestiary.Sheet.BestiaryOptions.Icon",
+    value: 1,
+  },
+  iconAndText: {
+    name: "PF2EBestiary.Bestiary.Sheet.BestiaryOptions.IconAndText",
+    value: 2,
+  },
+};
+
 const fields = foundry.data.fields;
 
 const toggleStringField = () =>
@@ -10955,232 +10970,244 @@ const bestiaryThemeChoices = {
 };
 
 const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$3, ApplicationV2: ApplicationV2$3 } = foundry.applications.api;
-  
-  class BestiaryDisplayMenu extends HandlebarsApplicationMixin$3(
-    ApplicationV2$3,
-  ) {
-    constructor() {
-      super({});
-  
-      this.settings = {
-        hideAbilityDescriptions: game.settings.get(
-          "pf2e-bestiary-tracking",
-          "hide-ability-descriptions",
-        ),
-        additionalCreatureTypes: game.settings
-          .get("pf2e-bestiary-tracking", "additional-creature-types")
-          .map((x) => ({ value: x.value, name: game.i18n.localize(x.name) })),
-        optionalFields: game.settings.get(
-          "pf2e-bestiary-tracking",
-          "optional-fields",
-        ),
-        detailedInformation: game.settings.get(
-          "pf2e-bestiary-tracking",
-          "detailed-information-toggles",
-        ),
-        usedSections: game.settings.get(
-          "pf2e-bestiary-tracking",
-          "used-sections",
-        ),
-        journalSettings: game.settings.get(
-          "pf2e-bestiary-tracking",
-          "bestiary-journal-settings",
-        ),
-      };
-    }
-  
-    get title() {
-      return game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Name");
-    }
-  
-    static DEFAULT_OPTIONS = {
-      tag: "form",
-      id: "pf2e-bestiary-tracking-display-menu",
-      classes: ["bestiary-settings-menu"],
-      position: { width: 680, height: "auto" },
-      actions: {
-        resetJournalSettings: this.resetJournalSettings,
-        toggleOptionalFields: this.toggleOptionalFields,
-        toggleDetailedInformation: this.toggleDetailedInformation,
-        toggleUsedSection: this.toggleUsedSection,
-        filePicker: this.filePicker,
-        save: this.save,
-      },
-      form: { handler: this.updateData, submitOnChange: true },
-    };
-  
-    static PARTS = {
-      application: {
-        id: "bestiary-display-menu",
-        template:
-          "modules/pf2e-bestiary-tracking/templates/bestiaryDisplayMenu.hbs",
-      },
-    };
-  
-    _attachPartListeners(partId, htmlElement, options) {
-      super._attachPartListeners(partId, htmlElement, options);
-  
-      const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
-      const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits).filter(
-        (x) => !creatureTypes.includes(x),
-      );
-  
-      const traitsInput = $(htmlElement).find(".traits-input")[0];
-      const traitsTagify = new Y(traitsInput, {
-        tagTextProp: "name",
-        enforceWhitelist: true,
-        whitelist: creatureTraits.map((key) => {
-          const label = CONFIG.PF2E.creatureTraits[key];
-          return { value: key, name: game.i18n.localize(label) };
-        }),
-        callbacks: { invalid: this.onAddTag },
-        dropdown: {
-          mapValueTo: "name",
-          searchKeys: ["name"],
-          enabled: 0,
-          maxItems: 20,
-          closeOnSelect: true,
-          highlightFirst: false,
-        },
-      });
-  
-      traitsTagify.on("change", this.creatureTraitSelect.bind(this));
-    }
-  
-    async _prepareContext(_options) {
-      const context = await super._prepareContext(_options);
-      context.settings = {
-        ...this.settings,
-        additionalCreatureTypes: this.settings.additionalCreatureTypes?.length
-          ? this.settings.additionalCreatureTypes.map((x) => x.name)
-          : [],
-      };
-  
-      context.nrUsedSections = Object.values(this.settings.usedSections).filter(
-        (x) => x,
-      ).length;
-  
-      return context;
-    }
-  
-    static async updateData(event, element, formData) {
-      const data = foundry.utils.expandObject(formData.object);
-      this.settings = {
-        additionalCreatureTypes: this.settings.additionalCreatureTypes,
-        hideAbilityDescriptions: data.hideAbilityDescriptions,
-        optionalFields: data.optionalFields,
-        detailedInformation: { ...data.detailedInformation },       
-        usedSections: this.settings.usedSections,
-        journalSettings: {
-          ...data.journalSettings,
-          image: this.settings.journalSettings.image,
-        },
-      };
-      this.render();
-    }
-  
-    async creatureTraitSelect(event) {
-      this.settings.additionalCreatureTypes = event.detail?.value
-        ? JSON.parse(event.detail.value)
-        : [];
-      this.render();
-    }
-  
-    static async resetJournalSettings() {
-      this.settings.journalSettings = {
-        active: true,
-        name: "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle",
-        image: "icons/sundries/books/book-embossed-bound-brown.webp",
-      };
-      this.render();
-    }
-  
-    static async toggleOptionalFields() {
-      const keys = Object.keys(this.settings.optionalFields);
-      const enable = Object.values(this.settings.optionalFields).some((x) => !x);
-      this.settings.optionalFields = keys.reduce((acc, key) => {
-        acc[key] = enable;
-        return acc;
-      }, {});
-  
-      this.render();
-    }
-  
-    static async toggleDetailedInformation() {
-      const keys = Object.keys(this.settings.detailedInformation);
-      const enable = Object.values(this.settings.detailedInformation).some(
-        (x) => !x,
-      );
-      this.settings.detailedInformation = keys.reduce((acc, key) => {
-        acc[key] = enable;
-        return acc;
-      }, {});
-  
-      this.render();
-    }
-  
-    static async toggleUsedSection(_, button) {
-      const usedSections = Object.values(this.settings.usedSections).filter(
-        (x) => x,
-      );
-      if (
-        usedSections.length > 1 ||
-        !this.settings.usedSections[button.dataset.section]
-      )
-        this.settings.usedSections[button.dataset.section] =
-          !this.settings.usedSections[button.dataset.section];
-  
-      this.render();
-    }
-  
-    static async filePicker(_, button) {
-      new FilePicker({
-        type: "image",
-        title: "Image Select",
-        callback: async (path) => {
-          foundry.utils.setProperty(this.settings, button.dataset.path, path);
-          this.render();
-        },
-      }).render(true);
-    }
-  
-    static async save(_) {
-      await game.settings.set(
-        "pf2e-bestiary-tracking",
-        "additional-creature-types",
-        this.settings.additionalCreatureTypes.map((x) => ({
-          value: x.value,
-          name: CONFIG.PF2E.creatureTraits[x.value],
-        })),
-      );
-      await game.settings.set(
+
+class BestiaryDisplayMenu extends HandlebarsApplicationMixin$3(
+  ApplicationV2$3,
+) {
+  constructor() {
+    super({});
+
+    this.settings = {
+      hideAbilityDescriptions: game.settings.get(
         "pf2e-bestiary-tracking",
         "hide-ability-descriptions",
-        this.settings.hideAbilityDescriptions,
-      );
-      await game.settings.set(
+      ),
+      additionalCreatureTypes: game.settings
+        .get("pf2e-bestiary-tracking", "additional-creature-types")
+        .map((x) => ({ value: x.value, name: game.i18n.localize(x.name) })),
+      optionalFields: game.settings.get(
         "pf2e-bestiary-tracking",
         "optional-fields",
-        this.settings.optionalFields,
-      );
-      await game.settings.set(
+      ),
+      detailedInformation: game.settings.get(
         "pf2e-bestiary-tracking",
         "detailed-information-toggles",
-        this.settings.detailedInformation,
-      );
-      await game.settings.set(
+      ),
+      usedSections: game.settings.get(
         "pf2e-bestiary-tracking",
         "used-sections",
-        this.settings.usedSections,
-      );
-      await game.settings.set(
+      ),
+      journalSettings: game.settings.get(
         "pf2e-bestiary-tracking",
         "bestiary-journal-settings",
-        this.settings.journalSettings,
-      );
-      this.close();
-    }
+      ),
+      sheetSettings: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "sheet-settings"
+      )
+    };
   }
+
+  get title() {
+    return game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Name");
+  }
+
+  static DEFAULT_OPTIONS = {
+    tag: "form",
+    id: "pf2e-bestiary-tracking-display-menu",
+    classes: ["bestiary-settings-menu"],
+    position: { width: 680, height: "auto" },
+    actions: {
+      resetJournalSettings: this.resetJournalSettings,
+      toggleOptionalFields: this.toggleOptionalFields,
+      toggleDetailedInformation: this.toggleDetailedInformation,
+      toggleUsedSection: this.toggleUsedSection,
+      filePicker: this.filePicker,
+      save: this.save,
+    },
+    form: { handler: this.updateData, submitOnChange: true },
+  };
+
+  static PARTS = {
+    application: {
+      id: "bestiary-display-menu",
+      template:
+        "modules/pf2e-bestiary-tracking/templates/bestiaryDisplayMenu.hbs",
+    },
+  };
+
+  _attachPartListeners(partId, htmlElement, options) {
+    super._attachPartListeners(partId, htmlElement, options);
+
+    const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
+    const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits).filter(
+      (x) => !creatureTypes.includes(x),
+    );
+
+    const traitsInput = $(htmlElement).find(".traits-input")[0];
+    const traitsTagify = new Y(traitsInput, {
+      tagTextProp: "name",
+      enforceWhitelist: true,
+      whitelist: creatureTraits.map((key) => {
+        const label = CONFIG.PF2E.creatureTraits[key];
+        return { value: key, name: game.i18n.localize(label) };
+      }),
+      callbacks: { invalid: this.onAddTag },
+      dropdown: {
+        mapValueTo: "name",
+        searchKeys: ["name"],
+        enabled: 0,
+        maxItems: 20,
+        closeOnSelect: true,
+        highlightFirst: false,
+      },
+    });
+
+    traitsTagify.on("change", this.creatureTraitSelect.bind(this));
+  }
+
+  async _prepareContext(_options) {
+    const context = await super._prepareContext(_options);
+    context.settings = {
+      ...this.settings,
+      additionalCreatureTypes: this.settings.additionalCreatureTypes?.length
+        ? this.settings.additionalCreatureTypes.map((x) => x.name)
+        : [],
+    };
+
+    context.nrUsedSections = Object.values(this.settings.usedSections).filter(
+      (x) => x,
+    ).length;
+
+    context.toBestiaryOptions = toBestiaryOptions;
+
+    return context;
+  }
+
+  static async updateData(event, element, formData) {
+    const data = foundry.utils.expandObject(formData.object);
+    this.settings = {
+      additionalCreatureTypes: this.settings.additionalCreatureTypes,
+      hideAbilityDescriptions: data.hideAbilityDescriptions,
+      optionalFields: data.optionalFields,
+      detailedInformation: { ...data.detailedInformation },
+      usedSections: this.settings.usedSections,
+      journalSettings: {
+        ...data.journalSettings,
+        image: this.settings.journalSettings.image,
+      },
+      sheetSettings: data.sheetSettings,
+    };
+    this.render();
+  }
+
+  async creatureTraitSelect(event) {
+    this.settings.additionalCreatureTypes = event.detail?.value
+      ? JSON.parse(event.detail.value)
+      : [];
+    this.render();
+  }
+
+  static async resetJournalSettings() {
+    this.settings.journalSettings = {
+      active: true,
+      name: "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle",
+      image: "icons/sundries/books/book-embossed-bound-brown.webp",
+    };
+    this.render();
+  }
+
+  static async toggleOptionalFields() {
+    const keys = Object.keys(this.settings.optionalFields);
+    const enable = Object.values(this.settings.optionalFields).some((x) => !x);
+    this.settings.optionalFields = keys.reduce((acc, key) => {
+      acc[key] = enable;
+      return acc;
+    }, {});
+
+    this.render();
+  }
+
+  static async toggleDetailedInformation() {
+    const keys = Object.keys(this.settings.detailedInformation);
+    const enable = Object.values(this.settings.detailedInformation).some(
+      (x) => !x,
+    );
+    this.settings.detailedInformation = keys.reduce((acc, key) => {
+      acc[key] = enable;
+      return acc;
+    }, {});
+
+    this.render();
+  }
+
+  static async toggleUsedSection(_, button) {
+    const usedSections = Object.values(this.settings.usedSections).filter(
+      (x) => x,
+    );
+    if (
+      usedSections.length > 1 ||
+      !this.settings.usedSections[button.dataset.section]
+    )
+      this.settings.usedSections[button.dataset.section] =
+        !this.settings.usedSections[button.dataset.section];
+
+    this.render();
+  }
+
+  static async filePicker(_, button) {
+    new FilePicker({
+      type: "image",
+      title: "Image Select",
+      callback: async (path) => {
+        foundry.utils.setProperty(this.settings, button.dataset.path, path);
+        this.render();
+      },
+    }).render(true);
+  }
+
+  static async save(_) {
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "additional-creature-types",
+      this.settings.additionalCreatureTypes.map((x) => ({
+        value: x.value,
+        name: CONFIG.PF2E.creatureTraits[x.value],
+      })),
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "hide-ability-descriptions",
+      this.settings.hideAbilityDescriptions,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "optional-fields",
+      this.settings.optionalFields,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "detailed-information-toggles",
+      this.settings.detailedInformation,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "used-sections",
+      this.settings.usedSections,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "bestiary-journal-settings",
+      this.settings.journalSettings,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "sheet-settings",
+      this.settings.sheetSettings,
+    );
+    this.close();
+  }
+}
 
 const currentVersion = "1.0.12";
 const bestiaryFolder = "BestiaryTracking Bestiares";
@@ -11475,15 +11502,12 @@ const bestiaryLabels = () => {
 const bestiaryDisplay = () => {
   game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-display", {
     name: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Menu.Name"),
-    label: game.i18n.localize(
-      "PF2EBestiary.Menus.BestiaryDisplay.Menu.Label",
-    ),
+    label: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Menu.Label"),
     hint: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Menu.Hint"),
     icon: "fa-solid fa-sitemap",
     type: BestiaryDisplayMenu,
     restricted: true,
   });
-
 
   game.settings.register("pf2e-bestiary-tracking", "used-sections", {
     name: game.i18n.localize("PF2EBestiary.Settings.UsedSections.Name"),
@@ -11582,6 +11606,25 @@ const bestiaryDisplay = () => {
         attackTraits: false,
         damageTypes: false,
         abilityTraits: false,
+      },
+    },
+  );
+
+  game.settings.register(
+    "pf2e-bestiary-tracking",
+    "sheet-settings",
+    {
+      name: game.i18n.localize(
+        "PF2EBestiary.Settings.SheetSettings.Name",
+      ),
+      hint: game.i18n.localize(
+        "PF2EBestiary.Settings.SheetSettings.Hint",
+      ),
+      scope: "world",
+      config: false,
+      type: Object,
+      default: {
+        toBestiaryButton: toBestiaryOptions.iconAndText.value,
       },
     },
   );
@@ -12599,11 +12642,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       toggleStatistics: this.toggleStatistics,
       returnButton: this.returnButton,
       toggleAbility: this.toggleAbility,
-      toggleSpell: this.toggleSpell,
       toggleRevealed: this.toggleRevealed,
       toggleAllRevealed: this.toggleAllRevealed,
       revealEverything: this.revealEverything,
       hideEverything: this.hideEverything,
+      openActorSheet: this.openActorSheet,
       refreshBestiary: this.refreshBestiary,
       handleSaveSlots: this.handleSaveSlots,
       resetBestiary: this.resetBestiary,
@@ -13964,6 +14007,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     await this.toggleEverythingRevealed(false);
   }
 
+  static async openActorSheet() {
+    const actor = game.actors.find(x => x.uuid === this.selected.monster.system.uuid);
+    if(!actor){
+      ui.notifications.error("PF2EBestiary.Bestiary.Errors.ActorMissing");
+      return;
+    }
+
+    actor.sheet.render(true);
+  }
+
   async toggleEverythingRevealed(revealed) {
     if (!game.user.isGM || !this.selected.monster) return;
 
@@ -15017,7 +15070,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     });
   }
 
-  static async addMonster(item) {
+  static async addMonster(item, openAfter) {
     const bestiary = game.journal.get(
       game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
     );
@@ -15046,7 +15099,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         break;
     }
 
-    await bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
+    const pages = await bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
     for (var key in itemRules) {
       await item.items.get(key).update({ "system.rules": itemRules[key] });
     }
@@ -15065,6 +15118,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     });
 
     Hooks.callAll(socketEvent.UpdateBestiary, {});
+
+    if(openAfter){
+      new PF2EBestiary(pages[0]).render(true);
+    }
 
     return true;
   }
@@ -16265,6 +16322,58 @@ Hooks.on("renderDialog", (dialog, html) => {
       const option = options[index];
       if (option.innerText === "BestiaryTracking Bestiares") $(option).remove();
     });
+  }
+});
+
+Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
+  if(isValidEntityType(options.object.type)){
+    const { toBestiaryButton } = game.settings.get("pf2e-bestiary-tracking", "sheet-settings");
+    if(toBestiaryButton > 0){
+      buttons.unshift({
+        label: toBestiaryButton === 2 ? game.i18n.localize("To Bestiary") : "",
+        class: "pf2e-bestiary-entry-button",
+        icon: "fa-solid fa-spaghetti-monster-flying",
+        onclick: () => {
+          const bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
+          const page = bestiary?.pages?.find(x => x.system.uuid === options.object.uuid);
+          if(page){
+            new PF2EBestiary(page).render(true);
+          }
+          else {
+            const dialog = new foundry.applications.api.DialogV2({
+              buttons: [
+                {
+                  action: "ok",
+                  label: "Yes",
+                  icon: "fas fa-check",
+                  default: true,
+                  callback: () => {
+                    PF2EBestiary.addMonster(options.object, true);
+                  }
+                },
+                {
+                  action: "cancel",
+                  label: "No",
+                  icon: "fas fa-x",
+                  default: true,
+                },
+              ],
+              content: game.i18n.localize("PF2EBestiary.Bestiary.Sheet.BestiaryAddText"),
+              rejectClose: false,
+              modal: false,
+              window: {
+                title: game.i18n.localize(
+                  "PF2EBestiary.Bestiary.Sheet.BestiaryAddTitle",
+                ),
+              },
+              position: { width: 400 },
+            });
+
+            dialog.render(true);
+          }
+        },
+      });
+    }
   }
 });
 //# sourceMappingURL=BestiaryTracking.js.map

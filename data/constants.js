@@ -147,3 +147,18 @@ export const imageSettings = {
     hideImage: "systems/pf2e/icons/default-icons/npc.svg",
   },
 };
+
+export const toBestiaryOptions = {
+  no: {
+    name: "PF2EBestiary.Bestiary.Sheet.BestiaryOptions.No",
+    value: 0,
+  },
+  icon: {
+    name: "PF2EBestiary.Bestiary.Sheet.BestiaryOptions.Icon",
+    value: 1,
+  },
+  iconAndText: {
+    name: "PF2EBestiary.Bestiary.Sheet.BestiaryOptions.IconAndText",
+    value: 2,
+  },
+};

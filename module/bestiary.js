@@ -99,11 +99,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       toggleStatistics: this.toggleStatistics,
       returnButton: this.returnButton,
       toggleAbility: this.toggleAbility,
-      toggleSpell: this.toggleSpell,
       toggleRevealed: this.toggleRevealed,
       toggleAllRevealed: this.toggleAllRevealed,
       revealEverything: this.revealEverything,
       hideEverything: this.hideEverything,
+      openActorSheet: this.openActorSheet,
       refreshBestiary: this.refreshBestiary,
       handleSaveSlots: this.handleSaveSlots,
       resetBestiary: this.resetBestiary,
@@ -1464,6 +1464,18 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     await this.toggleEverythingRevealed(false);
   }
 
+  static async openActorSheet() {
+    const actor = game.actors.find(
+      (x) => x.uuid === this.selected.monster.system.uuid,
+    );
+    if (!actor) {
+      ui.notifications.error("PF2EBestiary.Bestiary.Errors.ActorMissing");
+      return;
+    }
+
+    actor.sheet.render(true);
+  }
+
   async toggleEverythingRevealed(revealed) {
     if (!game.user.isGM || !this.selected.monster) return;
 
@@ -2517,7 +2529,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     });
   }
 
-  static async addMonster(item) {
+  static async addMonster(item, openAfter) {
     const bestiary = game.journal.get(
       game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
     );
@@ -2546,7 +2558,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         break;
     }
 
-    await bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
+    const pages = await bestiary.createEmbeddedDocuments("JournalEntryPage", [
+      data,
+    ]);
     for (var key in itemRules) {
       await item.items.get(key).update({ "system.rules": itemRules[key] });
     }
@@ -2565,6 +2579,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     });
 
     Hooks.callAll(socketEvent.UpdateBestiary, {});
+
+    if (openAfter) {
+      new PF2EBestiary(pages[0]).render(true);
+    }
 
     return true;
   }

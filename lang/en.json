@@ -94,6 +94,7 @@
         "ResetBestiary": "Reset Bestiary",
         "RevealAll": "Reveal Creature",
         "HideAll": "Hide Creature",
+        "OpenActorSheet": "OpenActorSheet",
         "TransformCreature": "Transform To NPC",
         "TransformNPC": "Transform To Creature"
       },
@@ -254,7 +255,8 @@
       },
       "Errors": {
         "UnsupportedType": "Not a supported actor type!",
-        "DataMissing": "Some data is missing. You'll have to reimport the creature. Sorry about that!"
+        "DataMissing": "Some data is missing. You'll have to reimport the creature. Sorry about that!",
+        "ActorMissing": "There is no linked Actor for the entity in the world."
       },
       "Info": {
         "GMOnly": "This is a GM only function.",
@@ -262,6 +264,15 @@
         "AlreadyExistsInBestiary": "[{creatures}] already exists in the Bestiary.",
         "BestiaryEntryLinkTip": "Copy link (+Alt to send to chat)",
         "BestiaryEntryLink": "Bestiary Entry {entity} copied to clipboard."
+      },
+      "Sheet": {
+        "BestiaryAddTitle": "Add To Bestiary",
+        "BestiaryAddText": "This actor is not currently in the Bestiary. Do you want to add it?",
+        "BestiaryOptions": {
+          "No": "No",
+          "Icon": "Icon",
+          "IconAndText": "IconAndText"
+        }
       },
       "RemoveBookmarkTitle": "Remove Category",
       "RemoveBookmarkText": "Are you sure you want to remove the {category} category?",
@@ -338,11 +349,11 @@
         }
       },
       "BestiaryDisplay": {
-        "Name": "Bestiary Display",
+        "Name": "Bestiary Contents",
         "Menu": {
-          "Name": "Bestiary Display",
-          "Label": "Bestiary Display Settings",
-          "Hint": "Customize what's displayed within the Bestiary"
+          "Name": "Bestiary Contents",
+          "Label": "Bestiary Content Settings",
+          "Hint": "Customize what is displayed, and how it's displayed within the Bestiary"
         },
         "UsedSections": {
           "Name": "Used Sections Of The Bestiary",
@@ -375,6 +386,9 @@
           "Name": "Name",
           "Image": "Image"
         },
+        "SheetSettings": {
+          "AddButton": "Bestiary Button In Actor Sheet"
+        },
         "HideAbilityDescriptions": "Hide Ability Descriptions"
       },
       "BestiaryAppearance": {
@@ -383,7 +397,7 @@
         "Menu": {
           "Name": "Bestiary Appearance",
           "Label": "Bestiary Appearance Settings",
-          "Hint": "Customize the appearance and used fields of the Bestiary"
+          "Hint": "Customize the appearance of the Bestiary"
         },
         "UseTokenArt": "Use Token Art",
         "ContrastRevealedState": {

@@ -1,4 +1,5 @@
 import Tagify from "@yaireo/tagify";
+import { toBestiaryOptions } from "../data/constants";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -31,6 +32,10 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
       journalSettings: game.settings.get(
         "pf2e-bestiary-tracking",
         "bestiary-journal-settings",
+      ),
+      sheetSettings: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "sheet-settings",
       ),
     };
   }
@@ -106,6 +111,8 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
       (x) => x,
     ).length;
 
+    context.toBestiaryOptions = toBestiaryOptions;
+
     return context;
   }
 
@@ -121,6 +128,7 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
         ...data.journalSettings,
         image: this.settings.journalSettings.image,
       },
+      sheetSettings: data.sheetSettings,
     };
     this.render();
   }
@@ -223,6 +231,11 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "bestiary-journal-settings",
       this.settings.journalSettings,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "sheet-settings",
+      this.settings.sheetSettings,
     );
     this.close();
   }
