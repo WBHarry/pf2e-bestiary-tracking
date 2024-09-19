@@ -657,6 +657,10 @@
   justify-content: space-between;
   align-items: center;
 }
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .saves-container.partial {
+  gap: 8px;
+  justify-content: initial;
+}
 .pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .saves-container .save-container {
   display: flex;
   flex-direction: column;

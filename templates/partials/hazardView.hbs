@@ -60,19 +60,25 @@
                                 <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Saves.Title"}}</div>
                             </div>
                         </div>
-                        <div class="saves-container">
+                        <div class="saves-container {{#if (not this.system.hasAllSaves)}}partial{{/if}}">
+                            {{#if this.system.saves.fortitude.value}}
                             <div class="save-container">
                                 <div class="saves-title secondary-container {{PF2EBTToggleContainer this.user this.system.saves.fortitude}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.saves.fortitude}}" data-action="toggleRevealed" data-path="system.saves.fortitude" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}" data-vague-property="saves">{{localize "PF2EBestiary.Miscellaneous.Saves.Fortitude.Short"}}</div>
                                 <div class="saves-value">{{#if (or this.user.isGM this.system.saves.fortitude.revealed)}}{{PF2EBTMonsterValue this.system.saves.fortitude this.vagueDescriptions.properties.saves}}{{else}}?{{/if}}</div>
                             </div>
+                            {{/if}}
+                            {{#if this.system.saves.reflex.value}}
                             <div class="save-container">
                                 <div class="saves-title secondary-container {{PF2EBTToggleContainer this.user this.system.saves.reflex}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.saves.reflex}}" data-action="toggleRevealed" data-path="system.saves.reflex" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}" data-vague-property="saves">{{localize "PF2EBestiary.Miscellaneous.Saves.Reflex.Short"}}</div>
                                 <div class="saves-value">{{#if (or this.user.isGM this.system.saves.reflex.revealed)}}{{PF2EBTMonsterValue this.system.saves.reflex this.vagueDescriptions.properties.saves}}{{else}}?{{/if}}</div>
                             </div>
+                            {{/if}}
+                            {{#if this.system.saves.will.value}}
                             <div class="save-container">
                                 <div class="saves-title secondary-container {{PF2EBTToggleContainer this.user this.system.saves.will}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.saves.will}}" data-action="toggleRevealed" data-path="system.saves.will" data-name="{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}" data-vague-property="saves">{{localize "PF2EBestiary.Miscellaneous.Saves.Will.Short"}}</div>
                                 <div class="saves-value">{{#if (or this.user.isGM this.system.saves.will.revealed)}}{{PF2EBTMonsterValue this.system.saves.will this.vagueDescriptions.properties.saves}}{{else}}?{{/if}}</div>
                             </div>
+                            {{/if}}
                         </div>
                     </div>
                 {{/if}}

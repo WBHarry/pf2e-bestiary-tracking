@@ -2777,7 +2777,7 @@ const getCreatureData = async (actor, pcBase) => {
       texture: actor.prototypeToken.texture.src,
       imageState: { hideState: imageSettings.hideState },
       name: { value: actor.name, revealed: defaultRevealed.name },
-      hardness: { value: actor.system.attributes.hardness.value },
+      hardness: { value: actor.system.attributes.hardness },
       allSaves: { value: actor.system.attributes.allSaves?.value },
       publication: actor.system.details.publication,
       ac: {
@@ -3317,7 +3317,7 @@ const getPCCreatureData = async (actor) => {
       texture: actor.prototypeToken.texture.src,
       imageState: { hideState: imageSettings.hideState },
       name: { value: actor.name, revealed: defaultRevealed.name },
-      hardness: { value: actor.system.attributes.hardness.value },
+      hardness: { value: actor.system.attributes.hardness },
       allSaves: { value: actor.system.attributes.allSaves?.value },
       publication: actor.system.details.publication,
       ac: {
@@ -3822,7 +3822,7 @@ const getHazardData = (actor) => {
         revealed: defaultRevealed.hp,
       },
       hardness: {
-        value: actor.system.attributes.hardness.value,
+        value: actor.system.attributes.hardness,
         revealed: defaultRevealed.hardness,
       },
       level: {
@@ -7001,6 +7001,18 @@ class Hazard extends foundry.abstract.TypeDataModel {
     }, []);
   }
 
+  get hasSaves(){
+    return this.saves.fortitude.value ||
+    this.saves.reflex.value ||
+    this.saves.will.value;
+  }
+
+  get hasAllSaves(){
+    return this.saves.fortitude.value &&
+    this.saves.reflex.value &&
+    this.saves.will.value;
+  }
+
   _getRefreshData(hazard, hazardData) {
     const data = hazardData ?? getHazardData(hazard);
 
@@ -7424,11 +7436,6 @@ class Hazard extends foundry.abstract.TypeDataModel {
         ? gmLevel
         : (playerLevel ?? this.level.value)
       : this.level.value;
-
-    this.hasSaves =
-      this.saves.fortitude.value ||
-      this.saves.reflex.value ||
-      this.saves.will.value;
 
     this.ac.category = getCategoryLabel(acTable, contextLevel, this.ac.value);
     this.hp.category = getCategoryFromIntervals(

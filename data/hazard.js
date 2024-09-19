@@ -407,6 +407,22 @@ export class Hazard extends foundry.abstract.TypeDataModel {
     }, []);
   }
 
+  get hasSaves() {
+    return (
+      this.saves.fortitude.value ||
+      this.saves.reflex.value ||
+      this.saves.will.value
+    );
+  }
+
+  get hasAllSaves() {
+    return (
+      this.saves.fortitude.value &&
+      this.saves.reflex.value &&
+      this.saves.will.value
+    );
+  }
+
   _getRefreshData(hazard, hazardData) {
     const data = hazardData ?? getHazardData(hazard);
 
@@ -830,11 +846,6 @@ export class Hazard extends foundry.abstract.TypeDataModel {
         ? gmLevel
         : (playerLevel ?? this.level.value)
       : this.level.value;
-
-    this.hasSaves =
-      this.saves.fortitude.value ||
-      this.saves.reflex.value ||
-      this.saves.will.value;
 
     this.ac.category = getCategoryLabel(acTable, contextLevel, this.ac.value);
     this.hp.category = getCategoryFromIntervals(
