@@ -1258,6 +1258,21 @@
   border-color: black;
   background: #cfcfcf;
 }
+.bestiary-settings-menu .form-group.inner {
+  flex: 0;
+}
+.bestiary-settings-menu .form-group.inner label {
+  padding: 0;
+}
+.bestiary-settings-menu .form-group.full {
+  gap: 8px;
+}
+.bestiary-settings-menu .form-group.full label {
+  flex: 0;
+}
+.bestiary-settings-menu .form-group.full button {
+  height: 32px;
+}
 .bestiary-settings-menu .menu-container {
   display: flex;
   flex-direction: column;

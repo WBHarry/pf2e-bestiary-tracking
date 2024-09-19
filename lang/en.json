@@ -386,6 +386,12 @@
           "Creature": "Creatures",
           "NPC": "NPC Gallery",
           "Hazard": "Hazards"
+        },
+        "JournalSettings": {
+          "Title": "Accompanying Journal",
+          "Enabled": "Enabled",
+          "Name": "Name",
+          "Image": "Image"
         }
       },
       "BestiaryIntegration": {

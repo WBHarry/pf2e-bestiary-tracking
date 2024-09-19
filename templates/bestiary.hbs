@@ -85,16 +85,16 @@
                             <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RightClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleMisinformationTip"}}</li>
                         </ul>
                     </div>
-                    {{#if (or this.user.isGM this.recallKnowledgeJournal)}}
+                    {{#if (and this.journalSettings.active (or this.user.isGM this.recallKnowledgeJournal))}}
                         <div class="recall-knowledge-container secondary-border-container {{#if (not this.recallKnowledgeJournal)}}empty{{/if}}" {{#if (not this.recallKnowledgeJournal)}}title="{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeJournalMissing"}}"{{/if}}>
                             <div class="main-page-category-card">
                                 <div class="main-page-category-image-container secondary-border-container {{#if this.recallKnowledgeJournal}}primary-hover-container{{/if}}" {{#if this.recallKnowledgeJournal}}data-action="openDocument"{{/if}} data-uuid="{{this.recallKnowledgeJournal}}">
-                                    <img src="icons/sundries/books/book-embossed-bound-brown.webp" />
-                                    <h4 class="main-page-category-label primary-container">{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle"}}</h4>
+                                    <img src="{{this.journalSettings.image}}" />
+                                    <h4 class="main-page-category-label primary-container">{{localize this.journalSettings.name}}</h4>
                                     {{#if (and this.user.isGM this.recallKnowledgeJournal)}}<i class="recall-knowledge-unlink-icon fa-solid fa-link-slash primary-hover-container" data-action="removeRecallKnowledgeJournal"></i>{{/if}}
                                 </div>
                             </div>
-                            {{#if (not this.recallKnowledgeJournal)}}<i class="recall-knowledge-empty-icon fa-solid fa-link-slash"></i>{{/if}}
+                            {{!-- {{#if (not this.recallKnowledgeJournal)}}<i class="recall-knowledge-empty-icon fa-solid fa-link-slash"></i>{{/if}} --}}
                         </div>
                     {{/if}}
                 </div>

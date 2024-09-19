@@ -17,7 +17,7 @@ import bestiaryThemes, {
   bestiaryThemeChoices,
 } from "../styles/themes/themes.js";
 
-export const currentVersion = "1.0.11";
+export const currentVersion = "1.0.12";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
@@ -319,6 +319,27 @@ const bestiaryAppearance = () => {
       hazard: true,
     },
   });
+
+  game.settings.register(
+    "pf2e-bestiary-tracking",
+    "bestiary-journal-settings",
+    {
+      name: game.i18n.localize(
+        "PF2EBestiary.Settings.BestiaryJournalSettings.Name",
+      ),
+      hint: game.i18n.localize(
+        "PF2EBestiary.Settings.BestiaryJournalSettings.Hint",
+      ),
+      scope: "world",
+      config: false,
+      type: Object,
+      default: {
+        active: true,
+        name: "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle",
+        image: "icons/sundries/books/book-embossed-bound-brown.webp",
+      },
+    },
+  );
 
   game.settings.register("pf2e-bestiary-tracking", "use-token-art", {
     name: game.i18n.localize("PF2EBestiary.Settings.UseTokenArt.Name"),

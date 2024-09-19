@@ -7783,6 +7783,10 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
         "pf2e-bestiary-tracking",
         "used-sections",
       ),
+      journalSettings: game.settings.get(
+        "pf2e-bestiary-tracking", 
+        "bestiary-journal-settings"
+      )
     };
   }
 
@@ -7799,6 +7803,7 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
       resetContrastRevealedState: this.resetContrastRevealedState,
       resetCategorySettings: this.resetCategorySettings,
       resetImageSettings: this.resetImageSettings,
+      resetJournalSettings: this.resetJournalSettings,
       toggleOptionalFields: this.toggleOptionalFields,
       toggleDetailedInformation: this.toggleDetailedInformation,
       toggleUsedSection: this.toggleUsedSection,
@@ -7900,6 +7905,11 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
           hideImage: this.settings.imageSettings.hazard.hideImage,
         },
       },
+      usedSections: this.settings.usedSections,
+      journalSettings: {
+        ...data.journalSettings,
+        image: this.settings.journalSettings.image,
+      },
     };
     this.render();
   }
@@ -7923,6 +7933,15 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
 
   static async resetImageSettings() {
     this.settings.imageSettings = { ...imageSettings };
+    this.render();
+  }
+
+  static async resetJournalSettings() {
+    this.settings.journalSettings = {
+      active: true,
+      name: "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle",
+      image: "icons/sundries/books/book-embossed-bound-brown.webp",
+    };
     this.render();
   }
 
@@ -8023,6 +8042,11 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$6(
       "pf2e-bestiary-tracking",
       "used-sections",
       this.settings.usedSections,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking", 
+      "bestiary-journal-settings",
+      this.settings.journalSettings
     );
     this.close();
   }
@@ -11092,7 +11116,7 @@ const bestiaryThemeChoices = {
   // parchment: 'Parchment',
 };
 
-const currentVersion = "1.0.11";
+const currentVersion = "1.0.12";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -11392,6 +11416,19 @@ const bestiaryAppearance = () => {
       creature: true,
       npc: true,
       hazard: true,
+    },
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "bestiary-journal-settings", {
+    name: game.i18n.localize("PF2EBestiary.Settings.BestiaryJournalSettings.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.BestiaryJournalSettings.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      active: true,
+      name: "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle",
+      image: "icons/sundries/books/book-embossed-bound-brown.webp",
     },
   });
 
@@ -13334,6 +13371,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "recall-knowledge-journal",
     );
+    context.journalSettings = game.settings.get(
+      "pf2e-bestiary-tracking", 
+      "bestiary-journal-settings");
+
     context.vagueDescriptions.settings.playerBased = game.user.isGM
       ? false
       : context.vagueDescriptions.settings.playerBased;

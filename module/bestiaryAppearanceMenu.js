@@ -46,6 +46,10 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
         "pf2e-bestiary-tracking",
         "used-sections",
       ),
+      journalSettings: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "bestiary-journal-settings",
+      ),
     };
   }
 
@@ -62,6 +66,7 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
       resetContrastRevealedState: this.resetContrastRevealedState,
       resetCategorySettings: this.resetCategorySettings,
       resetImageSettings: this.resetImageSettings,
+      resetJournalSettings: this.resetJournalSettings,
       toggleOptionalFields: this.toggleOptionalFields,
       toggleDetailedInformation: this.toggleDetailedInformation,
       toggleUsedSection: this.toggleUsedSection,
@@ -163,6 +168,11 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
           hideImage: this.settings.imageSettings.hazard.hideImage,
         },
       },
+      usedSections: this.settings.usedSections,
+      journalSettings: {
+        ...data.journalSettings,
+        image: this.settings.journalSettings.image,
+      },
     };
     this.render();
   }
@@ -186,6 +196,15 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
 
   static async resetImageSettings() {
     this.settings.imageSettings = { ...imageSettings };
+    this.render();
+  }
+
+  static async resetJournalSettings() {
+    this.settings.journalSettings = {
+      active: true,
+      name: "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle",
+      image: "icons/sundries/books/book-embossed-bound-brown.webp",
+    };
     this.render();
   }
 
@@ -286,6 +305,11 @@ export default class BestiaryAppearanceMenu extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "used-sections",
       this.settings.usedSections,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "bestiary-journal-settings",
+      this.settings.journalSettings,
     );
     this.close();
   }

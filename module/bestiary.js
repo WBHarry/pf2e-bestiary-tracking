@@ -960,6 +960,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "recall-knowledge-journal",
     );
+    context.journalSettings = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "bestiary-journal-settings",
+    );
+
     context.vagueDescriptions.settings.playerBased = game.user.isGM
       ? false
       : context.vagueDescriptions.settings.playerBased;
