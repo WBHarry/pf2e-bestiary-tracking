@@ -16,6 +16,7 @@ import { imageSettings } from "../data/constants.js";
 import bestiaryThemes, {
   bestiaryThemeChoices,
 } from "../styles/themes/themes.js";
+import BestiaryDisplayMenu from "../module/bestiaryDisplayMenu.js";
 
 export const currentVersion = "1.0.12";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
@@ -111,6 +112,7 @@ export const registerGameSettings = () => {
   generalNonConfigSettings();
   vagueDescriptions();
   bestiaryLabels();
+  bestiaryDisplay();
   bestiaryAppearance();
   bestiaryIntegration();
 };
@@ -306,7 +308,16 @@ const bestiaryLabels = () => {
   });
 };
 
-const bestiaryAppearance = () => {
+const bestiaryDisplay = () => {
+  game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-display", {
+    name: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Menu.Name"),
+    label: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Menu.Label"),
+    hint: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Menu.Hint"),
+    icon: "fa-solid fa-sitemap",
+    type: BestiaryDisplayMenu,
+    restricted: true,
+  });
+
   game.settings.register("pf2e-bestiary-tracking", "used-sections", {
     name: game.i18n.localize("PF2EBestiary.Settings.UsedSections.Name"),
     hint: game.i18n.localize("PF2EBestiary.Settings.UsedSections.Hint"),
@@ -319,6 +330,23 @@ const bestiaryAppearance = () => {
       hazard: true,
     },
   });
+
+  game.settings.register(
+    "pf2e-bestiary-tracking",
+    "additional-creature-types",
+    {
+      name: game.i18n.localize(
+        "PF2EBestiary.Settings.AdditionalCreatureTypes.Name",
+      ),
+      hint: game.i18n.localize(
+        "PF2EBestiary.Settings.AdditionalCreatureTypes.Hint",
+      ),
+      scope: "world",
+      config: false,
+      type: Object,
+      default: [],
+    },
+  );
 
   game.settings.register(
     "pf2e-bestiary-tracking",
@@ -341,15 +369,6 @@ const bestiaryAppearance = () => {
     },
   );
 
-  game.settings.register("pf2e-bestiary-tracking", "use-token-art", {
-    name: game.i18n.localize("PF2EBestiary.Settings.UseTokenArt.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.UseTokenArt.Hint"),
-    scope: "world",
-    config: false,
-    type: Boolean,
-    default: false,
-  });
-
   game.settings.register(
     "pf2e-bestiary-tracking",
     "hide-ability-descriptions",
@@ -366,6 +385,17 @@ const bestiaryAppearance = () => {
       default: false,
     },
   );
+
+  game.settings.register("pf2e-bestiary-tracking", "optional-fields", {
+    name: game.i18n.localize("PF2EBestiary.Settings.OptionalFields.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.OptionalFields.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      ...optionalFields,
+    },
+  });
 
   game.settings.register(
     "pf2e-bestiary-tracking",
@@ -388,16 +418,27 @@ const bestiaryAppearance = () => {
       },
     },
   );
+};
 
+const bestiaryAppearance = () => {
   game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-appearance", {
     name: game.i18n.localize("PF2EBestiary.Menus.BestiaryAppearance.Menu.Name"),
     label: game.i18n.localize(
       "PF2EBestiary.Menus.BestiaryAppearance.Menu.Label",
     ),
     hint: game.i18n.localize("PF2EBestiary.Menus.BestiaryAppearance.Menu.Hint"),
-    icon: "fa-solid fa-sitemap",
+    icon: "fa-solid fa-palette",
     type: BestiaryAppearanceMenu,
     restricted: true,
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "use-token-art", {
+    name: game.i18n.localize("PF2EBestiary.Settings.UseTokenArt.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.UseTokenArt.Hint"),
+    scope: "world",
+    config: false,
+    type: Boolean,
+    default: false,
   });
 
   game.settings.register(
@@ -427,34 +468,6 @@ const bestiaryAppearance = () => {
       ...revealedState,
     },
   });
-
-  game.settings.register("pf2e-bestiary-tracking", "optional-fields", {
-    name: game.i18n.localize("PF2EBestiary.Settings.OptionalFields.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.OptionalFields.Hint"),
-    scope: "world",
-    config: false,
-    type: Object,
-    default: {
-      ...optionalFields,
-    },
-  });
-
-  game.settings.register(
-    "pf2e-bestiary-tracking",
-    "additional-creature-types",
-    {
-      name: game.i18n.localize(
-        "PF2EBestiary.Settings.AdditionalCreatureTypes.Name",
-      ),
-      hint: game.i18n.localize(
-        "PF2EBestiary.Settings.AdditionalCreatureTypes.Hint",
-      ),
-      scope: "world",
-      config: false,
-      type: Object,
-      default: [],
-    },
-  );
 
   game.settings.register("pf2e-bestiary-tracking", "image-settings", {
     name: game.i18n.localize("PF2EBestiary.Settings.ImageSettings.Name"),

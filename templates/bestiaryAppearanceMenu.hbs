@@ -1,131 +1,4 @@
-<div class="menu-container">
-    <fieldset class="menu-category">
-        <legend>
-            <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.UsedSections.Name"}}</h4>
-        </legend>
-        
-        <div class="menu-button-range">
-            <button class="menu-button" data-action="toggleUsedSection" data-section="creature" {{#if (and (lte nrUsedSections 1) settings.usedSections.creature)}}disabled{{/if}}>
-                <span>{{localize "PF2EBestiary.Menus.BestiaryAppearance.UsedSections.Creature"}}</span>
-                {{#if settings.usedSections.creature}}<i class="fa-regular fa-circle-check"></i>{{else}}<i class="fa-regular fa-circle"></i>{{/if}}
-            </button>
-            <button class="menu-button" data-action="toggleUsedSection" data-section="npc" {{#if (and (lte nrUsedSections 1) settings.usedSections.npc)}}disabled{{/if}}>
-                <span>{{localize "PF2EBestiary.Menus.BestiaryAppearance.UsedSections.NPC"}}</span>
-                {{#if settings.usedSections.npc}}<i class="fa-regular fa-circle-check"></i>{{else}}<i class="fa-regular fa-circle"></i>{{/if}}
-            </button>
-            <button class="menu-button" data-action="toggleUsedSection" data-section="hazard" {{#if (and (lte nrUsedSections 1) settings.usedSections.hazard)}}disabled{{/if}}>
-                <span>{{localize "PF2EBestiary.Menus.BestiaryAppearance.UsedSections.Hazard"}}</span>
-                {{#if settings.usedSections.hazard}}<i class="fa-regular fa-circle-check"></i>{{else}}<i class="fa-regular fa-circle"></i>{{/if}}
-            </button>
-        </div>
-    </fieldset>
-
-    <fieldset class="menu-category">
-        <legend>
-            <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.AdditionalCreatureTypes.Name"}}</h4>
-        </legend>
-
-        <div class="flexcol">
-            <input class="traits-input" value="{{settings.additionalCreatureTypes}}" />
-            <div>{{localize "PF2EBestiary.Menus.BestiaryAppearance.AdditionalCreatureTypes.SubText"}}</div>
-        </div>
-    </fieldset>
-   
-   <div class="menu-grouper">
-    <fieldset class="menu-category">
-        <legend class="pf2e-bestiary-clickable-icon" data-action="toggleOptionalFields">
-            <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Name"}}</h4>
-        </legend>
-
-        <div class="form-group">
-            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Level"}}</label>
-            <div class="form-fields">
-                <div class="form-fields">
-                    <input type="checkbox" name="optionalFields.level" {{checked settings.optionalFields.level}} />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Languages"}}</label>
-            <div class="form-fields">
-                <div class="form-fields">
-                    <input type="checkbox" name="optionalFields.languages" {{checked settings.optionalFields.languages}} />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Height"}}</label>
-            <div class="form-fields">
-                <div class="form-fields">
-                    <input type="checkbox" name="optionalFields.height" {{checked settings.optionalFields.height}} />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Weight"}}</label>
-            <div class="form-fields">
-                <div class="form-fields">
-                    <input type="checkbox" name="optionalFields.weight" {{checked settings.optionalFields.weight}} />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.OptionalFields.Birthplace"}}</label>
-            <div class="form-fields">
-                <div class="form-fields">
-                    <input type="checkbox" name="optionalFields.birthplace" {{checked settings.optionalFields.birthplace}} />
-                </div>
-            </div>
-        </div>
-    </fieldset> 
-
-    <fieldset class="menu-category">
-        <legend class="pf2e-bestiary-clickable-icon" data-action="toggleDetailedInformation">
-            <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.DetailedInformation.Name"}}</h4>
-        </legend>
-
-        <div class="form-group">
-            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.DetailedInformation.ExceptionsDoubleVs"}}</label>
-            <div class="form-fields">
-                <div class="form-fields">
-                    <input type="checkbox" name="detailedInformation.exceptionsDouble" {{checked settings.detailedInformation.exceptionsDouble}} />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.DetailedInformation.AttackTraits"}}</label>
-            <div class="form-fields">
-                <div class="form-fields">
-                    <input type="checkbox" name="detailedInformation.attackTraits" {{checked settings.detailedInformation.attackTraits}} />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.DetailedInformation.DamageTypes"}}</label>
-            <div class="form-fields">
-                <div class="form-fields">
-                    <input type="checkbox" name="detailedInformation.damageTypes" {{checked settings.detailedInformation.damageTypes}} />
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.DetailedInformation.AbilityTraits"}}</label>
-            <div class="form-fields">
-                <div class="form-fields">
-                    <input type="checkbox" name="detailedInformation.abilityTraits" {{checked settings.detailedInformation.abilityTraits}} />
-                </div>
-            </div>
-        </div>
-    </fieldset> 
-    </div>
-
+<div class="menu-container"> 
     <fieldset class="menu-category">
         <legend class="flexed">
             <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.ImageSettings.Title"}}</h4>
@@ -213,7 +86,7 @@
                             </div>
                             <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.CategorySettings.Image"}}</label>
                             <div class="form-fields">
-                                <input type="text" value="{{localize setting.categorySettings.creature.image}}" disabled />
+                                <input type="text" value="{{localize settings.categorySettings.creature.image}}" disabled />
                                 <button data-action="filePicker" data-path="categorySettings.creature.image" title="Browse Files"><i class="fas fa-file-import fa-fw"></i></button>
                             </div>
                         </div>
@@ -293,51 +166,11 @@
         </div>
     </fieldset>
 
-    <fieldset class="menu-category">
-        <legend class="flexed">
-            <h4>{{localize "PF2EBestiary.Menus.BestiaryAppearance.JournalSettings.Title"}}</h4>
-            <i class="fa-solid fa-arrow-rotate-left pf2e-bestiary-clickable-icon" data-action="resetJournalSettings"></i>
-        </legend>
-
-        <div class="menu-grouper">
-            <div class="form-group inner">
-                <div class="form-fields">
-                    <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.JournalSettings.Enabled"}}</label>
-                    <div class="form-fields">
-                        <input type="checkbox" name="journalSettings.active" {{checked settings.journalSettings.active}} />
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="form-fields">
-                    <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.JournalSettings.Name"}}</label>
-                    <input type="text" name="journalSettings.name" value="{{localize settings.journalSettings.name}}" />
-                </div>
-            </div>
-        </div>
-        <div class="form-group full">
-            <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.JournalSettings.Image"}}</label>
-            <div class="form-fields">
-                <input type="text" value="{{localize settings.journalSettings.image}}" disabled />
-                <button data-action="filePicker" data-path="journalSettings.image" title="Browse Files"><i class="fas fa-file-import fa-fw"></i></button>
-            </div>
-        </div>
-    </fieldset>
-
     <div class="form-group">
         <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.UseTokenArt"}}</label>
         <div class="form-fields">
             <div class="form-fields">
                 <input type="checkbox" name="useTokenArt" {{checked settings.useTokenArt}} />
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label>{{localize "PF2EBestiary.Menus.BestiaryAppearance.HideAbilityDescriptions"}}</label>
-        <div class="form-fields">
-            <div class="form-fields">
-                <input type="checkbox" name="hideAbilityDescriptions" {{checked settings.hideAbilityDescriptions}} />
             </div>
         </div>
     </div>

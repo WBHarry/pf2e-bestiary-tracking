@@ -337,21 +337,22 @@
           }
         }
       },
-      "BestiaryAppearance": {
-        "Name": "Bestiary Appearance",
-        "Hint": "Customize the appearance of the Bestiary",
+      "BestiaryDisplay": {
+        "Name": "Bestiary Display",
         "Menu": {
-          "Name": "Bestiary Appearance",
-          "Label": "Bestiary Appearance Settings",
-          "Hint": "Customize the appearance and used fields of the Bestiary"
+          "Name": "Bestiary Display",
+          "Label": "Bestiary Display Settings",
+          "Hint": "Customize what's displayed within the Bestiary"
         },
-        "UseTokenArt": "Use Token Art",
-        "HideAbilityDescriptions": "Hide Ability Descriptions",
-        "ContrastRevealedState": {
-          "Name": "Contrast Revealed State",
-          "Enabled": "Enabled",
-          "Revealed": "Revealed",
-          "Hidden": "Hidden"
+        "UsedSections": {
+          "Name": "Used Sections Of The Bestiary",
+          "Creature": "Creatures",
+          "NPC": "NPC Gallery",
+          "Hazard": "Hazards"
+        },
+        "AdditionalCreatureTypes": {
+          "Name": "Additional Creature Types",
+          "SubText": "You can add more available creature traits to choose from in the PF2E System Settings for Homebrew."
         },
         "OptionalFields": {
           "Name": "Optional Fields",
@@ -368,29 +369,36 @@
           "DamageTypes": "Damage Types",
           "AbilityTraits": "Ability Traits"
         },
+        "JournalSettings": {
+          "Title": "Accompanying Journal",
+          "Enabled": "Enabled",
+          "Name": "Name",
+          "Image": "Image"
+        },
+        "HideAbilityDescriptions": "Hide Ability Descriptions"
+      },
+      "BestiaryAppearance": {
+        "Name": "Bestiary Appearance",
+        "Hint": "Customize the appearance of the Bestiary",
+        "Menu": {
+          "Name": "Bestiary Appearance",
+          "Label": "Bestiary Appearance Settings",
+          "Hint": "Customize the appearance and used fields of the Bestiary"
+        },
+        "UseTokenArt": "Use Token Art",
+        "ContrastRevealedState": {
+          "Name": "Contrast Revealed State",
+          "Enabled": "Enabled",
+          "Revealed": "Revealed",
+          "Hidden": "Hidden"
+        },
         "ImageSettings": {
           "Title": "Avatar Settings",
           "HideState": "Default Filter",
           "HiddenImage": "Hidden Image"
         },
-        "AdditionalCreatureTypes": {
-          "Name": "Additional Creature Types",
-          "SubText": "You can add more available creature traits to choose from in the PF2E System Settings for Homebrew."
-        },
         "CategorySettings": {
           "Title": "Bestiary Category Customization",
-          "Image": "Image"
-        },
-        "UsedSections": {
-          "Name": "Used Sections Of The Bestiary",
-          "Creature": "Creatures",
-          "NPC": "NPC Gallery",
-          "Hazard": "Hazards"
-        },
-        "JournalSettings": {
-          "Title": "Accompanying Journal",
-          "Enabled": "Enabled",
-          "Name": "Name",
           "Image": "Image"
         }
       },
