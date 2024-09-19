@@ -334,21 +334,10 @@
           }
         }
       },
-      "BestiaryAppearance": {
-        "Name": "Apparence du bestiaire",
-        "Hint": "Personnalise l'apparence du Bestiaire",
-        "Menu": {
-          "Name": "Apparence du bestiaire",
-          "Label": "Configuration de l'apparence du bestiaire",
-          "Hint": "Customize the appearance of the Bestiary"
-        },
-        "UseTokenArt": "Utiliser l'image du token",
-        "HideAbilityDescriptions": "Cacher les descriptions des capacités",
-        "ContrastRevealedState": {
-          "Name": "Contraste révélant l'État",
-          "Enabled": "activé",
-          "Revealed": "Revélé",
-          "Hidden": "caché"
+      "BestiaryDisplay": {
+        "AdditionalCreatureTypes": {
+          "Name": "Types de créature supplémentaires",
+          "SubText": "Vous pouvez ajouter d'autres traits de créature disponibles dans les Paramètres du système PF2E pour les créations maison."
         },
         "OptionalFields": {
           "Name": "Champs facultatifs",
@@ -364,14 +353,27 @@
           "DamageTypes": "Types de dégâts",
           "AbilityTraits": "Aptitudes"
         },
+        "HideAbilityDescriptions": "Cacher les descriptions des capacités"
+      },
+      "BestiaryAppearance": {
+        "Name": "Apparence du bestiaire",
+        "Hint": "Personnalise l'apparence du Bestiaire",
+        "Menu": {
+          "Name": "Apparence du bestiaire",
+          "Label": "Configuration de l'apparence du bestiaire",
+          "Hint": "Customize the appearance of the Bestiary"
+        },
+        "UseTokenArt": "Utiliser l'image du token",
+        "ContrastRevealedState": {
+          "Name": "Contraste révélant l'État",
+          "Enabled": "activé",
+          "Revealed": "Revélé",
+          "Hidden": "caché"
+        },
         "ImageSettings": {
           "Title": "Réglages de l'avatar",
           "HideState": "Filtre par défaut",
           "HiddenImage": "Image cachée"
-        },
-        "AdditionalCreatureTypes": {
-          "Name": "Types de créature supplémentaires",
-          "SubText": "Vous pouvez ajouter d'autres traits de créature disponibles dans les Paramètres du système PF2E pour les créations maison."
         },
         "CategorySettings": {
           "Title": "Personnalisation des catégories de bestiaire",

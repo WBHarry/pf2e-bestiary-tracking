@@ -11003,8 +11003,8 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$3(
       ),
       sheetSettings: game.settings.get(
         "pf2e-bestiary-tracking",
-        "sheet-settings"
-      )
+        "sheet-settings",
+      ),
     };
   }
 
@@ -11610,24 +11610,16 @@ const bestiaryDisplay = () => {
     },
   );
 
-  game.settings.register(
-    "pf2e-bestiary-tracking",
-    "sheet-settings",
-    {
-      name: game.i18n.localize(
-        "PF2EBestiary.Settings.SheetSettings.Name",
-      ),
-      hint: game.i18n.localize(
-        "PF2EBestiary.Settings.SheetSettings.Hint",
-      ),
-      scope: "world",
-      config: false,
-      type: Object,
-      default: {
-        toBestiaryButton: toBestiaryOptions.iconAndText.value,
-      },
+  game.settings.register("pf2e-bestiary-tracking", "sheet-settings", {
+    name: game.i18n.localize("PF2EBestiary.Settings.SheetSettings.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.SheetSettings.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      toBestiaryButton: toBestiaryOptions.iconAndText.value,
     },
-  );
+  });
 };
 
 const bestiaryAppearance = () => {
@@ -14008,8 +14000,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   static async openActorSheet() {
-    const actor = game.actors.find(x => x.uuid === this.selected.monster.system.uuid);
-    if(!actor){
+    const actor = game.actors.find(
+      (x) => x.uuid === this.selected.monster.system.uuid,
+    );
+    if (!actor) {
       ui.notifications.error("PF2EBestiary.Bestiary.Errors.ActorMissing");
       return;
     }
@@ -15099,7 +15093,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         break;
     }
 
-    const pages = await bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
+    const pages = await bestiary.createEmbeddedDocuments("JournalEntryPage", [
+      data,
+    ]);
     for (var key in itemRules) {
       await item.items.get(key).update({ "system.rules": itemRules[key] });
     }
@@ -15119,7 +15115,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     Hooks.callAll(socketEvent.UpdateBestiary, {});
 
-    if(openAfter){
+    if (openAfter) {
       new PF2EBestiary(pages[0]).render(true);
     }
 
@@ -16326,20 +16322,26 @@ Hooks.on("renderDialog", (dialog, html) => {
 });
 
 Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
-  if(isValidEntityType(options.object.type)){
-    const { toBestiaryButton } = game.settings.get("pf2e-bestiary-tracking", "sheet-settings");
-    if(toBestiaryButton > 0){
+  if (isValidEntityType(options.object.type)) {
+    const { toBestiaryButton } = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "sheet-settings",
+    );
+    if (toBestiaryButton > 0) {
       buttons.unshift({
         label: toBestiaryButton === 2 ? game.i18n.localize("To Bestiary") : "",
         class: "pf2e-bestiary-entry-button",
         icon: "fa-solid fa-spaghetti-monster-flying",
         onclick: () => {
-          const bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
-          const page = bestiary?.pages?.find(x => x.system.uuid === options.object.uuid);
-          if(page){
+          const bestiary = game.journal.get(
+            game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+          );
+          const page = bestiary?.pages?.find(
+            (x) => x.system.uuid === options.object.uuid,
+          );
+          if (page) {
             new PF2EBestiary(page).render(true);
-          }
-          else {
+          } else {
             const dialog = new foundry.applications.api.DialogV2({
               buttons: [
                 {
@@ -16349,7 +16351,7 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
                   default: true,
                   callback: () => {
                     PF2EBestiary.addMonster(options.object, true);
-                  }
+                  },
                 },
                 {
                   action: "cancel",
@@ -16358,7 +16360,9 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
                   default: true,
                 },
               ],
-              content: game.i18n.localize("PF2EBestiary.Bestiary.Sheet.BestiaryAddText"),
+              content: game.i18n.localize(
+                "PF2EBestiary.Bestiary.Sheet.BestiaryAddText",
+              ),
               rejectClose: false,
               modal: false,
               window: {
