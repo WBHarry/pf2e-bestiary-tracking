@@ -7001,16 +7001,20 @@ class Hazard extends foundry.abstract.TypeDataModel {
     }, []);
   }
 
-  get hasSaves(){
-    return this.saves.fortitude.value ||
-    this.saves.reflex.value ||
-    this.saves.will.value;
+  get hasSaves() {
+    return (
+      this.saves.fortitude.value ||
+      this.saves.reflex.value ||
+      this.saves.will.value
+    );
   }
 
-  get hasAllSaves(){
-    return this.saves.fortitude.value &&
-    this.saves.reflex.value &&
-    this.saves.will.value;
+  get hasAllSaves() {
+    return (
+      this.saves.fortitude.value &&
+      this.saves.reflex.value &&
+      this.saves.will.value
+    );
   }
 
   _getRefreshData(hazard, hazardData) {
