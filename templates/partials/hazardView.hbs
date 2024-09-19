@@ -649,7 +649,7 @@
                             {{#each this.system.actions as |action key|}}
                                 <div class="actions-container secondary-container {{PF2EBTToggleContainer ../user action}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState action}}" data-action="toggleRevealed" data-path="{{concat 'system.actions.' key}}" data-fake="{{action.fake}}">
                                     <div class="action-container">
-                                        <div class="pf2e-bestiary-bold {{#if (and (not (eq action.name 'None')) (gt action.description.length 0))}}primary-hover-container{{/if}}" data-action="toggleAbility" data-ability="{{key}}">{{localize action.label}}</div>
+                                        <div class="pf2e-bestiary-bold {{#if (and (not (eq action.name 'None')) (gt action.description.length 0))}}primary-hover-container{{/if}}" data-action="toggleAbility" data-ability="{{key}}" data-category="actions">{{localize action.label}}</div>
                                         {{#if action.actions}}<span class="action-glyph">{{action.actions}}</span>{{/if}}
                                         {{#if (gt (PF2EBTNrKeys action.traits) 0)}}
                                             <div class="attack-traits-container">(
@@ -667,8 +667,8 @@
                                             )</div>
                                         {{/if}}
                                     </div>
-                                    <div class="action-description {{#if (includes ../selected.abilities key)}}expanded{{/if}}">
-                                        {{{action.description}}}
+                                    <div class="action-description {{#if (includes ../selected.abilities.actions key)}}expanded{{/if}}">
+                                        {{{action.enrichedDescription}}}
                                     </div>
                                 </div>
                             {{/each}}
@@ -680,6 +680,7 @@
                                             class="pf2e-bestiary-bold {{#if (and (not ../hideAbilityDescriptions) (and (not (eq this.name 'None')) (gt this.description.length 0)))}}primary-hover-container{{/if}}" 
                                             {{#if (not ../hideAbilityDescriptions)}}data-action="toggleAbility"{{/if}}
                                             data-ability="{{this.key}}"
+                                            data-category="actions"
                                         >
                                             {{localize this.label}}
                                         </div>
@@ -694,8 +695,8 @@
                                             </div>
                                         {{/if}}
                                     </div>
-                                    <div class="action-description {{#if (includes ../selected.abilities this.key)}}expanded{{/if}}">
-                                        {{{this.description}}}
+                                    <div class="action-description {{#if (includes ../selected.abilities.actions this.key)}}expanded{{/if}}">
+                                        {{{this.enrichedDescription}}}
                                     </div>
                                 </div>
                             {{/PF2EBTFilter}}

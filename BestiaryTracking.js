@@ -11092,7 +11092,7 @@ const bestiaryThemeChoices = {
   // parchment: 'Parchment',
 };
 
-const currentVersion = "1.0.10";
+const currentVersion = "1.0.11";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -12399,6 +12399,12 @@ class AvatarMenu extends HandlebarsApplicationMixin$1(
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
+const defaultSelectedAbilities = () => ({
+  actions: new Set(),
+  passives: new Set(),
+  spells: new Set(),
+});
+
 class PF2EBestiary extends HandlebarsApplicationMixin(
   ApplicationV2,
 ) {
@@ -12418,11 +12424,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       category: options?.category ?? page?.type ?? getUsedBestiaryTypes()[0],
       type: options?.type ?? monsterCreatureType,
       monster: page,
-      abilities: {
-        actions: new Set(),
-        passives: new Set(),
-        spells: new Set(),
-      },
+      abilities: defaultSelectedAbilities(),
     };
 
     // Filter 0 = Alphebetic, 1 = by level
@@ -13497,6 +13499,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   static selectMonster(_, button) {
     this.selected.monster = this.bestiary.pages.get(button.dataset.monster);
     this.selected.category = this.selected.monster.type;
+    this.selected.abilities = defaultSelectedAbilities();
     this.npcData.npcView =
       this.selected.monster.type === "pf2e-bestiary-tracking.npc" &&
       (this.selected.monster.system.npcData.simple ||
