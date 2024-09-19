@@ -99,7 +99,7 @@
       },
       "Category": {
         "Creatures": "Stworzenia",
-        "NPC": "Galeria BN",
+        "NPC": "Galeria BNów",
         "Hazards": "Zagrożenia"
       },
       "Welcome": {
@@ -253,7 +253,7 @@
         "Content": "Obecnemu stworzeniu brakuje aktora na świecie. Czy chciałbyś go stworzyć?"
       },
       "Errors": {
-        "UnsupportedType": "Nieobsługiwany typ BN!",
+        "UnsupportedType": "Nieobsługiwany typ aktora!",
         "DataMissing": "Brakuje niektórych danych. Będziesz musiał ponownie zaimportować stworzenie. Przepraszamy za to!"
       },
       "Info": {
@@ -337,21 +337,22 @@
           }
         }
       },
-      "BestiaryAppearance": {
-        "Name": "Wygląd bestiariusza",
-        "Hint": "Dostosuj wygląd Bestiariusza",
+      "BestiaryDisplay": {
+        "Name": "Wyświetlanie bestiariusza",
         "Menu": {
-          "Name": "Wygląd bestiariusza",
-          "Label": "Ustawienia wyglądu bestiariusza",
-          "Hint": "Dostosuj wygląd i używane pola Bestiariusza"
+          "Name": "Wyświetlanie bestiariusza",
+          "Label": "Ustawienia wyświetlania bestiariusza",
+          "Hint": "Dostosuj to, co jest wyświetlane w Bestiariuszu"
         },
-        "UseTokenArt": "Użyj tokenów artystycznych",
-        "HideAbilityDescriptions": "Ukryj opisy zdolności",
-        "ContrastRevealedState": {
-          "Name": "Kontrast ujawnionego stanu",
-          "Enabled": "Włączone",
-          "Revealed": "Ujawnione",
-          "Hidden": "Ukryte"
+        "UsedSections": {
+          "Name": "Używane sekcje bestiariusza",
+          "Creature": "Stworzenia",
+          "NPC": "Galeria BNów",
+          "Hazard": "Zagrożenia"
+        },
+        "AdditionalCreatureTypes": {
+          "Name": "Dodatkowe typy stworzeń",
+          "SubText": "Możesz dodać więcej dostępnych cech stworzeń do wyboru w ustawieniach systemu PF2E dla Zasad Domowych."
         },
         "OptionalFields": {
           "Name": "Pola opcjonalne",
@@ -368,14 +369,33 @@
           "DamageTypes": "Rodzaje obrażeń",
           "AbilityTraits": "Cechy zdolności"
         },
+        "JournalSettings": {
+          "Title": "Dziennik uzupełniający",
+          "Enabled": "Włączone",
+          "Name": "Nazwa",
+          "Image": "Obraz"
+        },
+        "HideAbilityDescriptions": "Ukryj opisy zdolności"
+      },
+      "BestiaryAppearance": {
+        "Name": "Wygląd bestiariusza",
+        "Hint": "Dostosuj wygląd Bestiariusza",
+        "Menu": {
+          "Name": "Wygląd bestiariusza",
+          "Label": "Ustawienia wyglądu bestiariusza",
+          "Hint": "Dostosuj wygląd i używane pola Bestiariusza"
+        },
+        "UseTokenArt": "Użyj tokenów artystycznych",
+        "ContrastRevealedState": {
+          "Name": "Kontrast ujawnionego stanu",
+          "Enabled": "Włączone",
+          "Revealed": "Ujawnione",
+          "Hidden": "Ukryte"
+        },
         "ImageSettings": {
           "Title": "Ustawienia awatara",
           "HideState": "Domyślny filtr",
           "HiddenImage": "Ukryty obraz"
-        },
-        "AdditionalCreatureTypes": {
-          "Name": "Dodatkowe typy stworzeń",
-          "SubText": "Możesz dodać więcej dostępnych cech stworzeń do wyboru w ustawieniach systemu PF2E dla Zasad Domowych."
         },
         "CategorySettings": {
           "Title": "Dostosowywanie kategorii bestiariusza",
