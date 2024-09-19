@@ -1,4 +1,5 @@
 import PF2EBestiary from "../module/bestiary.js";
+import { isValidEntityType } from "./helpers.js";
 import { bestiaryFolder, currentVersion } from "./setup.js";
 import { socketEvent } from "./socket.js";
 
@@ -45,7 +46,7 @@ export const showMonster = () => {
   }
 
   if (
-    selectedMonster.actor.type !== "npc" ||
+    !isValidEntityType(selectedMonster.actor.type) ||
     selectedMonster.actor.hasPlayerOwner
   ) {
     ui.notifications.error(
@@ -95,7 +96,7 @@ export const addMonster = async () => {
   }
 
   if (
-    selectedMonster.actor.type !== "npc" ||
+    !isValidEntityType(selectedMonster.actor.type) ||
     selectedMonster.actor.hasPlayerOwner
   ) {
     ui.notifications.error(
