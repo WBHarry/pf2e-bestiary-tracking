@@ -94,6 +94,7 @@
         "ResetBestiary": "Reset Bestiariusza",
         "RevealAll": "Ujawnij stworzenie",
         "HideAll": "Ukryj stworzenie",
+        "OpenActorSheet": "Otwórz kartę aktora",
         "TransformCreature": "Przekształcenie w BN",
         "TransformNPC": "Przekształcenie w stworzenie"
       },
@@ -254,7 +255,8 @@
       },
       "Errors": {
         "UnsupportedType": "Nieobsługiwany typ aktora!",
-        "DataMissing": "Brakuje niektórych danych. Będziesz musiał ponownie zaimportować stworzenie. Przepraszamy za to!"
+        "DataMissing": "Brakuje niektórych danych. Będziesz musiał ponownie zaimportować stworzenie. Przepraszamy za to!",
+        "ActorMissing": "Na świecie nie ma powiązanego aktora dla tego podmiotu."
       },
       "Info": {
         "GMOnly": "Jest to funkcja dostępna tylko dla MG.",
@@ -262,6 +264,15 @@
         "AlreadyExistsInBestiary": "[{creatures}] już istnieje w Bestiariuszu.",
         "BestiaryEntryLinkTip": "Kopiuj link (+Alt, aby wysłać do czatu)",
         "BestiaryEntryLink": "Wpis z bestiariusza {entity} został skopiowany do schowka."
+      },
+      "Sheet": {
+        "BestiaryAddTitle": "Dodaj do Bestiariusza",
+        "BestiaryAddText": "Ten aktor nie znajduje się obecnie w Bestiariuszu. Czy chcesz go dodać?",
+        "BestiaryOptions": {
+          "No": "Nie",
+          "Icon": "Ikona",
+          "IconAndText": "Ikona i tekst"
+        }
       },
       "RemoveBookmarkTitle": "Usuń kategorię",
       "RemoveBookmarkText": "Czy na pewno chcesz usunąć kategorię {category}?",
@@ -338,11 +349,11 @@
         }
       },
       "BestiaryDisplay": {
-        "Name": "Wyświetlanie bestiariusza",
+        "Name": "Zawartość bestiariusza",
         "Menu": {
-          "Name": "Wyświetlanie bestiariusza",
-          "Label": "Ustawienia wyświetlania bestiariusza",
-          "Hint": "Dostosuj to, co jest wyświetlane w Bestiariuszu"
+          "Name": "Zawartość bestiariusza",
+          "Label": "Ustawienia zawartości bestiariusza",
+          "Hint": "Dostosuj, co jest wyświetlane i jak jest wyświetlane w Bestiariuszu"
         },
         "UsedSections": {
           "Name": "Używane sekcje bestiariusza",
@@ -375,6 +386,9 @@
           "Name": "Nazwa",
           "Image": "Obraz"
         },
+        "SheetSettings": {
+          "AddButton": "Przycisk bestiariusza na karcie aktora"
+        },
         "HideAbilityDescriptions": "Ukryj opisy zdolności"
       },
       "BestiaryAppearance": {
@@ -383,7 +397,7 @@
         "Menu": {
           "Name": "Wygląd bestiariusza",
           "Label": "Ustawienia wyglądu bestiariusza",
-          "Hint": "Dostosuj wygląd i używane pola Bestiariusza"
+          "Hint": "Dostosuj wygląd Bestiariusza"
         },
         "UseTokenArt": "Użyj tokenów artystycznych",
         "ContrastRevealedState": {
