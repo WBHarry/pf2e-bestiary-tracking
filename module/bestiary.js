@@ -2681,7 +2681,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       return;
     }
 
-    if (event.currentTarget.classList.contains("npc-players-inner-container")) {
+    if (
+      event.currentTarget?.classList?.contains("npc-players-inner-container")
+    ) {
       const playerCharacter = game.actors.get(event.currentTarget.id);
       const newDropEvent = new DragEvent("drop", {
         altKey: game.keyboard.isModifierActive("Alt"),

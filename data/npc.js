@@ -532,7 +532,7 @@ export class NPC extends Creature {
       ? this.npcData.categories
       : this.npcData.categories.filter((x) => !x.hidden);
     return filteredCategories.length > 0
-      ? filteredCategories.value
+      ? filteredCategories[0].value
       : "unaffiliated";
   }
 

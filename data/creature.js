@@ -842,20 +842,22 @@ export class Creature extends foundry.abstract.TypeDataModel {
     return {
       name: data.name,
       system: {
-        pcData: {
-          ...data.system.pcData,
-          classDC: {
-            ...data.system.pcData.classDC,
-            dc: {
-              ...data.system.pcData.classDC.dc,
-              revealed: this.pcData.classDC.dc.revealed,
-            },
-            mod: {
-              ...data.system.pcData.classDC.mod,
-              revealed: this.pcData.classDC.mod.revealed,
-            },
-          },
-        },
+        pcData: data.system.isFromPC
+          ? {
+              ...data.system.pcData,
+              classDC: {
+                ...data.system.pcData.classDC,
+                dc: {
+                  ...data.system.pcData.classDC.dc,
+                  revealed: this.pcData.classDC.dc.revealed,
+                },
+                mod: {
+                  ...data.system.pcData.classDC.mod,
+                  revealed: this.pcData.classDC.mod.revealed,
+                },
+              },
+            }
+          : null,
         hidden: this.hidden,
         uuid: data.system.uuid,
         version: data.system.version,

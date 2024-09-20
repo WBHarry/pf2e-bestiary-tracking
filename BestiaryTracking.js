@@ -5020,7 +5020,7 @@ class Creature extends foundry.abstract.TypeDataModel {
     return {
       name: data.name,
       system: {
-        pcData: {
+        pcData: data.system.isFromPC ? {
           ...data.system.pcData,
           classDC: {
             ...data.system.pcData.classDC,
@@ -5033,7 +5033,7 @@ class Creature extends foundry.abstract.TypeDataModel {
               revealed: this.pcData.classDC.mod.revealed,
             },
           },
-        },
+        } : null,
         hidden: this.hidden,
         uuid: data.system.uuid,
         version: data.system.version,
@@ -6565,7 +6565,7 @@ class NPC extends Creature {
       ? this.npcData.categories
       : this.npcData.categories.filter((x) => !x.hidden);
     return filteredCategories.length > 0
-      ? filteredCategories.value
+      ? filteredCategories[0].value
       : "unaffiliated";
   }
 
@@ -11212,7 +11212,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$3(
   }
 }
 
-const currentVersion = "1.0.13";
+const currentVersion = "1.0.14";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -15219,7 +15219,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       return;
     }
 
-    if (event.currentTarget.classList.contains("npc-players-inner-container")) {
+    if (event.currentTarget?.classList?.contains("npc-players-inner-container")) {
       const playerCharacter = game.actors.get(event.currentTarget.id);
       const newDropEvent = new DragEvent("drop", {
         altKey: game.keyboard.isModifierActive("Alt"),
@@ -16353,7 +16353,10 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
                   icon: "fas fa-check",
                   default: true,
                   callback: () => {
-                    PF2EBestiary.addMonster(options.object.token.baseActor, true);
+                    PF2EBestiary.addMonster(
+                      options.object.token.baseActor,
+                      true,
+                    );
                   },
                 },
                 {
