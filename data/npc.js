@@ -528,8 +528,11 @@ export class NPC extends Creature {
   }
 
   get initialType() {
-    return this.npcData.categories.length > 0
-      ? this.npcData.categories[0].value
+    const filteredCategories = game.user.isGM
+      ? this.npcData.categories
+      : this.npcData.categories.filter((x) => !x.hidden);
+    return filteredCategories.length > 0
+      ? filteredCategories.value
       : "unaffiliated";
   }
 
