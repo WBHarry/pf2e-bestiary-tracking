@@ -727,7 +727,7 @@ Hooks.on("renderDialog", (dialog, html) => {
 });
 
 Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
-  if (isValidEntityType(options.object.type)) {
+  if (game.user.isGM && isValidEntityType(options.object.type)) {
     const { toBestiaryButton } = game.settings.get(
       "pf2e-bestiary-tracking",
       "sheet-settings",
@@ -756,7 +756,8 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
                   default: true,
                   callback: () => {
                     PF2EBestiary.addMonster(
-                      options.object.token.baseActor,
+                      options.object.token?.baseActor ?? options.object,
+                      true,
                       true,
                     );
                   },

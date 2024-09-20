@@ -18,7 +18,7 @@ import bestiaryThemes, {
 } from "../styles/themes/themes.js";
 import BestiaryDisplayMenu from "../module/bestiaryDisplayMenu.js";
 
-export const currentVersion = "1.0.14";
+export const currentVersion = "1.0.15";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {

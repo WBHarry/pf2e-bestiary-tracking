@@ -5020,20 +5020,22 @@ class Creature extends foundry.abstract.TypeDataModel {
     return {
       name: data.name,
       system: {
-        pcData: data.system.isFromPC ? {
-          ...data.system.pcData,
-          classDC: {
-            ...data.system.pcData.classDC,
-            dc: {
-              ...data.system.pcData.classDC.dc,
-              revealed: this.pcData.classDC.dc.revealed,
-            },
-            mod: {
-              ...data.system.pcData.classDC.mod,
-              revealed: this.pcData.classDC.mod.revealed,
-            },
-          },
-        } : null,
+        pcData: data.system.isFromPC
+          ? {
+              ...data.system.pcData,
+              classDC: {
+                ...data.system.pcData.classDC,
+                dc: {
+                  ...data.system.pcData.classDC.dc,
+                  revealed: this.pcData.classDC.dc.revealed,
+                },
+                mod: {
+                  ...data.system.pcData.classDC.mod,
+                  revealed: this.pcData.classDC.mod.revealed,
+                },
+              },
+            }
+          : null,
         hidden: this.hidden,
         uuid: data.system.uuid,
         version: data.system.version,
@@ -11212,7 +11214,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$3(
   }
 }
 
-const currentVersion = "1.0.14";
+const currentVersion = "1.0.15";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -15067,13 +15069,15 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     });
   }
 
-  static async addMonster(item, openAfter) {
+  static async addMonster(item, acceptPlayerCharacters, openAfter) {
     const bestiary = game.journal.get(
       game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
     );
 
     // We do not currently refresh already present creatures in the Bestiary.
     if (bestiary.pages.some((x) => x.system.uuid === item.uuid)) return false;
+
+    if(item.hasPlayerOwner && !acceptPlayerCharacters) return false; 
 
     const itemRules = {};
     for (var subItem of item.items) {
@@ -15087,6 +15091,12 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     switch (getEntityType(item)) {
       case "creature":
         data = await getCreatureData(item);
+        break;
+      case "creatureCharacter":
+        data = await getCreatureData(item, true);
+        break;
+      case "character":
+        data = await getNPCData(item, true);
         break;
       case "npc":
         data = await getNPCData(item);
@@ -15219,7 +15229,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       return;
     }
 
-    if (event.currentTarget?.classList?.contains("npc-players-inner-container")) {
+    if (
+      event.currentTarget?.classList?.contains("npc-players-inner-container")
+    ) {
       const playerCharacter = game.actors.get(event.currentTarget.id);
       const newDropEvent = new DragEvent("drop", {
         altKey: game.keyboard.isModifierActive("Alt"),
@@ -16325,7 +16337,7 @@ Hooks.on("renderDialog", (dialog, html) => {
 });
 
 Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
-  if (isValidEntityType(options.object.type)) {
+  if (game.user.isGM && isValidEntityType(options.object.type)) {
     const { toBestiaryButton } = game.settings.get(
       "pf2e-bestiary-tracking",
       "sheet-settings",
@@ -16354,7 +16366,8 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
                   default: true,
                   callback: () => {
                     PF2EBestiary.addMonster(
-                      options.object.token.baseActor,
+                      options.object.token?.baseActor ?? options.object,
+                      true,
                       true,
                     );
                   },

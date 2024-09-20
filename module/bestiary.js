@@ -2529,13 +2529,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     });
   }
 
-  static async addMonster(item, openAfter) {
+  static async addMonster(item, acceptPlayerCharacters, openAfter) {
     const bestiary = game.journal.get(
       game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
     );
 
     // We do not currently refresh already present creatures in the Bestiary.
     if (bestiary.pages.some((x) => x.system.uuid === item.uuid)) return false;
+
+    if (item.hasPlayerOwner && !acceptPlayerCharacters) return false;
 
     const itemRules = {};
     for (var subItem of item.items) {
@@ -2549,6 +2551,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     switch (getEntityType(item)) {
       case "creature":
         data = await getCreatureData(item);
+        break;
+      case "creatureCharacter":
+        data = await getCreatureData(item, true);
+        break;
+      case "character":
+        data = await getNPCData(item, true);
         break;
       case "npc":
         data = await getNPCData(item);
