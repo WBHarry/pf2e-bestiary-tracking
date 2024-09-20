@@ -755,7 +755,10 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
                   icon: "fas fa-check",
                   default: true,
                   callback: () => {
-                    PF2EBestiary.addMonster(options.object, true);
+                    PF2EBestiary.addMonster(
+                      options.object.token.baseActor,
+                      true,
+                    );
                   },
                 },
                 {
