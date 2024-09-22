@@ -14005,7 +14005,15 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async toggleActorSheet() {
     if (this.actorSheetApp) {
-      this.removeActorSheet();
+      await this.selected.monster.system.refreshData();
+
+      await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+        action: socketEvent.UpdateBestiary,
+        data: {},
+      });
+
+      await this.removeActorSheet();
+      Hooks.callAll(socketEvent.UpdateBestiary, {});
     } else {
       const actor = game.actors.find(
         (x) => x.uuid === this.selected.monster.system.uuid,
@@ -16392,8 +16400,10 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
                   default: true,
                   callback: async () => {
                     const item = options.object.pack
-                    ? await Actor.implementation.create(options.object.toObject())
-                    : options.object;
+                      ? await Actor.implementation.create(
+                          options.object.toObject(),
+                        )
+                      : options.object;
 
                     PF2EBestiary.addMonster(
                       item.token?.baseActor ?? item,
