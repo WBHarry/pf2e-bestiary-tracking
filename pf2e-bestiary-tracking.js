@@ -763,9 +763,15 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
                   label: "Yes",
                   icon: "fas fa-check",
                   default: true,
-                  callback: () => {
+                  callback: async () => {
+                    const item = options.object.pack
+                      ? await Actor.implementation.create(
+                          options.object.toObject(),
+                        )
+                      : options.object;
+
                     PF2EBestiary.addMonster(
-                      options.object.token?.baseActor ?? options.object,
+                      item.token?.baseActor ?? item,
                       true,
                       true,
                     );
