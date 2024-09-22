@@ -426,7 +426,7 @@ const bestiaryDisplay = () => {
     config: false,
     type: Object,
     default: {
-      toBestiaryButton: toBestiaryOptions.iconAndText.value,
+      toBestiaryButton: toBestiaryOptions.no.value,
     },
   });
 };

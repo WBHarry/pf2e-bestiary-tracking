@@ -10832,7 +10832,7 @@ const handleDeactivatedPages = async () => {
 
 const coreDark = {
   "--pf2e-bestiary-tracking-application-image": "ignore",
-  "--pf2e-bestiary-tracking-application": "rgba(11, 10, 19, 0.9)",
+  "--pf2e-bestiary-tracking-application": "#12101fe6",
   "--pf2e-bestiary-tracking-secondary-application": "#431b1b",
   "--pf2e-bestiary-tracking-primary": "rgb(94 0 0)",
   "--pf2e-bestiary-tracking-primary-faded": "rgb(94 0 0 / 50%)",
@@ -11618,7 +11618,7 @@ const bestiaryDisplay = () => {
     config: false,
     type: Object,
     default: {
-      toBestiaryButton: toBestiaryOptions.iconAndText.value,
+      toBestiaryButton: toBestiaryOptions.no.value,
     },
   });
 };
