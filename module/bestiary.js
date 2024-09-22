@@ -549,6 +549,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   async enrichTexts(selected) {
     if (!selected.monster) return;
 
+    selected.monster.system.notes.player.enriched = await TextEditor.enrichHTML(
+      selected.monster.system.notes.player.value,
+    );
+
     if (!this.npcData.npcView) {
       for (var actionKey of Object.keys(selected.monster.system.actions)) {
         if (this.selected.abilities.actions.has(actionKey)) {
@@ -562,9 +566,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           selected.monster.system.actions[actionKey].enrichedDescription =
             selected.monster.system.actions[actionKey].description;
       }
-
-      selected.monster.system.notes.player.enriched =
-        await TextEditor.enrichHTML(selected.monster.system.notes.player.value);
 
       if (selected.monster.type !== "pf2e-bestiary-tracking.hazard") {
         selected.monster.system.notes.public.value =

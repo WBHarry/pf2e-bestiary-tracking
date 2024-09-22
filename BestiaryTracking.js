@@ -11210,7 +11210,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$3(
   }
 }
 
-const currentVersion = "1.1.1";
+const currentVersion = "1.1.2";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -13085,6 +13085,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   async enrichTexts(selected) {
     if (!selected.monster) return;
 
+    selected.monster.system.notes.player.enriched =
+    await TextEditor.enrichHTML(selected.monster.system.notes.player.value);
+
     if (!this.npcData.npcView) {
       for (var actionKey of Object.keys(selected.monster.system.actions)) {
         if (this.selected.abilities.actions.has(actionKey)) {
@@ -13098,9 +13101,6 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           selected.monster.system.actions[actionKey].enrichedDescription =
             selected.monster.system.actions[actionKey].description;
       }
-
-      selected.monster.system.notes.player.enriched =
-        await TextEditor.enrichHTML(selected.monster.system.notes.player.value);
 
       if (selected.monster.type !== "pf2e-bestiary-tracking.hazard") {
         selected.monster.system.notes.public.value =
