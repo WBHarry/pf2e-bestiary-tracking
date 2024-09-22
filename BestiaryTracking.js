@@ -2707,7 +2707,7 @@ const getCreatureData = async (actor, pcBase) => {
   const itemKeys = Array.from(actor.items);
 
   const combatant = game.combat?.combatants?.find(
-    (x) => x.token.baseActor.uuid === actor.uuid,
+    (x) => (x.token?.baseActor?.uuid ?? x.actor.uuid) === actor.uuid,
   );
 
   const spellEntries = itemKeys.reduce((acc, entry) => {
@@ -3019,18 +3019,16 @@ const getCreatureData = async (actor, pcBase) => {
                 label: attack.label,
                 actions: attack.glyph,
                 totalModifier: attack.totalModifier,
-                isMelee: attack.weapon.isMelee,
-                additionalEffects: attack.additionalEffects.reduce(
-                  (acc, effect) => {
+                isMelee: attack.weapon?.isMelee ?? attack.item.isMelee,
+                additionalEffects:
+                  attack.additionalEffects?.reduce((acc, effect) => {
                     acc[effect.tag] = {
                       label: effect.label,
                       tag: effect.tag,
                     };
 
                     return acc;
-                  },
-                  {},
-                ),
+                  }, {}) ?? {},
                 damageInstances: Object.keys(item.system.damageRolls).reduce(
                   (acc, damage) => {
                     acc[damage] = {
@@ -3176,7 +3174,7 @@ const getPCCreatureData = async (actor) => {
   const itemKeys = Array.from(actor.items);
 
   const combatant = game.combat?.combatants?.find(
-    (x) => x.token.baseActor.uuid === actor.uuid,
+    (x) => (x.token?.baseActor?.uuid ?? x.actor.uuid) === actor.uuid,
   );
 
   const spellEntries = itemKeys.reduce((acc, entry) => {
@@ -3647,7 +3645,7 @@ const getNPCData = async (actor, pcBase) => {
   );
 
   const combatant = game.combat?.combatants?.find(
-    (x) => x.token.baseActor.uuid === actor.uuid,
+    (x) => (x.token?.baseActor?.uuid ?? x.actor.uuid) === actor.uuid,
   );
 
   const isSimple = actor.sheet.options.classes.includes("simple");
@@ -3786,7 +3784,7 @@ const getHazardData = (actor) => {
   );
 
   const combatant = game.combat?.combatants?.find(
-    (x) => x.token.baseActor.uuid === actor.uuid,
+    (x) => (x.token?.baseActor?.uuid ?? x.actor.uuid) === actor.uuid,
   );
 
   const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
@@ -3987,18 +3985,16 @@ const getHazardData = (actor) => {
                   label: attack.label,
                   actions: attack.glyph,
                   totalModifier: attack.totalModifier,
-                  isMelee: attack.weapon.isMelee,
-                  additionalEffects: attack.additionalEffects.reduce(
-                    (acc, effect) => {
+                  isMelee: attack.weapon?.isMelee ?? attack.item.isMelee,
+                  additionalEffects:
+                    attack.additionalEffects?.reduce((acc, effect) => {
                       acc[effect.tag] = {
                         label: effect.label,
                         tag: effect.tag,
                       };
 
                       return acc;
-                    },
-                    {},
-                  ),
+                    }, {}) ?? {},
                   damageInstances: Object.keys(item.system.damageRolls).reduce(
                     (acc, damage) => {
                       acc[damage] = {
@@ -12643,7 +12639,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       toggleAllRevealed: this.toggleAllRevealed,
       revealEverything: this.revealEverything,
       hideEverything: this.hideEverything,
-      openActorSheet: this.openActorSheet,
+      toggleActorSheet: this.toggleActorSheet,
       refreshBestiary: this.refreshBestiary,
       handleSaveSlots: this.handleSaveSlots,
       resetBestiary: this.resetBestiary,
@@ -13504,6 +13500,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "bestiary-journal-settings",
     );
+    context.actorSheetApp = this.actorSheetApp;
 
     context.vagueDescriptions.settings.playerBased = game.user.isGM
       ? false
@@ -13719,12 +13716,13 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     this.render();
   }
 
-  static returnButton(_, button) {
+  static async returnButton(_, button) {
     this.selected = this.selected.monster
       ? { ...this.selected, type: button.dataset.contextType, monster: null }
       : this.selected.type
         ? { ...this.selected, type: null }
         : {};
+    await this.removeActorSheet();
     this._updateFrame({ window: { controls: true } });
     this.render();
   }
@@ -14004,17 +14002,36 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     await this.toggleEverythingRevealed(false);
   }
 
-  static async openActorSheet() {
-    const actor = game.actors.find(
-      (x) => x.uuid === this.selected.monster.system.uuid,
-    );
-    if (!actor) {
-      ui.notifications.error("PF2EBestiary.Bestiary.Errors.ActorMissing");
-      return;
+  static async toggleActorSheet() {
+    if(this.actorSheetApp){
+      this.removeActorSheet();
+    }
+    else {
+      const actor = game.actors.find(
+        (x) => x.uuid === this.selected.monster.system.uuid,
+      );
+      if (!actor) {
+        ui.notifications.error("PF2EBestiary.Bestiary.Errors.ActorMissing");
+        return;
+      }
+  
+      this.actorSheetApp = await actor.sheet.render(true);
     }
 
-    actor.sheet.render(true);
   }
+
+  removeActorSheet = async () => {
+    if(!this.actorSheetApp) return;
+   
+    const monsterContainer =  $(this.element).find('.monster-container');
+    monsterContainer.removeClass('closed');
+    const actorContainer = $(this.element).find('.bestiary-actor-sheet');
+    actorContainer.removeClass('expanded');
+
+    delete ui.windows[this.actorSheetApp.appId];
+    await this.actorSheetApp.close({ force: true });
+    this.actorSheetApp = null;
+  };
 
   async toggleEverythingRevealed(revealed) {
     if (!game.user.isGM || !this.selected.monster) return;
@@ -14531,7 +14548,6 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     for (var tag of tagify) {
       const element = $(dialog.element).find(`input[name="${tag.element}"]`);
       new Y(element[0], tag.options);
-      console.log("asd");
     }
   }
 
@@ -15077,7 +15093,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     // We do not currently refresh already present creatures in the Bestiary.
     if (bestiary.pages.some((x) => x.system.uuid === item.uuid)) return false;
 
-    if(item.hasPlayerOwner && !acceptPlayerCharacters) return false; 
+    if (item.hasPlayerOwner && !acceptPlayerCharacters) return false;
 
     const itemRules = {};
     for (var subItem of item.items) {
@@ -15399,6 +15415,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   onBestiaryUpdate = async () => {
+    if(this.actorSheetApp) return ;
     this.bestiary = game.journal.get(
       game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
     );
@@ -15462,6 +15479,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   close = async (options) => {
     Hooks.off(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
     Hooks.off("deleteCombat", this.onDeleteCombat);
+    await this.removeActorSheet();
 
     return super.close(options);
   };
@@ -15759,6 +15777,15 @@ Hooks.once("setup", () => {
         new PF2EBestiary(page).render(true);
       },
     );
+
+    // libWrapper.register(
+    //   'pf2e-bestiary-tracking',
+    //   'Application.prototype.bringToTop',
+    //   async function () {
+
+    //   },
+    //   'LISTENER'
+    // );
   }
 });
 
@@ -16397,6 +16424,30 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
         },
       });
     }
+  }
+});
+
+Hooks.on('renderActorSheet', (sheet) => {
+  const bestiaryApp = foundry.applications.instances.get('pf2e-bestiary-tracking-bestiary');
+  if(bestiaryApp && bestiaryApp.actorSheetApp?.appId === sheet.appId) {
+    const actorSheetContainer = $(bestiaryApp.element).find('.bestiary-actor-sheet');
+    $(sheet.element[0]).children().each((_, child) => {
+      if(child.classList.contains('window-content')){
+        const tagify = child.querySelector('tagify-tags');
+        if (tagify) {
+          const input = $(tagify).find('> input');
+          input.__tagify?.destroy();
+          $(input).remove();
+          $(tagify).remove();
+        }
+      }
+      else if(!child.classList.contains('window-header')){
+        $(child).remove();
+      }
+    });
+    $(actorSheetContainer).append(sheet.element[0]);
+    $(actorSheetContainer).addClass('expanded');
+    $(bestiaryApp.element).find('.monster-container').addClass('closed');
   }
 });
 //# sourceMappingURL=BestiaryTracking.js.map

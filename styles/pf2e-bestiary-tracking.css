@@ -94,6 +94,11 @@
 .theme-dark .pf2e-bestiary-tracking.bestiary .monster-container .toggle-container {
   border-color: #ababab;
 }
+.application.pf2e-bestiary-tracking .bestiary-actor-sheet input[type] {
+  font-size: inherit;
+  border: none;
+  padding: revert-layer;
+}
 .pf2e-bestiary-tracking {
   overflow-y: visible;
   overflow-x: visible;
@@ -104,7 +109,7 @@
   flex-direction: column;
 }
 .pf2e-bestiary-tracking.bestiary .monster-image.outline {
-  filter: brightness(0);
+  filter: brightness(0) drop-shadow(0 0 1px white);
 }
 .pf2e-bestiary-tracking.bestiary .monster-image.sepia {
   filter: sepia(1);
@@ -350,6 +355,55 @@
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-welcome ul {
   margin-top: 4px;
 }
+.pf2e-bestiary-tracking.bestiary .bestiary-body-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 0;
+  transition: flex ease-in-out 0.2s;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet .window-app {
+  position: unset;
+  cursor: initial;
+  overflow: hidden;
+  border-radius: 6px;
+  width: 100% !important;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet .window-app .tabs > [data-tab].active {
+  color: inherit;
+  text-shadow: 0 0 10px var(--color-shadow-primary);
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet .window-app .window-header {
+  display: none;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet.expanded {
+  flex: 1;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet.expanded .window-app {
+  height: 100% !important;
+  border-style: solid;
+  border-width: 2px;
+  border-color: inherit;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet h1,
+.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet h2,
+.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet h3,
+.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet h4,
+.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet h5,
+.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet h6 {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  margin: inherit;
+  line-height: inherit;
+  text-shadow: inherit;
+}
 .pf2e-bestiary-tracking.bestiary .bestiary-toolbar-container {
   height: 100%;
   display: flex;
@@ -465,7 +519,12 @@
   display: flex;
   overflow: auto;
   height: 100%;
+  flex: 1;
   gap: 16px;
+  transition: flex ease-in-out 0.2s;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container.closed {
+  flex: 0;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .defenses-container {
   display: flex;
@@ -1650,7 +1709,7 @@ form.pf2e-bestiary-tracking.application > header .header-control {
   bottom: calc(100% - 7px);
 }
 .image-popout figure img.outline {
-  filter: brightness(0);
+  filter: brightness(0) drop-shadow(0 0 1px white);
 }
 .image-popout figure img.sepia {
   filter: sepia(1);

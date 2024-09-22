@@ -103,7 +103,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       toggleAllRevealed: this.toggleAllRevealed,
       revealEverything: this.revealEverything,
       hideEverything: this.hideEverything,
-      openActorSheet: this.openActorSheet,
+      toggleActorSheet: this.toggleActorSheet,
       refreshBestiary: this.refreshBestiary,
       handleSaveSlots: this.handleSaveSlots,
       resetBestiary: this.resetBestiary,
@@ -964,6 +964,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "bestiary-journal-settings",
     );
+    context.actorSheetApp = this.actorSheetApp;
 
     context.vagueDescriptions.settings.playerBased = game.user.isGM
       ? false
@@ -1179,12 +1180,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     this.render();
   }
 
-  static returnButton(_, button) {
+  static async returnButton(_, button) {
     this.selected = this.selected.monster
       ? { ...this.selected, type: button.dataset.contextType, monster: null }
       : this.selected.type
         ? { ...this.selected, type: null }
         : {};
+    await this.removeActorSheet();
     this._updateFrame({ window: { controls: true } });
     this.render();
   }
@@ -1464,17 +1466,34 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     await this.toggleEverythingRevealed(false);
   }
 
-  static async openActorSheet() {
-    const actor = game.actors.find(
-      (x) => x.uuid === this.selected.monster.system.uuid,
-    );
-    if (!actor) {
-      ui.notifications.error("PF2EBestiary.Bestiary.Errors.ActorMissing");
-      return;
-    }
+  static async toggleActorSheet() {
+    if (this.actorSheetApp) {
+      this.removeActorSheet();
+    } else {
+      const actor = game.actors.find(
+        (x) => x.uuid === this.selected.monster.system.uuid,
+      );
+      if (!actor) {
+        ui.notifications.error("PF2EBestiary.Bestiary.Errors.ActorMissing");
+        return;
+      }
 
-    actor.sheet.render(true);
+      this.actorSheetApp = await actor.sheet.render(true);
+    }
   }
+
+  removeActorSheet = async () => {
+    if (!this.actorSheetApp) return;
+
+    const monsterContainer = $(this.element).find(".monster-container");
+    monsterContainer.removeClass("closed");
+    const actorContainer = $(this.element).find(".bestiary-actor-sheet");
+    actorContainer.removeClass("expanded");
+
+    delete ui.windows[this.actorSheetApp.appId];
+    await this.actorSheetApp.close({ force: true });
+    this.actorSheetApp = null;
+  };
 
   async toggleEverythingRevealed(revealed) {
     if (!game.user.isGM || !this.selected.monster) return;
@@ -1991,7 +2010,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     for (var tag of tagify) {
       const element = $(dialog.element).find(`input[name="${tag.element}"]`);
       var ta = new Tagify(element[0], tag.options);
-      console.log("asd");
     }
   }
 
@@ -2859,6 +2877,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   onBestiaryUpdate = async () => {
+    if (this.actorSheetApp) return;
     this.bestiary = game.journal.get(
       game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
     );
@@ -2922,6 +2941,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   close = async (options) => {
     Hooks.off(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
     Hooks.off("deleteCombat", this.onDeleteCombat);
+    await this.removeActorSheet();
 
     return super.close(options);
   };

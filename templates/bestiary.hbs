@@ -22,7 +22,9 @@
                     </div>
                 </div>
             {{else}}
-                {{#if this.user.isGM}}<button class="header-button secondary-container primary-hover-container" data-action="openActorSheet"><i class="fa-solid fa-user"></i> {{localize "Open Actor Sheet"}}</button>{{/if}}
+                {{#if this.user.isGM}}
+                    <button class="header-button secondary-container primary-hover-container" data-action="toggleActorSheet"><i class="fa-solid fa-user"></i> {{localize "PF2EBestiary.Bestiary.ToggleActorSheet"}}</button>
+                {{/if}}
             {{/if}}
         </header>
     {{/if}}
@@ -102,62 +104,66 @@
             </div>
         {{else}}
             {{#if this.selected.monster}}
-                {{#if (and this.selected.monster.system.npcData this.npcState.npcView)}}
-                    {{#with this.selected.monster.system.npcData}}
-                        {{> "modules/pf2e-bestiary-tracking/templates/partials/npcView.hbs" 
-                            creatureData=../selected.monster
-                            selected=../selected 
-                            user=../user 
-                            useTokenArt=../useTokenArt 
-                            tabs=../npcTabs
-                            contrastRevealedState =../contrastRevealedState 
-                            optionalFields=../optionalFields 
-                            npcState=../npcState
-                            dispositions=../dispositions
-                            inputCategories=../inputCategories
-                            partyDispositions=../selected.monster.system.partyDispositions
-                            skillTypes=../skillTypes
-                            players=../players
-                        }}
-                    {{/with}}
-                {{else}}
-                    {{#if (or (eq this.selected.category 'pf2e-bestiary-tracking.creature') (and (eq this.selected.category 'pf2e-bestiary-tracking.npc') (not this.npcState.npcView)))}}
-                        {{#with this.selected.monster}}
-                            {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" 
-                                uuid=this.uuid
-                                selected=../selected 
-                                user=../user 
-                                vagueDescriptions=../vagueDescriptions
-                                gmNumeric=../vagueDescriptions.settings.gmNumeric 
-                                tabs=../tabs 
-                                useTokenArt=../useTokenArt 
-                                hideAbilityDescriptions=../hideAbilityDescriptions
-                                optionalFields=../optionalFields 
-                                contrastRevealedState =../contrastRevealedState 
-                                detailedInformation = ../detailedInformation
-                                npcState=../npcState
-                            }}
-                        {{/with}}
-                    {{else}}
-                        {{#with this.selected.monster}}
-                            {{> "modules/pf2e-bestiary-tracking/templates/partials/hazardView.hbs" 
-                                uuid=this.uuid
-                                selected=../selected 
-                                user=../user 
-                                vagueDescriptions=../vagueDescriptions
-                                gmNumeric=../vagueDescriptions.settings.gmNumeric 
-                                tabs=../tabs 
-                                useTokenArt=../useTokenArt 
-                                hideAbilityDescriptions=../hideAbilityDescriptions
-                                optionalFields=../optionalFields 
-                                contrastRevealedState =../contrastRevealedState 
-                                detailedInformation = ../detailedInformation
-                                npcState=../npcState
-                            }}
-                        {{/with}}
-                    {{/if}}
-
-                {{/if}}
+                <div class="bestiary-body-view">
+                    <div class="bestiary-actor-sheet secondary-border-container {{#if this.actorSheetApp}}expanded{{/if}}"></div>
+                    <div class="monster-container {{#if this.actorSheetApp}}closed{{/if}}">
+                        {{#if (and this.selected.monster.system.npcData this.npcState.npcView)}}
+                            {{#with this.selected.monster.system.npcData}}
+                                {{> "modules/pf2e-bestiary-tracking/templates/partials/npcView.hbs" 
+                                    creatureData=../selected.monster
+                                    selected=../selected 
+                                    user=../user 
+                                    useTokenArt=../useTokenArt 
+                                    tabs=../npcTabs
+                                    contrastRevealedState =../contrastRevealedState 
+                                    optionalFields=../optionalFields 
+                                    npcState=../npcState
+                                    dispositions=../dispositions
+                                    inputCategories=../inputCategories
+                                    partyDispositions=../selected.monster.system.partyDispositions
+                                    skillTypes=../skillTypes
+                                    players=../players
+                                }}
+                            {{/with}}
+                        {{else}}
+                            {{#if (or (eq this.selected.category 'pf2e-bestiary-tracking.creature') (and (eq this.selected.category 'pf2e-bestiary-tracking.npc') (not this.npcState.npcView)))}}
+                                {{#with this.selected.monster}}
+                                    {{> "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs" 
+                                        uuid=this.uuid
+                                        selected=../selected 
+                                        user=../user 
+                                        vagueDescriptions=../vagueDescriptions
+                                        gmNumeric=../vagueDescriptions.settings.gmNumeric 
+                                        tabs=../tabs 
+                                        useTokenArt=../useTokenArt 
+                                        hideAbilityDescriptions=../hideAbilityDescriptions
+                                        optionalFields=../optionalFields 
+                                        contrastRevealedState =../contrastRevealedState 
+                                        detailedInformation = ../detailedInformation
+                                        npcState=../npcState
+                                    }}
+                                {{/with}}
+                            {{else}}
+                                {{#with this.selected.monster}}
+                                    {{> "modules/pf2e-bestiary-tracking/templates/partials/hazardView.hbs" 
+                                        uuid=this.uuid
+                                        selected=../selected 
+                                        user=../user 
+                                        vagueDescriptions=../vagueDescriptions
+                                        gmNumeric=../vagueDescriptions.settings.gmNumeric 
+                                        tabs=../tabs 
+                                        useTokenArt=../useTokenArt 
+                                        hideAbilityDescriptions=../hideAbilityDescriptions
+                                        optionalFields=../optionalFields 
+                                        contrastRevealedState =../contrastRevealedState 
+                                        detailedInformation = ../detailedInformation
+                                        npcState=../npcState
+                                    }}
+                                {{/with}}
+                            {{/if}}
+                        {{/if}}
+                    </div>
+                </div>
             {{else}}
                 <div class="type-overview-container">
                     {{#if (eq this.bookmarkEntities.length 0)}}

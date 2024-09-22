@@ -42,7 +42,7 @@ export const getCreatureData = async (actor, pcBase) => {
   const itemKeys = Array.from(actor.items);
 
   const combatant = game.combat?.combatants?.find(
-    (x) => x.token.baseActor.uuid === actor.uuid,
+    (x) => (x.token?.baseActor?.uuid ?? x.actor.uuid) === actor.uuid,
   );
 
   const spellEntries = itemKeys.reduce((acc, entry) => {
@@ -354,18 +354,16 @@ export const getCreatureData = async (actor, pcBase) => {
                 label: attack.label,
                 actions: attack.glyph,
                 totalModifier: attack.totalModifier,
-                isMelee: attack.weapon.isMelee,
-                additionalEffects: attack.additionalEffects.reduce(
-                  (acc, effect) => {
+                isMelee: attack.weapon?.isMelee ?? attack.item.isMelee,
+                additionalEffects:
+                  attack.additionalEffects?.reduce((acc, effect) => {
                     acc[effect.tag] = {
                       label: effect.label,
                       tag: effect.tag,
                     };
 
                     return acc;
-                  },
-                  {},
-                ),
+                  }, {}) ?? {},
                 damageInstances: Object.keys(item.system.damageRolls).reduce(
                   (acc, damage) => {
                     acc[damage] = {
@@ -511,7 +509,7 @@ const getPCCreatureData = async (actor) => {
   const itemKeys = Array.from(actor.items);
 
   const combatant = game.combat?.combatants?.find(
-    (x) => x.token.baseActor.uuid === actor.uuid,
+    (x) => (x.token?.baseActor?.uuid ?? x.actor.uuid) === actor.uuid,
   );
 
   const spellEntries = itemKeys.reduce((acc, entry) => {
@@ -982,7 +980,7 @@ export const getNPCData = async (actor, pcBase) => {
   );
 
   const combatant = game.combat?.combatants?.find(
-    (x) => x.token.baseActor.uuid === actor.uuid,
+    (x) => (x.token?.baseActor?.uuid ?? x.actor.uuid) === actor.uuid,
   );
 
   const isSimple = actor.sheet.options.classes.includes("simple");
@@ -1121,7 +1119,7 @@ export const getHazardData = (actor) => {
   );
 
   const combatant = game.combat?.combatants?.find(
-    (x) => x.token.baseActor.uuid === actor.uuid,
+    (x) => (x.token?.baseActor?.uuid ?? x.actor.uuid) === actor.uuid,
   );
 
   const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
@@ -1322,18 +1320,16 @@ export const getHazardData = (actor) => {
                   label: attack.label,
                   actions: attack.glyph,
                   totalModifier: attack.totalModifier,
-                  isMelee: attack.weapon.isMelee,
-                  additionalEffects: attack.additionalEffects.reduce(
-                    (acc, effect) => {
+                  isMelee: attack.weapon?.isMelee ?? attack.item.isMelee,
+                  additionalEffects:
+                    attack.additionalEffects?.reduce((acc, effect) => {
                       acc[effect.tag] = {
                         label: effect.label,
                         tag: effect.tag,
                       };
 
                       return acc;
-                    },
-                    {},
-                  ),
+                    }, {}) ?? {},
                   damageInstances: Object.keys(item.system.damageRolls).reduce(
                     (acc, damage) => {
                       acc[damage] = {
