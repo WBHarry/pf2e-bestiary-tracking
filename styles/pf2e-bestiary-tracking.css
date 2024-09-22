@@ -94,10 +94,30 @@
 .theme-dark .pf2e-bestiary-tracking.bestiary .monster-container .toggle-container {
   border-color: #ababab;
 }
-.application.pf2e-bestiary-tracking .bestiary-actor-sheet input[type] {
+.application.pf2e-bestiary-tracking .bestiary-actor-sheet .window-app .tabs > [data-tab] {
+  flex: 0;
+}
+.application.pf2e-bestiary-tracking .bestiary-actor-sheet :not([data-theme]).window-app .tabs > [data-tab].active {
+  color: inherit;
+  text-shadow: 0 0 10px var(--color-shadow-primary);
+}
+.application.pf2e-bestiary-tracking .bestiary-actor-sheet :not([data-theme]) input[type] {
   font-size: inherit;
   border: none;
   padding: revert-layer;
+}
+.application.pf2e-bestiary-tracking .bestiary-actor-sheet :not([data-theme]) h1,
+.application.pf2e-bestiary-tracking .bestiary-actor-sheet :not([data-theme]) h2,
+.application.pf2e-bestiary-tracking .bestiary-actor-sheet :not([data-theme]) h3,
+.application.pf2e-bestiary-tracking .bestiary-actor-sheet :not([data-theme]) h4,
+.application.pf2e-bestiary-tracking .bestiary-actor-sheet :not([data-theme]) h5,
+.application.pf2e-bestiary-tracking .bestiary-actor-sheet :not([data-theme]) h6 {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  margin: inherit;
+  line-height: inherit;
+  text-shadow: inherit;
 }
 .pf2e-bestiary-tracking {
   overflow-y: visible;
@@ -374,10 +394,6 @@
   border-radius: 6px;
   width: 100% !important;
 }
-.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet .window-app .tabs > [data-tab].active {
-  color: inherit;
-  text-shadow: 0 0 10px var(--color-shadow-primary);
-}
 .pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet .window-app .window-header {
   display: none;
 }
@@ -392,19 +408,6 @@
   border-style: solid;
   border-width: 2px;
   border-color: inherit;
-}
-.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet h1,
-.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet h2,
-.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet h3,
-.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet h4,
-.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet h5,
-.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet h6 {
-  font-family: inherit;
-  font-size: inherit;
-  color: inherit;
-  margin: inherit;
-  line-height: inherit;
-  text-shadow: inherit;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-toolbar-container {
   height: 100%;

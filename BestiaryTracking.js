@@ -11210,7 +11210,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$3(
   }
 }
 
-const currentVersion = "1.1.0";
+const currentVersion = "1.1.1";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
