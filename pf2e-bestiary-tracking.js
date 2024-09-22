@@ -137,7 +137,7 @@ Hooks.once("setup", () => {
           (page) => page.system.uuid === baseActor.uuid,
         );
 
-        if (!page) {
+        if (!page || (!game.user.isGM && page.system.hidden)) {
           ui.notifications.info(
             game.i18n.localize(
               "PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary",
@@ -149,15 +149,6 @@ Hooks.once("setup", () => {
         new PF2EBestiary(page).render(true);
       },
     );
-
-    // libWrapper.register(
-    //   'pf2e-bestiary-tracking',
-    //   'Application.prototype.bringToTop',
-    //   async function () {
-
-    //   },
-    //   'LISTENER'
-    // );
   }
 });
 
