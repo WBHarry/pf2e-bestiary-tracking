@@ -11210,7 +11210,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$3(
   }
 }
 
-const currentVersion = "1.0.15";
+const currentVersion = "1.1.0";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -14003,10 +14003,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   static async toggleActorSheet() {
-    if(this.actorSheetApp){
+    if (this.actorSheetApp) {
       this.removeActorSheet();
-    }
-    else {
+    } else {
       const actor = game.actors.find(
         (x) => x.uuid === this.selected.monster.system.uuid,
       );
@@ -14014,19 +14013,18 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         ui.notifications.error("PF2EBestiary.Bestiary.Errors.ActorMissing");
         return;
       }
-  
+
       this.actorSheetApp = await actor.sheet.render(true);
     }
-
   }
 
   removeActorSheet = async () => {
-    if(!this.actorSheetApp) return;
-   
-    const monsterContainer =  $(this.element).find('.monster-container');
-    monsterContainer.removeClass('closed');
-    const actorContainer = $(this.element).find('.bestiary-actor-sheet');
-    actorContainer.removeClass('expanded');
+    if (!this.actorSheetApp) return;
+
+    const monsterContainer = $(this.element).find(".monster-container");
+    monsterContainer.removeClass("closed");
+    const actorContainer = $(this.element).find(".bestiary-actor-sheet");
+    actorContainer.removeClass("expanded");
 
     delete ui.windows[this.actorSheetApp.appId];
     await this.actorSheetApp.close({ force: true });
@@ -15415,7 +15413,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   onBestiaryUpdate = async () => {
-    if(this.actorSheetApp) return ;
+    if (this.actorSheetApp) return;
     this.bestiary = game.journal.get(
       game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
     );
@@ -16427,27 +16425,32 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
   }
 });
 
-Hooks.on('renderActorSheet', (sheet) => {
-  const bestiaryApp = foundry.applications.instances.get('pf2e-bestiary-tracking-bestiary');
-  if(bestiaryApp && bestiaryApp.actorSheetApp?.appId === sheet.appId) {
-    const actorSheetContainer = $(bestiaryApp.element).find('.bestiary-actor-sheet');
-    $(sheet.element[0]).children().each((_, child) => {
-      if(child.classList.contains('window-content')){
-        const tagify = child.querySelector('tagify-tags');
-        if (tagify) {
-          const input = $(tagify).find('> input');
-          input.__tagify?.destroy();
-          $(input).remove();
-          $(tagify).remove();
+Hooks.on("renderActorSheet", (sheet) => {
+  const bestiaryApp = foundry.applications.instances.get(
+    "pf2e-bestiary-tracking-bestiary",
+  );
+  if (bestiaryApp && bestiaryApp.actorSheetApp?.appId === sheet.appId) {
+    const actorSheetContainer = $(bestiaryApp.element).find(
+      ".bestiary-actor-sheet",
+    );
+    $(sheet.element[0])
+      .children()
+      .each((_, child) => {
+        if (child.classList.contains("window-content")) {
+          const tagify = child.querySelector("tagify-tags");
+          if (tagify) {
+            const input = $(tagify).find("> input");
+            input.__tagify?.destroy();
+            $(input).remove();
+            $(tagify).remove();
+          }
+        } else if (!child.classList.contains("window-header")) {
+          $(child).remove();
         }
-      }
-      else if(!child.classList.contains('window-header')){
-        $(child).remove();
-      }
-    });
+      });
     $(actorSheetContainer).append(sheet.element[0]);
-    $(actorSheetContainer).addClass('expanded');
-    $(bestiaryApp.element).find('.monster-container').addClass('closed');
+    $(actorSheetContainer).addClass("expanded");
+    $(bestiaryApp.element).find(".monster-container").addClass("closed");
   }
 });
 //# sourceMappingURL=BestiaryTracking.js.map

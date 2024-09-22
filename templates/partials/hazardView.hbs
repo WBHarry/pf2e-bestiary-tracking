@@ -25,15 +25,15 @@
                         </div>
                     </div>
                     <div class="defenses-container">
-                        <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.hp}}" data-action="toggleRevealed" data-path="system.hp" data-name="{{localize "PF2EBestiary.Miscellaneous.HP"}}">
+                        <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.hp}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.hp}}" data-action="toggleRevealed" data-path="system.hp" data-name="{{localize "PF2EBestiary.Miscellaneous.HP"}}">
                             <i class="fa-solid fa-heart"></i>
                             <span>{{#if (or this.user.isGM this.system.hp.revealed)}}{{PF2EBTMonsterValue this.system.hp this.vagueDescriptions.properties.hp}}{{else}}?{{/if}}</span>
                         </div>
-                        <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.hardness}}" data-action="toggleRevealed" data-path="system.hardness" data-name="{{localize "PF2EBestiary.Bestiary.Hazards.Hardness"}}">
+                        <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.hardness}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.hardness}}" data-action="toggleRevealed" data-path="system.hardness" data-name="{{localize "PF2EBestiary.Bestiary.Hazards.Hardness"}}">
                             <span>{{#if (or this.user.isGM this.system.hardness.revealed)}}{{PF2EBTMonsterValue this.system.hardness this.vagueDescriptions.properties.hardness}}{{else}}?{{/if}}</span>
                             <span>{{localize "PF2EBestiary.Bestiary.Hazards.Hardness"}}</span>
                         </div>
-                        <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.ac}}" data-action="toggleRevealed" data-path="system.ac" data-name="{{localize "PF2EBestiary.Miscellaneous.AC"}}">
+                        <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.ac}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.ac}}" data-action="toggleRevealed" data-path="system.ac" data-name="{{localize "PF2EBestiary.Miscellaneous.AC"}}">
                             <span>{{#if (or this.user.isGM this.system.ac.revealed)}}{{PF2EBTMonsterValue this.system.ac this.vagueDescriptions.properties.ac}}{{else}}?{{/if}}</span>
                             <span>{{localize "PF2EBestiary.Miscellaneous.AC"}}</span>
                         </div>
@@ -403,7 +403,7 @@
                         <div class="data-header-label">
                             <i class="fa-solid fa-user-ninja"></i>
                             <div class="flex-value">{{localize "PF2EBestiary.Bestiary.Hazards.StealthTitle"}}</div>
-                            <div class="flexrow secondary-container {{PF2EBTToggleContainer this.user this.system.stealth}}" data-action="toggleRevealed" data-path="system.stealth" data-name="{{localize "PF2EBestiary.Bestiary.Hazards.StealthTitle"}}">
+                            <div class="flexrow secondary-container {{PF2EBTToggleContainer this.user this.system.stealth}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.stealth}}" data-action="toggleRevealed" data-path="system.stealth" data-name="{{localize "PF2EBestiary.Bestiary.Hazards.StealthTitle"}}">
                                 <div>{{localize "PF2EBestiary.Miscellaneous.DCLabel"}} {{#if (or this.user.isGM this.system.stealth.revealed)}}{{PF2EBTMonsterValue this.system.stealth this.vagueDescriptions.properties.initiative}}{{else}}?{{/if}}</div>
                             </div>
                         </div>
@@ -411,7 +411,7 @@
                 </div>
                 <div class="data-body primary-border-container pf2e-bestiary-standard-gap">
                     {{#if (or this.user.isGM this.system.stealth.details.revealed)}}
-                        <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.stealth.details}}" data-action="toggleRevealed" data-path="system.stealth.details">
+                        <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.stealth.details}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.stealth.details}}" data-action="toggleRevealed" data-path="system.stealth.details">
                             {{{this.system.stealth.details.value}}}
                         </div>
                     {{else}}
@@ -432,7 +432,7 @@
                     </div>
                     <div class="data-body primary-border-container pf2e-bestiary-standard-gap">
                         {{#if (or this.user.isGM this.system.notes.description.revealed)}}
-                            <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.notes.description}}" data-action="toggleRevealed" data-path="system.notes.description">
+                            <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.notes.description}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.notes.description}}" data-action="toggleRevealed" data-path="system.notes.description">
                                 {{{this.system.notes.description.value}}}
                             </div>
                         {{else}}
@@ -454,7 +454,7 @@
                     </div>
                     <div class="data-body primary-border-container pf2e-bestiary-standard-gap">
                         {{#if (or this.user.isGM this.system.disable.revealed)}}
-                            <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.disable}}" data-action="toggleRevealed" data-path="system.disable">
+                            <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.disable}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.disable}}" data-action="toggleRevealed" data-path="system.disable">
                                 {{{this.system.disable.value}}}
                             </div>
                         {{else}}
@@ -476,7 +476,7 @@
                 </div>
                 <div class="data-body primary-border-container pf2e-bestiary-standard-gap">
                     {{#if (or this.user.isGM this.system.routine.revealed)}}
-                        <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.routine}}" data-action="toggleRevealed" data-path="system.routine">
+                        <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.routine}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.routine}}" data-action="toggleRevealed" data-path="system.routine">
                             {{{this.system.routine.value}}}
                         </div>
                     {{else}}
@@ -498,7 +498,7 @@
                     </div>
                     <div class="data-body primary-border-container pf2e-bestiary-standard-gap">
                         {{#if (or this.user.isGM this.system.reset.revealed)}}
-                            <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.reset}}" data-action="toggleRevealed" data-path="system.reset">
+                            <div class="secondary-container {{PF2EBTToggleContainer this.user this.system.reset}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.reset}}" data-action="toggleRevealed" data-path="system.reset">
                                 {{{this.system.reset.value}}}
                             </div>
                         {{else}}

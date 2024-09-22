@@ -366,7 +366,6 @@
   display: flex;
   flex-direction: column;
   flex: 0;
-  transition: flex ease-in-out 0.2s;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet .window-app {
   position: unset;
@@ -381,6 +380,9 @@
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet .window-app .window-header {
   display: none;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet.animated {
+  transition: flex ease-in-out 0.2s;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-actor-sheet.expanded {
   flex: 1;
@@ -521,6 +523,8 @@
   height: 100%;
   flex: 1;
   gap: 16px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container.animated {
   transition: flex ease-in-out 0.2s;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container.closed {

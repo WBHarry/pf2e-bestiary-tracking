@@ -359,7 +359,6 @@
       display: flex;
       flex-direction: column;
       flex: 0;
-      transition: flex ease-in-out 0.2s;
 
       .window-app {
         position: unset;
@@ -376,6 +375,10 @@
         .window-header {
           display: none;
         }
+      }
+
+      &.animated {
+        transition: flex ease-in-out 0.2s;
       }
 
       &.expanded {
@@ -542,7 +545,10 @@
       height: 100%;
       flex: 1;
       gap: 16px;
-      transition: flex ease-in-out 0.2s;
+
+      &.animated {
+        transition: flex ease-in-out 0.2s;
+      }
 
       &.closed {
         flex: 0;

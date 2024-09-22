@@ -1,6 +1,6 @@
 <div class="flexcol data-section primary-container active">
     <div class="data-header primary-container">
-        <div class="data-header-label {{#if this.user.isGM}}{{PF2EBTToggleContainer this.user data}}{{/if}}" data-action="toggleRevealed" data-path="{{path}}">
+        <div class="data-header-label {{#if this.user.isGM}}{{PF2EBTToggleContainer this.user data}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState data}}" data-action="toggleRevealed" data-path="{{path}}">
             <i class="header-icon {{icon}}"></i>
             <div class="flex-value">{{localize title}}</div>
         </div>
