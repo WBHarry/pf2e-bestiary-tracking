@@ -88,6 +88,7 @@
     },
     "Bestiary": {
       "Title": "Bestiariusz",
+      "ToggleActorSheet": "Przełącz kartę aktora",
       "WindowControls": {
         "RefreshBestiary": "Odśwież Bestiariusz",
         "BestiarySelection": "Zmiana Bestiariusza",
