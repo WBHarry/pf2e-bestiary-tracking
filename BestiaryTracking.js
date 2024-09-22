@@ -15788,29 +15788,17 @@ Hooks.once("setup", () => {
 });
 
 Hooks.on("renderApplication", (_, html) => {
-  const select = $(html).find("select");
-  if (select.length === 0) return;
-
-  const options = $(select).find("option");
-  if (options.length === 0) return;
-
   const moduleSubTypes = [
     "pf2e-bestiary-tracking.creature",
     "pf2e-bestiary-tracking.npc",
     "pf2e-bestiary-tracking.hazard",
   ];
-  if (
-    options.toArray().every((option) => !moduleSubTypes.includes(option.value))
-  )
-    return;
-
-  const filteredOptions = options
-    .toArray()
-    .filter((x) => !moduleSubTypes.includes(x.value));
-  $(select).empty();
-  filteredOptions.forEach((option) => {
-    $(select).append(option);
-  });
+  const options = $(html).find("option");
+  for(var option of options){
+    if(moduleSubTypes.includes(option.value)){
+      $(option).remove();
+    }
+  }
 });
 
 Hooks.on("combatStart", async (encounter) => {
