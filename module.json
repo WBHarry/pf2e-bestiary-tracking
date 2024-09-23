@@ -25,16 +25,6 @@
           "verified": "6.4.0"
         }
       }
-    ],
-    "recommends": [
-      {
-        "id": "lib-wrapper",
-        "type": "module",
-        "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/download/v1.12.15.0/module.json",
-        "compatibility": {
-          "verified": "1.12.15.0"
-        }
-      }
     ]
   },
   "flags": {

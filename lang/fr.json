@@ -481,7 +481,7 @@
       },
       "DoubleClickOpen": {
         "Name": "Double Clic pour Ouvrir",
-        "Hint": "Ouvre l'entrée Bestiaire d'une créature en double-cliquant (+ ALT pour le MJ) dessus. Lorsque ce paramètre est activé, toutes les créatures du Bestiaire voient leur Droit défini sur 'Limité' pour les joueurs. (Nécessite le module LibWrapper)"
+        "Hint": "Ouvre l'entrée Bestiaire d'une créature en double-cliquant (+ ALT pour le MJ) dessus. Lorsque ce paramètre est activé, toutes les créatures du Bestiaire voient leur Droit défini sur 'Limité' pour les joueurs."
       },
       "ContrastRevealState": {
         "Name": "Contraste Révélant l'État",

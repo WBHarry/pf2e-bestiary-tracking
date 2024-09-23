@@ -518,7 +518,7 @@
       },
       "DoubleClickOpen": {
         "Name": "Podwójne kliknięcie otwiera",
-        "Hint": "Otwiera wpis Bestiariusza stworzenia po jego dwukrotnym kliknięciu (+ ALT dla MG). Gdy to ustawienie jest aktywne, wszystkie stworzenia w Bestiariuszu otrzymują poziom Własności ustawiony na „Ograniczony” dla graczy. (Wymaga modułu LibWrapper)"
+        "Hint": "Otwiera wpis Bestiariusza stworzenia po jego dwukrotnym kliknięciu (+ ALT dla MG). Gdy to ustawienie jest aktywne, wszystkie stworzenia w Bestiariuszu otrzymują poziom Własności ustawiony na „Ograniczony” dla graczy."
       },
       "ContrastRevealState": {
         "Name": "Kontrastowy stan ujawnienia",

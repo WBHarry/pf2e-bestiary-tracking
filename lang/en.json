@@ -518,7 +518,7 @@
       },
       "DoubleClickOpen": {
         "Name": "Double Click Open",
-        "Hint": "Opens a creature's Bestiary entry when doubleclicked(+ ALT for GM) it. With this setting active, all creatures in the Bestiary get their Ownership level set to 'Limited' for the players. (Requires the LibWrapper module)"
+        "Hint": "Opens a creature's Bestiary entry when doubleclicked(+ ALT for GM) it. With this setting active, all creatures in the Bestiary get their Ownership level set to 'Limited' for the players."
       },
       "ContrastRevealState": {
         "Name": "Contrast Reveal State",

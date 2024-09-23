@@ -15,6 +15,7 @@ import {
   getSpellLevel,
   isValidEntityType,
 } from "./scripts/helpers.js";
+import { libWrapper } from "./libwrapperShim.js";
 
 async function bestiaryEnricher(match, _options) {
   const linkElement = document.createElement("span");
