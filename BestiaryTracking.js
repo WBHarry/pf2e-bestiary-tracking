@@ -11210,7 +11210,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$3(
   }
 }
 
-const currentVersion = "1.1.2";
+const currentVersion = "1.1.3";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -15794,8 +15794,8 @@ Hooks.on("renderApplication", (_, html) => {
     "pf2e-bestiary-tracking.hazard",
   ];
   const options = $(html).find("option");
-  for(var option of options){
-    if(moduleSubTypes.includes(option.value)){
+  for (var option of options) {
+    if (moduleSubTypes.includes(option.value)) {
       $(option).remove();
     }
   }
@@ -16361,11 +16361,12 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
         class: "pf2e-bestiary-entry-button",
         icon: "fa-solid fa-spaghetti-monster-flying",
         onclick: () => {
+          const item = options.object.token?.baseActor ?? options.object;
           const bestiary = game.journal.get(
             game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
           );
           const page = bestiary?.pages?.find(
-            (x) => x.system.uuid === options.object.uuid,
+            (x) => x.system.uuid === item.uuid,
           );
           if (page) {
             new PF2EBestiary(page).render(true);
@@ -16378,14 +16379,14 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
                   icon: "fas fa-check",
                   default: true,
                   callback: async () => {
-                    const item = options.object.pack
+                    const usedItem = item.pack
                       ? await Actor.implementation.create(
-                          options.object.toObject(),
+                          item.toObject(),
                         )
-                      : options.object;
+                      : item;
 
                     PF2EBestiary.addMonster(
-                      item.token?.baseActor ?? item,
+                      usedItem.token?.baseActor ?? usedItem,
                       true,
                       true,
                     );

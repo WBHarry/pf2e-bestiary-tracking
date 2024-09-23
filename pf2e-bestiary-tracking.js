@@ -726,11 +726,12 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
         class: "pf2e-bestiary-entry-button",
         icon: "fa-solid fa-spaghetti-monster-flying",
         onclick: () => {
+          const item = options.object.token?.baseActor ?? options.object;
           const bestiary = game.journal.get(
             game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
           );
           const page = bestiary?.pages?.find(
-            (x) => x.system.uuid === options.object.uuid,
+            (x) => x.system.uuid === item.uuid,
           );
           if (page) {
             new PF2EBestiary(page).render(true);
@@ -743,14 +744,12 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
                   icon: "fas fa-check",
                   default: true,
                   callback: async () => {
-                    const item = options.object.pack
-                      ? await Actor.implementation.create(
-                          options.object.toObject(),
-                        )
-                      : options.object;
+                    const usedItem = item.pack
+                      ? await Actor.implementation.create(item.toObject())
+                      : item;
 
                     PF2EBestiary.addMonster(
-                      item.token?.baseActor ?? item,
+                      usedItem.token?.baseActor ?? usedItem,
                       true,
                       true,
                     );
