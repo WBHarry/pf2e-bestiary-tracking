@@ -4,3 +4,8 @@ A Foundry VTT module for the Pathfinder Second Edition (PF2E) system. It adds a 
 
 Here the useage of the module aswell as its module settings are explained 🤖
 A common point of confusion is [adding NPCs to the bestiary](https://github.com/WBHarry/pf2e-bestiary-tracking/wiki/Basics#regarding-npcs).
+
+# For users updating from an old version
+Unfortunately there was a point in development where a bad data issue happened. It effected some users that were trying out module at the time, and wasn't something I could reasonable fix in a migration.
+If you're getting errors in this kind of situation, there is a `Bestiary Reset` macro included in the compendium section from this modue. It will remove any existing Bestiary data and update the data structure so everything will work well again.
+![image](https://github.com/user-attachments/assets/77b02c21-6e8a-4ef4-ab61-6bc01edf90a2)
