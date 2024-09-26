@@ -134,8 +134,8 @@ Hooks.once("setup", () => {
         const bestiary = game.journal.get(
           game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
         );
-        const page = bestiary.pages.find(
-          (page) => page.system.uuid === baseActor.uuid,
+        const page = bestiary.pages.find((page) =>
+          page.system.actorBelongs(baseActor),
         );
 
         if (!page || (!game.user.isGM && page.system.hidden)) {
@@ -256,7 +256,7 @@ Hooks.on("xdy-pf2e-workbench.tokenCreateMystification", (token) => {
     );
     const actor = token.baseActor ?? token.actor;
     if (actor.uuid) {
-      const page = bestiary.pages.find((x) => x.system.uuid === actor.uuid);
+      const page = bestiary.pages.find((x) => x.system.actorBelongs(actor));
       if (page && page.system.name.revealed) {
         return false;
       }
@@ -278,8 +278,8 @@ Hooks.on("preCreateToken", async (token) => {
     const bestiary = game.journal.get(
       game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
     );
-    const page = bestiary.pages.find(
-      (x) => x.system.uuid === token.baseActor.uuid,
+    const page = bestiary.pages.find((x) =>
+      x.system.actorBelongs(token.baseActor),
     );
     if (page) {
       if (page.system.name.revealed) {
@@ -355,8 +355,8 @@ Hooks.on("createChatMessage", async (message) => {
         if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
           return;
 
-        const actorUuid = getBaseActor(actor).uuid;
-        page = bestiary.pages.find((x) => x.system.uuid === actorUuid);
+        const baseActor = getBaseActor(actor);
+        page = bestiary.pages.find((x) => x.system.actorBelongs(baseActor));
 
         const item = await fromUuid(message.flags.pf2e.origin.uuid);
         if (page && item) {
@@ -400,8 +400,8 @@ Hooks.on("createChatMessage", async (message) => {
         if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
           return;
 
-        const actorUuid = getBaseActor(actor).uuid;
-        page = bestiary.pages.find((x) => x.system.uuid === actorUuid);
+        const baseActor = getBaseActor(actor);
+        page = bestiary.pages.find((x) => x.system.actorBelongs(baseActor));
 
         if (page) {
           if (
@@ -466,7 +466,7 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
         );
 
         return Boolean(
-          bestiary.pages.some((x) => x.system.uuid === actor.uuid),
+          bestiary.pages.some((x) => x.system.actorBelongs(actor)),
         );
       }
 
@@ -495,7 +495,7 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
             .find((option) => option.includes("item:id"))
             ?.split(":") ?? null;
         if (actor && itemIdSplit) {
-          page = bestiary.pages.find((x) => x.system.uuid === actor.uuid);
+          page = bestiary.pages.find((x) => x.system.actorBelongs(actor));
           if (page) {
             const item = actor.items.get(itemIdSplit[itemIdSplit.length - 1]);
             if (message.flags.pf2e.modifierName) {
@@ -540,8 +540,8 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
         const actor = game.actors.find((x) => x.id === actorId);
         if (!isValidEntityType(actor.type) || actor.hasPlayerOwner) return;
 
-        const actorUuid = getBaseActor(actor).uuid;
-        page = bestiary.pages.find((x) => x.system.uuid === actorUuid);
+        const baseActor = getBaseActor(actor);
+        page = bestiary.pages.find((x) => x.system.actorBelongs(baseActor));
         if (page) {
           if (message.flags.pf2e.context.type === "skill-check") {
             if (page.system.skills[message.flags.pf2e.modifierName]) {
@@ -586,7 +586,7 @@ Hooks.on("getDirectoryApplicationEntryContext", (_, buttons) => {
       return !Boolean(
         game.journal
           .get(game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"))
-          .pages.find((page) => page.system.uuid === actor.uuid),
+          .pages.find((page) => page.system.actorBelongs(actor)),
       );
     },
     callback: async (li) => {
@@ -636,7 +636,9 @@ Hooks.on("renderImagePopout", (app, html) => {
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );
   const existingPage = bestiary.pages.find(
-    (x) => x.system.uuid === app.options.uuid,
+    (x) =>
+      x.system.uuid === app.options.uuid ||
+      x.system.actorState.actorDuplicates.includes(app.options.uuid),
   );
   if (existingPage) {
     const hideState = existingPage.system.imageState.hideState;
@@ -692,7 +694,7 @@ Hooks.on("updateCombatant", async (combatant, changes) => {
   if (changes.hidden === false) {
     const page = game.journal
       .get(game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"))
-      .pages.find((x) => x.system.uuid === combatant.token.baseActor.uuid);
+      .pages.find((x) => x.system.actorBelongs(combatant.token.baseActor));
     if (page) {
       await page.update({ "system.hidden": false });
       Hooks.callAll(socketEvent.UpdateBestiary, {});
@@ -731,8 +733,8 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
           const bestiary = game.journal.get(
             game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
           );
-          const page = bestiary?.pages?.find(
-            (x) => x.system.uuid === item.uuid,
+          const page = bestiary?.pages?.find((x) =>
+            x.system.actorBelongs(item),
           );
           if (page) {
             new PF2EBestiary(page).render(true);

@@ -34,7 +34,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
     const fields = foundry.data.fields;
     return {
       hidden: new fields.BooleanField({ required: true, initial: false }),
-      uuid: new fields.StringField({ required: true }),
+      uuid: new fields.StringField({ required: false, nullable: true }),
       version: new fields.StringField({ required: true }),
       img: new fields.StringField({ required: true }),
       texture: new fields.StringField({ required: true }),
@@ -46,6 +46,15 @@ export class Creature extends foundry.abstract.TypeDataModel {
         }),
         hideImage: new fields.StringField({ nullable: true, initial: null }),
       }),
+      actorState: new fields.SchemaField({
+        actorLinks: new fields.ArrayField(
+          new fields.StringField({ required: true }),
+        ),
+        actorDuplicates: new fields.ArrayField(
+          new fields.StringField({ required: true }),
+        ),
+      }),
+      active: new fields.BooleanField({ required: true, initial: true }),
       isFromPC: new fields.BooleanField({}),
       pcData: new fields.SchemaField(
         {
@@ -476,6 +485,63 @@ export class Creature extends foundry.abstract.TypeDataModel {
         }),
       }),
     };
+  }
+
+  actorBelongs = (actor) => {
+    const sameNameDuplicates = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "sameNameDuplicates",
+    );
+    return (
+      this.uuid === actor.uuid ||
+      this.actorState.actorDuplicates.some((x) => x === actor.uuid) ||
+      (sameNameDuplicates && this.name.value === actor.name)
+    );
+  };
+
+  get actorLinkOptions() {
+    const useTokenArt = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "use-token-art",
+    );
+    return this.actorLinks
+      .reduce(
+        (acc, link) => {
+          const page = this.parent.parent.pages(link.pageId);
+          if (page) {
+            const image = useTokenArt ? page.system.texture : page.system.img;
+            acc.push({
+              page: page.uuid,
+              actor: page.system.uuid,
+              img: image,
+              name: page.system.name.value,
+              level: page.system.level.value,
+            });
+          }
+
+          return acc;
+        },
+        [
+          {
+            page: this.parent.uuid,
+            actor: this.uuid,
+            img: useTokenArt ? this.texture : this.img,
+            name: this.name.value,
+            level: this.level.value,
+            current: true,
+            active: true,
+          },
+        ],
+      )
+      .sort((a, b) => {
+        if (a.level === b.level) {
+          if (a.name < b.name) return -1;
+          else if (a.name > b.name) return 1;
+          else return 0;
+        }
+
+        return a.level - b.level;
+      });
   }
 
   get displayImage() {

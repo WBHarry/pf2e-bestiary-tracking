@@ -1,0 +1,61 @@
+<div>
+    <div class="menu-container">
+        <fieldset class="menu-section">
+            <legend>
+                <h4 class="actor-links-title flexrow">
+                    <span>{{localize "Linked Actors"}}</span>
+                    <i class="fa-solid fa-plus"></i>
+                </h4>
+            </legend>
+            <div class="actor-links-container">
+                {{#if (eq actorLinks.length 0)}}
+                {{else}}
+                    {{#each actorLinks}}
+                        <div class="actor-link-container {{#if this.active}}active{{/if}}" data-action="selectActorLink">
+                            <div class="actor-link-labels">
+                                <div>{{this.name}}</div>
+                                <div>{{localize "Level"}} {{this.level}}</div>
+                            </div>
+                            <img src="{{this.img}}" />
+                        </div>
+                    {{/each}}
+                {{/if}}
+            </div>
+        </fieldset>
+
+        <fieldset class="menu-section duplicate-section">
+            <legend>
+                <h4 class="actor-links-title flexrow">
+                    <span>{{localize "Duplicate Actors"}}</span>
+                    <button class="flex0" data-action="importDuplicates"><i class="fa-solid fa-spaghetti-monster-flying"></i> Import</button>
+                </h4>
+            </legend>
+
+            <div class="duplicate-container">
+                <div class="duplicate-row">
+                    <div>{{#if (eq (PF2EBTNrKeys this.duplicates) 0)}}{{localize "No duplicates. Drag in actors or import."}}{{else}}{{localize "PF2EBestiary.LinkMenu.DuplicatesLinkedInfo" nr=(PF2EBTNrKeys this.duplicates)}}{{/if}}</div>
+                    <i class="fa-solid {{#if this.duplicateListOpen}}fa-chevron-down{{else}}fa-chevron-up{{/if}} pf2e-bestiary-clickable-icon" data-action="toggleDuplicateList"></i>
+                </div>
+                <div class="duplicate-list {{#if this.duplicateListOpen}}expanded{{/if}}">
+                    {{#each this.duplicates}}
+                        <div class="duplicate-list-row">
+                            <div class="flexrow">
+                                <span class="duplicate-name flex0">{{this.name}}</span>
+                                {{#if this.folderPath}}
+                                    &nbsp;-&nbsp;
+                                    <span>{{this.folderPath}}</span>
+                                {{/if}}
+                            </div>
+                            <i class="fa-solid fa-circle-xmark pf2e-bestiary-clickable-icon" data-action="removeDuplicate" data-duplicate="{{@key}}"></i>
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
+        </fieldset>
+
+        <footer class="flexrow">
+            <button data-action="save">{{localize "PF2EBestiary.Miscellaneous.Save"}}</button>
+            <button data-action="close">{{localize "PF2EBestiary.Miscellaneous.Close"}}</button>
+        </footer>
+    </div>
+</div>

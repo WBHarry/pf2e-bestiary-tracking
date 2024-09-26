@@ -40,6 +40,14 @@
       "OldSaveStateImported": "Old Save State successfully imported. Feel free to delete it.",
       "OldSaveInvalid": "The file is invalid."
     },
+    "LinkMenu": {
+      "Title": "Actor Link Menu",
+      "DuplicatesLinkedInfo": "{nr} duplicate actors linked",
+      "Notifications": {
+        "DuplicatesImported": "{nr} duplicate actors found.",
+        "MissmatchedType": "Entity type missmatch. Dragged actor is {new} and not {current}."
+      }
+    },
     "Miscellaneous": {
       "Name": "Name",
       "Title": "Title",
@@ -76,6 +84,7 @@
       "Actions": "Actions",
       "Passives": "Passives",
       "Save": "Save",
+      "Close": "Close",
       "Except": "except",
       "Double": "double",
       "Or": "or",
@@ -515,6 +524,9 @@
       "AutomaticallyOpenMonster": {
         "Name": "Auto Open Bestiary Entry",
         "Hint": "Automatically open the bestiary entry for monsters you drop into it."
+      },
+      "SameNameDuplicates": {
+        "Name": "Same Name Actors Are Duplicates"
       },
       "DoubleClickOpen": {
         "Name": "Double Click Open",

@@ -564,6 +564,15 @@ const bestiaryIntegration = () => {
     },
   });
 
+  game.settings.register("pf2e-bestiary-tracking", "sameNameDuplicates", {
+    name: game.i18n.localize("PF2EBestiary.Settings.SameNameDuplicates.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.SameNameDuplicates.Hint"),
+    scope: "world",
+    config: false,
+    type: Boolean,
+    default: true,
+  });
+
   game.settings.register("pf2e-bestiary-tracking", "chat-message-handling", {
     name: game.i18n.localize("PF2EBestiary.Settings.ChatMessageHandling.Name"),
     hint: game.i18n.localize("PF2EBestiary.Settings.ChatMessageHandling.Hint"),

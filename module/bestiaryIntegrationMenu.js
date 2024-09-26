@@ -16,6 +16,10 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
           "pf2e-bestiary-tracking",
           "automatic-combat-registration",
         ),
+        sameNameDuplicates: game.settings.get(
+          "pf2e-bestiary-tracking",
+          "sameNameDuplicates",
+        ),
         doubleClickOpen: game.settings.get(
           "pf2e-bestiary-tracking",
           "doubleClickOpen",
@@ -274,6 +278,11 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
     );
     await game.settings.set(
       "pf2e-bestiary-tracking",
+      "sameNameDuplicates",
+      this.settings.creatureRegistration.sameNameDuplicates,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
       "doubleClickOpen",
       this.settings.creatureRegistration.doubleClickOpen,
     );
@@ -297,6 +306,7 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
       "default-revealed",
       this.settings.defaultRevealed,
     );
+
     this.close();
   }
 }

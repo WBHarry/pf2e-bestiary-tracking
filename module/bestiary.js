@@ -22,6 +22,7 @@ import {
 import BestiarySelection from "./bestiarySelection.js";
 import { ExpandedDragDrop } from "../scripts/expandedDragDrop.js";
 import AvatarMenu from "./avatarMenu.js";
+import AvatarLinkMenu from "./actorLinkMenu.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -104,6 +105,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       revealEverything: this.revealEverything,
       hideEverything: this.hideEverything,
       toggleActorSheet: this.toggleActorSheet,
+      openActorLinkMenu: this.openActorLinkMenu,
       refreshBestiary: this.refreshBestiary,
       handleSaveSlots: this.handleSaveSlots,
       resetBestiary: this.resetBestiary,
@@ -678,6 +680,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           : getHazardCategories();
 
     const creatureReduce = (acc, creature) => {
+      if (!creature.system.active) return acc;
+
       const types = getCreaturesTypes(creature.system.traits);
 
       var usedTypes = types.map((x) => x.key);
@@ -705,6 +709,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     };
 
     const npcReduce = (npcCategories) => (acc, npc) => {
+      if (!npc.system.active) return acc;
+
       const categories = npc.system.npcData.categories.filter((x) => {
         const npcCategory = npcCategories.find(
           (category) => category.value === x.value,
@@ -734,6 +740,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     };
 
     const hazardReduce = (acc, hazard) => {
+      if (!hazard.system.active) return acc;
+
       const types = getHazardTypes(hazard.system.traits);
 
       var usedTypes = types.map((x) => x.key);
@@ -1489,6 +1497,41 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
       this.actorSheetApp = await actor.sheet.render(true);
     }
+  }
+
+  static async openActorLinkMenu() {
+    new Promise((resolve, reject) => {
+      new AvatarLinkMenu(this.selected.monster, resolve, reject).render(true);
+    }).then(
+      async ({ actorLinks, duplicates }) => {
+        const updateLinks = actorLinks.filter((x) => !x.current);
+        const activeLink = actorLinks.find((x) => x.active);
+        const currentIsActive = activeLink.page === this.selected.monster.uuid;
+        await this.selected.monster.update({
+          system: {
+            actorState: {
+              actorLinks: updateLinks.map((x) => x.page),
+              actorDuplicates: duplicates,
+            },
+            active: currentIsActive,
+          },
+        });
+
+        if (!currentIsActive) {
+          this.selected.monster = this.bestiary.pages.get(activeLink.page);
+          await this.selected.monster.update({ "syste.active": true });
+        }
+
+        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+          action: socketEvent.UpdateBestiary,
+          data: {},
+        });
+        Hooks.callAll(socketEvent.UpdateBestiary, {});
+      },
+      () => {
+        return;
+      },
+    );
   }
 
   removeActorSheet = async () => {
@@ -2562,7 +2605,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     );
 
     // We do not currently refresh already present creatures in the Bestiary.
-    if (bestiary.pages.some((x) => x.system.uuid === item.uuid)) return false;
+    if (bestiary.pages.some((x) => x.system.actorBelongs(item))) return false;
 
     if (item.hasPlayerOwner && !acceptPlayerCharacters) return false;
 
@@ -2829,8 +2872,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     const bestiary = game.journal.get(
       game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
     );
-    const existingPage = bestiary.pages.find(
-      (x) => x.system.uuid === item.uuid,
+    const existingPage = bestiary.pages.find((x) =>
+      x.system.actorBelongs(item),
     );
     if (existingPage) {
       await existingPage.system.refreshData(item);

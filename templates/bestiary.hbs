@@ -22,9 +22,12 @@
                     </div>
                 </div>
             {{else}}
+                <div class="flexrow">
+                    <button class="header-button link-menu-button secondary-container primary-hover-container" data-action="openActorLinkMenu" title="{{localize "Actor Link Menu"}}"><i class="fa-solid fa-users"></i></button>
                 {{#if this.user.isGM}}
                     <button class="header-button secondary-container primary-hover-container" data-action="toggleActorSheet"><i class="fa-solid fa-user"></i> {{localize "PF2EBestiary.Bestiary.ToggleActorSheet"}}</button>
                 {{/if}}
+                </div>
             {{/if}}
         </header>
     {{/if}}
