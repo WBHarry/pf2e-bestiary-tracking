@@ -11435,7 +11435,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$6(
   }
 }
 
-const currentVersion = "1.1.4";
+const currentVersion = "1.1.5";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -12168,7 +12168,7 @@ const showMonster = () => {
   );
   const page = bestiary.pages.find((x) => x.system.uuid === actor.uuid);
 
-  if (!page) {
+  if (!page || (page.system.hidden && !game.user.isGM)) {
     ui.notifications.info(
       game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"),
     );
@@ -13068,15 +13068,13 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$2(
     if (link.current) {
       link.actor = null;
       link.unlinked = true;
-    } 
-    else {
+    } else {
       if (link.active) this.actorLinks.find((x) => x.current).active = true;
-      
+
       if (link.new) {
         this.actorLinks = this.actorLinks.filter(
           (x) => x.actor !== button.dataset.actor,
         );
-
       } else {
         link.removed = true;
       }
@@ -13156,7 +13154,7 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$2(
             "PF2EBestiary.Macros.AddMonster.TargetAlreadyInBestiary",
           ),
         );
-  
+
         return;
       }
 
@@ -13169,7 +13167,9 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$2(
     }
 
     if (event.currentTarget.classList.contains("actor-link-container")) {
-      const existingLink = this.actorLinks.find((x) => x.actor === baseItem.uuid);
+      const existingLink = this.actorLinks.find(
+        (x) => x.actor === baseItem.uuid,
+      );
       if (existingLink && !existingLink.removed) {
         ui.notifications.error(
           game.i18n.localize(
@@ -13179,7 +13179,9 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$2(
         return;
       }
 
-      if ((existingLink && !existingLink.removed) &&
+      if (
+        existingLink &&
+        !existingLink.removed &&
         game.journal
           .get(game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"))
           .pages.find((x) => x.system.uuid === baseItem.uuid)
@@ -13189,7 +13191,7 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$2(
             "PF2EBestiary.Macros.AddMonster.TargetAlreadyInBestiary",
           ),
         );
-  
+
         return;
       }
 

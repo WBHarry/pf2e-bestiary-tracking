@@ -63,7 +63,7 @@ export const showMonster = () => {
   );
   const page = bestiary.pages.find((x) => x.system.uuid === actor.uuid);
 
-  if (!page) {
+  if (!page || (page.system.hidden && !game.user.isGM)) {
     ui.notifications.info(
       game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"),
     );
