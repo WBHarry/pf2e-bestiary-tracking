@@ -489,6 +489,15 @@ export class Hazard extends foundry.abstract.TypeDataModel {
     );
   }
 
+  async importData(hazardPage) {
+    await this.parent.update({
+      system: {
+        notes: hazardPage.system.notes,
+        recallKnowledge: hazardPage.system.recallKnowledge,
+      },
+    });
+  }
+
   _getRefreshData(hazard, hazardData) {
     const data = hazardData ?? getHazardData(hazard);
 

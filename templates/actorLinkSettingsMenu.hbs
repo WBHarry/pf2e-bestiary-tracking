@@ -1,0 +1,39 @@
+<div>
+    <div class="actor-settings-container">
+        <fieldset>
+            <legend>{{localize "PF2EBestiary.ActorLinkSettingsMenu.ImportSettings"}}</legend>
+
+            <div class="flexcol">
+                <div class="form-group">
+                    <label>{{localize "PF2EBestiary.ActorLinkSettingsMenu.General"}}</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="settings.general" {{checked this.settings.general}} />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>{{localize "PF2EBestiary.ActorLinkSettingsMenu.Influence"}}</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="settings.influence" {{checked this.settings.influence}} />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>{{localize "PF2EBestiary.ActorLinkSettingsMenu.Notes"}}</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="settings.notes" {{checked this.settings.notes}} />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>{{localize "PF2EBestiary.ActorLinkSettingsMenu.GM"}}</label>
+                    <div class="form-fields">
+                        <input type="checkbox" name="settings.gm" {{checked this.settings.gm}} />
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        
+        <footer>
+            <button data-action="save">{{localize "PF2EBestiary.ActorLinkSettingsMenu.Import"}}</button>
+            <button data-action="close">{{localize "PF2EBestiary.Miscellaneous.Close"}}</button>
+        </footer>
+    </div>
+</div>

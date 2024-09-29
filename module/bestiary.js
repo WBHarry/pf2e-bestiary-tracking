@@ -1519,12 +1519,15 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           link.page = page.id;
         }
 
+        const currentPage = this.bestiary.pages.get(
+          actorLinks.find((x) => x.active).page,
+        );
         for (var link of actorLinks.filter((x) => !x.removed)) {
           const page = this.bestiary.pages.get(link.page);
           const newLinks = actorLinks
             .filter((x) => x.actor !== link.actor && !x.removed)
             .map((x) => x.page);
-          if (link.current && link.actor !== page.system.uuid) {
+          if (link.actor !== page.system.uuid) {
             await page.update({
               system: {
                 active: Boolean(link.active),
@@ -1546,6 +1549,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
                 },
               },
             });
+
+            if (link.new) {
+              await page.system.importData(currentPage, link.importSections);
+            }
           }
 
           if (link.active) {

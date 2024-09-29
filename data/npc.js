@@ -265,6 +265,39 @@ export class NPC extends Creature {
       : (this.name.custom ?? this.name.value);
   }
 
+  async importData(npcPage, settings) {
+    await this.parent.update({
+      system: {
+        npcData: {
+          general: settings.general
+            ? npcPage.system.npcData.general
+            : this.npcData.general,
+          influence: settings.influence
+            ? npcPage.system.npcData.influence
+            : this.npcData.influence,
+        },
+        notes:
+          settings.notes || settings.gm
+            ? {
+                public: settings.notes
+                  ? npcPage.system.notes.public
+                  : this.notes.public,
+                private: settings.notes
+                  ? npcPage.system.notes.private
+                  : this.notes.private,
+                player: settings.notes
+                  ? npcPage.system.notes.player
+                  : this.notes.player,
+                gm: settings.gm ? npcPage.system.notes.gm : this.notes.gm,
+              }
+            : this.notes,
+        recallKnowledge: settings.notes
+          ? npcPage.system.recallKnowledge
+          : this.recallKnowledge,
+      },
+    });
+  }
+
   async _getRefreshData(actor) {
     const data = await getNPCData(actor, this.isFromPC);
     const creatureData = await super._getRefreshData(actor, data);

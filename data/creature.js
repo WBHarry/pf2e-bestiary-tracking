@@ -844,6 +844,15 @@ export class Creature extends foundry.abstract.TypeDataModel {
     return `Applicable Lore: DC ${applicableDC} (${game.i18n.localize(applicableModDC.label)}) or DC ${baselineDC} (${game.i18n.localize(baselineModDC.label)})`;
   }
 
+  async importData(creaturePage) {
+    await this.parent.update({
+      system: {
+        notes: creaturePage.system.notes,
+        recallKnowledge: creaturePage.system.recallKnowledge,
+      },
+    });
+  }
+
   async _getRefreshData(actor, creatureData) {
     const data = creatureData ?? (await getCreatureData(actor, this.isFromPC));
 

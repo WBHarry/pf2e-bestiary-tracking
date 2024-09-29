@@ -1,5 +1,6 @@
 import { ExpandedDragDrop } from "../scripts/expandedDragDrop";
 import { getEntityType } from "../scripts/helpers";
+import ActorLinkSettingsMenu from "./actorLinkSettingsMenu";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -27,6 +28,9 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
         (acc, link) => {
           const page = entity.parent.pages.get(link);
           if (page) {
+            const actorExists = Boolean(
+              game.actors.find((x) => x.uuid === page.system.uuid),
+            );
             const image = useTokenArt ? page.system.texture : page.system.img;
             acc.push({
               page: page.id,
@@ -34,6 +38,7 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
               img: image,
               name: page.system.name.value,
               level: page.system.level.value,
+              unlinked: !actorExists,
             });
           }
 
@@ -181,16 +186,24 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
   static selectActorLink(_, button) {
     this.actorLinks = this.actorLinks.map((x) => ({
       ...x,
-      active: x.actor === button.dataset.actor,
+      active:
+        x.page === button.dataset.page || x.actor === button.dataset.actor,
     }));
     this.render();
   }
 
   static removeActorLink(_, button) {
-    const link = this.actorLinks.find((x) => x.actor === button.dataset.actor);
+    const link = this.actorLinks.find(
+      (x) => x.page === button.dataset.page || x.actor === button.dataset.actor,
+    );
     if (link.current) {
       link.actor = null;
       link.unlinked = true;
+    } else if (link.new) {
+      this.actorLinks = this.actorLinks.filter(
+        (x) => x.actor !== button.dataset.actor,
+      );
+      if (link.active) this.actorLinks.find((x) => x.current).active = true;
     } else {
       link.removed = true;
     }
@@ -258,7 +271,7 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
       "use-token-art",
     );
 
-    if (event.currentTarget.classList.contains("duplicate-container")) {
+    if (event.currentTarget.classList.contains("duplicate-section")) {
       this.duplicates.set(baseItem.uuid, {
         name: baseItem.name,
         folderPath: this.getFolderPath(baseItem.folder),
@@ -279,15 +292,42 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
         return;
       }
       if (event.currentTarget.classList.contains("new")) {
-        this.actorLinks.push({
-          actor: baseItem.uuid,
-          img: useTokenArt ? baseItem.prototypeToken.texture.src : baseItem.img,
-          name: baseItem.name,
-          level: baseItem.system.details.level.value,
-          new: true,
-        });
+        if (["npc", "character"].includes(itemEntityType)) {
+          new Promise((resolve, reject) => {
+            new ActorLinkSettingsMenu(resolve, reject).render(true);
+          }).then((settings) => {
+            this.actorLinks.push({
+              actor: baseItem.uuid,
+              img: useTokenArt
+                ? baseItem.prototypeToken.texture.src
+                : baseItem.img,
+              name: baseItem.name,
+              level: baseItem.system.details.level.value,
+              importSections: settings,
+              new: true,
+            });
+
+            this.render();
+          });
+        } else {
+          this.actorLinks.push({
+            actor: baseItem.uuid,
+            img: useTokenArt
+              ? baseItem.prototypeToken.texture.src
+              : baseItem.img,
+            name: baseItem.name,
+            level: baseItem.system.details.level.value,
+            new: true,
+          });
+
+          this.render();
+        }
       } else if (event.currentTarget.classList.contains("unlinked")) {
-        const currentLink = this.actorLinks.find((x) => x.current);
+        const currentLink = this.actorLinks.find(
+          (x) =>
+            x.page === event.currentTarget.dataset.page ||
+            x.actor === event.currentTarget.dataset.actor,
+        );
         currentLink.unlinked = false;
         currentLink.actor = baseItem.uuid;
         currentLink.img = useTokenArt
@@ -295,9 +335,9 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
           : baseItem.img;
         currentLink.name = baseItem.name;
         currentLink.level = baseItem.system.details.level.value;
-      }
 
-      this.render();
+        this.render();
+      }
     }
   }
 }

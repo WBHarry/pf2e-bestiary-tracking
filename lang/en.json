@@ -51,6 +51,15 @@
         "ActorAlreadyLinked": "The Actor is already linked"
       }
     },
+    "ActorLinkSettingsMenu": {
+      "Title": "New Actor Link Settings",
+      "ImportSettings": "Sections To Copy",
+      "General": "General Section",
+      "Influence": "Influence Section",
+      "Notes": "Notes Section",
+      "GM": "GM Sections",
+      "Import": "Import"
+    },
     "Miscellaneous": {
       "Name": "Name",
       "Title": "Title",
