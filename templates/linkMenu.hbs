@@ -2,24 +2,40 @@
     <div class="menu-container">
         <fieldset class="menu-section">
             <legend>
-                <h4 class="actor-links-title flexrow">
-                    <span>{{localize "Linked Actors"}}</span>
-                    <i class="fa-solid fa-plus"></i>
-                </h4>
+                <h4 class="actor-links-title flexrow">{{localize "Linked Actors"}}</h4>
             </legend>
             <div class="actor-links-container">
-                {{#if (eq actorLinks.length 0)}}
-                {{else}}
-                    {{#each actorLinks}}
-                        <div class="actor-link-container {{#if this.active}}active{{/if}}" data-action="selectActorLink">
-                            <div class="actor-link-labels">
-                                <div>{{this.name}}</div>
-                                <div>{{localize "Level"}} {{this.level}}</div>
+                {{#each actorLinks}}
+                    <div class="actor-link-container {{#if this.unlinked}}unlinked{{/if}} {{#if this.active}}active{{/if}}" data-action="selectActorLink" data-actor="{{this.actor}}">
+                        <div class="actor-link-labels">
+                            <div>{{this.name}}</div>
+                            <div>
+                                {{#if (not this.unlinked)}}<i class="name-pre-icon fa-solid fa-circle-xmark pf2e-bestiary-clickable-icon" data-action="removeActorLink" data-actor="{{this.actor}}"></i>{{/if}}
+                                {{localize "Level"}} {{this.level}}{{#if this.active}}
+                                <i class="name-post-icon fa-solid fa-star"></i>{{/if}}
                             </div>
-                            <img src="{{this.img}}" />
                         </div>
-                    {{/each}}
-                {{/if}}
+                        {{#if this.unlinked}}
+                            <div class="icon-container">
+                                <div class="link-new-text">{{localize "PF2EBestiary.LinkMenu.NewLinkTip"}}</div>
+                                <i class="fa-solid fa-link-slash"></i>
+                            </div>
+                        {{else}}
+                            <img src="{{this.img}}" />
+                        {{/if}}
+                    </div>
+                {{/each}}
+                <div class="actor-link-container new">
+                    <div class="actor-link-labels">
+                        <div>{{localize "PF2EBestiary.LinkMenu.NewLink"}}</div>
+                        <div>&nbsp;</div>
+                    </div>
+                    
+                    <div class="icon-container">
+                        <div class="link-new-text">{{localize "PF2EBestiary.LinkMenu.NewLinkTip"}}</div>
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                </div>
             </div>
         </fieldset>
 

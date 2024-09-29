@@ -43,9 +43,12 @@
     "LinkMenu": {
       "Title": "Actor Link Menu",
       "DuplicatesLinkedInfo": "{nr} duplicate actors linked",
+      "NewLink": "New Link",
+      "NewLinkTip": "Drag In Actor To Link",
       "Notifications": {
         "DuplicatesImported": "{nr} duplicate actors found.",
-        "MissmatchedType": "Entity type missmatch. Dragged actor is {new} and not {current}."
+        "MissmatchedType": "Entity type missmatch. Dragged actor is {new} and not {current}.",
+        "ActorAlreadyLinked": "The Actor is already linked"
       }
     },
     "Miscellaneous": {

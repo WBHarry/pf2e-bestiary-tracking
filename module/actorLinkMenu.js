@@ -18,14 +18,18 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "use-token-art",
     );
+
+    const baseActorExists = Boolean(
+      game.actors.find((x) => x.uuid === entity.system.uuid),
+    );
     this.actorLinks = entity.system.actorState.actorLinks
       .reduce(
         (acc, link) => {
-          const page = entity.parent.parent.pages(link.pageId);
+          const page = entity.parent.pages.get(link);
           if (page) {
             const image = useTokenArt ? page.system.texture : page.system.img;
             acc.push({
-              page: page.uuid,
+              page: page.id,
               actor: page.system.uuid,
               img: image,
               name: page.system.name.value,
@@ -37,13 +41,14 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
         },
         [
           {
-            page: entity.uuid,
+            page: entity.id,
             actor: entity.system.uuid,
             img: useTokenArt ? entity.system.texture : entity.system.img,
             name: entity.system.name.value,
             level: entity.system.level.value,
             current: true,
-            active: true,
+            active: entity.system.active,
+            unlinked: !baseActorExists,
           },
         ],
       )
@@ -89,10 +94,16 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
       importDuplicates: this.importDuplicates,
       toggleDuplicateList: this.toggleDuplicateList,
       removeDuplicate: this.removeDuplicate,
+      selectActorLink: this.selectActorLink,
+      removeActorLink: this.removeActorLink,
       save: this.save,
     },
     form: { handler: this.updateData, submitOnChange: true },
-    dragDrop: [{ dragSelector: null, dropSelector: ".duplicate-section" }],
+    dragDrop: [
+      { dragSelector: null, dropSelector: ".duplicate-section" },
+      { dragSelector: null, dropSelector: ".actor-link-container.new" },
+      { dragSelector: null, dropSelector: ".actor-link-container.unlinked" },
+    ],
   };
 
   static PARTS = {
@@ -110,7 +121,7 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
 
   async _prepareContext(_options) {
     const context = await super._prepareContext(_options);
-    context.actorLinks = this.actorLinks;
+    context.actorLinks = this.actorLinks.filter((x) => !x.removed);
     context.duplicates = Object.fromEntries(this.duplicates);
     context.actors = game.actors.filter(
       (x) => !this.actorLinks.every((link) => link.uuid !== x.actor),
@@ -167,6 +178,26 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
     this.render();
   }
 
+  static selectActorLink(_, button) {
+    this.actorLinks = this.actorLinks.map((x) => ({
+      ...x,
+      active: x.actor === button.dataset.actor,
+    }));
+    this.render();
+  }
+
+  static removeActorLink(_, button) {
+    const link = this.actorLinks.find((x) => x.actor === button.dataset.actor);
+    if (link.current) {
+      link.actor = null;
+      link.unlinked = true;
+    } else {
+      link.removed = true;
+    }
+
+    this.render();
+  }
+
   static close(options) {
     this.reject();
     super.close(options);
@@ -211,23 +242,61 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
     const data = TextEditor.getDragEventData(event);
     const baseItem = await fromUuid(data.uuid);
 
-    if (event.currentTarget.classList.contains("duplicate-container")) {
-      const itemEntityType = getEntityType(baseItem);
-      if (itemEntityType !== this.entityType) {
-        ui.notifications.error(
-          game.i18n.format(
-            "PF2EBestiary.LinkMenu.Notifications.MissmatchedType",
-            { new: itemEntityType, current: this.entityType },
-          ),
-        );
-        return;
-      }
+    const itemEntityType = getEntityType(baseItem);
+    if (itemEntityType !== this.entityType) {
+      ui.notifications.error(
+        game.i18n.format(
+          "PF2EBestiary.LinkMenu.Notifications.MissmatchedType",
+          { new: itemEntityType, current: this.entityType },
+        ),
+      );
+      return;
+    }
 
+    const useTokenArt = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "use-token-art",
+    );
+
+    if (event.currentTarget.classList.contains("duplicate-container")) {
       this.duplicates.set(baseItem.uuid, {
         name: baseItem.name,
         folderPath: this.getFolderPath(baseItem.folder),
         pack: baseItem.pack,
       });
+      this.render();
+    }
+
+    if (event.currentTarget.classList.contains("actor-link-container")) {
+      if (
+        this.actorLinks.some((x) => x.actor === baseItem.uuid && !x.removed)
+      ) {
+        ui.notifications.error(
+          game.i18n.localize(
+            "PF2EBestiary.LinkMenu.Notifications.ActorAlreadyLinked",
+          ),
+        );
+        return;
+      }
+      if (event.currentTarget.classList.contains("new")) {
+        this.actorLinks.push({
+          actor: baseItem.uuid,
+          img: useTokenArt ? baseItem.prototypeToken.texture.src : baseItem.img,
+          name: baseItem.name,
+          level: baseItem.system.details.level.value,
+          new: true,
+        });
+      } else if (event.currentTarget.classList.contains("unlinked")) {
+        const currentLink = this.actorLinks.find((x) => x.current);
+        currentLink.unlinked = false;
+        currentLink.actor = baseItem.uuid;
+        currentLink.img = useTokenArt
+          ? baseItem.prototypeToken.texture.src
+          : baseItem.img;
+        currentLink.name = baseItem.name;
+        currentLink.level = baseItem.system.details.level.value;
+      }
+
       this.render();
     }
   }

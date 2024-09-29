@@ -31,21 +31,31 @@
 
   .actor-links-container {
     display: flex;
-    align-items: center;
+    align-items: start;
     flex-wrap: wrap;
+    gap: 8px;
 
     .actor-link-container {
       position: relative;
-      width: calc(33% - 1px);
+      width: calc(33% - 5px);
       cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
 
-      &:hover,
-      &.active {
-        filter: drop-shadow(0 0 3px black);
+      &.new {
+        cursor: initial;
+      }
+
+      &.new {
+        .actor-link-labels,
+        .icon-container {
+          border-style: dotted;
+        }
       }
 
       .actor-link-labels {
-        flex: none;
+        flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -53,15 +63,65 @@
         background: var(--pf2e-bestiary-tracking-primary);
         color: var(--pf2e-bestiary-tracking-primary-color);
         font-weight: bold;
+        border-style: solid;
+        border-color: black;
+        border-width: 2px;
+        padding: 0 4px;
 
         div {
+          position: relative;
           width: 100%;
           text-align: center;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+
+          i {
+            position: absolute;
+            top: 3px;
+            font-size: 12px;
+            color: var(--pf2e-bestiary-tracking-secondary-border);
+            height: auto;
+            border: 0;
+
+            &.name-pre-icon {
+              color: black;
+              left: 2px;
+            }
+
+            &.name-post-icon {
+              right: 2px;
+            }
+          }
         }
       }
 
       img {
-        flex: 1;
+        height: 110px;
+      }
+
+      .icon-container {
+        position: relative;
+        height: 110px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-style: solid;
+        border-color: black;
+        border-width: 0 2px 2px;
+
+        .link-new-text {
+          position: absolute;
+          top: 0;
+          width: 100%;
+          text-align: center;
+          font-size: 11px;
+          font-style: italic;
+        }
+
+        i {
+          font-size: 50px;
+        }
       }
     }
   }

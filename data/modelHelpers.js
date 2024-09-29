@@ -126,6 +126,9 @@ export const getCreatureData = async (actor, pcBase) => {
       img: actor.img,
       texture: actor.prototypeToken.texture.src,
       imageState: { hideState: imageSettings.hideState },
+      actorState: {
+        actorLinks: actor.actorLinks ?? [],
+      },
       name: { value: actor.name, revealed: defaultRevealed.name },
       hardness: { value: actor.system.attributes.hardness },
       allSaves: { value: actor.system.attributes.allSaves?.value },

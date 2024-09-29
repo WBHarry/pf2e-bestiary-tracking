@@ -1504,22 +1504,53 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       new AvatarLinkMenu(this.selected.monster, resolve, reject).render(true);
     }).then(
       async ({ actorLinks, duplicates }) => {
-        const updateLinks = actorLinks.filter((x) => !x.current);
-        const activeLink = actorLinks.find((x) => x.active);
-        const currentIsActive = activeLink.page === this.selected.monster.uuid;
-        await this.selected.monster.update({
-          system: {
-            actorState: {
-              actorLinks: updateLinks.map((x) => x.page),
-              actorDuplicates: duplicates,
-            },
-            active: currentIsActive,
-          },
-        });
+        for (var link of actorLinks.filter((x) => x.removed)) {
+          const page = this.bestiary.pages.get(link.page);
+          await page.delete();
+        }
 
-        if (!currentIsActive) {
-          this.selected.monster = this.bestiary.pages.get(activeLink.page);
-          await this.selected.monster.update({ "syste.active": true });
+        for (var link of actorLinks.filter((x) => x.new)) {
+          const newEntity = await fromUuid(link.actor);
+          const page = await PF2EBestiary.addMonster(
+            newEntity,
+            null,
+            link.active,
+          );
+          link.page = page.id;
+        }
+
+        for (var link of actorLinks.filter((x) => !x.removed)) {
+          const page = this.bestiary.pages.get(link.page);
+          const newLinks = actorLinks
+            .filter((x) => x.actor !== link.actor && !x.removed)
+            .map((x) => x.page);
+          if (link.current && link.actor !== page.system.uuid) {
+            await page.update({
+              system: {
+                active: Boolean(link.active),
+                uuid: link.actor,
+                actorState: {
+                  actorLinks: newLinks,
+                  actorDuplicates: duplicates,
+                },
+              },
+            });
+            if (link.actor) await page.system.refreshData();
+          } else {
+            await page.update({
+              system: {
+                active: Boolean(link.active),
+                actorState: {
+                  actorLinks: newLinks,
+                  actorDuplicates: duplicates,
+                },
+              },
+            });
+          }
+
+          if (link.active) {
+            this.selected.monster = page;
+          }
         }
 
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -2605,9 +2636,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     );
 
     // We do not currently refresh already present creatures in the Bestiary.
-    if (bestiary.pages.some((x) => x.system.actorBelongs(item))) return false;
+    if (bestiary.pages.some((x) => x.system.actorBelongs(item))) return null;
 
-    if (item.hasPlayerOwner && !acceptPlayerCharacters) return false;
+    if (item.hasPlayerOwner && !acceptPlayerCharacters) return null;
 
     const itemRules = {};
     for (var subItem of item.items) {
@@ -2662,7 +2693,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       new PF2EBestiary(pages[0]).render(true);
     }
 
-    return true;
+    return pages[0];
   }
 
   async _onDragStart(event) {

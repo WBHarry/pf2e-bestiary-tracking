@@ -2791,6 +2791,9 @@ const getCreatureData = async (actor, pcBase) => {
       img: actor.img,
       texture: actor.prototypeToken.texture.src,
       imageState: { hideState: imageSettings.hideState },
+      actorState: {
+        actorLinks: actor.actorLinks ?? [],
+      },
       name: { value: actor.name, revealed: defaultRevealed.name },
       hardness: { value: actor.system.attributes.hardness },
       allSaves: { value: actor.system.attributes.allSaves?.value },
@@ -6718,10 +6721,14 @@ class Hazard extends foundry.abstract.TypeDataModel {
         hideImage: new fields.StringField({ nullable: true, initial: null }),
       }),
       actorState: new fields.SchemaField({
-        actorLinks: new fields.ArrayField(new fields.StringField({ required: true })),
-        actorDuplicates: new fields.ArrayField(new fields.StringField({ required: true })),
+        actorLinks: new fields.ArrayField(
+          new fields.StringField({ required: true }),
+        ),
+        actorDuplicates: new fields.ArrayField(
+          new fields.StringField({ required: true }),
+        ),
       }),
-      active: new fields.BooleanField({ required: true, initial: true}),
+      active: new fields.BooleanField({ required: true, initial: true }),
       recallKnowledge: new MappingField(
         new fields.SchemaField({
           attempts: new MappingField(new fields.StringField({})),
@@ -6987,42 +6994,60 @@ class Hazard extends foundry.abstract.TypeDataModel {
   }
 
   actorBelongs = (actor) => {
-    const sameNameDuplicates = game.settings.get('pf2e-bestiary-tracking', 'sameNameDuplicates');
-    return this.uuid === actor.uuid || this.actorState.actorDuplicates.some(x => x === actor.uuid) || (sameNameDuplicates && this.name.value === actor.name);
+    const sameNameDuplicates = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "sameNameDuplicates",
+    );
+    return (
+      this.uuid === actor.uuid ||
+      this.actorState.actorDuplicates.some((x) => x === actor.uuid) ||
+      (sameNameDuplicates && this.name.value === actor.name)
+    );
   };
 
   get actorLinkOptions() {
-    const useTokenArt = game.settings.get("pf2e-bestiary-tracking", "use-token-art");
-    return this.actorLinks.reduce((acc, link) => {
-      const page = this.parent.parent.pages(link.pageId);
-      if(page){
-        const image = useTokenArt ? page.system.texture
-        : page.system.img;
-        acc.push({ page: page.uuid, actor: page.system.uuid, img: image, name: page.system.name.value, level: page.system.level.value, });
-      }
+    const useTokenArt = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "use-token-art",
+    );
+    return this.actorLinks
+      .reduce(
+        (acc, link) => {
+          const page = this.parent.parent.pages(link.pageId);
+          if (page) {
+            const image = useTokenArt ? page.system.texture : page.system.img;
+            acc.push({
+              page: page.uuid,
+              actor: page.system.uuid,
+              img: image,
+              name: page.system.name.value,
+              level: page.system.level.value,
+            });
+          }
 
-      return acc;
-    }, [
-      {
-        page: this.parent.uuid,
-        actor: this.uuid,
-        img: useTokenArt
-        ? this.texture
-        : this.img,
-        name: this.name.value,
-        level: this.level.value,
-        current: true,
-        active: true,
-      }
-    ]).sort((a, b) => {
-      if(a.level === b.level){
-        if(a.name < b.name) return -1;
-        else if(a.name > b.name) return 1;
-        else return 0;
-      }
+          return acc;
+        },
+        [
+          {
+            page: this.parent.uuid,
+            actor: this.uuid,
+            img: useTokenArt ? this.texture : this.img,
+            name: this.name.value,
+            level: this.level.value,
+            current: true,
+            active: true,
+          },
+        ],
+      )
+      .sort((a, b) => {
+        if (a.level === b.level) {
+          if (a.name < b.name) return -1;
+          else if (a.name > b.name) return 1;
+          else return 0;
+        }
 
-      return a.level - b.level;
-    })
+        return a.level - b.level;
+      });
   }
 
   get displayImage() {
@@ -8031,7 +8056,7 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$7(
           "automatic-combat-registration",
         ),
         sameNameDuplicates: game.settings.get(
-          "pf2e-bestiary-tracking", 
+          "pf2e-bestiary-tracking",
           "sameNameDuplicates",
         ),
         doubleClickOpen: game.settings.get(
@@ -8291,7 +8316,7 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$7(
       this.settings.creatureRegistration.automaticCombatRegistration,
     );
     await game.settings.set(
-      "pf2e-bestiary-tracking", 
+      "pf2e-bestiary-tracking",
       "sameNameDuplicates",
       this.settings.creatureRegistration.sameNameDuplicates,
     );
@@ -12701,46 +12726,66 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$1(
 
     this.entityType = getEntityType(entity);
 
-    const useTokenArt = game.settings.get("pf2e-bestiary-tracking", "use-token-art");
-    this.actorLinks = entity.system.actorState.actorLinks.reduce((acc, link) => {
-      const page = entity.parent.parent.pages(link.pageId);
-      if(page){
-        const image = useTokenArt ? page.system.texture
-        : page.system.img;
-        acc.push({ page: page.uuid, actor: page.system.uuid, img: image, name: page.system.name.value, level: page.system.level.value, });
-      }
+    const useTokenArt = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "use-token-art",
+    );
 
-      return acc;
-    }, [
-      {
-        page: entity.uuid,
-        actor: entity.system.uuid,
-        img: useTokenArt
-        ? entity.system.texture
-        : entity.system.img,
-        name: entity.system.name.value,
-        level: entity.system.level.value,
-        current: true,
-        active: true,
-      }
-    ]).sort((a, b) => {
-      if(a.level === b.level){
-        if(a.name < b.name) return -1;
-        else if(a.name > b.name) return 1;
-        else return 0;
-      }
+    const baseActorExists = Boolean(game.actors.find(x => x.uuid === entity.system.uuid));
+    this.actorLinks = entity.system.actorState.actorLinks
+      .reduce(
+        (acc, link) => {
+          const page = entity.parent.pages.get(link);
+          if (page) {
+            const image = useTokenArt ? page.system.texture : page.system.img;
+            acc.push({
+              page: page.id,
+              actor: page.system.uuid,
+              img: image,
+              name: page.system.name.value,
+              level: page.system.level.value,
+            });
+          }
 
-      return a.level - b.level;
-    });
+          return acc;
+        },
+        [
+          {
+            page: entity.id,
+            actor: entity.system.uuid,
+            img: useTokenArt ? entity.system.texture : entity.system.img,
+            name: entity.system.name.value,
+            level: entity.system.level.value,
+            current: true,
+            active: entity.system.active,
+            unlinked: !baseActorExists,
+          },
+        ],
+      )
+      .sort((a, b) => {
+        if (a.level === b.level) {
+          if (a.name < b.name) return -1;
+          else if (a.name > b.name) return 1;
+          else return 0;
+        }
 
-    this.duplicates = entity.system.actorState.actorDuplicates.reduce((acc, duplicate) => {
-        const actor = game.actors.find(x => x.uuid === duplicate);
-        if(actor){
-            acc.set(actor.uuid, { name: actor.name, folderPath: this.getFolderPath(actor.folder) });
+        return a.level - b.level;
+      });
+
+    this.duplicates = entity.system.actorState.actorDuplicates.reduce(
+      (acc, duplicate) => {
+        const actor = game.actors.find((x) => x.uuid === duplicate);
+        if (actor) {
+          acc.set(actor.uuid, {
+            name: actor.name,
+            folderPath: this.getFolderPath(actor.folder),
+          });
         }
 
         return acc;
-    }, new Map());
+      },
+      new Map(),
+    );
 
     this.duplicateListOpen = false;
     this._dragDrop = this._createDragDropHandlers();
@@ -12756,14 +12801,18 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$1(
     classes: ["bestiary-link-menu"],
     position: { width: 400, height: "auto" },
     actions: {
-        importDuplicates: this.importDuplicates,
-        toggleDuplicateList: this.toggleDuplicateList,
-        removeDuplicate: this.removeDuplicate,
-        save: this.save,
+      importDuplicates: this.importDuplicates,
+      toggleDuplicateList: this.toggleDuplicateList,
+      removeDuplicate: this.removeDuplicate,
+      selectActorLink: this.selectActorLink,
+      removeActorLink: this.removeActorLink,
+      save: this.save,
     },
     form: { handler: this.updateData, submitOnChange: true },
     dragDrop: [
       { dragSelector: null, dropSelector: ".duplicate-section" },
+      { dragSelector: null, dropSelector: ".actor-link-container.new" },
+      { dragSelector: null, dropSelector: ".actor-link-container.unlinked" },
     ],
   };
 
@@ -12782,33 +12831,46 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$1(
 
   async _prepareContext(_options) {
     const context = await super._prepareContext(_options);
-    context.actorLinks = this.actorLinks;
+    context.actorLinks = this.actorLinks.filter(x => !x.removed);
     context.duplicates = Object.fromEntries(this.duplicates);
-    context.actors = game.actors.filter(x => !this.actorLinks.every(link => link.uuid !== x.actor));
+    context.actors = game.actors.filter(
+      (x) => !this.actorLinks.every((link) => link.uuid !== x.actor),
+    );
     context.duplicateListOpen = this.duplicateListOpen;
 
     return context;
   }
 
   getFolderPath(folder) {
-    if(!folder) return '';
-    if(folder.folder) return `${folder.name}/${this.getFolderPath(folder.folder)}`;
-    
+    if (!folder) return "";
+    if (folder.folder)
+      return `${folder.name}/${this.getFolderPath(folder.folder)}`;
+
     return folder.name;
   }
 
   static async updateData(event, element, formData) {
     foundry.utils.expandObject(formData.object);
-    
+
     this.render();
   }
 
   static importDuplicates() {
-    const current = this.actorLinks.find(x => x.active);
-    const potentialDuplicates = game.actors.filter(x => x.name === current.name && x.uuid !== current.actor);
-    ui.notifications.info(game.i18n.format('PF2EBestiary.LinkMenu.Notifications.DuplicatesImported', { nr: potentialDuplicates.length }));
-    for(var duplicate of potentialDuplicates){
-        this.duplicates.set(duplicate.uuid, { name: duplicate.name, folderPath: this.getFolderPath(duplicate.folder) });
+    const current = this.actorLinks.find((x) => x.active);
+    const potentialDuplicates = game.actors.filter(
+      (x) => x.name === current.name && x.uuid !== current.actor,
+    );
+    ui.notifications.info(
+      game.i18n.format(
+        "PF2EBestiary.LinkMenu.Notifications.DuplicatesImported",
+        { nr: potentialDuplicates.length },
+      ),
+    );
+    for (var duplicate of potentialDuplicates) {
+      this.duplicates.set(duplicate.uuid, {
+        name: duplicate.name,
+        folderPath: this.getFolderPath(duplicate.folder),
+      });
     }
 
     this.render();
@@ -12818,11 +12880,31 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$1(
     this.duplicateListOpen = !this.duplicateListOpen;
     $(button).toggleClass("fa-chevron-down");
     $(button).toggleClass("fa-chevron-up");
-    $(this.element).find('.duplicate-list').toggleClass("expanded");
+    $(this.element).find(".duplicate-list").toggleClass("expanded");
   }
 
   static removeDuplicate(_, button) {
     this.duplicates.delete(button.dataset.duplicate);
+    this.render();
+  }
+
+  static selectActorLink(_, button) {
+    this.actorLinks = this.actorLinks.map(x => ({
+      ...x,
+      active: x.actor === button.dataset.actor,
+    }));
+    this.render();
+  }
+
+  static removeActorLink(_, button) {
+    const link = this.actorLinks.find(x => x.actor === button.dataset.actor);
+    if(link.current){
+      link.actor = null;
+      link.unlinked = true;
+    } else {
+      link.removed = true;
+    }
+
     this.render();
   }
 
@@ -12834,21 +12916,20 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$1(
   static async save() {
     const potentialDuplicates = Object.fromEntries(this.duplicates);
     const usedDuplicates = [];
-    for(var key in potentialDuplicates){
+    for (var key in potentialDuplicates) {
       const duplicate = potentialDuplicates[key];
-      if(duplicate.pack){
+      if (duplicate.pack) {
         const actor = await fromUuid(key);
         const newActor = await Actor.implementation.create(actor.toObject());
         usedDuplicates.push(newActor.uuid);
-      }
-      else {
+      } else {
         usedDuplicates.push(key);
       }
     }
 
     this.resolve({
-        actorLinks: this.actorLinks,
-        duplicates: usedDuplicates
+      actorLinks: this.actorLinks,
+      duplicates: usedDuplicates,
     });
     this.close({});
   }
@@ -12871,18 +12952,56 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$1(
     const data = TextEditor.getDragEventData(event);
     const baseItem = await fromUuid(data.uuid);
 
-    if(event.currentTarget.classList.contains('duplicate-container')){
-      const itemEntityType = getEntityType(baseItem);
-      if(itemEntityType !== this.entityType){
-        ui.notifications.error(
-          game.i18n.format("PF2EBestiary.LinkMenu.Notifications.MissmatchedType", { new: itemEntityType, current: this.entityType }),
-        );
+    const itemEntityType = getEntityType(baseItem);
+    if (itemEntityType !== this.entityType) {
+      ui.notifications.error(
+        game.i18n.format(
+          "PF2EBestiary.LinkMenu.Notifications.MissmatchedType",
+          { new: itemEntityType, current: this.entityType },
+        ),
+      );
+      return;
+    }
+
+    const useTokenArt = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "use-token-art",
+    );
+
+    if (event.currentTarget.classList.contains("duplicate-container")) {
+      this.duplicates.set(baseItem.uuid, {
+        name: baseItem.name,
+        folderPath: this.getFolderPath(baseItem.folder),
+        pack: baseItem.pack,
+      });
+      this.render();
+    }
+
+    if(event.currentTarget.classList.contains("actor-link-container")){
+      if(this.actorLinks.some(x => x.actor === baseItem.uuid && !x.removed)) {
+        ui.notifications.error(game.i18n.localize("PF2EBestiary.LinkMenu.Notifications.ActorAlreadyLinked"));
         return;
       }
-
-      this.duplicates.set(baseItem.uuid, { name: baseItem.name, folderPath: this.getFolderPath(baseItem.folder), pack: baseItem.pack });
+      if(event.currentTarget.classList.contains("new")){
+        this.actorLinks.push({
+          actor: baseItem.uuid,
+          img: useTokenArt ? baseItem.prototypeToken.texture.src : baseItem.img,
+          name: baseItem.name,
+          level: baseItem.system.details.level.value,
+          new: true,
+        });
+      }
+      else if(event.currentTarget.classList.contains("unlinked")){
+        const currentLink = this.actorLinks.find(x => x.current);
+        currentLink.unlinked = false;
+        currentLink.actor = baseItem.uuid;
+        currentLink.img = useTokenArt ? baseItem.prototypeToken.texture.src : baseItem.img;
+        currentLink.name = baseItem.name;
+        currentLink.level = baseItem.system.details.level.value;
+      }
+      
       this.render();
-    } 
+    }
   }
 }
 
@@ -13542,7 +13661,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           : getHazardCategories();
 
     const creatureReduce = (acc, creature) => {
-      if(!creature.system.active) return acc;
+      if (!creature.system.active) return acc;
 
       const types = getCreaturesTypes(creature.system.traits);
 
@@ -13571,7 +13690,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     };
 
     const npcReduce = (npcCategories) => (acc, npc) => {
-      if(!npc.system.active) return acc;
+      if (!npc.system.active) return acc;
 
       const categories = npc.system.npcData.categories.filter((x) => {
         const npcCategory = npcCategories.find(
@@ -13602,7 +13721,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     };
 
     const hazardReduce = (acc, hazard) => {
-      if(!hazard.system.active) return acc;
+      if (!hazard.system.active) return acc;
 
       const types = getHazardTypes(hazard.system.traits);
 
@@ -14366,20 +14485,44 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       new AvatarLinkMenu(this.selected.monster, resolve, reject).render(true);
     }).then(
       async ({ actorLinks, duplicates }) => {
-        const updateLinks = actorLinks.filter(x => !x.current);
-        const activeLink = actorLinks.find(x => x.active);
-        const currentIsActive = activeLink.page === this.selected.monster.uuid;
-        await this.selected.monster.update({ "system": {
-          actorState: {
-            actorLinks: updateLinks.map(x => x.page),
-            actorDuplicates: duplicates,
-          },
-          active: currentIsActive, 
-        }});
+        for(var link of actorLinks.filter(x => x.removed)){
+          const page = this.bestiary.pages.get(link.page);
+          await page.delete();
+        }
 
-        if(!currentIsActive){
-          this.selected.monster = this.bestiary.pages.get(activeLink.page);
-          await this.selected.monster.update({ "syste.active": true });
+        for(var link of actorLinks.filter(x => x.new)){
+          const newEntity = await fromUuid(link.actor);
+          const page = await PF2EBestiary.addMonster(newEntity, null, link.active);
+          link.page = page.id;
+        }
+
+        for(var link of actorLinks.filter(x => !x.removed)) {
+          const page = this.bestiary.pages.get(link.page);
+          const newLinks = actorLinks.filter(x => x.actor !== link.actor && !x.removed).map(x => x.page);
+          if(link.current && link.actor !== page.system.uuid) {
+            await page.update({ "system": {
+              active: Boolean(link.active),
+              uuid: link.actor,
+              actorState: {
+                actorLinks: newLinks,
+                actorDuplicates: duplicates,
+              },
+            }});
+            if(link.actor) await page.system.refreshData();
+          }
+          else {
+            await page.update({ "system": {
+              active: Boolean(link.active),
+              actorState: {
+                actorLinks: newLinks,
+                actorDuplicates: duplicates,
+              }
+            }});
+          } 
+            
+          if(link.active) {
+            this.selected.monster = page;
+          }
         }
 
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -15465,9 +15608,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     );
 
     // We do not currently refresh already present creatures in the Bestiary.
-    if (bestiary.pages.some((x) => x.system.actorBelongs(item))) return false;
+    if (bestiary.pages.some((x) => x.system.actorBelongs(item))) return null;
 
-    if (item.hasPlayerOwner && !acceptPlayerCharacters) return false;
+    if (item.hasPlayerOwner && !acceptPlayerCharacters) return null;
 
     const itemRules = {};
     for (var subItem of item.items) {
@@ -15522,7 +15665,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       new PF2EBestiary(pages[0]).render(true);
     }
 
-    return true;
+    return pages[0];
   }
 
   async _onDragStart(event) {
@@ -15732,8 +15875,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const bestiary = game.journal.get(
       game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
     );
-    const existingPage = bestiary.pages.find(
-      (x) => x.system.actorBelongs(item),
+    const existingPage = bestiary.pages.find((x) =>
+      x.system.actorBelongs(item),
     );
     if (existingPage) {
       await existingPage.system.refreshData(item);
@@ -16254,8 +16397,8 @@ Hooks.once("setup", () => {
         const bestiary = game.journal.get(
           game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
         );
-        const page = bestiary.pages.find(
-          (page) => page.system.actorBelongs(baseActor),
+        const page = bestiary.pages.find((page) =>
+          page.system.actorBelongs(baseActor),
         );
 
         if (!page || (!game.user.isGM && page.system.hidden)) {
@@ -16398,8 +16541,8 @@ Hooks.on("preCreateToken", async (token) => {
     const bestiary = game.journal.get(
       game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
     );
-    const page = bestiary.pages.find(
-      (x) => x.system.actorBelongs(token.baseActor),
+    const page = bestiary.pages.find((x) =>
+      x.system.actorBelongs(token.baseActor),
     );
     if (page) {
       if (page.system.name.revealed) {
@@ -16756,7 +16899,9 @@ Hooks.on("renderImagePopout", (app, html) => {
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );
   const existingPage = bestiary.pages.find(
-    (x) => x.system.uuid === app.options.uuid || x.system.actorState.actorDuplicates.includes(app.options.uuid),
+    (x) =>
+      x.system.uuid === app.options.uuid ||
+      x.system.actorState.actorDuplicates.includes(app.options.uuid),
   );
   if (existingPage) {
     const hideState = existingPage.system.imageState.hideState;
@@ -16851,8 +16996,8 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
           const bestiary = game.journal.get(
             game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
           );
-          const page = bestiary?.pages?.find(
-            (x) => x.system.actorBelongs(item),
+          const page = bestiary?.pages?.find((x) =>
+            x.system.actorBelongs(item),
           );
           if (page) {
             new PF2EBestiary(page).render(true);

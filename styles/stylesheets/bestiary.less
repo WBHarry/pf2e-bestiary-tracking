@@ -250,6 +250,12 @@
         i {
           margin: 0;
         }
+
+        &.unlinked {
+          i {
+            filter: drop-shadow(0 0 3px red);
+          }
+        }
       }
     }
 
@@ -1408,6 +1414,7 @@
 
           .bookmark {
             width: 120px;
+            padding-left: 16px;
           }
         }
 
@@ -1446,10 +1453,11 @@
       text-transform: uppercase;
       padding: 0 4px;
       text-align: center;
-      transition: width 0.1s ease-in-out;
+      transition: all 0.1s ease-in-out;
 
       &.expanded {
         width: 120px;
+        padding-left: 16px;
       }
 
       &.icons {
