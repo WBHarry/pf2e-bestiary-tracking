@@ -8,6 +8,7 @@ import {
   slugify,
   isValidEntityType,
   getUsedBestiaryTypes,
+  saveDataToFile,
 } from "../scripts/helpers.js";
 import { resetBestiary } from "../scripts/macros.js";
 import { socketEvent } from "../scripts/socket.js";
@@ -23,6 +24,7 @@ import BestiarySelection from "./bestiarySelection.js";
 import { ExpandedDragDrop } from "../scripts/expandedDragDrop.js";
 import AvatarMenu from "./avatarMenu.js";
 import AvatarLinkMenu from "./actorLinkMenu.js";
+import ImportDialog from "./importDialog.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -120,6 +122,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       increaseInfluence: this.increaseInfluence,
       decreaseInfluence: this.decreaseInfluence,
       removeProperty: this.removeProperty,
+      exportEntity: this.exportEntity,
+      importEntity: this.importEntity,
       transformNPC: this.transformNPC,
       transformCreature: this.transformCreature,
       openDocument: this.openDocument,
@@ -158,6 +162,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           icon: "fa-solid fa-eye-slash",
           label: "PF2EBestiary.Bestiary.WindowControls.HideAll",
           action: "hideEverything",
+        },
+        {
+          icon: "fas fa-file-export fa-fw",
+          label: "PF2EBestiary.Bestiary.WindowControls.ExportEntity",
+          action: "exportEntity",
+        },
+        {
+          icon: "fas fa-file-import fa-fw",
+          label: "PF2EBestiary.Bestiary.WindowControls.ImportEntity",
+          action: "importEntity",
         },
         {
           icon: "fa-solid fa-toggle-on",
@@ -376,6 +390,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
   filterHeaderControls(control) {
     switch (control.action) {
+      case "importEntity":
+        return game.user.isGM && !this.selected.monster;
       case "transformNPC":
         return (
           game.user.isGM &&
@@ -392,6 +408,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
               this.selected.monster.type === "pf2e-bestiary-tracking.creature",
           )
         );
+      case "exportEntity":
       case "revealEverything":
       case "hideEverything":
         return game.user.isGM && Boolean(this.selected.monster);
@@ -2282,6 +2299,32 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async removeProperty(_, button) {
     await this.selected.monster.update({ [button.dataset.path]: null });
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  static exportEntity() {
+    saveDataToFile(
+      JSON.stringify(this.selected.monster.toObject(), null, 2),
+      "text/json",
+      `${slugify(this.selected.monster.system.name.value)}.json`,
+    );
+    this.toggleControls(false);
+  }
+
+  static async importEntity() {
+    new Promise((resolve, reject) => {
+      new ImportDialog(resolve, reject).render(true);
+    }).then(this.importFromJSONData.bind(this));
+    this.toggleControls(false);
+  }
+
+  async importFromJSONData(data) {
+    await this.bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,

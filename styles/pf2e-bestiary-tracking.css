@@ -1456,6 +1456,17 @@
 .bestiary-settings-menu .menu-category .form-group.underlined {
   border-bottom: 1px solid black;
 }
+.bestiary-import-dialog .menu-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: auto;
+}
+.bestiary-import-dialog .menu-container footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 .theme-dark .bestiary-selection .bestiaries-container .bestiary-container .bestiary-image {
   background-color: white;
   border-color: gold;

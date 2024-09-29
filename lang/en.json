@@ -26,6 +26,12 @@
       "Failure": "Failure",
       "CriticalFailure": "Critical Failure"
     },
+    "ImportDialog": {
+      "EntryTitle": "Bestiary Entry Import",
+      "FaultyImport": "The selected JSON file is not a valid Bestiary Entry.",
+      "UnusedBestiaryType": "You are not using this type of Bestiary Entry. Check your module settings.",
+      "MissingName": "You must provide a name for the imported Bestiary Entry!"
+    },
     "BestiarySelection": {
       "Name": "Bestiary Selection",
       "AddBestiary": "Add New Bestiary",
@@ -117,6 +123,9 @@
         "RevealAll": "Reveal Creature",
         "HideAll": "Hide Creature",
         "OpenActorSheet": "OpenActorSheet",
+        "ExportEntity": "Export Entity",
+        "ImportEntity": "Import Entity",
+        "ExportBestiary": "Export Bestiary",
         "TransformCreature": "Transform To NPC",
         "TransformNPC": "Transform To Creature"
       },

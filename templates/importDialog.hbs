@@ -1,0 +1,21 @@
+<div class="menu-container">
+    <div class="flexcol">
+        <div class="form-group">
+            <label for="data">{{ localize 'DOCUMENT.ImportSource' }}</label>
+            <div class="form-fields">
+                <input class="file-path" type="file" name="fileData.path" value="{{this.fileData.path}}" accept=".json"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>{{ localize 'PF2EBestiary.Miscellaneous.Name' }}</label>
+            <div class="form-fields">
+                <input class="name-field" type="text" name="importName" value="{{this.importName}}" disabled />
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <button data-action="importFile" disabled><i class="fas fa-file-import"></i> Import</button>
+        <button data-action="close"><i class="fas fa-times"></i> Cancel</button>
+    </footer>
+</div>
