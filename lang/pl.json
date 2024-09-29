@@ -40,6 +40,14 @@
       "OldSaveStateImported": "Stary stan zapisu został pomyślnie zaimportowany. Możesz go usunąć.",
       "OldSaveInvalid": "Plik jest nieprawidłowy."
     },
+    "LinkMenu": {
+      "Title": "Menu łącza aktora",
+      "DuplicatesLinkedInfo": "{nr} zduplikowanych aktorów powiązano",
+      "Notifications": {
+        "DuplicatesImported": "znaleziono {nr} zduplikowanych aktorów.",
+        "MissmatchedType": "Niedopasowanie typu podmiotu. Przeciągnięty aktor to {new}, a nie {current}."
+      }
+    },
     "Miscellaneous": {
       "Name": "Nazwa",
       "Title": "Tytuł",
@@ -76,6 +84,7 @@
       "Actions": "Akcje",
       "Passives": "Pasywne",
       "Save": "Zapisz",
+      "Close": "Zamknij",
       "Except": "z wyjątkiem",
       "Double": "podwójny",
       "Or": "lub",
@@ -515,6 +524,9 @@
       "AutomaticallyOpenMonster": {
         "Name": "Automatycznie otwierany wpis do bestiariusza",
         "Hint": "Automatycznie otwiera wpis bestiariusza dla potworów, które do niego upuścisz."
+      },
+      "SameNameDuplicates": {
+        "Name": "Aktorzy o tych samych nazwach są duplikatami"
       },
       "DoubleClickOpen": {
         "Name": "Podwójne kliknięcie otwiera",
