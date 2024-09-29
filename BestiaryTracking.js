@@ -316,25 +316,27 @@ const isValidEntityType = (type) => {
 };
 
 const saveDataToFile = (data, type, filename) => {
-  const blob = new Blob([data], {type: type});
+  const blob = new Blob([data], { type: type });
 
   // Create an element to trigger the download
-  let a = document.createElement('a');
+  let a = document.createElement("a");
   a.href = window.URL.createObjectURL(blob);
   a.download = filename;
 
   // Dispatch a click event to the element
-  a.dispatchEvent(new MouseEvent("click", {bubbles: true, cancelable: true, view: window}));
+  a.dispatchEvent(
+    new MouseEvent("click", { bubbles: true, cancelable: true, view: window }),
+  );
   setTimeout(() => window.URL.revokeObjectURL(a.href), 100);
 };
 
 const readTextFromFile = (file) => {
   const reader = new FileReader();
   return new Promise((resolve, reject) => {
-    reader.onload = ev => {
+    reader.onload = (ev) => {
       resolve(reader.result);
     };
-    reader.onerror = ev => {
+    reader.onerror = (ev) => {
       reader.abort();
       reject();
     };
@@ -13133,6 +13135,16 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$2(
       return;
     }
 
+    if (game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking')).pages.find(x => x.system.uuid === baseItem.uuid)){
+      ui.notifications.error(
+        game.i18n.localize(
+          "PF2EBestiary.Macros.AddMonster.TargetAlreadyInBestiary",
+        ),
+      );
+
+      return;
+    }
+
     const useTokenArt = game.settings.get(
       "pf2e-bestiary-tracking",
       "use-token-art",
@@ -13158,6 +13170,7 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$2(
         );
         return;
       }
+      
       if (event.currentTarget.classList.contains("new")) {
         if (["npc", "character"].includes(itemEntityType)) {
           new Promise((resolve, reject) => {
@@ -13231,7 +13244,7 @@ class ImportDialog extends HandlebarsApplicationMixin$1(
     classes: ["bestiary-import-dialog"],
     position: { width: 400, height: "auto" },
     actions: {
-        importFile: this.importFile,
+      importFile: this.importFile,
     },
     form: { handler: this.updateData, submitOnChange: false },
   };
@@ -13239,8 +13252,7 @@ class ImportDialog extends HandlebarsApplicationMixin$1(
   static PARTS = {
     application: {
       id: "bestiary-import-dialog",
-      template:
-        "modules/pf2e-bestiary-tracking/templates/importDialog.hbs",
+      template: "modules/pf2e-bestiary-tracking/templates/importDialog.hbs",
     },
   };
 
@@ -13256,36 +13268,43 @@ class ImportDialog extends HandlebarsApplicationMixin$1(
     super._attachPartListeners(partId, htmlElement, options);
     $(htmlElement)
       .find(".file-path")
-      .on("change", async event => {
-        const nameElement = $(this.element).find('.name-field')[0];
-        const importButton = $(this.element).find('button[data-action="importFile"]')[0];
-        if(!event.currentTarget.value){
-            $(importButton).prop('disabled', true);
-            $(nameElement).prop('disabled', true);
-            nameElement.value = '';
-        }
-        else {
-            const text = await readTextFromFile(event.currentTarget.files[0]);
-            let jsonObject = null;
-            try {
-                jsonObject = JSON.parse(text);
-            } catch {}
+      .on("change", async (event) => {
+        const nameElement = $(this.element).find(".name-field")[0];
+        const importButton = $(this.element).find(
+          'button[data-action="importFile"]',
+        )[0];
+        if (!event.currentTarget.value) {
+          $(importButton).prop("disabled", true);
+          $(nameElement).prop("disabled", true);
+          nameElement.value = "";
+        } else {
+          const text = await readTextFromFile(event.currentTarget.files[0]);
+          let jsonObject = null;
+          try {
+            jsonObject = JSON.parse(text);
+          } catch {}
 
-            if(!jsonObject || !jsonObject.type){
-                ui.notifications.error(game.i18n.localize("PF2EBestiary.ImportDialog.FaultyImport"));
-                event.currentTarget.value = '';
-                return;
-            }
+          if (!jsonObject || !jsonObject.type) {
+            ui.notifications.error(
+              game.i18n.localize("PF2EBestiary.ImportDialog.FaultyImport"),
+            );
+            event.currentTarget.value = "";
+            return;
+          }
 
-            if(!getUsedBestiaryTypes().includes(jsonObject.type)){
-                ui.notifications.error(game.i18n.localize("PF2EBestiary.ImportDialog.UnusedBestiaryType"));
-                event.currentTarget.value = '';
-                return;
-            }
+          if (!getUsedBestiaryTypes().includes(jsonObject.type)) {
+            ui.notifications.error(
+              game.i18n.localize(
+                "PF2EBestiary.ImportDialog.UnusedBestiaryType",
+              ),
+            );
+            event.currentTarget.value = "";
+            return;
+          }
 
-            $(importButton).prop('disabled', false);
-            $(nameElement).prop('disabled', false);
-            nameElement.value = jsonObject.system.name.value;
+          $(importButton).prop("disabled", false);
+          $(nameElement).prop("disabled", false);
+          nameElement.value = jsonObject.system.name.value;
         }
       });
   }
@@ -13295,31 +13314,33 @@ class ImportDialog extends HandlebarsApplicationMixin$1(
     super.close(options);
   }
 
-  static async importFile(){
-    const files = $(this.element).find('.file-path')[0].files;
-    const name = $(this.element).find('.name-field')[0].value;
+  static async importFile() {
+    const files = $(this.element).find(".file-path")[0].files;
+    const name = $(this.element).find(".name-field")[0].value;
 
-    if(!name) {
-        ui.notifications.error(game.i18n.localize("PF2EBestiary.ImportDialog.MissingName"));
-        return;
+    if (!name) {
+      ui.notifications.error(
+        game.i18n.localize("PF2EBestiary.ImportDialog.MissingName"),
+      );
+      return;
     }
 
-    await readTextFromFile(files[0]).then(json => {
-        const data = JSON.parse(json);
-        data.name = name;
-        data.system.name.value = name; 
-        this.resolve(data);
+    await readTextFromFile(files[0]).then((json) => {
+      const data = JSON.parse(json);
+      data.name = name;
+      data.system.name.value = name;
+      this.resolve(data);
     });
     this.close();
   }
 
-//   static async updateData(event, element, formData) {
-//     const updateData = foundry.utils.expandObject(formData.object);
-//     this.fileData = updateData.fileData;
-//     this.importName = updateData.importName;
+  //   static async updateData(event, element, formData) {
+  //     const updateData = foundry.utils.expandObject(formData.object);
+  //     this.fileData = updateData.fileData;
+  //     this.importName = updateData.importName;
 
-//     this.render();
-//   }
+  //     this.render();
+  //   }
 }
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -15603,19 +15624,23 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
-  static exportEntity(){
-    saveDataToFile(JSON.stringify(this.selected.monster.toObject(), null, 2), "text/json", `${slugify(this.selected.monster.system.name.value)}.json`);
+  static exportEntity() {
+    saveDataToFile(
+      JSON.stringify(this.selected.monster.toObject(), null, 2),
+      "text/json",
+      `${slugify(this.selected.monster.system.name.value)}.json`,
+    );
     this.toggleControls(false);
   }
 
-  static async importEntity(){
+  static async importEntity() {
     new Promise((resolve, reject) => {
       new ImportDialog(resolve, reject).render(true);
     }).then(this.importFromJSONData.bind(this));
     this.toggleControls(false);
   }
 
-  async importFromJSONData(data){
+  async importFromJSONData(data) {
     await this.bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {

@@ -266,6 +266,20 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
       return;
     }
 
+    if (
+      game.journal
+        .get(game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"))
+        .pages.find((x) => x.system.uuid === baseItem.uuid)
+    ) {
+      ui.notifications.error(
+        game.i18n.localize(
+          "PF2EBestiary.Macros.AddMonster.TargetAlreadyInBestiary",
+        ),
+      );
+
+      return;
+    }
+
     const useTokenArt = game.settings.get(
       "pf2e-bestiary-tracking",
       "use-token-art",
@@ -291,6 +305,7 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
         );
         return;
       }
+
       if (event.currentTarget.classList.contains("new")) {
         if (["npc", "character"].includes(itemEntityType)) {
           new Promise((resolve, reject) => {
