@@ -26,6 +26,12 @@
       "Failure": "Porażka",
       "CriticalFailure": "Krytyczna Porażka"
     },
+    "ImportDialog": {
+      "EntryTitle": "Import wpisu do bestiariusza",
+      "FaultyImport": "Wybrany plik JSON nie jest prawidłowym wpisem Bestiariusza.",
+      "UnusedBestiaryType": "Nie używasz tego typu wpisu do Bestiariusza. Sprawdź ustawienia modułu.",
+      "MissingName": "Musisz podać nazwę dla importowanego wpisu do Bestiariusza!"
+    },
     "BestiarySelection": {
       "Name": "Wybór bestiariusza",
       "AddBestiary": "Dodaj nowy bestiariusz",
@@ -43,10 +49,22 @@
     "LinkMenu": {
       "Title": "Menu łącza aktora",
       "DuplicatesLinkedInfo": "{nr} zduplikowanych aktorów powiązano",
+      "NewLink": "Nowe powiązanie",
+      "NewLinkTip": "Przeciągnij aktora, aby powiązać",
       "Notifications": {
         "DuplicatesImported": "znaleziono {nr} zduplikowanych aktorów.",
-        "MissmatchedType": "Niedopasowanie typu podmiotu. Przeciągnięty aktor to {new}, a nie {current}."
+        "MissmatchedType": "Niedopasowanie typu podmiotu. Przeciągnięty aktor to {new}, a nie {current}.",
+        "ActorAlreadyLinked": "Aktor jest już powiązany"
       }
+    },
+    "ActorLinkSettingsMenu": {
+      "Title": "Ustawienia nowego powiązania z aktorem",
+      "ImportSettings": "Sekcje do skopiowania",
+      "General": "Sekcja ogólna",
+      "Influence": "Sekcja wpływu",
+      "Notes": "Sekcja notatek",
+      "GM": "Sekcje MG",
+      "Import": "Importuj"
     },
     "Miscellaneous": {
       "Name": "Nazwa",
@@ -105,6 +123,9 @@
         "RevealAll": "Ujawnij stworzenie",
         "HideAll": "Ukryj stworzenie",
         "OpenActorSheet": "Otwórz kartę aktora",
+        "ExportEntity": "Eksportuj podmiot",
+        "ImportEntity": "Importuj podmiot",
+        "ExportBestiary": "Eksportuj bestiariusz",
         "TransformCreature": "Przekształcenie w BN",
         "TransformNPC": "Przekształcenie w stworzenie"
       },
@@ -530,7 +551,7 @@
       },
       "DoubleClickOpen": {
         "Name": "Podwójne kliknięcie otwiera",
-        "Hint": "Otwiera wpis Bestiariusza stworzenia po jego dwukrotnym kliknięciu (+ ALT dla MG). Gdy to ustawienie jest aktywne, wszystkie stworzenia w Bestiariuszu otrzymują poziom Własności ustawiony na „Ograniczony” dla graczy."
+        "Hint": "Otwiera wpis Bestiariusza stworzenia po dwukrotnym kliknięciu jego tokena (+ ALT dla MG). Gdy to ustawienie jest aktywne, wszystkie stworzenia w Bestiariuszu otrzymują poziom Własności ustawiony na „Ograniczony” dla graczy."
       },
       "ContrastRevealState": {
         "Name": "Kontrastowy stan ujawnienia",
