@@ -2966,6 +2966,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
+  async maximize() {
+    super.maximize();
+    this.render();
+  }
+
   onBestiaryUpdate = async () => {
     if (this.actorSheetApp) return;
     this.bestiary = game.journal.get(
@@ -2998,7 +3003,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     const saveButton = $(this.element).find(
       '.prosemirror[collaborate="true"] *[data-action="save"]',
     );
-    if (saveButton.length === 0) {
+    if (saveButton.length === 0 && !this.minimized) {
       this.render(true);
     }
   };

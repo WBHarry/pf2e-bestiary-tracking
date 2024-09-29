@@ -1844,6 +1844,12 @@ form.pf2e-bestiary-tracking.application > header .header-control {
 .actor-link-settings-menu .actor-settings-container fieldset legend {
   margin: 0 auto;
 }
+.actor-link-settings-menu .actor-settings-container fieldset legend h4 {
+  margin-bottom: 0;
+  color: black;
+  text-shadow: none;
+  font-weight: bold;
+}
 .actor-link-settings-menu .actor-settings-container footer {
   display: flex;
   align-items: center;

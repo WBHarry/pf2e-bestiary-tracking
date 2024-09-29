@@ -29,6 +29,7 @@ export default class ActorLinkSettingsMenu extends HandlebarsApplicationMixin(
     classes: ["actor-link-settings-menu"],
     position: { width: 400, height: "auto" },
     actions: {
+      toggleSettings: this.toggleSettings,
       save: this.save,
     },
     form: { handler: this.updateData, submitOnChange: true },
@@ -59,6 +60,16 @@ export default class ActorLinkSettingsMenu extends HandlebarsApplicationMixin(
   close(options) {
     this.reject();
     super.close(options);
+  }
+
+  static toggleSettings() {
+    const allToggled = Object.values(this.settings).every((x) => x);
+    this.settings = Object.keys(this.settings).reduce((acc, key) => {
+      acc[key] = !allToggled;
+      return acc;
+    }, {});
+
+    this.render();
   }
 
   static async save() {

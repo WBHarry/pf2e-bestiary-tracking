@@ -6375,19 +6375,36 @@ class NPC extends Creature {
   }
 
   async importData(npcPage, settings) {
-    await this.parent.update({ "system": {
-      npcData: {
-        general: settings.general ? npcPage.system.npcData.general : this.npcData.general,
-        influence: settings.influence ? npcPage.system.npcData.influence : this.npcData.influence,
+    await this.parent.update({
+      system: {
+        npcData: {
+          general: settings.general
+            ? npcPage.system.npcData.general
+            : this.npcData.general,
+          influence: settings.influence
+            ? npcPage.system.npcData.influence
+            : this.npcData.influence,
+        },
+        notes:
+          settings.notes || settings.gm
+            ? {
+                public: settings.notes
+                  ? npcPage.system.notes.public
+                  : this.notes.public,
+                private: settings.notes
+                  ? npcPage.system.notes.private
+                  : this.notes.private,
+                player: settings.notes
+                  ? npcPage.system.notes.player
+                  : this.notes.player,
+                gm: settings.gm ? npcPage.system.notes.gm : this.notes.gm,
+              }
+            : this.notes,
+        recallKnowledge: settings.notes
+          ? npcPage.system.recallKnowledge
+          : this.recallKnowledge,
       },
-      notes: (settings.notes || settings.gm) ? {
-        public: settings.notes ? npcPage.system.notes.public : this.notes.public,
-        private: settings.notes ? npcPage.system.notes.private : this.notes.private,
-        player: settings.notes ? npcPage.system.notes.player : this.notes.player,
-        gm: settings.gm ? npcPage.system.notes.gm : this.notes.gm,
-      } : this.notes,
-      recallKnowledge: settings.notes ? npcPage.system.recallKnowledge : this.recallKnowledge, 
-    }});
+    });
   }
 
   async _getRefreshData(actor) {
@@ -7194,10 +7211,12 @@ class Hazard extends foundry.abstract.TypeDataModel {
   }
 
   async importData(hazardPage) {
-    await this.parent.update({ "system": {
-      notes: hazardPage.system.notes,
-      recallKnowledge: hazardPage.system.recallKnowledge, 
-    }});
+    await this.parent.update({
+      system: {
+        notes: hazardPage.system.notes,
+        recallKnowledge: hazardPage.system.recallKnowledge,
+      },
+    });
   }
 
   _getRefreshData(hazard, hazardData) {
@@ -12755,12 +12774,12 @@ class ActorLinkSettingsMenu extends HandlebarsApplicationMixin$2(
 
     this.resolve = resolve;
     this.reject = reject;
-  
+
     this.settings = {
-        general: true,
-        influence: true,
-        notes: true,
-        gm: true,
+      general: true,
+      influence: true,
+      notes: true,
+      gm: true,
     };
   }
 
@@ -12774,6 +12793,7 @@ class ActorLinkSettingsMenu extends HandlebarsApplicationMixin$2(
     classes: ["actor-link-settings-menu"],
     position: { width: 400, height: "auto" },
     actions: {
+      toggleSettings: this.toggleSettings,
       save: this.save,
     },
     form: { handler: this.updateData, submitOnChange: true },
@@ -12782,7 +12802,8 @@ class ActorLinkSettingsMenu extends HandlebarsApplicationMixin$2(
   static PARTS = {
     application: {
       id: "bestiary-actor-link-settings-menu",
-      template: "modules/pf2e-bestiary-tracking/templates/actorLinkSettingsMenu.hbs",
+      template:
+        "modules/pf2e-bestiary-tracking/templates/actorLinkSettingsMenu.hbs",
     },
   };
 
@@ -12803,6 +12824,16 @@ class ActorLinkSettingsMenu extends HandlebarsApplicationMixin$2(
   close(options) {
     this.reject();
     super.close(options);
+  }
+
+  static toggleSettings(){
+    const allToggled = Object.values(this.settings).every(x => x);
+    this.settings = Object.keys(this.settings).reduce((acc, key) => {
+        acc[key] = !allToggled;
+        return acc;
+    }, {});
+    
+    this.render();
   }
 
   static async save() {
@@ -12837,7 +12868,9 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$1(
         (acc, link) => {
           const page = entity.parent.pages.get(link);
           if (page) {
-            const actorExists = Boolean(game.actors.find(x => x.uuid === page.system.uuid));
+            const actorExists = Boolean(
+              game.actors.find((x) => x.uuid === page.system.uuid),
+            );
             const image = useTokenArt ? page.system.texture : page.system.img;
             acc.push({
               page: page.id,
@@ -12993,19 +13026,24 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$1(
   static selectActorLink(_, button) {
     this.actorLinks = this.actorLinks.map((x) => ({
       ...x,
-      active: x.page === button.dataset.page || x.actor === button.dataset.actor,
+      active:
+        x.page === button.dataset.page || x.actor === button.dataset.actor,
     }));
     this.render();
   }
 
   static removeActorLink(_, button) {
-    const link = this.actorLinks.find((x) => x.page === button.dataset.page || x.actor === button.dataset.actor);
+    const link = this.actorLinks.find(
+      (x) => x.page === button.dataset.page || x.actor === button.dataset.actor,
+    );
     if (link.current) {
       link.actor = null;
       link.unlinked = true;
-    } else if(link.new) {
-      this.actorLinks = this.actorLinks.filter(x => x.actor !== button.dataset.actor);
-      if(link.active) this.actorLinks.find(x => x.current).active = true;
+    } else if (link.new) {
+      this.actorLinks = this.actorLinks.filter(
+        (x) => x.actor !== button.dataset.actor,
+      );
+      if (link.active) this.actorLinks.find((x) => x.current).active = true;
     } else {
       link.removed = true;
     }
@@ -13094,26 +13132,29 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$1(
         return;
       }
       if (event.currentTarget.classList.contains("new")) {
-        if(['npc', 'character'].includes(itemEntityType)){
+        if (["npc", "character"].includes(itemEntityType)) {
           new Promise((resolve, reject) => {
             new ActorLinkSettingsMenu(resolve, reject).render(true);
-          }).then(settings  => {
+          }).then((settings) => {
             this.actorLinks.push({
               actor: baseItem.uuid,
-              img: useTokenArt ? baseItem.prototypeToken.texture.src : baseItem.img,
+              img: useTokenArt
+                ? baseItem.prototypeToken.texture.src
+                : baseItem.img,
               name: baseItem.name,
               level: baseItem.system.details.level.value,
               importSections: settings,
               new: true,
             });
-  
+
             this.render();
           });
-        }
-        else {
+        } else {
           this.actorLinks.push({
             actor: baseItem.uuid,
-            img: useTokenArt ? baseItem.prototypeToken.texture.src : baseItem.img,
+            img: useTokenArt
+              ? baseItem.prototypeToken.texture.src
+              : baseItem.img,
             name: baseItem.name,
             level: baseItem.system.details.level.value,
             new: true,
@@ -13122,7 +13163,11 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$1(
           this.render();
         }
       } else if (event.currentTarget.classList.contains("unlinked")) {
-        const currentLink = this.actorLinks.find((x) => x.page === event.currentTarget.dataset.page || x.actor === event.currentTarget.dataset.actor);
+        const currentLink = this.actorLinks.find(
+          (x) =>
+            x.page === event.currentTarget.dataset.page ||
+            x.actor === event.currentTarget.dataset.actor,
+        );
         currentLink.unlinked = false;
         currentLink.actor = baseItem.uuid;
         currentLink.img = useTokenArt
@@ -14632,7 +14677,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           link.page = page.id;
         }
 
-        const currentPage = this.bestiary.pages.get(actorLinks.find(x => x.active).page);
+        const currentPage = this.bestiary.pages.get(
+          actorLinks.find((x) => x.active).page,
+        );
         for (var link of actorLinks.filter((x) => !x.removed)) {
           const page = this.bestiary.pages.get(link.page);
           const newLinks = actorLinks
@@ -14661,7 +14708,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
               },
             });
 
-            if(link.new) {
+            if (link.new) {
               await page.system.importData(currentPage, link.importSections);
             }
           }
@@ -16077,6 +16124,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
+  async maximize() {
+    super.maximize();
+    this.render();
+  }
+
   onBestiaryUpdate = async () => {
     if (this.actorSheetApp) return;
     this.bestiary = game.journal.get(
@@ -16109,7 +16161,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const saveButton = $(this.element).find(
       '.prosemirror[collaborate="true"] *[data-action="save"]',
     );
-    if (saveButton.length === 0) {
+    if (saveButton.length === 0 && !this.minimized) {
       this.render(true);
     }
   };
