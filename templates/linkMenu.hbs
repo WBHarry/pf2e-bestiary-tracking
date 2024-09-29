@@ -10,7 +10,7 @@
                         <div class="actor-link-labels">
                             <div>{{this.name}}</div>
                             <div>
-                                {{#if (not this.unlinked)}}<i class="name-pre-icon fa-solid fa-circle-xmark pf2e-bestiary-clickable-icon" data-action="removeActorLink" data-actor="{{this.actor}}" data-page="{{this.page}}"></i>{{/if}}
+                                {{#if (not this.current)}}<i class="name-pre-icon fa-solid fa-circle-xmark pf2e-bestiary-clickable-icon" data-action="removeActorLink" data-actor="{{this.actor}}" data-page="{{this.page}}"></i>{{/if}}
                                 {{localize "Level"}} {{this.level}}{{#if this.active}}
                                 <i class="name-post-icon fa-solid fa-star"></i>{{/if}}
                             </div>

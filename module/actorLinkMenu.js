@@ -199,13 +199,16 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
     if (link.current) {
       link.actor = null;
       link.unlinked = true;
-    } else if (link.new) {
-      this.actorLinks = this.actorLinks.filter(
-        (x) => x.actor !== button.dataset.actor,
-      );
-      if (link.active) this.actorLinks.find((x) => x.current).active = true;
     } else {
-      link.removed = true;
+      if (link.active) this.actorLinks.find((x) => x.current).active = true;
+
+      if (link.new) {
+        this.actorLinks = this.actorLinks.filter(
+          (x) => x.actor !== button.dataset.actor,
+        );
+      } else {
+        link.removed = true;
+      }
     }
 
     this.render();
@@ -266,26 +269,26 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
       return;
     }
 
-    if (
-      game.journal
-        .get(game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"))
-        .pages.find((x) => x.system.uuid === baseItem.uuid)
-    ) {
-      ui.notifications.error(
-        game.i18n.localize(
-          "PF2EBestiary.Macros.AddMonster.TargetAlreadyInBestiary",
-        ),
-      );
-
-      return;
-    }
-
     const useTokenArt = game.settings.get(
       "pf2e-bestiary-tracking",
       "use-token-art",
     );
 
     if (event.currentTarget.classList.contains("duplicate-section")) {
+      if (
+        game.journal
+          .get(game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"))
+          .pages.find((x) => x.system.uuid === baseItem.uuid)
+      ) {
+        ui.notifications.error(
+          game.i18n.localize(
+            "PF2EBestiary.Macros.AddMonster.TargetAlreadyInBestiary",
+          ),
+        );
+
+        return;
+      }
+
       this.duplicates.set(baseItem.uuid, {
         name: baseItem.name,
         folderPath: this.getFolderPath(baseItem.folder),
@@ -295,14 +298,31 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
     }
 
     if (event.currentTarget.classList.contains("actor-link-container")) {
-      if (
-        this.actorLinks.some((x) => x.actor === baseItem.uuid && !x.removed)
-      ) {
+      const existingLink = this.actorLinks.find(
+        (x) => x.actor === baseItem.uuid,
+      );
+      if (existingLink && !existingLink.removed) {
         ui.notifications.error(
           game.i18n.localize(
             "PF2EBestiary.LinkMenu.Notifications.ActorAlreadyLinked",
           ),
         );
+        return;
+      }
+
+      if (
+        existingLink &&
+        !existingLink.removed &&
+        game.journal
+          .get(game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"))
+          .pages.find((x) => x.system.uuid === baseItem.uuid)
+      ) {
+        ui.notifications.error(
+          game.i18n.localize(
+            "PF2EBestiary.Macros.AddMonster.TargetAlreadyInBestiary",
+          ),
+        );
+
         return;
       }
 
