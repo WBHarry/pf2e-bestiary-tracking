@@ -22,14 +22,15 @@
                     </div>
                 </div>
             {{else}}
+                {{#if this.user.isGM}}
                 <div class="flexrow">
                     <div class="link-menu-container">
                         <button class="header-button link-menu-button {{#if (not this.selected.monster.system.uuid)}}unlinked{{/if}} secondary-container primary-hover-container" data-action="openActorLinkMenu" title="{{localize "Actor Link Menu"}}"><i class="fa-solid fa-users"></i></button>
                     </div>
-                {{#if this.user.isGM}}
+
                     <button class="header-button secondary-container primary-hover-container" data-action="toggleActorSheet"><i class="fa-solid fa-user"></i> {{localize "PF2EBestiary.Bestiary.ToggleActorSheet"}}</button>
-                {{/if}}
                 </div>
+                {{/if}}
             {{/if}}
         </header>
     {{/if}}
