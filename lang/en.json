@@ -27,6 +27,7 @@
       "CriticalFailure": "Critical Failure"
     },
     "ImportDialog": {
+      "JournalTitle": "Bestiary Import",
       "EntryTitle": "Bestiary Entry Import",
       "FaultyImport": "The selected JSON file is not a valid Bestiary Entry.",
       "UnusedBestiaryType": "You are not using this type of Bestiary Entry. Check your module settings.",
@@ -39,7 +40,9 @@
       "EditDialogTitle": "Edit Bestiary",
       "BestiaryNameText": "Bestiary Name",
       "BestiaryImageText": "Bestiary Image",
-      "EditBestiaryTitle": "Edit Bestiary",
+      "EditBestiaryTitle": "Edit",
+      "ImportBestiaryTitle": "Import",
+      "ExportBestiaryTitle": "Export",
       "DeleteBestiaryTitle": "Delete Bestiary",
       "DeleteBestiaryText": "Are you sure you want to delete this bestiary?",
       "ImportOldSaves": "Import Old Save States",

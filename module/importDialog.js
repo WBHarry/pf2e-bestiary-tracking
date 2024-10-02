@@ -5,15 +5,17 @@ const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 export default class ImportDialog extends HandlebarsApplicationMixin(
   ApplicationV2,
 ) {
-  constructor(resolve, reject) {
+  constructor(title, validation, resolve, reject) {
     super({});
 
+    this.titleName = title;
+    this.validation = validation;
     this.resolve = resolve;
     this.reject = reject;
   }
 
   get title() {
-    return game.i18n.localize("PF2EBestiary.ImportDialog.EntryTitle");
+    return game.i18n.localize(this.titleName);
   }
 
   static DEFAULT_OPTIONS = {
@@ -62,27 +64,16 @@ export default class ImportDialog extends HandlebarsApplicationMixin(
             jsonObject = JSON.parse(text);
           } catch {}
 
-          if (!jsonObject || !jsonObject.type) {
-            ui.notifications.error(
-              game.i18n.localize("PF2EBestiary.ImportDialog.FaultyImport"),
-            );
-            event.currentTarget.value = "";
-            return;
-          }
-
-          if (!getUsedBestiaryTypes().includes(jsonObject.type)) {
-            ui.notifications.error(
-              game.i18n.localize(
-                "PF2EBestiary.ImportDialog.UnusedBestiaryType",
-              ),
-            );
+          const validationError = this.validation(jsonObject);
+          if (validationError) {
+            ui.notifications.error(validationError);
             event.currentTarget.value = "";
             return;
           }
 
           $(importButton).prop("disabled", false);
           $(nameElement).prop("disabled", false);
-          nameElement.value = jsonObject.system.name.value;
+          nameElement.value = jsonObject.system?.name?.value ?? jsonObject.name;
         }
       });
   }
@@ -106,7 +97,10 @@ export default class ImportDialog extends HandlebarsApplicationMixin(
     await readTextFromFile(files[0]).then((json) => {
       const data = JSON.parse(json);
       data.name = name;
-      data.system.name.value = name;
+      if (data.system?.name?.value) {
+        data.system.name.value = name;
+      }
+
       this.resolve(data);
     });
     this.close();

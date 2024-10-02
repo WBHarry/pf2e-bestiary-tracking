@@ -315,7 +315,7 @@ const isValidEntityType = (type) => {
   return types.has(type);
 };
 
-const saveDataToFile = (data, type, filename) => {
+const saveDataToFile$1 = (data, type, filename) => {
   const blob = new Blob([data], { type: type });
 
   // Create an element to trigger the download
@@ -11435,7 +11435,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$6(
   }
 }
 
-const currentVersion = "1.1.6";
+const currentVersion = "1.1.7";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -12403,8 +12403,123 @@ var macros = /*#__PURE__*/Object.freeze({
 
 const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$5, ApplicationV2: ApplicationV2$5 } = foundry.applications.api;
 
-class BestiarySelection extends HandlebarsApplicationMixin$5(
+class ImportDialog extends HandlebarsApplicationMixin$5(
   ApplicationV2$5,
+) {
+  constructor(title, validation, resolve, reject) {
+    super({});
+
+    this.titleName = title;
+    this.validation = validation;
+    this.resolve = resolve;
+    this.reject = reject;
+  }
+
+  get title() {
+    return game.i18n.localize(this.titleName);
+  }
+
+  static DEFAULT_OPTIONS = {
+    tag: "form",
+    id: "pf2e-bestiary-tracking-import-dialog",
+    classes: ["bestiary-import-dialog"],
+    position: { width: 400, height: "auto" },
+    actions: {
+      importFile: this.importFile,
+    },
+    form: { handler: this.updateData, submitOnChange: false },
+  };
+
+  static PARTS = {
+    application: {
+      id: "bestiary-import-dialog",
+      template: "modules/pf2e-bestiary-tracking/templates/importDialog.hbs",
+    },
+  };
+
+  async _prepareContext(_options) {
+    const context = await super._prepareContext(_options);
+    context.fileData = this.fileData;
+    context.importName = this.importName;
+
+    return context;
+  }
+
+  _attachPartListeners(partId, htmlElement, options) {
+    super._attachPartListeners(partId, htmlElement, options);
+    $(htmlElement)
+      .find(".file-path")
+      .on("change", async (event) => {
+        const nameElement = $(this.element).find(".name-field")[0];
+        const importButton = $(this.element).find(
+          'button[data-action="importFile"]',
+        )[0];
+        if (!event.currentTarget.value) {
+          $(importButton).prop("disabled", true);
+          $(nameElement).prop("disabled", true);
+          nameElement.value = "";
+        } else {
+          const text = await readTextFromFile(event.currentTarget.files[0]);
+          let jsonObject = null;
+          try {
+            jsonObject = JSON.parse(text);
+          } catch {}
+
+          const validationError = this.validation(jsonObject);
+          if(validationError){
+            ui.notifications.error(validationError);
+            event.currentTarget.value = "";
+            return;
+          }
+
+          $(importButton).prop("disabled", false);
+          $(nameElement).prop("disabled", false);
+          nameElement.value = jsonObject.system?.name?.value ?? jsonObject.name;
+        }
+      });
+  }
+
+  close(options) {
+    this.reject();
+    super.close(options);
+  }
+
+  static async importFile() {
+    const files = $(this.element).find(".file-path")[0].files;
+    const name = $(this.element).find(".name-field")[0].value;
+
+    if (!name) {
+      ui.notifications.error(
+        game.i18n.localize("PF2EBestiary.ImportDialog.MissingName"),
+      );
+      return;
+    }
+
+    await readTextFromFile(files[0]).then((json) => {
+      const data = JSON.parse(json);
+      data.name = name;
+      if(data.system?.name?.value){
+        data.system.name.value = name;
+      }
+
+      this.resolve(data);
+    });
+    this.close();
+  }
+
+  //   static async updateData(event, element, formData) {
+  //     const updateData = foundry.utils.expandObject(formData.object);
+  //     this.fileData = updateData.fileData;
+  //     this.importName = updateData.importName;
+
+  //     this.render();
+  //   }
+}
+
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$4, ApplicationV2: ApplicationV2$4 } = foundry.applications.api;
+
+class BestiarySelection extends HandlebarsApplicationMixin$4(
+  ApplicationV2$4,
 ) {
   constructor() {
     super({});
@@ -12424,6 +12539,8 @@ class BestiarySelection extends HandlebarsApplicationMixin$5(
       editBestiary: this.editBestiary,
       deleteBestiary: this.deleteBestiary,
       swapBestiary: this.swapBestiary,
+      exportBestiary: this.exportBestiary,
+      importBestiary: this.importBestiary,
       importOldSaves: this.importOldSaves,
     },
     window: {
@@ -12628,6 +12745,36 @@ class BestiarySelection extends HandlebarsApplicationMixin$5(
     this.render();
   }
 
+  static async exportBestiary(event, button) {
+    event.stopPropagation();
+
+    const bestiary = game.journal.get(button.dataset.bestiary);
+    if (!bestiary) return;
+
+    saveDataToFile(
+      JSON.stringify(bestiary.toObject(), null, 2),
+      "text/json",
+      `${slugify(bestiary.name)}.json`,
+    );
+  }
+
+  static async importBestiary() {
+    new Promise((resolve, reject) => {
+      new ImportDialog("PF2EBestiary.ImportDialog.JournalTitle", 
+        jsonObject => {
+          if (!jsonObject) {
+            return game.i18n.localize("PF2EBestiary.ImportDialog.FaultyImport");
+          }
+
+          return null;
+        }
+      , resolve, reject).render(true);
+    }).then(async data => {
+      await JournalEntry.create(data);
+      this.render();
+    });
+  }
+
   static async importOldSaves() {
     const callback = async (path) => {
       const oldSave = await fetch(path).then(async (response) => {
@@ -12699,10 +12846,10 @@ class ExpandedDragDrop extends DragDrop {
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$4, ApplicationV2: ApplicationV2$4 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$3, ApplicationV2: ApplicationV2$3 } = foundry.applications.api;
 
-class AvatarMenu extends HandlebarsApplicationMixin$4(
-  ApplicationV2$4,
+class AvatarMenu extends HandlebarsApplicationMixin$3(
+  ApplicationV2$3,
 ) {
   constructor(entity, resolve, reject) {
     super({});
@@ -12793,10 +12940,10 @@ class AvatarMenu extends HandlebarsApplicationMixin$4(
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$3, ApplicationV2: ApplicationV2$3 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$2, ApplicationV2: ApplicationV2$2 } = foundry.applications.api;
 
-class ActorLinkSettingsMenu extends HandlebarsApplicationMixin$3(
-  ApplicationV2$3,
+class ActorLinkSettingsMenu extends HandlebarsApplicationMixin$2(
+  ApplicationV2$2,
 ) {
   constructor(resolve, reject) {
     super({});
@@ -12871,10 +13018,10 @@ class ActorLinkSettingsMenu extends HandlebarsApplicationMixin$3(
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$2, ApplicationV2: ApplicationV2$2 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
 
-class AvatarLinkMenu extends HandlebarsApplicationMixin$2(
-  ApplicationV2$2,
+class AvatarLinkMenu extends HandlebarsApplicationMixin$1(
+  ApplicationV2$1,
 ) {
   constructor(entity, resolve, reject) {
     super({});
@@ -13244,127 +13391,6 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$2(
       }
     }
   }
-}
-
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
-
-class ImportDialog extends HandlebarsApplicationMixin$1(
-  ApplicationV2$1,
-) {
-  constructor(resolve, reject) {
-    super({});
-
-    this.resolve = resolve;
-    this.reject = reject;
-  }
-
-  get title() {
-    return game.i18n.localize("PF2EBestiary.ImportDialog.EntryTitle");
-  }
-
-  static DEFAULT_OPTIONS = {
-    tag: "form",
-    id: "pf2e-bestiary-tracking-import-dialog",
-    classes: ["bestiary-import-dialog"],
-    position: { width: 400, height: "auto" },
-    actions: {
-      importFile: this.importFile,
-    },
-    form: { handler: this.updateData, submitOnChange: false },
-  };
-
-  static PARTS = {
-    application: {
-      id: "bestiary-import-dialog",
-      template: "modules/pf2e-bestiary-tracking/templates/importDialog.hbs",
-    },
-  };
-
-  async _prepareContext(_options) {
-    const context = await super._prepareContext(_options);
-    context.fileData = this.fileData;
-    context.importName = this.importName;
-
-    return context;
-  }
-
-  _attachPartListeners(partId, htmlElement, options) {
-    super._attachPartListeners(partId, htmlElement, options);
-    $(htmlElement)
-      .find(".file-path")
-      .on("change", async (event) => {
-        const nameElement = $(this.element).find(".name-field")[0];
-        const importButton = $(this.element).find(
-          'button[data-action="importFile"]',
-        )[0];
-        if (!event.currentTarget.value) {
-          $(importButton).prop("disabled", true);
-          $(nameElement).prop("disabled", true);
-          nameElement.value = "";
-        } else {
-          const text = await readTextFromFile(event.currentTarget.files[0]);
-          let jsonObject = null;
-          try {
-            jsonObject = JSON.parse(text);
-          } catch {}
-
-          if (!jsonObject || !jsonObject.type) {
-            ui.notifications.error(
-              game.i18n.localize("PF2EBestiary.ImportDialog.FaultyImport"),
-            );
-            event.currentTarget.value = "";
-            return;
-          }
-
-          if (!getUsedBestiaryTypes().includes(jsonObject.type)) {
-            ui.notifications.error(
-              game.i18n.localize(
-                "PF2EBestiary.ImportDialog.UnusedBestiaryType",
-              ),
-            );
-            event.currentTarget.value = "";
-            return;
-          }
-
-          $(importButton).prop("disabled", false);
-          $(nameElement).prop("disabled", false);
-          nameElement.value = jsonObject.system.name.value;
-        }
-      });
-  }
-
-  close(options) {
-    this.reject();
-    super.close(options);
-  }
-
-  static async importFile() {
-    const files = $(this.element).find(".file-path")[0].files;
-    const name = $(this.element).find(".name-field")[0].value;
-
-    if (!name) {
-      ui.notifications.error(
-        game.i18n.localize("PF2EBestiary.ImportDialog.MissingName"),
-      );
-      return;
-    }
-
-    await readTextFromFile(files[0]).then((json) => {
-      const data = JSON.parse(json);
-      data.name = name;
-      data.system.name.value = name;
-      this.resolve(data);
-    });
-    this.close();
-  }
-
-  //   static async updateData(event, element, formData) {
-  //     const updateData = foundry.utils.expandObject(formData.object);
-  //     this.fileData = updateData.fileData;
-  //     this.importName = updateData.importName;
-
-  //     this.render();
-  //   }
 }
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -15649,7 +15675,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   static exportEntity() {
-    saveDataToFile(
+    saveDataToFile$1(
       JSON.stringify(this.selected.monster.toObject(), null, 2),
       "text/json",
       `${slugify(this.selected.monster.system.name.value)}.json`,
@@ -15659,7 +15685,20 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async importEntity() {
     new Promise((resolve, reject) => {
-      new ImportDialog(resolve, reject).render(true);
+      new ImportDialog("PF2EBestiary.ImportDialog.EntryTitle", 
+        jsonObject => {
+          if (!jsonObject || !jsonObject.type) {
+            return game.i18n.localize("PF2EBestiary.ImportDialog.FaultyImport");
+          }
+
+          if (!getUsedBestiaryTypes().includes(jsonObject.type)) {
+            return game.i18n.localize(
+              "PF2EBestiary.ImportDialog.UnusedBestiaryType",
+            );
+          }
+          return null;
+        }
+      , resolve, reject).render(true);
     }).then(this.importFromJSONData.bind(this));
     this.toggleControls(false);
   }

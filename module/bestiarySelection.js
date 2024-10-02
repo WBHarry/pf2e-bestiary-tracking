@@ -1,6 +1,8 @@
+import { slugify } from "../scripts/helpers";
 import { handleBestiaryMigration } from "../scripts/migrationHandler";
 import { currentVersion } from "../scripts/setup";
 import { socketEvent } from "../scripts/socket";
+import ImportDialog from "./importDialog";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -25,6 +27,8 @@ export default class BestiarySelection extends HandlebarsApplicationMixin(
       editBestiary: this.editBestiary,
       deleteBestiary: this.deleteBestiary,
       swapBestiary: this.swapBestiary,
+      exportBestiary: this.exportBestiary,
+      importBestiary: this.importBestiary,
       importOldSaves: this.importOldSaves,
     },
     window: {
@@ -227,6 +231,39 @@ export default class BestiarySelection extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
 
     this.render();
+  }
+
+  static async exportBestiary(event, button) {
+    event.stopPropagation();
+
+    const bestiary = game.journal.get(button.dataset.bestiary);
+    if (!bestiary) return;
+
+    saveDataToFile(
+      JSON.stringify(bestiary.toObject(), null, 2),
+      "text/json",
+      `${slugify(bestiary.name)}.json`,
+    );
+  }
+
+  static async importBestiary() {
+    new Promise((resolve, reject) => {
+      new ImportDialog(
+        "PF2EBestiary.ImportDialog.JournalTitle",
+        (jsonObject) => {
+          if (!jsonObject) {
+            return game.i18n.localize("PF2EBestiary.ImportDialog.FaultyImport");
+          }
+
+          return null;
+        },
+        resolve,
+        reject,
+      ).render(true);
+    }).then(async (data) => {
+      await JournalEntry.create(data);
+      this.render();
+    });
   }
 
   static async importOldSaves() {

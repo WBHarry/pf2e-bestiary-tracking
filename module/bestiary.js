@@ -2318,7 +2318,23 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async importEntity() {
     new Promise((resolve, reject) => {
-      new ImportDialog(resolve, reject).render(true);
+      new ImportDialog(
+        "PF2EBestiary.ImportDialog.EntryTitle",
+        (jsonObject) => {
+          if (!jsonObject || !jsonObject.type) {
+            return game.i18n.localize("PF2EBestiary.ImportDialog.FaultyImport");
+          }
+
+          if (!getUsedBestiaryTypes().includes(jsonObject.type)) {
+            return game.i18n.localize(
+              "PF2EBestiary.ImportDialog.UnusedBestiaryType",
+            );
+          }
+          return null;
+        },
+        resolve,
+        reject,
+      ).render(true);
     }).then(this.importFromJSONData.bind(this));
     this.toggleControls(false);
   }
