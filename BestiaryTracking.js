@@ -11435,7 +11435,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$6(
   }
 }
 
-const currentVersion = "1.1.7";
+const currentVersion = "1.1.8";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -12466,7 +12466,7 @@ class ImportDialog extends HandlebarsApplicationMixin$5(
           } catch {}
 
           const validationError = this.validation(jsonObject);
-          if(validationError){
+          if (validationError) {
             ui.notifications.error(validationError);
             event.currentTarget.value = "";
             return;
@@ -12498,7 +12498,7 @@ class ImportDialog extends HandlebarsApplicationMixin$5(
     await readTextFromFile(files[0]).then((json) => {
       const data = JSON.parse(json);
       data.name = name;
-      if(data.system?.name?.value){
+      if (data.system?.name?.value) {
         data.system.name.value = name;
       }
 
@@ -12760,17 +12760,38 @@ class BestiarySelection extends HandlebarsApplicationMixin$4(
 
   static async importBestiary() {
     new Promise((resolve, reject) => {
-      new ImportDialog("PF2EBestiary.ImportDialog.JournalTitle", 
-        jsonObject => {
+      new ImportDialog(
+        "PF2EBestiary.ImportDialog.JournalTitle",
+        (jsonObject) => {
           if (!jsonObject) {
             return game.i18n.localize("PF2EBestiary.ImportDialog.FaultyImport");
           }
 
           return null;
-        }
-      , resolve, reject).render(true);
-    }).then(async data => {
-      await JournalEntry.create(data);
+        },
+        resolve,
+        reject,
+      ).render(true);
+    }).then(async (data) => {
+      var folder = game.folders.get(
+        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking-folder"),
+      );
+      if (!folder) {
+        folder = await Folder.create({
+          name: bestiaryFolder,
+          type: "JournalEntry",
+        });
+        await game.settings.set(
+          "pf2e-bestiary-tracking",
+          "bestiary-tracking-folder",
+          folder.id,
+        );
+      }
+
+      await JournalEntry.create({
+        ...data,
+        folder: folder.id,
+      });
       this.render();
     });
   }
@@ -15685,8 +15706,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async importEntity() {
     new Promise((resolve, reject) => {
-      new ImportDialog("PF2EBestiary.ImportDialog.EntryTitle", 
-        jsonObject => {
+      new ImportDialog(
+        "PF2EBestiary.ImportDialog.EntryTitle",
+        (jsonObject) => {
           if (!jsonObject || !jsonObject.type) {
             return game.i18n.localize("PF2EBestiary.ImportDialog.FaultyImport");
           }
@@ -15697,8 +15719,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
             );
           }
           return null;
-        }
-      , resolve, reject).render(true);
+        },
+        resolve,
+        reject,
+      ).render(true);
     }).then(this.importFromJSONData.bind(this));
     this.toggleControls(false);
   }

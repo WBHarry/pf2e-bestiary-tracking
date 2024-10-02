@@ -1,6 +1,6 @@
 import { slugify } from "../scripts/helpers";
 import { handleBestiaryMigration } from "../scripts/migrationHandler";
-import { currentVersion } from "../scripts/setup";
+import { bestiaryFolder, currentVersion } from "../scripts/setup";
 import { socketEvent } from "../scripts/socket";
 import ImportDialog from "./importDialog";
 
@@ -261,7 +261,25 @@ export default class BestiarySelection extends HandlebarsApplicationMixin(
         reject,
       ).render(true);
     }).then(async (data) => {
-      await JournalEntry.create(data);
+      var folder = game.folders.get(
+        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking-folder"),
+      );
+      if (!folder) {
+        folder = await Folder.create({
+          name: bestiaryFolder,
+          type: "JournalEntry",
+        });
+        await game.settings.set(
+          "pf2e-bestiary-tracking",
+          "bestiary-tracking-folder",
+          folder.id,
+        );
+      }
+
+      await JournalEntry.create({
+        ...data,
+        folder: folder.id,
+      });
       this.render();
     });
   }
