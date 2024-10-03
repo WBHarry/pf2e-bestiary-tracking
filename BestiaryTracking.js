@@ -215,14 +215,16 @@ const getEntityType = (data) => {
     "npc-registration",
   );
 
+  const isUnique = data.system.traits.rarity === "unique";
+  const npcTagged = Object.values(data.system.traits.value).find((x) =>
+    x.value ? x.value === "npc" : x === "npc",
+  );
   const isNPC =
     !usedSections.creature ||
     (usedSections.npc &&
       (npcRegistration === 0
-        ? data.system.traits.rarity === "unique"
-        : Object.values(data.system.traits.value).find((x) =>
-            x.value ? x.value === "npc" : x === "npc",
-          )));
+        ? isUnique
+        : npcRegistration === 1 ? npcTagged : (isUnique || npcTagged)));
 
   return isNPC ? "npc" : "creature";
 };
@@ -8196,6 +8198,12 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$9(
         ),
         value: 1,
       },
+      {
+        name: game.i18n.localize(
+          "PF2EBestiary.Settings.NPCRegistation.Choices.UniqueTag",
+        ),
+        value: 2,
+      },
     ];
   }
 
@@ -12019,6 +12027,7 @@ const bestiaryIntegration = () => {
         "PF2EBestiary.Settings.NPCRegistation.Choices.Unique",
       ),
       1: game.i18n.localize("PF2EBestiary.Settings.NPCRegistation.Choices.Tag"),
+      2: game.i18n.localize("PF2EBestiary.Settings.NPCRegistation.Choices.UniqueTag"),
     },
     default: 0,
   });

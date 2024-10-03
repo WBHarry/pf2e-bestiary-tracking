@@ -538,7 +538,8 @@
         "Hint": "Select the way NPCs will be recognised by the bestiary",
         "Choices": {
           "Unique": "By Unique Rarity",
-          "Tag": "By NPC Tag"
+          "Tag": "By NPC Tag",
+          "UniqueTag": "Either Unique Rarity or NPC Tag"
         }
       },
       "HideTokenNames": {

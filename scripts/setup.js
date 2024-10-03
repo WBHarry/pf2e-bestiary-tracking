@@ -602,6 +602,9 @@ const bestiaryIntegration = () => {
         "PF2EBestiary.Settings.NPCRegistation.Choices.Unique",
       ),
       1: game.i18n.localize("PF2EBestiary.Settings.NPCRegistation.Choices.Tag"),
+      2: game.i18n.localize(
+        "PF2EBestiary.Settings.NPCRegistation.Choices.UniqueTag",
+      ),
     },
     default: 0,
   });

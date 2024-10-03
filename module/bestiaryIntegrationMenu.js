@@ -77,6 +77,12 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
         ),
         value: 1,
       },
+      {
+        name: game.i18n.localize(
+          "PF2EBestiary.Settings.NPCRegistation.Choices.UniqueTag",
+        ),
+        value: 2,
+      },
     ];
   }
 

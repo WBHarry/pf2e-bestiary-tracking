@@ -232,14 +232,18 @@ export const getEntityType = (data) => {
     "npc-registration",
   );
 
+  const isUnique = data.system.traits.rarity === "unique";
+  const npcTagged = Object.values(data.system.traits.value).find((x) =>
+    x.value ? x.value === "npc" : x === "npc",
+  );
   const isNPC =
     !usedSections.creature ||
     (usedSections.npc &&
       (npcRegistration === 0
-        ? data.system.traits.rarity === "unique"
-        : Object.values(data.system.traits.value).find((x) =>
-            x.value ? x.value === "npc" : x === "npc",
-          )));
+        ? isUnique
+        : npcRegistration === 1
+          ? npcTagged
+          : isUnique || npcTagged));
 
   return isNPC ? "npc" : "creature";
 };
