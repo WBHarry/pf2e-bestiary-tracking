@@ -27,6 +27,7 @@
       "CriticalFailure": "Krytyczna Porażka"
     },
     "ImportDialog": {
+      "JournalTitle": "Import Bestiariusza",
       "EntryTitle": "Import wpisu do bestiariusza",
       "FaultyImport": "Wybrany plik JSON nie jest prawidłowym wpisem Bestiariusza.",
       "UnusedBestiaryType": "Nie używasz tego typu wpisu do Bestiariusza. Sprawdź ustawienia modułu.",
@@ -40,6 +41,8 @@
       "BestiaryNameText": "Nazwa Bestiariusza",
       "BestiaryImageText": "Obraz Bestiariusza",
       "EditBestiaryTitle": "Edytuj",
+      "ImportBestiaryTitle": "Importuj",
+      "ExportBestiaryTitle": "Eksportuj",
       "DeleteBestiaryTitle": "Usuń Bestiariusz",
       "DeleteBestiaryText": "Czy na pewno chcesz usunąć ten bestiariusz?",
       "ImportOldSaves": "Importuj stare zapisane stany",
@@ -475,7 +478,7 @@
             "Title": "Początkowy ukryty stan obrazu",
             "Revealed": "Ujawnione",
             "Outline": "Zarys",
-            "Hidden": "Ukryte",
+            "Hidden": "Ukryty",
             "Sepia": "Sepia"
           }
         },
@@ -535,7 +538,8 @@
         "Hint": "Wybierz sposób, w jaki postacie niezależne będą rozpoznawane przez bestiariusz.",
         "Choices": {
           "Unique": "Według unikalnej rzadkości",
-          "Tag": "Według tagu BN"
+          "Tag": "Według tagu BN",
+          "UniqueTag": "Unikatowa rzadkość lub znacznik BN"
         }
       },
       "HideTokenNames": {
