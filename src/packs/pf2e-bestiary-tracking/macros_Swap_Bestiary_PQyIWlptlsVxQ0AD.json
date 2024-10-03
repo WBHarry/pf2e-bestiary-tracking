@@ -1,0 +1,27 @@
+{
+  "name": "Swap Bestiary",
+  "type": "script",
+  "command": "game.modules.get('pf2e-bestiary-tracking').macros.swapBestiary();",
+  "img": "icons/magic/time/arrows-circling-pink.webp",
+  "author": "bjIOjwHFtSW4QhtR",
+  "scope": "global",
+  "folder": null,
+  "ownership": {
+    "default": 0,
+    "bjIOjwHFtSW4QhtR": 3
+  },
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.331",
+    "systemId": "pf2e",
+    "systemVersion": "6.4.1",
+    "createdTime": 1727983965187,
+    "modifiedTime": 1727983965187,
+    "lastModifiedBy": "bjIOjwHFtSW4QhtR"
+  },
+  "_id": "PQyIWlptlsVxQ0AD",
+  "sort": 0,
+  "_key": "!macros!PQyIWlptlsVxQ0AD"
+}

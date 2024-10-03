@@ -1,10 +1,15 @@
 import PF2EBestiary from "../module/bestiary.js";
+import BestiarySelection from "../module/bestiarySelection.js";
 import { isValidEntityType } from "./helpers.js";
 import { bestiaryFolder, currentVersion } from "./setup.js";
 import { socketEvent } from "./socket.js";
 
 export const openBestiary = async () => {
   new PF2EBestiary().render(true);
+};
+
+export const swapBestiary = async () => {
+  new BestiarySelection().render(true);
 };
 
 export const openBestiaryCombat = async () => {

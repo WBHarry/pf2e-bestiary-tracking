@@ -224,7 +224,9 @@ const getEntityType = (data) => {
     (usedSections.npc &&
       (npcRegistration === 0
         ? isUnique
-        : npcRegistration === 1 ? npcTagged : (isUnique || npcTagged)));
+        : npcRegistration === 1
+          ? npcTagged
+          : isUnique || npcTagged));
 
   return isNPC ? "npc" : "creature";
 };
@@ -346,35 +348,6 @@ const readTextFromFile = (file) => {
   });
 };
 
-const revealedState = {
-  enabled: false,
-  revealed: "#008000",
-  hidden: "#ff0000",
-};
-
-const optionalFields = {
-  level: false,
-  languages: false,
-  height: false,
-  weight: false,
-  birthplace: false,
-};
-
-const bestiaryCategorySettings = {
-  creature: {
-    name: "PF2EBestiary.Bestiary.Category.Creatures",
-    image: "icons/creatures/magical/humanoid-silhouette-green.webp",
-  },
-  npc: {
-    name: "PF2EBestiary.Bestiary.Category.NPC",
-    image: "icons/environment/people/group.webp",
-  },
-  hazard: {
-    name: "PF2EBestiary.Bestiary.Category.Hazards",
-    image: "icons/environment/traps/trap-jaw-steel.webp",
-  },
-};
-
 const getVagueDescriptionLabels = () => ({
   full: {
     extreme: game.i18n.localize(
@@ -411,6 +384,35 @@ const getVagueDescriptionLabels = () => ({
     ),
   },
 });
+
+const revealedState = {
+  enabled: false,
+  revealed: "#008000",
+  hidden: "#ff0000",
+};
+
+const optionalFields = {
+  level: false,
+  languages: false,
+  height: false,
+  weight: false,
+  birthplace: false,
+};
+
+const bestiaryCategorySettings = {
+  creature: {
+    name: "PF2EBestiary.Bestiary.Category.Creatures",
+    image: "icons/creatures/magical/humanoid-silhouette-green.webp",
+  },
+  npc: {
+    name: "PF2EBestiary.Bestiary.Category.NPC",
+    image: "icons/environment/people/group.webp",
+  },
+  hazard: {
+    name: "PF2EBestiary.Bestiary.Category.Hazards",
+    image: "icons/environment/traps/trap-jaw-steel.webp",
+  },
+};
 
 const rangeOptions = ["extreme", "high", "moderate", "low", "terrible"];
 
@@ -8607,6 +8609,1048 @@ class VagueDescriptionsMenu extends HandlebarsApplicationMixin$7(
   }
 }
 
+const coreDark = {
+  "--pf2e-bestiary-tracking-application-image": "ignore",
+  "--pf2e-bestiary-tracking-application": "#12101fe6",
+  "--pf2e-bestiary-tracking-secondary-application": "#431b1b",
+  "--pf2e-bestiary-tracking-primary": "rgb(94 0 0)",
+  "--pf2e-bestiary-tracking-primary-faded": "rgb(94 0 0 / 50%)",
+  "--pf2e-bestiary-tracking-secondary": "#4b4b8c",
+  "--pf2e-bestiary-tracking-tertiary": "#007149",
+  "--pf2e-bestiary-tracking-primary-accent": "#ad0303",
+  "--pf2e-bestiary-tracking-tertiary-accent": "#76963f",
+  "--pf2e-bestiary-tracking-primary-color": "white",
+  "--pf2e-bestiary-tracking-icon-filter": "none",
+  "--pf2e-bestiary-tracking-main-hover": "white",
+  "--pf2e-bestiary-tracking-border": "#ababab",
+  "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-application-border": "wheat",
+  "--pf2e-bestiary-tracking-icon": "rgb(247, 243, 232)",
+  "--pf2e-bestiary-tracking-accent-icon": "gold",
+};
+
+const coreLight = {
+  "--pf2e-bestiary-tracking-application-image": "../ui/parchment.jpg",
+  "--pf2e-bestiary-tracking-application-header": "rgb(68, 68, 68)",
+  "--pf2e-bestiary-tracking-application-image-repeat": "repeat",
+  "--pf2e-bestiary-tracking-application": "initial",
+  "--pf2e-bestiary-tracking-secondary-application": "#b8cccb",
+  "--pf2e-bestiary-tracking-primary": "rgb(212 189 172)",
+  "--pf2e-bestiary-tracking-primary-faded": "rgb(212 189 172 / 25%)",
+  "--pf2e-bestiary-tracking-secondary": "#62b356",
+  "--pf2e-bestiary-tracking-tertiary": "#62acce",
+  "--pf2e-bestiary-tracking-primary-accent": "#fff1db",
+  "--pf2e-bestiary-tracking-tertiary-accent": "#9de0ff",
+  "--pf2e-bestiary-tracking-primary-color": "black",
+  "--pf2e-bestiary-tracking-icon-filter":
+    "invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%)",
+  "--pf2e-bestiary-tracking-main-hover": "#1c8efe",
+  "--pf2e-bestiary-tracking-border": "black",
+  "--pf2e-bestiary-tracking-secondary-border": "#82acff",
+  "--pf2e-bestiary-tracking-application-border": "initial",
+  "--pf2e-bestiary-tracking-icon": "black",
+  "--pf2e-bestiary-tracking-accent-icon": "gold",
+};
+
+const nebula = {
+  "--pf2e-bestiary-tracking-application-image":
+    "modules/pf2e-bestiary-tracking/assets/Space.webp",
+  "--pf2e-bestiary-tracking-application-header": "transparent",
+  "--pf2e-bestiary-tracking-application-image-size": "cover",
+  "--pf2e-bestiary-tracking-application-image-repeat": "round",
+  "--pf2e-bestiary-tracking-application-secondary-image":
+    "linear-gradient(#8a549c, #9198e5)",
+  "--pf2e-bestiary-tracking-application": "",
+  "--pf2e-bestiary-tracking-secondary-application": "",
+  "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px grey)",
+  "--pf2e-bestiary-tracking-primary": "rgb(115 169 188)",
+  "--pf2e-bestiary-tracking-primary-faded": "rgb(115 169 188 / 50%)",
+  "--pf2e-bestiary-tracking-secondary": "#cd7e23",
+  "--pf2e-bestiary-tracking-tertiary": "#7476a6",
+  "--pf2e-bestiary-tracking-primary-accent": "#0888b5",
+  "--pf2e-bestiary-tracking-tertiary-accent": "#888bc0",
+  "--pf2e-bestiary-tracking-primary-color": "rgb(247, 243, 232)",
+  "--pf2e-bestiary-tracking-icon-filter": "none",
+  "--pf2e-bestiary-tracking-main-hover": "",
+  "--pf2e-bestiary-tracking-border": "#e4e41e",
+  "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-application-border": "#e4e41e",
+  "--pf2e-bestiary-tracking-icon": "",
+  "--pf2e-bestiary-tracking-accent-icon": "",
+};
+
+const viscera = {
+  "--pf2e-bestiary-tracking-application-image":
+    "modules/pf2e-bestiary-tracking/assets/Viscera.webp",
+  "--pf2e-bestiary-tracking-application-header": "transparent",
+  "--pf2e-bestiary-tracking-application-image-size": "cover",
+  "--pf2e-bestiary-tracking-application-image-repeat": "initial",
+  "--pf2e-bestiary-tracking-application-secondary-image": "",
+  "--pf2e-bestiary-tracking-application": "",
+  "--pf2e-bestiary-tracking-secondary-application": "",
+  "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px grey)",
+  "--pf2e-bestiary-tracking-primary": "rgb(129 63 63)",
+  "--pf2e-bestiary-tracking-primary-faded": "rgb(129 63 63 / 50%)",
+  "--pf2e-bestiary-tracking-secondary": "#483c70",
+  "--pf2e-bestiary-tracking-tertiary": "crimson",
+  "--pf2e-bestiary-tracking-primary-accent": "#9f2828",
+  "--pf2e-bestiary-tracking-tertiary-accent": "#c12c2c",
+  "--pf2e-bestiary-tracking-primary-color": "white",
+  "--pf2e-bestiary-tracking-icon-filter": "none",
+  "--pf2e-bestiary-tracking-main-hover": "red",
+  "--pf2e-bestiary-tracking-border": "orange",
+  "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-application-border": "orange",
+  "--pf2e-bestiary-tracking-icon": "",
+  "--pf2e-bestiary-tracking-accent-icon": "",
+};
+
+const water = {
+  "--pf2e-bestiary-tracking-application-image":
+    "modules/pf2e-bestiary-tracking/assets/Water.webp",
+  "--pf2e-bestiary-tracking-application-header": "transparent",
+  "--pf2e-bestiary-tracking-application-image-size": "cover",
+  "--pf2e-bestiary-tracking-application-image-repeat": "initial",
+  "--pf2e-bestiary-tracking-application-secondary-image": "",
+  "--pf2e-bestiary-tracking-application": "",
+  "--pf2e-bestiary-tracking-secondary-application": "",
+  "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px grey)",
+  "--pf2e-bestiary-tracking-primary": "rgb(28 166 113)",
+  "--pf2e-bestiary-tracking-primary-faded": "rgb(28 166 113 / 50%)",
+  "--pf2e-bestiary-tracking-secondary": "#8b0d8b",
+  "--pf2e-bestiary-tracking-tertiary": "#602fa1",
+  "--pf2e-bestiary-tracking-primary-accent": "#0f7e2fbf",
+  "--pf2e-bestiary-tracking-tertiary-accent": "#681ad1",
+  "--pf2e-bestiary-tracking-primary-color": "rgb(247, 243, 232)",
+  "--pf2e-bestiary-tracking-icon-filter": "none",
+  "--pf2e-bestiary-tracking-main-hover": "white",
+  "--pf2e-bestiary-tracking-border": "#c7ffed",
+  "--pf2e-bestiary-tracking-secondary-border": "gold",
+  "--pf2e-bestiary-tracking-application-border": "#c7ffed",
+  "--pf2e-bestiary-tracking-icon": "",
+  "--pf2e-bestiary-tracking-accent-icon": "",
+};
+
+const bestiaryThemes = {
+  coreLight: coreLight,
+  coreDark: coreDark,
+  nebula: nebula,
+  viscera: viscera,
+  water: water,
+  // parchment: parchment,
+};
+
+const bestiaryThemeChoices = {
+  coreLight: "Core Light",
+  coreDark: "Core Dark",
+  nebula: "Nebula",
+  viscera: "Viscera",
+  water: "Water",
+  // parchment: 'Parchment',
+};
+
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$6, ApplicationV2: ApplicationV2$6 } = foundry.applications.api;
+
+class BestiaryDisplayMenu extends HandlebarsApplicationMixin$6(
+  ApplicationV2$6,
+) {
+  constructor() {
+    super({});
+
+    this.settings = {
+      hideAbilityDescriptions: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "hide-ability-descriptions",
+      ),
+      additionalCreatureTypes: game.settings
+        .get("pf2e-bestiary-tracking", "additional-creature-types")
+        .map((x) => ({ value: x.value, name: game.i18n.localize(x.name) })),
+      optionalFields: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "optional-fields",
+      ),
+      detailedInformation: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "detailed-information-toggles",
+      ),
+      usedSections: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "used-sections",
+      ),
+      journalSettings: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "bestiary-journal-settings",
+      ),
+      sheetSettings: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "sheet-settings",
+      ),
+    };
+  }
+
+  get title() {
+    return game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Name");
+  }
+
+  static DEFAULT_OPTIONS = {
+    tag: "form",
+    id: "pf2e-bestiary-tracking-display-menu",
+    classes: ["bestiary-settings-menu"],
+    position: { width: 680, height: "auto" },
+    actions: {
+      resetJournalSettings: this.resetJournalSettings,
+      toggleOptionalFields: this.toggleOptionalFields,
+      toggleDetailedInformation: this.toggleDetailedInformation,
+      toggleUsedSection: this.toggleUsedSection,
+      filePicker: this.filePicker,
+      save: this.save,
+    },
+    form: { handler: this.updateData, submitOnChange: true },
+  };
+
+  static PARTS = {
+    application: {
+      id: "bestiary-display-menu",
+      template:
+        "modules/pf2e-bestiary-tracking/templates/bestiaryDisplayMenu.hbs",
+    },
+  };
+
+  _attachPartListeners(partId, htmlElement, options) {
+    super._attachPartListeners(partId, htmlElement, options);
+
+    const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
+    const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits).filter(
+      (x) => !creatureTypes.includes(x),
+    );
+
+    const traitsInput = $(htmlElement).find(".traits-input")[0];
+    const traitsTagify = new Y(traitsInput, {
+      tagTextProp: "name",
+      enforceWhitelist: true,
+      whitelist: creatureTraits.map((key) => {
+        const label = CONFIG.PF2E.creatureTraits[key];
+        return { value: key, name: game.i18n.localize(label) };
+      }),
+      callbacks: { invalid: this.onAddTag },
+      dropdown: {
+        mapValueTo: "name",
+        searchKeys: ["name"],
+        enabled: 0,
+        maxItems: 20,
+        closeOnSelect: true,
+        highlightFirst: false,
+      },
+    });
+
+    traitsTagify.on("change", this.creatureTraitSelect.bind(this));
+  }
+
+  async _prepareContext(_options) {
+    const context = await super._prepareContext(_options);
+    context.settings = {
+      ...this.settings,
+      additionalCreatureTypes: this.settings.additionalCreatureTypes?.length
+        ? this.settings.additionalCreatureTypes.map((x) => x.name)
+        : [],
+    };
+
+    context.nrUsedSections = Object.values(this.settings.usedSections).filter(
+      (x) => x,
+    ).length;
+
+    context.toBestiaryOptions = toBestiaryOptions;
+
+    return context;
+  }
+
+  static async updateData(event, element, formData) {
+    const data = foundry.utils.expandObject(formData.object);
+    this.settings = {
+      additionalCreatureTypes: this.settings.additionalCreatureTypes,
+      hideAbilityDescriptions: data.hideAbilityDescriptions,
+      optionalFields: data.optionalFields,
+      detailedInformation: { ...data.detailedInformation },
+      usedSections: this.settings.usedSections,
+      journalSettings: {
+        ...data.journalSettings,
+        image: this.settings.journalSettings.image,
+      },
+      sheetSettings: data.sheetSettings,
+    };
+    this.render();
+  }
+
+  async creatureTraitSelect(event) {
+    this.settings.additionalCreatureTypes = event.detail?.value
+      ? JSON.parse(event.detail.value)
+      : [];
+    this.render();
+  }
+
+  static async resetJournalSettings() {
+    this.settings.journalSettings = {
+      active: true,
+      name: "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle",
+      image: "icons/sundries/books/book-embossed-bound-brown.webp",
+    };
+    this.render();
+  }
+
+  static async toggleOptionalFields() {
+    const keys = Object.keys(this.settings.optionalFields);
+    const enable = Object.values(this.settings.optionalFields).some((x) => !x);
+    this.settings.optionalFields = keys.reduce((acc, key) => {
+      acc[key] = enable;
+      return acc;
+    }, {});
+
+    this.render();
+  }
+
+  static async toggleDetailedInformation() {
+    const keys = Object.keys(this.settings.detailedInformation);
+    const enable = Object.values(this.settings.detailedInformation).some(
+      (x) => !x,
+    );
+    this.settings.detailedInformation = keys.reduce((acc, key) => {
+      acc[key] = enable;
+      return acc;
+    }, {});
+
+    this.render();
+  }
+
+  static async toggleUsedSection(_, button) {
+    const usedSections = Object.values(this.settings.usedSections).filter(
+      (x) => x,
+    );
+    if (
+      usedSections.length > 1 ||
+      !this.settings.usedSections[button.dataset.section]
+    )
+      this.settings.usedSections[button.dataset.section] =
+        !this.settings.usedSections[button.dataset.section];
+
+    this.render();
+  }
+
+  static async filePicker(_, button) {
+    new FilePicker({
+      type: "image",
+      title: "Image Select",
+      callback: async (path) => {
+        foundry.utils.setProperty(this.settings, button.dataset.path, path);
+        this.render();
+      },
+    }).render(true);
+  }
+
+  static async save(_) {
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "additional-creature-types",
+      this.settings.additionalCreatureTypes.map((x) => ({
+        value: x.value,
+        name: CONFIG.PF2E.creatureTraits[x.value],
+      })),
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "hide-ability-descriptions",
+      this.settings.hideAbilityDescriptions,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "optional-fields",
+      this.settings.optionalFields,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "detailed-information-toggles",
+      this.settings.detailedInformation,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "used-sections",
+      this.settings.usedSections,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "bestiary-journal-settings",
+      this.settings.journalSettings,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "sheet-settings",
+      this.settings.sheetSettings,
+    );
+    this.close();
+  }
+}
+
+const currentVersion = "1.1.8";
+const bestiaryFolder = "BestiaryTracking Bestiares";
+
+const dataTypeSetup = () => {
+  CONFIG.JournalEntryPage.dataModels = {
+    ...CONFIG.JournalEntryPage.dataModels,
+    "pf2e-bestiary-tracking.creature": Creature,
+    "pf2e-bestiary-tracking.npc": NPC,
+    "pf2e-bestiary-tracking.hazard": Hazard,
+  };
+};
+
+const setupTheme = () => {
+  const theme =
+    bestiaryThemes[
+      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
+    ];
+  const root = document.querySelector(":root");
+  for (var property of Object.keys(theme)) {
+    if (
+      property === "--pf2e-bestiary-tracking-application-image" &&
+      theme[property] !== "ignore"
+    ) {
+      const baseUri = document.baseURI.split("game")[0];
+      root.style.setProperty(property, `url("${baseUri}${theme[property]}")`);
+    } else {
+      root.style.setProperty(property, theme[property]);
+    }
+  }
+};
+
+const registerKeyBindings = () => {
+  game.keybindings.register("pf2e-bestiary-tracking", "open-bestiary", {
+    name: game.i18n.localize("PF2EBestiary.KeyBindings.OpenBestiary.Name"),
+    hint: game.i18n.localize("PF2EBestiary.KeyBindings.OpenBestiary.Hint"),
+    uneditable: [],
+    editable: [],
+    onDown: () =>
+      game.modules.get("pf2e-bestiary-tracking").macros.openBestiary(),
+    onUp: () => {},
+    restricted: false,
+    reservedModifiers: [],
+    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
+  });
+
+  game.keybindings.register("pf2e-bestiary-tracking", "open-bestiary-combat", {
+    name: game.i18n.localize(
+      "PF2EBestiary.KeyBindings.OpenBestiaryCombat.Name",
+    ),
+    hint: game.i18n.localize(
+      "PF2EBestiary.KeyBindings.OpenBestiaryCombat.Hint",
+    ),
+    uneditable: [],
+    editable: [],
+    onDown: () =>
+      game.modules.get("pf2e-bestiary-tracking").macros.openBestiaryCombat(),
+    onUp: () => {},
+    restricted: false,
+    reservedModifiers: [],
+    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
+  });
+
+  game.keybindings.register("pf2e-bestiary-tracking", "show-monster", {
+    name: game.i18n.localize("PF2EBestiary.KeyBindings.ShowMonster.Name"),
+    hint: game.i18n.localize("PF2EBestiary.KeyBindings.ShowMonster.Hint"),
+    uneditable: [],
+    editable: [],
+    onDown: () =>
+      game.modules.get("pf2e-bestiary-tracking").macros.showMonster(),
+    onUp: () => {},
+    restricted: false,
+    reservedModifiers: [],
+    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
+  });
+
+  game.keybindings.register("pf2e-bestiary-tracking", "add-monster", {
+    name: game.i18n.localize("PF2EBestiary.KeyBindings.AddMonster.Name"),
+    hint: game.i18n.localize("PF2EBestiary.KeyBindings.AddMonster.Hint"),
+    uneditable: [],
+    editable: [],
+    onDown: () =>
+      game.modules.get("pf2e-bestiary-tracking").macros.addMonster(),
+    onUp: () => {},
+    restricted: true,
+    reservedModifiers: [],
+    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
+  });
+};
+
+const registerGameSettings = () => {
+  configSettings();
+  generalNonConfigSettings();
+  vagueDescriptions();
+  bestiaryLabels();
+  bestiaryDisplay();
+  bestiaryAppearance();
+  bestiaryIntegration();
+};
+
+const configSettings = () => {
+  game.settings.register("pf2e-bestiary-tracking", "hide-token-names", {
+    name: game.i18n.localize("PF2EBestiary.Settings.HideTokenNames.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.HideTokenNames.Hint"),
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: false,
+    onChange: async (value) => {
+      for (var token of canvas.tokens.placeables) {
+        var name = token.document.baseActor.name;
+        if (value) {
+          const bestiary = game.journal.get(
+            game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+          );
+          const page = bestiary.pages.find(
+            (x) => x.system.uuid === token.document.baseActor.uuid,
+          );
+          if (page) {
+            name =
+              page.system.name.revealed && page.system.name.custom
+                ? page.system.name.custom
+                : page.system.name.revealed && !page.system.name.custom
+                  ? page.system.name.value
+                  : !page.system.name.revealed
+                    ? game.i18n.localize(
+                        "PF2EBestiary.Bestiary.Miscellaneous.Unknown",
+                      )
+                    : name;
+          }
+        }
+
+        await token.document.update({ name });
+      }
+
+      if (game.combat) {
+        for (var combatant of game.combat.combatants) {
+          var name = combatant.token.baseActor.name;
+          if (value) {
+            const bestiary = game.journal.get(
+              game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+            );
+            const page = bestiary.pages.find(
+              (x) => x.system.uuid === combatant.token.baseActor.uuid,
+            );
+            if (page) {
+              name =
+                page.system.name.revealed && page.system.name.custom
+                  ? page.system.name.custom
+                  : page.system.name.revealed && !page.system.name.custom
+                    ? page.system.name.value
+                    : !page.system.name.revealed
+                      ? game.i18n.localize(
+                          "PF2EBestiary.Bestiary.Miscellaneous.Unknown",
+                        )
+                      : name;
+            }
+          }
+
+          await combatant.update({ name: name });
+        }
+      }
+    },
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "bestiary-theme", {
+    name: game.i18n.localize("PF2EBestiary.Settings.BestiaryTheme.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.BestiaryTheme.Hint"),
+    scope: "client",
+    config: true,
+    type: String,
+    choices: bestiaryThemeChoices,
+    requiresReload: true,
+    default: "coreLight",
+  });
+};
+
+const generalNonConfigSettings = () => {
+  game.settings.register("pf2e-bestiary-tracking", "version", {
+    name: game.i18n.localize("PF2EBestiary.Settings.Version.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.Version.Hint"),
+    scope: "world",
+    config: false,
+    type: String,
+    default: "",
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "bestiary-tracking", {
+    name: game.i18n.localize("PF2EBestiary.Menus.Data.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Menus.Data.Hint"),
+    scope: "world",
+    config: false,
+    type: String,
+    default: "",
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "bestiary-tracking-folder", {
+    name: game.i18n.localize("PF2EBestiary.Menus.Data.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Menus.Data.Hint"),
+    scope: "world",
+    config: false,
+    type: String,
+    default: "",
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "bestiary-layout", {
+    name: game.i18n.localize("PF2EBestiary.Settings.Version.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.Version.Hint"),
+    scope: "client",
+    config: false,
+    type: Object,
+    default: {
+      categories: {
+        layout: 0,
+        filter: {
+          type: 0,
+          direction: 0,
+        },
+      },
+    },
+  });
+};
+
+const vagueDescriptions = () => {
+  game.settings.registerMenu("pf2e-bestiary-tracking", "vague-descriptions", {
+    name: game.i18n.localize("PF2EBestiary.Menus.VagueDescriptions.Menu.Name"),
+    label: game.i18n.localize(
+      "PF2EBestiary.Menus.VagueDescriptions.Menu.Label",
+    ),
+    hint: game.i18n.localize("PF2EBestiary.Menus.VagueDescriptions.Menu.Hint"),
+    icon: "fa-solid fa-eye-low-vision",
+    type: VagueDescriptionsMenu,
+    restricted: true,
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "vague-descriptions", {
+    name: game.i18n.localize("PF2EBestiary.Menus.VagueDescriptions.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Menus.VagueDescriptions.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      properties: {
+        ac: false,
+        hp: false,
+        hardness: false,
+        resistances: false,
+        weaknesses: false,
+        saves: false,
+        perception: false,
+        speed: false,
+        attributes: false,
+        skills: false,
+        attacks: false,
+        damage: false,
+        spells: false,
+        initiative: false,
+      },
+      settings: {
+        playerBased: false,
+        misinformationOptions: false,
+        gmNumeric: false,
+      },
+    },
+  });
+};
+
+const bestiaryLabels = () => {
+  game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-labels", {
+    name: game.i18n.localize("PF2EBestiary.Menus.BestiaryLabels.Menu.Name"),
+    label: game.i18n.localize("PF2EBestiary.Menus.BestiaryLabels.Menu.Label"),
+    hint: game.i18n.localize("PF2EBestiary.Menus.BestiaryLabels.Menu.Hint"),
+    icon: "fa-solid fa-tags",
+    type: BestiaryLabelsMenu,
+    restricted: true,
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "bestiary-labels", {
+    name: game.i18n.localize("PF2EBestiary.Menus.BestiaryLabels.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Menus.BestiaryLabels.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      vagueDescriptions: {
+        ...getVagueDescriptionLabels(),
+      },
+    },
+  });
+};
+
+const bestiaryDisplay = () => {
+  game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-display", {
+    name: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Menu.Name"),
+    label: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Menu.Label"),
+    hint: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Menu.Hint"),
+    icon: "fa-solid fa-sitemap",
+    type: BestiaryDisplayMenu,
+    restricted: true,
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "used-sections", {
+    name: game.i18n.localize("PF2EBestiary.Settings.UsedSections.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.UsedSections.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      creature: true,
+      npc: true,
+      hazard: true,
+    },
+  });
+
+  game.settings.register(
+    "pf2e-bestiary-tracking",
+    "additional-creature-types",
+    {
+      name: game.i18n.localize(
+        "PF2EBestiary.Settings.AdditionalCreatureTypes.Name",
+      ),
+      hint: game.i18n.localize(
+        "PF2EBestiary.Settings.AdditionalCreatureTypes.Hint",
+      ),
+      scope: "world",
+      config: false,
+      type: Object,
+      default: [],
+    },
+  );
+
+  game.settings.register(
+    "pf2e-bestiary-tracking",
+    "bestiary-journal-settings",
+    {
+      name: game.i18n.localize(
+        "PF2EBestiary.Settings.BestiaryJournalSettings.Name",
+      ),
+      hint: game.i18n.localize(
+        "PF2EBestiary.Settings.BestiaryJournalSettings.Hint",
+      ),
+      scope: "world",
+      config: false,
+      type: Object,
+      default: {
+        active: true,
+        name: "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle",
+        image: "icons/sundries/books/book-embossed-bound-brown.webp",
+      },
+    },
+  );
+
+  game.settings.register(
+    "pf2e-bestiary-tracking",
+    "hide-ability-descriptions",
+    {
+      name: game.i18n.localize(
+        "PF2EBestiary.Settings.HideAbilityDescriptions.Name",
+      ),
+      hint: game.i18n.localize(
+        "PF2EBestiary.Settings.HideAbilityDescriptions.Hint",
+      ),
+      scope: "world",
+      config: false,
+      type: Boolean,
+      default: false,
+    },
+  );
+
+  game.settings.register("pf2e-bestiary-tracking", "optional-fields", {
+    name: game.i18n.localize("PF2EBestiary.Settings.OptionalFields.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.OptionalFields.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      ...optionalFields,
+    },
+  });
+
+  game.settings.register(
+    "pf2e-bestiary-tracking",
+    "detailed-information-toggles",
+    {
+      name: game.i18n.localize(
+        "PF2EBestiary.Settings.DetailedInformation.Name",
+      ),
+      hint: game.i18n.localize(
+        "PF2EBestiary.Settings.DetailedInformation.Hint",
+      ),
+      scope: "world",
+      config: false,
+      type: Object,
+      default: {
+        exceptionsDouble: false,
+        attackTraits: false,
+        damageTypes: false,
+        abilityTraits: false,
+      },
+    },
+  );
+
+  game.settings.register("pf2e-bestiary-tracking", "sheet-settings", {
+    name: game.i18n.localize("PF2EBestiary.Settings.SheetSettings.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.SheetSettings.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      toBestiaryButton: toBestiaryOptions.no.value,
+    },
+  });
+};
+
+const bestiaryAppearance = () => {
+  game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-appearance", {
+    name: game.i18n.localize("PF2EBestiary.Menus.BestiaryAppearance.Menu.Name"),
+    label: game.i18n.localize(
+      "PF2EBestiary.Menus.BestiaryAppearance.Menu.Label",
+    ),
+    hint: game.i18n.localize("PF2EBestiary.Menus.BestiaryAppearance.Menu.Hint"),
+    icon: "fa-solid fa-palette",
+    type: BestiaryAppearanceMenu,
+    restricted: true,
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "use-token-art", {
+    name: game.i18n.localize("PF2EBestiary.Settings.UseTokenArt.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.UseTokenArt.Hint"),
+    scope: "world",
+    config: false,
+    type: Boolean,
+    default: false,
+  });
+
+  game.settings.register(
+    "pf2e-bestiary-tracking",
+    "bestiary-category-settings",
+    {
+      name: game.i18n.localize(
+        "PF2EBestiary.Settings.BestiaryCategorySettings.Name",
+      ),
+      hint: game.i18n.localize(
+        "PF2EBestiary.Settings.BestiaryCategorySettings.Hint",
+      ),
+      scope: "world",
+      config: false,
+      type: Object,
+      default: bestiaryCategorySettings,
+    },
+  );
+
+  game.settings.register("pf2e-bestiary-tracking", "contrast-revealed-state", {
+    name: game.i18n.localize("PF2EBestiary.Settings.ContrastRevealState.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.ContrastRevealState.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      ...revealedState,
+    },
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "image-settings", {
+    name: game.i18n.localize("PF2EBestiary.Settings.ImageSettings.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.ImageSettings.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: imageSettings,
+  });
+};
+
+const bestiaryIntegration = () => {
+  game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-integration", {
+    name: game.i18n.localize(
+      "PF2EBestiary.Menus.BestiaryIntegration.Menu.Name",
+    ),
+    label: game.i18n.localize(
+      "PF2EBestiary.Menus.BestiaryIntegration.Menu.Label",
+    ),
+    hint: game.i18n.localize(
+      "PF2EBestiary.Menus.BestiaryIntegration.Menu.Hint",
+    ),
+    icon: "fa-solid fa-feather",
+    type: BestiaryIntegrationMenu,
+    restricted: true,
+  });
+
+  game.settings.register(
+    "pf2e-bestiary-tracking",
+    "automatic-combat-registration",
+    {
+      name: game.i18n.localize(
+        "PF2EBestiary.Settings.AutomaticCombatRegistration.Name",
+      ),
+      hint: game.i18n.localize(
+        "PF2EBestiary.Settings.AutomaticCombatRegistration.Hint",
+      ),
+      scope: "world",
+      config: false,
+      type: Number,
+      choices: {
+        0: game.i18n.localize(
+          "PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.Never",
+        ),
+        1: game.i18n.localize(
+          "PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.StartOfCombat",
+        ),
+        2: game.i18n.localize(
+          "PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.CreatureDefeated",
+        ),
+      },
+      default: 0,
+    },
+  );
+
+  game.settings.register("pf2e-bestiary-tracking", "doubleClickOpen", {
+    name: game.i18n.localize("PF2EBestiary.Settings.DoubleClickOpen.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.DoubleClickOpen.Hint"),
+    scope: "world",
+    config: false,
+    type: Boolean,
+    default: false,
+    onChange: async (value) => {
+      if (!value || !game.user.isGM) return;
+
+      const bestiary = await newMigrateBestiary(
+        async (_, monster) => {
+          const origin = await fromUuid(monster.uuid);
+
+          await origin?.update({
+            "ownership.default":
+              origin.ownership.default > 1 ? origin.ownership.default : 1,
+          });
+        },
+        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+      );
+
+      await game.settings.set(
+        "pf2e-bestiary-tracking",
+        "bestiary-tracking",
+        bestiary,
+      );
+    },
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "sameNameDuplicates", {
+    name: game.i18n.localize("PF2EBestiary.Settings.SameNameDuplicates.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.SameNameDuplicates.Hint"),
+    scope: "world",
+    config: false,
+    type: Boolean,
+    default: true,
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "chat-message-handling", {
+    name: game.i18n.localize("PF2EBestiary.Settings.ChatMessageHandling.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.ChatMessageHandling.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      revealRightClick: false,
+      automaticReveal: {
+        saves: false,
+        skills: false,
+        attacks: false,
+        actions: false,
+        spells: false,
+      },
+    },
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "npc-registration", {
+    name: game.i18n.localize("PF2EBestiary.Settings.NPCRegistation.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.NPCRegistation.Hint"),
+    scope: "world",
+    config: false,
+    type: Number,
+    choices: {
+      0: game.i18n.localize(
+        "PF2EBestiary.Settings.NPCRegistation.Choices.Unique",
+      ),
+      1: game.i18n.localize("PF2EBestiary.Settings.NPCRegistation.Choices.Tag"),
+      2: game.i18n.localize(
+        "PF2EBestiary.Settings.NPCRegistation.Choices.UniqueTag",
+      ),
+    },
+    default: 0,
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "hidden-settings", {
+    name: game.i18n.localize("PF2EBestiary.Settings.HiddenSettings.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.HiddenSettings.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      monster: false,
+      npc: true,
+      hazard: false,
+      npcCategories: true,
+    },
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "default-revealed", {
+    name: game.i18n.localize("PF2EBestiary.Settings.DefaultRevealed.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.DefaultReaveled.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      creature: {
+        name: false,
+        traits: false,
+        attributes: false,
+        description: false,
+        level: false,
+        ac: false,
+        hp: false,
+        saves: false,
+        iwr: false,
+        speeds: false,
+        perception: false,
+        senses: false,
+        skills: false,
+        languages: false,
+        attacks: false,
+        abilities: false,
+        spells: false,
+      },
+      npc: {
+        appearance: false,
+        personality: false,
+        background: false,
+        height: false,
+        weight: false,
+        // birthplace: false,
+        premise: false,
+      },
+      hazard: {
+        attacks: false,
+        abilities: false,
+        name: false,
+        traits: false,
+        description: false,
+        level: false,
+        ac: false,
+        hp: false,
+        hardness: false,
+        disable: false,
+        routine: false,
+        initiative: false,
+        stealth: false,
+        reset: false,
+        saves: false,
+        iwr: false,
+      },
+    },
+  });
+};
+
 const getCreatureDataFromOld = (actor) => {
   const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
   const weaknessesKeys = Object.keys(actor.system.attributes.weaknesses);
@@ -11063,1046 +12107,6 @@ const handleDeactivatedPages = async () => {
   }
 };
 
-const coreDark = {
-  "--pf2e-bestiary-tracking-application-image": "ignore",
-  "--pf2e-bestiary-tracking-application": "#12101fe6",
-  "--pf2e-bestiary-tracking-secondary-application": "#431b1b",
-  "--pf2e-bestiary-tracking-primary": "rgb(94 0 0)",
-  "--pf2e-bestiary-tracking-primary-faded": "rgb(94 0 0 / 50%)",
-  "--pf2e-bestiary-tracking-secondary": "#4b4b8c",
-  "--pf2e-bestiary-tracking-tertiary": "#007149",
-  "--pf2e-bestiary-tracking-primary-accent": "#ad0303",
-  "--pf2e-bestiary-tracking-tertiary-accent": "#76963f",
-  "--pf2e-bestiary-tracking-primary-color": "white",
-  "--pf2e-bestiary-tracking-icon-filter": "none",
-  "--pf2e-bestiary-tracking-main-hover": "white",
-  "--pf2e-bestiary-tracking-border": "#ababab",
-  "--pf2e-bestiary-tracking-secondary-border": "gold",
-  "--pf2e-bestiary-tracking-application-border": "wheat",
-  "--pf2e-bestiary-tracking-icon": "rgb(247, 243, 232)",
-  "--pf2e-bestiary-tracking-accent-icon": "gold",
-};
-
-const coreLight = {
-  "--pf2e-bestiary-tracking-application-image": "../ui/parchment.jpg",
-  "--pf2e-bestiary-tracking-application-header": "rgb(68, 68, 68)",
-  "--pf2e-bestiary-tracking-application-image-repeat": "repeat",
-  "--pf2e-bestiary-tracking-application": "initial",
-  "--pf2e-bestiary-tracking-secondary-application": "#b8cccb",
-  "--pf2e-bestiary-tracking-primary": "rgb(212 189 172)",
-  "--pf2e-bestiary-tracking-primary-faded": "rgb(212 189 172 / 25%)",
-  "--pf2e-bestiary-tracking-secondary": "#62b356",
-  "--pf2e-bestiary-tracking-tertiary": "#62acce",
-  "--pf2e-bestiary-tracking-primary-accent": "#fff1db",
-  "--pf2e-bestiary-tracking-tertiary-accent": "#9de0ff",
-  "--pf2e-bestiary-tracking-primary-color": "black",
-  "--pf2e-bestiary-tracking-icon-filter":
-    "invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%)",
-  "--pf2e-bestiary-tracking-main-hover": "#1c8efe",
-  "--pf2e-bestiary-tracking-border": "black",
-  "--pf2e-bestiary-tracking-secondary-border": "#82acff",
-  "--pf2e-bestiary-tracking-application-border": "initial",
-  "--pf2e-bestiary-tracking-icon": "black",
-  "--pf2e-bestiary-tracking-accent-icon": "gold",
-};
-
-const nebula = {
-  "--pf2e-bestiary-tracking-application-image":
-    "modules/pf2e-bestiary-tracking/assets/Space.webp",
-  "--pf2e-bestiary-tracking-application-header": "transparent",
-  "--pf2e-bestiary-tracking-application-image-size": "cover",
-  "--pf2e-bestiary-tracking-application-image-repeat": "round",
-  "--pf2e-bestiary-tracking-application-secondary-image":
-    "linear-gradient(#8a549c, #9198e5)",
-  "--pf2e-bestiary-tracking-application": "",
-  "--pf2e-bestiary-tracking-secondary-application": "",
-  "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px grey)",
-  "--pf2e-bestiary-tracking-primary": "rgb(115 169 188)",
-  "--pf2e-bestiary-tracking-primary-faded": "rgb(115 169 188 / 50%)",
-  "--pf2e-bestiary-tracking-secondary": "#cd7e23",
-  "--pf2e-bestiary-tracking-tertiary": "#7476a6",
-  "--pf2e-bestiary-tracking-primary-accent": "#0888b5",
-  "--pf2e-bestiary-tracking-tertiary-accent": "#888bc0",
-  "--pf2e-bestiary-tracking-primary-color": "rgb(247, 243, 232)",
-  "--pf2e-bestiary-tracking-icon-filter": "none",
-  "--pf2e-bestiary-tracking-main-hover": "",
-  "--pf2e-bestiary-tracking-border": "#e4e41e",
-  "--pf2e-bestiary-tracking-secondary-border": "gold",
-  "--pf2e-bestiary-tracking-application-border": "#e4e41e",
-  "--pf2e-bestiary-tracking-icon": "",
-  "--pf2e-bestiary-tracking-accent-icon": "",
-};
-
-const viscera = {
-  "--pf2e-bestiary-tracking-application-image":
-    "modules/pf2e-bestiary-tracking/assets/Viscera.webp",
-  "--pf2e-bestiary-tracking-application-header": "transparent",
-  "--pf2e-bestiary-tracking-application-image-size": "cover",
-  "--pf2e-bestiary-tracking-application-image-repeat": "initial",
-  "--pf2e-bestiary-tracking-application-secondary-image": "",
-  "--pf2e-bestiary-tracking-application": "",
-  "--pf2e-bestiary-tracking-secondary-application": "",
-  "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px grey)",
-  "--pf2e-bestiary-tracking-primary": "rgb(129 63 63)",
-  "--pf2e-bestiary-tracking-primary-faded": "rgb(129 63 63 / 50%)",
-  "--pf2e-bestiary-tracking-secondary": "#483c70",
-  "--pf2e-bestiary-tracking-tertiary": "crimson",
-  "--pf2e-bestiary-tracking-primary-accent": "#9f2828",
-  "--pf2e-bestiary-tracking-tertiary-accent": "#c12c2c",
-  "--pf2e-bestiary-tracking-primary-color": "white",
-  "--pf2e-bestiary-tracking-icon-filter": "none",
-  "--pf2e-bestiary-tracking-main-hover": "red",
-  "--pf2e-bestiary-tracking-border": "orange",
-  "--pf2e-bestiary-tracking-secondary-border": "gold",
-  "--pf2e-bestiary-tracking-application-border": "orange",
-  "--pf2e-bestiary-tracking-icon": "",
-  "--pf2e-bestiary-tracking-accent-icon": "",
-};
-
-const water = {
-  "--pf2e-bestiary-tracking-application-image":
-    "modules/pf2e-bestiary-tracking/assets/Water.webp",
-  "--pf2e-bestiary-tracking-application-header": "transparent",
-  "--pf2e-bestiary-tracking-application-image-size": "cover",
-  "--pf2e-bestiary-tracking-application-image-repeat": "initial",
-  "--pf2e-bestiary-tracking-application-secondary-image": "",
-  "--pf2e-bestiary-tracking-application": "",
-  "--pf2e-bestiary-tracking-secondary-application": "",
-  "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px grey)",
-  "--pf2e-bestiary-tracking-primary": "rgb(28 166 113)",
-  "--pf2e-bestiary-tracking-primary-faded": "rgb(28 166 113 / 50%)",
-  "--pf2e-bestiary-tracking-secondary": "#8b0d8b",
-  "--pf2e-bestiary-tracking-tertiary": "#602fa1",
-  "--pf2e-bestiary-tracking-primary-accent": "#0f7e2fbf",
-  "--pf2e-bestiary-tracking-tertiary-accent": "#681ad1",
-  "--pf2e-bestiary-tracking-primary-color": "rgb(247, 243, 232)",
-  "--pf2e-bestiary-tracking-icon-filter": "none",
-  "--pf2e-bestiary-tracking-main-hover": "white",
-  "--pf2e-bestiary-tracking-border": "#c7ffed",
-  "--pf2e-bestiary-tracking-secondary-border": "gold",
-  "--pf2e-bestiary-tracking-application-border": "#c7ffed",
-  "--pf2e-bestiary-tracking-icon": "",
-  "--pf2e-bestiary-tracking-accent-icon": "",
-};
-
-const bestiaryThemes = {
-  coreLight: coreLight,
-  coreDark: coreDark,
-  nebula: nebula,
-  viscera: viscera,
-  water: water,
-  // parchment: parchment,
-};
-
-const bestiaryThemeChoices = {
-  coreLight: "Core Light",
-  coreDark: "Core Dark",
-  nebula: "Nebula",
-  viscera: "Viscera",
-  water: "Water",
-  // parchment: 'Parchment',
-};
-
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$6, ApplicationV2: ApplicationV2$6 } = foundry.applications.api;
-
-class BestiaryDisplayMenu extends HandlebarsApplicationMixin$6(
-  ApplicationV2$6,
-) {
-  constructor() {
-    super({});
-
-    this.settings = {
-      hideAbilityDescriptions: game.settings.get(
-        "pf2e-bestiary-tracking",
-        "hide-ability-descriptions",
-      ),
-      additionalCreatureTypes: game.settings
-        .get("pf2e-bestiary-tracking", "additional-creature-types")
-        .map((x) => ({ value: x.value, name: game.i18n.localize(x.name) })),
-      optionalFields: game.settings.get(
-        "pf2e-bestiary-tracking",
-        "optional-fields",
-      ),
-      detailedInformation: game.settings.get(
-        "pf2e-bestiary-tracking",
-        "detailed-information-toggles",
-      ),
-      usedSections: game.settings.get(
-        "pf2e-bestiary-tracking",
-        "used-sections",
-      ),
-      journalSettings: game.settings.get(
-        "pf2e-bestiary-tracking",
-        "bestiary-journal-settings",
-      ),
-      sheetSettings: game.settings.get(
-        "pf2e-bestiary-tracking",
-        "sheet-settings",
-      ),
-    };
-  }
-
-  get title() {
-    return game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Name");
-  }
-
-  static DEFAULT_OPTIONS = {
-    tag: "form",
-    id: "pf2e-bestiary-tracking-display-menu",
-    classes: ["bestiary-settings-menu"],
-    position: { width: 680, height: "auto" },
-    actions: {
-      resetJournalSettings: this.resetJournalSettings,
-      toggleOptionalFields: this.toggleOptionalFields,
-      toggleDetailedInformation: this.toggleDetailedInformation,
-      toggleUsedSection: this.toggleUsedSection,
-      filePicker: this.filePicker,
-      save: this.save,
-    },
-    form: { handler: this.updateData, submitOnChange: true },
-  };
-
-  static PARTS = {
-    application: {
-      id: "bestiary-display-menu",
-      template:
-        "modules/pf2e-bestiary-tracking/templates/bestiaryDisplayMenu.hbs",
-    },
-  };
-
-  _attachPartListeners(partId, htmlElement, options) {
-    super._attachPartListeners(partId, htmlElement, options);
-
-    const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
-    const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits).filter(
-      (x) => !creatureTypes.includes(x),
-    );
-
-    const traitsInput = $(htmlElement).find(".traits-input")[0];
-    const traitsTagify = new Y(traitsInput, {
-      tagTextProp: "name",
-      enforceWhitelist: true,
-      whitelist: creatureTraits.map((key) => {
-        const label = CONFIG.PF2E.creatureTraits[key];
-        return { value: key, name: game.i18n.localize(label) };
-      }),
-      callbacks: { invalid: this.onAddTag },
-      dropdown: {
-        mapValueTo: "name",
-        searchKeys: ["name"],
-        enabled: 0,
-        maxItems: 20,
-        closeOnSelect: true,
-        highlightFirst: false,
-      },
-    });
-
-    traitsTagify.on("change", this.creatureTraitSelect.bind(this));
-  }
-
-  async _prepareContext(_options) {
-    const context = await super._prepareContext(_options);
-    context.settings = {
-      ...this.settings,
-      additionalCreatureTypes: this.settings.additionalCreatureTypes?.length
-        ? this.settings.additionalCreatureTypes.map((x) => x.name)
-        : [],
-    };
-
-    context.nrUsedSections = Object.values(this.settings.usedSections).filter(
-      (x) => x,
-    ).length;
-
-    context.toBestiaryOptions = toBestiaryOptions;
-
-    return context;
-  }
-
-  static async updateData(event, element, formData) {
-    const data = foundry.utils.expandObject(formData.object);
-    this.settings = {
-      additionalCreatureTypes: this.settings.additionalCreatureTypes,
-      hideAbilityDescriptions: data.hideAbilityDescriptions,
-      optionalFields: data.optionalFields,
-      detailedInformation: { ...data.detailedInformation },
-      usedSections: this.settings.usedSections,
-      journalSettings: {
-        ...data.journalSettings,
-        image: this.settings.journalSettings.image,
-      },
-      sheetSettings: data.sheetSettings,
-    };
-    this.render();
-  }
-
-  async creatureTraitSelect(event) {
-    this.settings.additionalCreatureTypes = event.detail?.value
-      ? JSON.parse(event.detail.value)
-      : [];
-    this.render();
-  }
-
-  static async resetJournalSettings() {
-    this.settings.journalSettings = {
-      active: true,
-      name: "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle",
-      image: "icons/sundries/books/book-embossed-bound-brown.webp",
-    };
-    this.render();
-  }
-
-  static async toggleOptionalFields() {
-    const keys = Object.keys(this.settings.optionalFields);
-    const enable = Object.values(this.settings.optionalFields).some((x) => !x);
-    this.settings.optionalFields = keys.reduce((acc, key) => {
-      acc[key] = enable;
-      return acc;
-    }, {});
-
-    this.render();
-  }
-
-  static async toggleDetailedInformation() {
-    const keys = Object.keys(this.settings.detailedInformation);
-    const enable = Object.values(this.settings.detailedInformation).some(
-      (x) => !x,
-    );
-    this.settings.detailedInformation = keys.reduce((acc, key) => {
-      acc[key] = enable;
-      return acc;
-    }, {});
-
-    this.render();
-  }
-
-  static async toggleUsedSection(_, button) {
-    const usedSections = Object.values(this.settings.usedSections).filter(
-      (x) => x,
-    );
-    if (
-      usedSections.length > 1 ||
-      !this.settings.usedSections[button.dataset.section]
-    )
-      this.settings.usedSections[button.dataset.section] =
-        !this.settings.usedSections[button.dataset.section];
-
-    this.render();
-  }
-
-  static async filePicker(_, button) {
-    new FilePicker({
-      type: "image",
-      title: "Image Select",
-      callback: async (path) => {
-        foundry.utils.setProperty(this.settings, button.dataset.path, path);
-        this.render();
-      },
-    }).render(true);
-  }
-
-  static async save(_) {
-    await game.settings.set(
-      "pf2e-bestiary-tracking",
-      "additional-creature-types",
-      this.settings.additionalCreatureTypes.map((x) => ({
-        value: x.value,
-        name: CONFIG.PF2E.creatureTraits[x.value],
-      })),
-    );
-    await game.settings.set(
-      "pf2e-bestiary-tracking",
-      "hide-ability-descriptions",
-      this.settings.hideAbilityDescriptions,
-    );
-    await game.settings.set(
-      "pf2e-bestiary-tracking",
-      "optional-fields",
-      this.settings.optionalFields,
-    );
-    await game.settings.set(
-      "pf2e-bestiary-tracking",
-      "detailed-information-toggles",
-      this.settings.detailedInformation,
-    );
-    await game.settings.set(
-      "pf2e-bestiary-tracking",
-      "used-sections",
-      this.settings.usedSections,
-    );
-    await game.settings.set(
-      "pf2e-bestiary-tracking",
-      "bestiary-journal-settings",
-      this.settings.journalSettings,
-    );
-    await game.settings.set(
-      "pf2e-bestiary-tracking",
-      "sheet-settings",
-      this.settings.sheetSettings,
-    );
-    this.close();
-  }
-}
-
-const currentVersion = "1.1.8";
-const bestiaryFolder = "BestiaryTracking Bestiares";
-
-const dataTypeSetup = () => {
-  CONFIG.JournalEntryPage.dataModels = {
-    ...CONFIG.JournalEntryPage.dataModels,
-    "pf2e-bestiary-tracking.creature": Creature,
-    "pf2e-bestiary-tracking.npc": NPC,
-    "pf2e-bestiary-tracking.hazard": Hazard,
-  };
-};
-
-const setupTheme = () => {
-  const theme =
-    bestiaryThemes[
-      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
-    ];
-  const root = document.querySelector(":root");
-  for (var property of Object.keys(theme)) {
-    if (
-      property === "--pf2e-bestiary-tracking-application-image" &&
-      theme[property] !== "ignore"
-    ) {
-      const baseUri = document.baseURI.split("game")[0];
-      root.style.setProperty(property, `url("${baseUri}${theme[property]}")`);
-    } else {
-      root.style.setProperty(property, theme[property]);
-    }
-  }
-};
-
-const registerKeyBindings = () => {
-  game.keybindings.register("pf2e-bestiary-tracking", "open-bestiary", {
-    name: game.i18n.localize("PF2EBestiary.KeyBindings.OpenBestiary.Name"),
-    hint: game.i18n.localize("PF2EBestiary.KeyBindings.OpenBestiary.Hint"),
-    uneditable: [],
-    editable: [],
-    onDown: () =>
-      game.modules.get("pf2e-bestiary-tracking").macros.openBestiary(),
-    onUp: () => {},
-    restricted: false,
-    reservedModifiers: [],
-    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
-  });
-
-  game.keybindings.register("pf2e-bestiary-tracking", "open-bestiary-combat", {
-    name: game.i18n.localize(
-      "PF2EBestiary.KeyBindings.OpenBestiaryCombat.Name",
-    ),
-    hint: game.i18n.localize(
-      "PF2EBestiary.KeyBindings.OpenBestiaryCombat.Hint",
-    ),
-    uneditable: [],
-    editable: [],
-    onDown: () =>
-      game.modules.get("pf2e-bestiary-tracking").macros.openBestiaryCombat(),
-    onUp: () => {},
-    restricted: false,
-    reservedModifiers: [],
-    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
-  });
-
-  game.keybindings.register("pf2e-bestiary-tracking", "show-monster", {
-    name: game.i18n.localize("PF2EBestiary.KeyBindings.ShowMonster.Name"),
-    hint: game.i18n.localize("PF2EBestiary.KeyBindings.ShowMonster.Hint"),
-    uneditable: [],
-    editable: [],
-    onDown: () =>
-      game.modules.get("pf2e-bestiary-tracking").macros.showMonster(),
-    onUp: () => {},
-    restricted: false,
-    reservedModifiers: [],
-    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
-  });
-
-  game.keybindings.register("pf2e-bestiary-tracking", "add-monster", {
-    name: game.i18n.localize("PF2EBestiary.KeyBindings.AddMonster.Name"),
-    hint: game.i18n.localize("PF2EBestiary.KeyBindings.AddMonster.Hint"),
-    uneditable: [],
-    editable: [],
-    onDown: () =>
-      game.modules.get("pf2e-bestiary-tracking").macros.addMonster(),
-    onUp: () => {},
-    restricted: true,
-    reservedModifiers: [],
-    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
-  });
-};
-
-const registerGameSettings = () => {
-  configSettings();
-  generalNonConfigSettings();
-  vagueDescriptions();
-  bestiaryLabels();
-  bestiaryDisplay();
-  bestiaryAppearance();
-  bestiaryIntegration();
-};
-
-const configSettings = () => {
-  game.settings.register("pf2e-bestiary-tracking", "hide-token-names", {
-    name: game.i18n.localize("PF2EBestiary.Settings.HideTokenNames.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.HideTokenNames.Hint"),
-    scope: "world",
-    config: true,
-    type: Boolean,
-    default: false,
-    onChange: async (value) => {
-      for (var token of canvas.tokens.placeables) {
-        var name = token.document.baseActor.name;
-        if (value) {
-          const bestiary = game.journal.get(
-            game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
-          );
-          const page = bestiary.pages.find(
-            (x) => x.system.uuid === token.document.baseActor.uuid,
-          );
-          if (page) {
-            name =
-              page.system.name.revealed && page.system.name.custom
-                ? page.system.name.custom
-                : page.system.name.revealed && !page.system.name.custom
-                  ? page.system.name.value
-                  : !page.system.name.revealed
-                    ? game.i18n.localize(
-                        "PF2EBestiary.Bestiary.Miscellaneous.Unknown",
-                      )
-                    : name;
-          }
-        }
-
-        await token.document.update({ name });
-      }
-
-      if (game.combat) {
-        for (var combatant of game.combat.combatants) {
-          var name = combatant.token.baseActor.name;
-          if (value) {
-            const bestiary = game.journal.get(
-              game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
-            );
-            const page = bestiary.pages.find(
-              (x) => x.system.uuid === combatant.token.baseActor.uuid,
-            );
-            if (page) {
-              name =
-                page.system.name.revealed && page.system.name.custom
-                  ? page.system.name.custom
-                  : page.system.name.revealed && !page.system.name.custom
-                    ? page.system.name.value
-                    : !page.system.name.revealed
-                      ? game.i18n.localize(
-                          "PF2EBestiary.Bestiary.Miscellaneous.Unknown",
-                        )
-                      : name;
-            }
-          }
-
-          await combatant.update({ name: name });
-        }
-      }
-    },
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "bestiary-theme", {
-    name: game.i18n.localize("PF2EBestiary.Settings.BestiaryTheme.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.BestiaryTheme.Hint"),
-    scope: "client",
-    config: true,
-    type: String,
-    choices: bestiaryThemeChoices,
-    requiresReload: true,
-    default: "coreLight",
-  });
-};
-
-const generalNonConfigSettings = () => {
-  game.settings.register("pf2e-bestiary-tracking", "version", {
-    name: game.i18n.localize("PF2EBestiary.Settings.Version.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.Version.Hint"),
-    scope: "world",
-    config: false,
-    type: String,
-    default: "",
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "bestiary-tracking", {
-    name: game.i18n.localize("PF2EBestiary.Menus.Data.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Menus.Data.Hint"),
-    scope: "world",
-    config: false,
-    type: String,
-    default: "",
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "bestiary-tracking-folder", {
-    name: game.i18n.localize("PF2EBestiary.Menus.Data.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Menus.Data.Hint"),
-    scope: "world",
-    config: false,
-    type: String,
-    default: "",
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "bestiary-layout", {
-    name: game.i18n.localize("PF2EBestiary.Settings.Version.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.Version.Hint"),
-    scope: "client",
-    config: false,
-    type: Object,
-    default: {
-      categories: {
-        layout: 0,
-        filter: {
-          type: 0,
-          direction: 0,
-        },
-      },
-    },
-  });
-};
-
-const vagueDescriptions = () => {
-  game.settings.registerMenu("pf2e-bestiary-tracking", "vague-descriptions", {
-    name: game.i18n.localize("PF2EBestiary.Menus.VagueDescriptions.Menu.Name"),
-    label: game.i18n.localize(
-      "PF2EBestiary.Menus.VagueDescriptions.Menu.Label",
-    ),
-    hint: game.i18n.localize("PF2EBestiary.Menus.VagueDescriptions.Menu.Hint"),
-    icon: "fa-solid fa-eye-low-vision",
-    type: VagueDescriptionsMenu,
-    restricted: true,
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "vague-descriptions", {
-    name: game.i18n.localize("PF2EBestiary.Menus.VagueDescriptions.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Menus.VagueDescriptions.Hint"),
-    scope: "world",
-    config: false,
-    type: Object,
-    default: {
-      properties: {
-        ac: false,
-        hp: false,
-        hardness: false,
-        resistances: false,
-        weaknesses: false,
-        saves: false,
-        perception: false,
-        speed: false,
-        attributes: false,
-        skills: false,
-        attacks: false,
-        damage: false,
-        spells: false,
-        initiative: false,
-      },
-      settings: {
-        playerBased: false,
-        misinformationOptions: false,
-        gmNumeric: false,
-      },
-    },
-  });
-};
-
-const bestiaryLabels = () => {
-  game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-labels", {
-    name: game.i18n.localize("PF2EBestiary.Menus.BestiaryLabels.Menu.Name"),
-    label: game.i18n.localize("PF2EBestiary.Menus.BestiaryLabels.Menu.Label"),
-    hint: game.i18n.localize("PF2EBestiary.Menus.BestiaryLabels.Menu.Hint"),
-    icon: "fa-solid fa-tags",
-    type: BestiaryLabelsMenu,
-    restricted: true,
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "bestiary-labels", {
-    name: game.i18n.localize("PF2EBestiary.Menus.BestiaryLabels.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Menus.BestiaryLabels.Hint"),
-    scope: "world",
-    config: false,
-    type: Object,
-    default: {
-      vagueDescriptions: {
-        ...getVagueDescriptionLabels(),
-      },
-    },
-  });
-};
-
-const bestiaryDisplay = () => {
-  game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-display", {
-    name: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Menu.Name"),
-    label: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Menu.Label"),
-    hint: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.Menu.Hint"),
-    icon: "fa-solid fa-sitemap",
-    type: BestiaryDisplayMenu,
-    restricted: true,
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "used-sections", {
-    name: game.i18n.localize("PF2EBestiary.Settings.UsedSections.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.UsedSections.Hint"),
-    scope: "world",
-    config: false,
-    type: Object,
-    default: {
-      creature: true,
-      npc: true,
-      hazard: true,
-    },
-  });
-
-  game.settings.register(
-    "pf2e-bestiary-tracking",
-    "additional-creature-types",
-    {
-      name: game.i18n.localize(
-        "PF2EBestiary.Settings.AdditionalCreatureTypes.Name",
-      ),
-      hint: game.i18n.localize(
-        "PF2EBestiary.Settings.AdditionalCreatureTypes.Hint",
-      ),
-      scope: "world",
-      config: false,
-      type: Object,
-      default: [],
-    },
-  );
-
-  game.settings.register(
-    "pf2e-bestiary-tracking",
-    "bestiary-journal-settings",
-    {
-      name: game.i18n.localize(
-        "PF2EBestiary.Settings.BestiaryJournalSettings.Name",
-      ),
-      hint: game.i18n.localize(
-        "PF2EBestiary.Settings.BestiaryJournalSettings.Hint",
-      ),
-      scope: "world",
-      config: false,
-      type: Object,
-      default: {
-        active: true,
-        name: "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle",
-        image: "icons/sundries/books/book-embossed-bound-brown.webp",
-      },
-    },
-  );
-
-  game.settings.register(
-    "pf2e-bestiary-tracking",
-    "hide-ability-descriptions",
-    {
-      name: game.i18n.localize(
-        "PF2EBestiary.Settings.HideAbilityDescriptions.Name",
-      ),
-      hint: game.i18n.localize(
-        "PF2EBestiary.Settings.HideAbilityDescriptions.Hint",
-      ),
-      scope: "world",
-      config: false,
-      type: Boolean,
-      default: false,
-    },
-  );
-
-  game.settings.register("pf2e-bestiary-tracking", "optional-fields", {
-    name: game.i18n.localize("PF2EBestiary.Settings.OptionalFields.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.OptionalFields.Hint"),
-    scope: "world",
-    config: false,
-    type: Object,
-    default: {
-      ...optionalFields,
-    },
-  });
-
-  game.settings.register(
-    "pf2e-bestiary-tracking",
-    "detailed-information-toggles",
-    {
-      name: game.i18n.localize(
-        "PF2EBestiary.Settings.DetailedInformation.Name",
-      ),
-      hint: game.i18n.localize(
-        "PF2EBestiary.Settings.DetailedInformation.Hint",
-      ),
-      scope: "world",
-      config: false,
-      type: Object,
-      default: {
-        exceptionsDouble: false,
-        attackTraits: false,
-        damageTypes: false,
-        abilityTraits: false,
-      },
-    },
-  );
-
-  game.settings.register("pf2e-bestiary-tracking", "sheet-settings", {
-    name: game.i18n.localize("PF2EBestiary.Settings.SheetSettings.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.SheetSettings.Hint"),
-    scope: "world",
-    config: false,
-    type: Object,
-    default: {
-      toBestiaryButton: toBestiaryOptions.no.value,
-    },
-  });
-};
-
-const bestiaryAppearance = () => {
-  game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-appearance", {
-    name: game.i18n.localize("PF2EBestiary.Menus.BestiaryAppearance.Menu.Name"),
-    label: game.i18n.localize(
-      "PF2EBestiary.Menus.BestiaryAppearance.Menu.Label",
-    ),
-    hint: game.i18n.localize("PF2EBestiary.Menus.BestiaryAppearance.Menu.Hint"),
-    icon: "fa-solid fa-palette",
-    type: BestiaryAppearanceMenu,
-    restricted: true,
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "use-token-art", {
-    name: game.i18n.localize("PF2EBestiary.Settings.UseTokenArt.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.UseTokenArt.Hint"),
-    scope: "world",
-    config: false,
-    type: Boolean,
-    default: false,
-  });
-
-  game.settings.register(
-    "pf2e-bestiary-tracking",
-    "bestiary-category-settings",
-    {
-      name: game.i18n.localize(
-        "PF2EBestiary.Settings.BestiaryCategorySettings.Name",
-      ),
-      hint: game.i18n.localize(
-        "PF2EBestiary.Settings.BestiaryCategorySettings.Hint",
-      ),
-      scope: "world",
-      config: false,
-      type: Object,
-      default: bestiaryCategorySettings,
-    },
-  );
-
-  game.settings.register("pf2e-bestiary-tracking", "contrast-revealed-state", {
-    name: game.i18n.localize("PF2EBestiary.Settings.ContrastRevealState.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.ContrastRevealState.Hint"),
-    scope: "world",
-    config: false,
-    type: Object,
-    default: {
-      ...revealedState,
-    },
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "image-settings", {
-    name: game.i18n.localize("PF2EBestiary.Settings.ImageSettings.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.ImageSettings.Hint"),
-    scope: "world",
-    config: false,
-    type: Object,
-    default: imageSettings,
-  });
-};
-
-const bestiaryIntegration = () => {
-  game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-integration", {
-    name: game.i18n.localize(
-      "PF2EBestiary.Menus.BestiaryIntegration.Menu.Name",
-    ),
-    label: game.i18n.localize(
-      "PF2EBestiary.Menus.BestiaryIntegration.Menu.Label",
-    ),
-    hint: game.i18n.localize(
-      "PF2EBestiary.Menus.BestiaryIntegration.Menu.Hint",
-    ),
-    icon: "fa-solid fa-feather",
-    type: BestiaryIntegrationMenu,
-    restricted: true,
-  });
-
-  game.settings.register(
-    "pf2e-bestiary-tracking",
-    "automatic-combat-registration",
-    {
-      name: game.i18n.localize(
-        "PF2EBestiary.Settings.AutomaticCombatRegistration.Name",
-      ),
-      hint: game.i18n.localize(
-        "PF2EBestiary.Settings.AutomaticCombatRegistration.Hint",
-      ),
-      scope: "world",
-      config: false,
-      type: Number,
-      choices: {
-        0: game.i18n.localize(
-          "PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.Never",
-        ),
-        1: game.i18n.localize(
-          "PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.StartOfCombat",
-        ),
-        2: game.i18n.localize(
-          "PF2EBestiary.Settings.AutomaticCombatRegistration.Choices.CreatureDefeated",
-        ),
-      },
-      default: 0,
-    },
-  );
-
-  game.settings.register("pf2e-bestiary-tracking", "doubleClickOpen", {
-    name: game.i18n.localize("PF2EBestiary.Settings.DoubleClickOpen.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.DoubleClickOpen.Hint"),
-    scope: "world",
-    config: false,
-    type: Boolean,
-    default: false,
-    onChange: async (value) => {
-      if (!value || !game.user.isGM) return;
-
-      const bestiary = await newMigrateBestiary(
-        async (_, monster) => {
-          const origin = await fromUuid(monster.uuid);
-
-          await origin?.update({
-            "ownership.default":
-              origin.ownership.default > 1 ? origin.ownership.default : 1,
-          });
-        },
-        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
-      );
-
-      await game.settings.set(
-        "pf2e-bestiary-tracking",
-        "bestiary-tracking",
-        bestiary,
-      );
-    },
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "sameNameDuplicates", {
-    name: game.i18n.localize("PF2EBestiary.Settings.SameNameDuplicates.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.SameNameDuplicates.Hint"),
-    scope: "world",
-    config: false,
-    type: Boolean,
-    default: true,
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "chat-message-handling", {
-    name: game.i18n.localize("PF2EBestiary.Settings.ChatMessageHandling.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.ChatMessageHandling.Hint"),
-    scope: "world",
-    config: false,
-    type: Object,
-    default: {
-      revealRightClick: false,
-      automaticReveal: {
-        saves: false,
-        skills: false,
-        attacks: false,
-        actions: false,
-        spells: false,
-      },
-    },
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "npc-registration", {
-    name: game.i18n.localize("PF2EBestiary.Settings.NPCRegistation.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.NPCRegistation.Hint"),
-    scope: "world",
-    config: false,
-    type: Number,
-    choices: {
-      0: game.i18n.localize(
-        "PF2EBestiary.Settings.NPCRegistation.Choices.Unique",
-      ),
-      1: game.i18n.localize("PF2EBestiary.Settings.NPCRegistation.Choices.Tag"),
-      2: game.i18n.localize("PF2EBestiary.Settings.NPCRegistation.Choices.UniqueTag"),
-    },
-    default: 0,
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "hidden-settings", {
-    name: game.i18n.localize("PF2EBestiary.Settings.HiddenSettings.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.HiddenSettings.Hint"),
-    scope: "world",
-    config: false,
-    type: Object,
-    default: {
-      monster: false,
-      npc: true,
-      hazard: false,
-      npcCategories: true,
-    },
-  });
-
-  game.settings.register("pf2e-bestiary-tracking", "default-revealed", {
-    name: game.i18n.localize("PF2EBestiary.Settings.DefaultRevealed.Name"),
-    hint: game.i18n.localize("PF2EBestiary.Settings.DefaultReaveled.Hint"),
-    scope: "world",
-    config: false,
-    type: Object,
-    default: {
-      creature: {
-        name: false,
-        traits: false,
-        attributes: false,
-        description: false,
-        level: false,
-        ac: false,
-        hp: false,
-        saves: false,
-        iwr: false,
-        speeds: false,
-        perception: false,
-        senses: false,
-        skills: false,
-        languages: false,
-        attacks: false,
-        abilities: false,
-        spells: false,
-      },
-      npc: {
-        appearance: false,
-        personality: false,
-        background: false,
-        height: false,
-        weight: false,
-        // birthplace: false,
-        premise: false,
-      },
-      hazard: {
-        attacks: false,
-        abilities: false,
-        name: false,
-        traits: false,
-        description: false,
-        level: false,
-        ac: false,
-        hp: false,
-        hardness: false,
-        disable: false,
-        routine: false,
-        initiative: false,
-        stealth: false,
-        reset: false,
-        saves: false,
-        iwr: false,
-      },
-    },
-  });
-};
-
 function handleSocketEvent({ action = null, data = {} } = {}) {
   switch (action) {
     case socketEvent.UpdateBestiary:
@@ -12116,299 +12120,6 @@ function handleSocketEvent({ action = null, data = {} } = {}) {
 const socketEvent = {
   UpdateBestiary: "UpdateBestiary",
 };
-
-const openBestiary = async () => {
-  new PF2EBestiary().render(true);
-};
-
-const openBestiaryCombat = async () => {
-  if (!game.combat) {
-    ui.notifications.info(
-      game.i18n.localize(
-        "PF2EBestiary.Macros.OpenBestiaryCombat.NoActiveCombat",
-      ),
-    );
-    return;
-  }
-
-  new PF2EBestiary(null, {
-    category: "pf2e-bestiary-tracking.creature",
-    type: "combat",
-  }).render(true);
-};
-
-const showMonster = () => {
-  const selectedMonster =
-    game.user.targets.size > 0
-      ? game.user.targets.values().next().value
-      : canvas.tokens.controlled.length > 0
-        ? canvas.tokens.controlled[0]
-        : null;
-
-  if (!selectedMonster) {
-    ui.notifications.info(
-      game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoTarget"),
-    );
-    return;
-  }
-
-  if (!selectedMonster.actor) {
-    ui.notifications.info(
-      game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoActor"),
-    );
-    return;
-  }
-
-  if (
-    !isValidEntityType(selectedMonster.actor.type) ||
-    selectedMonster.actor.hasPlayerOwner
-  ) {
-    ui.notifications.error(
-      game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"),
-    );
-    return;
-  }
-
-  const actor = selectedMonster.document
-    ? selectedMonster.document.baseActor
-    : selectedMonster.baseActor;
-  const bestiary = game.journal.get(
-    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
-  );
-  const page = bestiary.pages.find((x) => x.system.uuid === actor.uuid);
-
-  if (!page || (page.system.hidden && !game.user.isGM)) {
-    ui.notifications.info(
-      game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"),
-    );
-    return;
-  }
-
-  new PF2EBestiary(page).render(true);
-};
-
-const addMonster = async () => {
-  if (!game.user.isGM) {
-    ui.notifications.error(
-      game.i18n.localize("PF2EBestiary.Macros.AddMonster.GMOnly"),
-    );
-    return;
-  }
-
-  const selectedMonster =
-    game.user.targets.size > 0
-      ? game.user.targets.values().next().value
-      : canvas.tokens.controlled.length > 0
-        ? canvas.tokens.controlled[0]
-        : null;
-
-  if (!selectedMonster) {
-    ui.notifications.info(
-      game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoTarget"),
-    );
-    return;
-  }
-
-  if (
-    !isValidEntityType(selectedMonster.actor.type) ||
-    selectedMonster.actor.hasPlayerOwner
-  ) {
-    ui.notifications.error(
-      game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"),
-    );
-    return;
-  }
-
-  const baseActor = selectedMonster.document
-    ? selectedMonster.document.baseActor
-    : selectedMonster.baseActor;
-  const bestiary = game.journal.get(
-    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
-  );
-
-  if (bestiary.pages.some((x) => x.system.uuid === baseActor.uuid)) {
-    ui.notifications.info(
-      game.i18n.localize(
-        "PF2EBestiary.Macros.AddMonster.TargetAlreadyInBestiary",
-      ),
-    );
-    return;
-  }
-
-  const successfull = await PF2EBestiary.addMonster(baseActor);
-  if (successfull) {
-    ui.notifications.info(
-      game.i18n.format("PF2EBestiary.Bestiary.Info.AddedToBestiary", {
-        creatures: selectedMonster.actor.name,
-      }),
-    );
-  } else if (successfull === false) {
-    ui.notifications.info(
-      game.i18n.format("PF2EBestiary.Bestiary.Info.AlreadyExistsInBestiary", {
-        creatures: selectedMonster.actor.name,
-      }),
-    );
-  }
-};
-
-const resetBestiary = async () => {
-  if (!game.user.isGM) {
-    ui.notifications.error(
-      game.i18n.localize("PF2EBestiary.Macros.AddMonster.GMOnly"),
-    );
-    return;
-  }
-
-  const confirmed = await Dialog.confirm({
-    title: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Title"),
-    content: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Text"),
-    yes: () => true,
-    no: () => false,
-  });
-
-  if (!confirmed) return;
-
-  var folder = game.folders.get(
-    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking-folder"),
-  );
-  if (!folder) {
-    folder = await Folder.create({
-      name: bestiaryFolder,
-      type: "JournalEntry",
-    });
-    await game.settings.set(
-      "pf2e-bestiary-tracking",
-      "bestiary-tracking-folder",
-      folder.id,
-    );
-  }
-
-  const bestiaryTracking = game.settings.get(
-    "pf2e-bestiary-tracking",
-    "bestiary-tracking",
-  );
-  var bestiaryObject = null;
-  try {
-    bestiaryObject = JSON.parse(bestiaryTracking);
-  } catch {}
-
-  const existingJournal =
-    !bestiaryObject && Boolean(game.journal.get(bestiaryTracking));
-  if (bestiaryObject || !existingJournal) {
-    const journal = await JournalEntry.create({
-      name: game.i18n.localize("PF2EBestiary.BestiaryName"),
-      folder: folder.id,
-    });
-    await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
-    await journal.setFlag("pf2e-bestiary-tracking", "version", currentVersion);
-    await journal.setFlag(
-      "pf2e-bestiary-tracking",
-      "image",
-      "systems/pf2e/assets/compendium-banner/green.webp",
-    );
-
-    await game.settings.set(
-      "pf2e-bestiary-tracking",
-      "bestiary-tracking",
-      journal.id,
-    );
-  } else {
-    const journal = game.journal.get(bestiaryTracking);
-    for (var page of Array.from(journal.pages)) {
-      await page.delete();
-    }
-
-    await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
-  }
-
-  await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-    action: socketEvent.UpdateBestiary,
-    data: {},
-  });
-  Hooks.callAll(socketEvent.UpdateBestiary, {});
-
-  return true;
-};
-
-const deactivateModule = async () => {
-  if (!game.user.isGM) {
-    ui.notifications.error(
-      game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.GMOnly"),
-    );
-    return;
-  }
-
-  const link = await TextEditor.enrichHTML(
-    game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.Link"),
-  );
-  const content = `
-        <div>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.FirstPart")}</div>
-        <hr />
-        <div>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.SecondPart")}</div>
-        <div style="margin-bottom: 8px;">(${link})</div>
-    `;
-
-  const confirmed = await Dialog.confirm({
-    title: game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Title"),
-    content: content,
-    yes: () => true,
-    no: () => false,
-  });
-
-  if (!confirmed) return;
-
-  const bestiaries = game.journal.filter((x) =>
-    x.pages.some((x) =>
-      [
-        "pf2e-bestiary-tracking.creature",
-        "pf2e-bestiary-tracking.npc",
-        "pf2e-bestiary-tracking.hazard",
-      ].includes(x.type),
-    ),
-  );
-  for (var bestiaryKey in bestiaries) {
-    const pageArray = Array.from(bestiaries[bestiaryKey].pages);
-    for (var pageKey in pageArray) {
-      const page = pageArray[pageKey];
-      await page.setFlag(
-        "pf2e-bestiary-tracking",
-        "deactivated-data",
-        JSON.stringify({
-          type: page.type,
-          name: page.name,
-          ownership: foundry.utils.deepClone(page.ownership),
-          system: foundry.utils.deepClone(page.system),
-        }),
-      );
-      await page.update(
-        {
-          type: "text",
-          ownership: { default: 0 },
-          system: {},
-        },
-        { diff: false, recursive: false },
-      );
-    }
-  }
-
-  await game.settings.set("core", "moduleConfiguration", {
-    ...game.settings.get("core", "moduleConfiguration"),
-    ["pf2e-bestiary-tracking"]: false,
-  });
-
-  await game.socket.emit("reload");
-  foundry.utils.debouncedReload();
-};
-
-var macros = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  addMonster: addMonster,
-  deactivateModule: deactivateModule,
-  openBestiary: openBestiary,
-  openBestiaryCombat: openBestiaryCombat,
-  resetBestiary: resetBestiary,
-  showMonster: showMonster
-});
 
 const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$5, ApplicationV2: ApplicationV2$5 } = foundry.applications.api;
 
@@ -12842,6 +12553,304 @@ class BestiarySelection extends HandlebarsApplicationMixin$4(
     }).render(true);
   }
 }
+
+const openBestiary = async () => {
+  new PF2EBestiary().render(true);
+};
+
+const swapBestiary = async () => {
+  new BestiarySelection().render(true);
+};
+
+const openBestiaryCombat = async () => {
+  if (!game.combat) {
+    ui.notifications.info(
+      game.i18n.localize(
+        "PF2EBestiary.Macros.OpenBestiaryCombat.NoActiveCombat",
+      ),
+    );
+    return;
+  }
+
+  new PF2EBestiary(null, {
+    category: "pf2e-bestiary-tracking.creature",
+    type: "combat",
+  }).render(true);
+};
+
+const showMonster = () => {
+  const selectedMonster =
+    game.user.targets.size > 0
+      ? game.user.targets.values().next().value
+      : canvas.tokens.controlled.length > 0
+        ? canvas.tokens.controlled[0]
+        : null;
+
+  if (!selectedMonster) {
+    ui.notifications.info(
+      game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoTarget"),
+    );
+    return;
+  }
+
+  if (!selectedMonster.actor) {
+    ui.notifications.info(
+      game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoActor"),
+    );
+    return;
+  }
+
+  if (
+    !isValidEntityType(selectedMonster.actor.type) ||
+    selectedMonster.actor.hasPlayerOwner
+  ) {
+    ui.notifications.error(
+      game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"),
+    );
+    return;
+  }
+
+  const actor = selectedMonster.document
+    ? selectedMonster.document.baseActor
+    : selectedMonster.baseActor;
+  const bestiary = game.journal.get(
+    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+  );
+  const page = bestiary.pages.find((x) => x.system.uuid === actor.uuid);
+
+  if (!page || (page.system.hidden && !game.user.isGM)) {
+    ui.notifications.info(
+      game.i18n.localize("PF2EBestiary.Macros.ShowMonster.TargetNotInBestiary"),
+    );
+    return;
+  }
+
+  new PF2EBestiary(page).render(true);
+};
+
+const addMonster = async () => {
+  if (!game.user.isGM) {
+    ui.notifications.error(
+      game.i18n.localize("PF2EBestiary.Macros.AddMonster.GMOnly"),
+    );
+    return;
+  }
+
+  const selectedMonster =
+    game.user.targets.size > 0
+      ? game.user.targets.values().next().value
+      : canvas.tokens.controlled.length > 0
+        ? canvas.tokens.controlled[0]
+        : null;
+
+  if (!selectedMonster) {
+    ui.notifications.info(
+      game.i18n.localize("PF2EBestiary.Macros.ShowMonster.NoTarget"),
+    );
+    return;
+  }
+
+  if (
+    !isValidEntityType(selectedMonster.actor.type) ||
+    selectedMonster.actor.hasPlayerOwner
+  ) {
+    ui.notifications.error(
+      game.i18n.localize("PF2EBestiary.Macros.ShowMonster.InvalidTarget"),
+    );
+    return;
+  }
+
+  const baseActor = selectedMonster.document
+    ? selectedMonster.document.baseActor
+    : selectedMonster.baseActor;
+  const bestiary = game.journal.get(
+    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+  );
+
+  if (bestiary.pages.some((x) => x.system.uuid === baseActor.uuid)) {
+    ui.notifications.info(
+      game.i18n.localize(
+        "PF2EBestiary.Macros.AddMonster.TargetAlreadyInBestiary",
+      ),
+    );
+    return;
+  }
+
+  const successfull = await PF2EBestiary.addMonster(baseActor);
+  if (successfull) {
+    ui.notifications.info(
+      game.i18n.format("PF2EBestiary.Bestiary.Info.AddedToBestiary", {
+        creatures: selectedMonster.actor.name,
+      }),
+    );
+  } else if (successfull === false) {
+    ui.notifications.info(
+      game.i18n.format("PF2EBestiary.Bestiary.Info.AlreadyExistsInBestiary", {
+        creatures: selectedMonster.actor.name,
+      }),
+    );
+  }
+};
+
+const resetBestiary = async () => {
+  if (!game.user.isGM) {
+    ui.notifications.error(
+      game.i18n.localize("PF2EBestiary.Macros.AddMonster.GMOnly"),
+    );
+    return;
+  }
+
+  const confirmed = await Dialog.confirm({
+    title: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Title"),
+    content: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Text"),
+    yes: () => true,
+    no: () => false,
+  });
+
+  if (!confirmed) return;
+
+  var folder = game.folders.get(
+    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking-folder"),
+  );
+  if (!folder) {
+    folder = await Folder.create({
+      name: bestiaryFolder,
+      type: "JournalEntry",
+    });
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "bestiary-tracking-folder",
+      folder.id,
+    );
+  }
+
+  const bestiaryTracking = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "bestiary-tracking",
+  );
+  var bestiaryObject = null;
+  try {
+    bestiaryObject = JSON.parse(bestiaryTracking);
+  } catch {}
+
+  const existingJournal =
+    !bestiaryObject && Boolean(game.journal.get(bestiaryTracking));
+  if (bestiaryObject || !existingJournal) {
+    const journal = await JournalEntry.create({
+      name: game.i18n.localize("PF2EBestiary.BestiaryName"),
+      folder: folder.id,
+    });
+    await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
+    await journal.setFlag("pf2e-bestiary-tracking", "version", currentVersion);
+    await journal.setFlag(
+      "pf2e-bestiary-tracking",
+      "image",
+      "systems/pf2e/assets/compendium-banner/green.webp",
+    );
+
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "bestiary-tracking",
+      journal.id,
+    );
+  } else {
+    const journal = game.journal.get(bestiaryTracking);
+    for (var page of Array.from(journal.pages)) {
+      await page.delete();
+    }
+
+    await journal.setFlag("pf2e-bestiary-tracking", "npcCategories", []);
+  }
+
+  await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+    action: socketEvent.UpdateBestiary,
+    data: {},
+  });
+  Hooks.callAll(socketEvent.UpdateBestiary, {});
+
+  return true;
+};
+
+const deactivateModule = async () => {
+  if (!game.user.isGM) {
+    ui.notifications.error(
+      game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.GMOnly"),
+    );
+    return;
+  }
+
+  const link = await TextEditor.enrichHTML(
+    game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.Link"),
+  );
+  const content = `
+        <div>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.FirstPart")}</div>
+        <hr />
+        <div>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.SecondPart")}</div>
+        <div style="margin-bottom: 8px;">(${link})</div>
+    `;
+
+  const confirmed = await Dialog.confirm({
+    title: game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Title"),
+    content: content,
+    yes: () => true,
+    no: () => false,
+  });
+
+  if (!confirmed) return;
+
+  const bestiaries = game.journal.filter((x) =>
+    x.pages.some((x) =>
+      [
+        "pf2e-bestiary-tracking.creature",
+        "pf2e-bestiary-tracking.npc",
+        "pf2e-bestiary-tracking.hazard",
+      ].includes(x.type),
+    ),
+  );
+  for (var bestiaryKey in bestiaries) {
+    const pageArray = Array.from(bestiaries[bestiaryKey].pages);
+    for (var pageKey in pageArray) {
+      const page = pageArray[pageKey];
+      await page.setFlag(
+        "pf2e-bestiary-tracking",
+        "deactivated-data",
+        JSON.stringify({
+          type: page.type,
+          name: page.name,
+          ownership: foundry.utils.deepClone(page.ownership),
+          system: foundry.utils.deepClone(page.system),
+        }),
+      );
+      await page.update(
+        {
+          type: "text",
+          ownership: { default: 0 },
+          system: {},
+        },
+        { diff: false, recursive: false },
+      );
+    }
+  }
+
+  await game.settings.set("core", "moduleConfiguration", {
+    ...game.settings.get("core", "moduleConfiguration"),
+    ["pf2e-bestiary-tracking"]: false,
+  });
+
+  await game.socket.emit("reload");
+  foundry.utils.debouncedReload();
+};
+
+var macros = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  addMonster: addMonster,
+  deactivateModule: deactivateModule,
+  openBestiary: openBestiary,
+  openBestiaryCombat: openBestiaryCombat,
+  resetBestiary: resetBestiary,
+  showMonster: showMonster,
+  swapBestiary: swapBestiary
+});
 
 class ExpandedDragDrop extends DragDrop {
   bind(html) {
