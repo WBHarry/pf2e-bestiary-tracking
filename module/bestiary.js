@@ -1008,7 +1008,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     for (var data of game.actors.find((x) => x.type === "party" && x.active)
       ?.system?.details?.members ?? []) {
       const actor = await fromUuid(data.uuid);
-      context.players.push({ id: actor.id, name: actor.name, img: actor.img });
+      if (actor) {
+        context.players.push({
+          id: actor.id,
+          name: actor.name,
+          img: actor.img,
+        });
+      }
     }
 
     context.typeTitle = this.selected.type

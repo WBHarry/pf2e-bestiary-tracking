@@ -11,9 +11,9 @@ import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
 import { handleDataMigration } from "./scripts/migrationHandler.js";
 import {
-  getBaseActor,
-  getSpellLevel,
+  getBestiarySpellLevel,
   isValidEntityType,
+  valueFromRollOption,
 } from "./scripts/helpers.js";
 import { libWrapper } from "./libwrapperShim.js";
 
@@ -343,100 +343,7 @@ Hooks.on("createChatMessage", async (message) => {
       "chat-message-handling",
     );
     if (automaticReveal) {
-      const bestiary = game.journal.get(
-        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
-      );
-
-      var page = null;
-      var update = null;
-      if (message.flags.pf2e.origin) {
-        // Attacks | Actions | Spells
-        const actor = await fromUuid(message.flags.pf2e.origin.actor);
-        if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
-          return;
-
-        const baseActor = getBaseActor(actor);
-        page = bestiary.pages.find((x) => x.system.actorBelongs(baseActor));
-
-        const item = await fromUuid(message.flags.pf2e.origin.uuid);
-        if (page && item) {
-          if (message.flags.pf2e.modifierName && automaticReveal.attacks) {
-            if (page.system.attacks[item._id]) {
-              update = { [`system.attacks.${item._id}.revealed`]: true };
-            }
-          }
-
-          if (
-            message.flags.pf2e.origin.type === "action" &&
-            automaticReveal.actions
-          ) {
-            if (item.system.actionType.value === "passive")
-              update = { [`system.passives.${item._id}.revealed`]: true };
-            else update = { [`system.actions.${item._id}.revealed`]: true };
-          }
-
-          if (
-            ["spell", "spell-cast"].includes(message.flags.pf2e.origin.type) &&
-            automaticReveal.spells
-          ) {
-            const spellLevel = getSpellLevel(item, page.system.level.value);
-            update = {
-              system: {
-                spells: {
-                  [`entries.${item.system.location.value}`]: {
-                    revealed: true,
-                    [`levels.${spellLevel}.spells.${item._id}.revealed`]: true,
-                  },
-                },
-              },
-            };
-          }
-        }
-      } else {
-        // Skills | Saving Throws
-        const actor = await fromUuid(
-          `Actor.${message.flags.pf2e.context.actor}`,
-        );
-        if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
-          return;
-
-        const baseActor = getBaseActor(actor);
-        page = bestiary.pages.find((x) => x.system.actorBelongs(baseActor));
-
-        if (page) {
-          if (
-            message.flags.pf2e.context.type === "skill-check" &&
-            automaticReveal.skills
-          ) {
-            if (page.system.skills[message.flags.pf2e.modifierName]) {
-              update = {
-                [`system.skills.${message.flags.pf2e.modifierName}.revealed`]: true,
-              };
-            }
-          }
-          if (
-            message.flags.pf2e.context.type === "saving-throw" &&
-            automaticReveal.saves
-          ) {
-            if (page.system.saves[message.flags.pf2e.modifierName]) {
-              update = {
-                [`system.saves.${message.flags.pf2e.modifierName}.revealed`]: true,
-              };
-            }
-          }
-        }
-      }
-
-      if (page && update) {
-        await page.update(update);
-
-        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-          action: socketEvent.UpdateBestiary,
-          data: {},
-        });
-
-        Hooks.callAll(socketEvent.UpdateBestiary, {});
-      }
+      updateBestiaryData(message);
     }
   }
 });
@@ -449,128 +356,109 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
       if (!game.user.isGM) return false;
 
       const message = game.messages.get(li.data().messageId);
-      const actorUuid = message.flags.pf2e?.origin?.actor ?? null;
-      const actorId = message.flags.pf2e?.context?.actor ?? null;
-
-      if (actorUuid || actorId) {
-        var actor = null;
-        if (actorUuid) {
-          actor =
-            game.actors.find((x) => x.uuid === actorUuid) ??
-            canvas.scene.tokens.find((x) => x.actor.uuid === actorUuid)
-              .baseActor;
-        } else actor = game.actors.find((x) => x.id === actorId);
-
-        const bestiary = game.journal.get(
-          game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
-        );
-
-        return Boolean(
-          bestiary.pages.some((x) => x.system.actorBelongs(actor)),
-        );
-      }
-
-      return false;
-    },
-    callback: async (li) => {
       const bestiary = game.journal.get(
         game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
       );
+
+      return Boolean(
+        bestiary.pages.some((x) =>
+          x.system.actorBelongs({
+            uuid: `Actor.${message.speaker.actor}`,
+            name: message.speaker.alias,
+          }),
+        ),
+      );
+    },
+    callback: async (li) => {
       const message = game.messages.get(li.data().messageId);
-      const actorUuid = message.flags.pf2e?.origin?.actor ?? null;
-      const actorId = message.flags.pf2e?.context?.actor ?? null;
-
-      let update = null;
-      let page = null;
-      if (actorUuid) {
-        const actor = getBaseActor(
-          await fromUuid(message.flags.pf2e?.origin?.actor),
-        );
-        if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
-          return;
-
-        const rollOptions = message.flags.pf2e.origin.rollOptions;
-        const itemIdSplit =
-          rollOptions
-            .find((option) => option.includes("item:id"))
-            ?.split(":") ?? null;
-        if (actor && itemIdSplit) {
-          page = bestiary.pages.find((x) => x.system.actorBelongs(actor));
-          if (page) {
-            const item = actor.items.get(itemIdSplit[itemIdSplit.length - 1]);
-            if (message.flags.pf2e.modifierName) {
-              if (page.system.attacks[item._id]) {
-                update = { [`system.attacks.${item._id}.revealed`]: true };
-              }
-            } else {
-              switch (item.type) {
-                case "action":
-                  if (
-                    item.system.actionType.value === "passive" &&
-                    actor.type !== "hazard"
-                  )
-                    update = { [`system.passives.${item._id}.revealed`]: true };
-                  else
-                    update = { [`system.actions.${item._id}.revealed`]: true };
-
-                  break;
-                case "spell":
-                case "spell-cast":
-                  const spellLevel = getSpellLevel(
-                    item,
-                    page.system.level.value,
-                  );
-                  update = {
-                    system: {
-                      spells: {
-                        [`entries.${item.system.location.value}`]: {
-                          revealed: true,
-                          [`levels.${spellLevel}.spells.${item._id}.revealed`]: true,
-                        },
-                      },
-                    },
-                  };
-                  break;
-              }
-            }
-          }
-        }
-      } else if (actorId) {
-        // Skills | Saving Throws
-        const actor = game.actors.find((x) => x.id === actorId);
-        if (!isValidEntityType(actor.type) || actor.hasPlayerOwner) return;
-
-        const baseActor = getBaseActor(actor);
-        page = bestiary.pages.find((x) => x.system.actorBelongs(baseActor));
-        if (page) {
-          if (message.flags.pf2e.context.type === "skill-check") {
-            if (page.system.skills[message.flags.pf2e.modifierName]) {
-              update = {
-                [`system.skills.${message.flags.pf2e.modifierName}.revealed`]: true,
-              };
-            }
-          }
-          if (message.flags.pf2e.context.type === "saving-throw") {
-            update = {
-              [`system.saves.${message.flags.pf2e.modifierName}.revealed`]: true,
-            };
-          }
-        }
-      }
-
-      if (page && update) {
-        await page.update(update);
-
-        await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-          action: socketEvent.UpdateBestiary,
-          data: {},
-        });
-
-        Hooks.callAll(socketEvent.UpdateBestiary, {});
-      }
+      updateBestiaryData(message);
     },
   });
 });
+
+const updateBestiaryData = async (message) => {
+  const bestiary = game.journal.get(
+    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+  );
+
+  var page = bestiary.pages.find((x) =>
+    x.system.actorBelongs({
+      uuid: `Actor.${message.speaker.actor}`,
+      name: message.speaker.alias,
+    }),
+  );
+  if (!page) return;
+
+  const base = message.flags.pf2e.context ?? message.flags.pf2e.origin;
+  const options = base.rollOptions ?? base.options;
+  const id = message.flags.pf2e.origin?.uuid
+    ? message.flags.pf2e.origin.uuid.split(".")[3]
+    : message.flags.pf2e?.context?.identifier
+      ? message.flags.pf2e.context.identifier.split(".")[0]
+      : (message.flags.pf2e.modifierName ?? null);
+  var update = null;
+
+  if (id) {
+    switch (base.type) {
+      case "attack-roll":
+        if (page.system.attacks[id])
+          update = { [`system.attacks.${id}.revealed`]: true };
+        break;
+      case "action":
+        const isAction = !options.some(
+          (x) => x === "origin:item:action:type:passive",
+        );
+        if (isAction && page.system.actions[id])
+          update = { [`system.actions.${id}.revealed`]: true };
+        else if (page.system.passives[id])
+          update = { [`system.passives.${id}.revealed`]: true };
+        break;
+      case "spell":
+      case "spell-cast":
+        const isCantrip = options.some((x) => x === "cantrip");
+        const entry = message.flags.pf2e.casting.id;
+        const spellLevel = isCantrip
+          ? "Cantrips"
+          : getBestiarySpellLevel(
+              page.system.spells.entries[entry],
+              valueFromRollOption(options, "item:level"),
+              id,
+            );
+        update = {
+          system: {
+            spells: {
+              [`entries.${entry}`]: {
+                revealed: true,
+                [`levels.${spellLevel}.spells.${id}.revealed`]: true,
+              },
+            },
+          },
+        };
+        break;
+      case "skill-check":
+        update = {
+          [`system.skills.${id}.revealed`]: true,
+        };
+        break;
+      case "saving-throw":
+        update = {
+          [`system.saves.${id}.revealed`]: true,
+        };
+        break;
+    }
+  }
+
+  if (page && update) {
+    await page.update(update);
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+};
 
 Hooks.on("getDirectoryApplicationEntryContext", (_, buttons) => {
   buttons.push({

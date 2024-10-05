@@ -205,14 +205,6 @@ export const getHazardCategories = () => {
   ];
 };
 
-export const getBaseActor = (actor) => {
-  return actor.token
-    ? actor.token.document
-      ? actor.token.document.baseActor
-      : actor.token.baseActor
-    : actor;
-};
-
 export const getEntityType = (data) => {
   if (data.type === "pf2e-bestiary-tracking.hazard" || data.type === "hazard")
     return "hazard";
@@ -363,4 +355,28 @@ export const readTextFromFile = (file) => {
     };
     reader.readAsText(file);
   });
+};
+
+export const valueFromRollOption = (rollOptions, option) => {
+  let rollOption = rollOptions.find((x) => x.startsWith(option));
+  if (!rollOption)
+    rollOption = rollOptions.find((x) => x.startsWith(`origin:${option}`));
+
+  const optionSplit = rollOption.split(":");
+  return optionSplit[optionSplit.length - 1];
+};
+
+export const getBestiarySpellLevel = (spells, maxLevel, id) => {
+  if (spells.levels[maxLevel].spells[id]) return maxLevel;
+
+  let level = Number.parseInt(maxLevel);
+  while (level) {
+    if (spells.levels[level].spells[id]) {
+      break;
+    }
+    var nextLevel = Number.isNaN(level) ? null : level - 1;
+    level = nextLevel === 0 ? "Cantrips" : nextLevel ? nextLevel : null;
+  }
+
+  return level;
 };
