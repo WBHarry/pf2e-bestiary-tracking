@@ -2377,15 +2377,20 @@ const getCategoryLabel = (statisticsTable, level, save, short) => {
 
 const setSimpleCategoryLabels = (saves) => {
   const range = ["high", "moderate", "low"];
-  const workingSaves = Object.keys(saves).map(key => ({ key: key, value: saves[key].value })).sort((a, b) => b.value - a.value);
-  for(var i = 0; i < workingSaves.length; i++){
-    const baseCategory = i === 0 ? 'high' : i === 1 ? 'moderate' : 'low';
+  const workingSaves = Object.keys(saves)
+    .map((key) => ({ key: key, value: saves[key].value }))
+    .sort((a, b) => b.value - a.value);
+  for (var i = 0; i < workingSaves.length; i++) {
+    const baseCategory = i === 0 ? "high" : i === 1 ? "moderate" : "low";
     const save = workingSaves[i];
-    if(i !== 0 && workingSaves[i-1].value === save.value) {
-      saves[save.key].category = saves[workingSaves[i-1].key].category;
-    }
-    else {
-      saves[save.key].category = getCategoryLabelValue(range, baseCategory, true);
+    if (i !== 0 && workingSaves[i - 1].value === save.value) {
+      saves[save.key].category = saves[workingSaves[i - 1].key].category;
+    } else {
+      saves[save.key].category = getCategoryLabelValue(
+        range,
+        baseCategory,
+        true,
+      );
     }
   }
 };
@@ -5835,16 +5840,16 @@ class Creature extends foundry.abstract.TypeDataModel {
       will: {
         ...this.saves.will,
         label: `${this.saves.will.value > 0 ? "+" : ""}${this.saves.will.value}`,
-      }
+      },
     };
-    if(vagueDescriptions.settings.simpleSaves){
+    if (vagueDescriptions.settings.simpleSaves) {
       setSimpleCategoryLabels(this.saves);
     } else {
       this.saves.fortitude.category = getCategoryLabel(
         savingThrowPerceptionTable,
         contextLevel,
         this.saves.fortitude.value,
-        true
+        true,
       );
       this.saves.reflex.category = getCategoryLabel(
         savingThrowPerceptionTable,
@@ -7736,16 +7741,16 @@ class Hazard extends foundry.abstract.TypeDataModel {
       will: {
         ...this.saves.will,
         label: `${this.saves.will.value > 0 ? "+" : ""}${this.saves.will.value}`,
-      }
+      },
     };
-    if(vagueDescriptions.settings.simpleSaves){
+    if (vagueDescriptions.settings.simpleSaves) {
       setSimpleCategoryLabels(this.saves);
     } else {
       this.saves.fortitude.category = getCategoryLabel(
         savingThrowPerceptionTable,
         contextLevel,
         this.saves.fortitude.value,
-        true
+        true,
       );
       this.saves.reflex.category = getCategoryLabel(
         savingThrowPerceptionTable,
@@ -8556,10 +8561,9 @@ class VagueDescriptionsMenu extends HandlebarsApplicationMixin$7(
   constructor() {
     super({});
 
-    this.settings = foundry.utils.deepClone(game.settings.get(
-      "pf2e-bestiary-tracking",
-      "vague-descriptions",
-    ));
+    this.settings = foundry.utils.deepClone(
+      game.settings.get("pf2e-bestiary-tracking", "vague-descriptions"),
+    );
     this.helperSettings = {
       properties: {
         all: Object.keys(this.settings.properties).every(
@@ -8639,24 +8643,27 @@ class VagueDescriptionsMenu extends HandlebarsApplicationMixin$7(
   }
 
   static async save() {
-    const requireReload = this.settings.settings.simpleSaves !== game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions').settings.simpleSaves;
-    
+    const requireReload =
+      this.settings.settings.simpleSaves !==
+      game.settings.get("pf2e-bestiary-tracking", "vague-descriptions").settings
+        .simpleSaves;
+
     await game.settings.set(
       "pf2e-bestiary-tracking",
       "vague-descriptions",
       this.settings,
     );
 
-    if(requireReload){
+    if (requireReload) {
       const reload = await foundry.applications.api.DialogV2.confirm({
         id: "reload-world-confirm",
         modal: true,
         rejectClose: false,
         window: { title: "SETTINGS.ReloadPromptTitle" },
         position: { width: 400 },
-        content: `<p>${game.i18n.localize("SETTINGS.ReloadPromptBody")}</p>`
+        content: `<p>${game.i18n.localize("SETTINGS.ReloadPromptBody")}</p>`,
       });
-      if ( reload ) {
+      if (reload) {
         await game.socket.emit("reload");
         foundry.utils.debouncedReload();
       }

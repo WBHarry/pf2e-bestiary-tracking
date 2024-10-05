@@ -119,6 +119,15 @@
   line-height: inherit;
   text-shadow: inherit;
 }
+.application.pf2e-bestiary-tracking .bestiary-actor-sheet :not([data-theme]) .tags.paizo-style select {
+  width: auto;
+}
+.application.pf2e-bestiary-tracking .bestiary-actor-sheet :not([data-theme]) nav.sheet-tabs {
+  justify-content: space-around;
+}
+.application.pf2e-bestiary-tracking .bestiary-actor-sheet :not([data-theme]) nav.sheet-tabs .item {
+  flex: initial;
+}
 .pf2e-bestiary-tracking {
   overflow-y: visible;
   overflow-x: visible;
