@@ -33,6 +33,26 @@ export const getCategoryLabel = (statisticsTable, level, save, short) => {
   return getCategoryLabelValue(range, value.category, short);
 };
 
+export const setSimpleCategoryLabels = (saves) => {
+  const range = ["high", "moderate", "low"];
+  const workingSaves = Object.keys(saves)
+    .map((key) => ({ key: key, value: saves[key].value }))
+    .sort((a, b) => b.value - a.value);
+  for (var i = 0; i < workingSaves.length; i++) {
+    const baseCategory = i === 0 ? "high" : i === 1 ? "moderate" : "low";
+    const save = workingSaves[i];
+    if (i !== 0 && workingSaves[i - 1].value === save.value) {
+      saves[save.key].category = saves[workingSaves[i - 1].key].category;
+    } else {
+      saves[save.key].category = getCategoryLabelValue(
+        range,
+        baseCategory,
+        true,
+      );
+    }
+  }
+};
+
 export const getMixedCategoryLabel = (statisticsTable, level, save, short) => {
   const { range, values } = statisticsTable;
   const tableRow = values[level];

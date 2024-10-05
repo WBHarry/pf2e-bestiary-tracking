@@ -344,7 +344,8 @@
             "Initiative": "Initiative/Stealth (Hazards)",
             "PlayerBased": "Base Descriptions On Player Level",
             "MisinformationOptions": "Vague Misinformation Categories",
-            "GMNumeric": "GM Sees Exact Values"
+            "GMNumeric": "GM Sees Exact Values",
+            "SimpleSaves": "Comparative Save Descriptions"
           },
           "Sections": {
             "Properties": {

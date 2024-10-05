@@ -341,23 +341,24 @@ const readTextFromFile = (file) => {
 };
 
 const valueFromRollOption = (rollOptions, option) => {
-  let rollOption = rollOptions.find(x => x.startsWith(option));
-  if(!rollOption) rollOption = rollOptions.find(x => x.startsWith(`origin:${option}`));
-  
-  const optionSplit = rollOption.split(':');
-  return optionSplit[optionSplit.length-1];
+  let rollOption = rollOptions.find((x) => x.startsWith(option));
+  if (!rollOption)
+    rollOption = rollOptions.find((x) => x.startsWith(`origin:${option}`));
+
+  const optionSplit = rollOption.split(":");
+  return optionSplit[optionSplit.length - 1];
 };
 
 const getBestiarySpellLevel = (spells, maxLevel, id) => {
-  if(spells.levels[maxLevel].spells[id]) return maxLevel;
+  if (spells.levels[maxLevel].spells[id]) return maxLevel;
 
   let level = Number.parseInt(maxLevel);
-  while(level){
-    if(spells.levels[level].spells[id]){
+  while (level) {
+    if (spells.levels[level].spells[id]) {
       break;
     }
-    var nextLevel = Number.isNaN(level) ? null : level-1;
-    level = nextLevel === 0 ? 'Cantrips' : nextLevel ? nextLevel: null;
+    var nextLevel = Number.isNaN(level) ? null : level - 1;
+    level = nextLevel === 0 ? "Cantrips" : nextLevel ? nextLevel : null;
   }
 
   return level;
@@ -2372,6 +2373,21 @@ const getCategoryLabel = (statisticsTable, level, save, short) => {
   }
 
   return getCategoryLabelValue(range, value.category, short);
+};
+
+const setSimpleCategoryLabels = (saves) => {
+  const range = ["high", "moderate", "low"];
+  const workingSaves = Object.keys(saves).map(key => ({ key: key, value: saves[key].value })).sort((a, b) => b.value - a.value);
+  for(var i = 0; i < workingSaves.length; i++){
+    const baseCategory = i === 0 ? 'high' : i === 1 ? 'moderate' : 'low';
+    const save = workingSaves[i];
+    if(i !== 0 && workingSaves[i-1].value === save.value) {
+      saves[save.key].category = saves[workingSaves[i-1].key].category;
+    }
+    else {
+      saves[save.key].category = getCategoryLabelValue(range, baseCategory, true);
+    }
+  }
 };
 
 const getMixedCategoryLabel = (statisticsTable, level, save, short) => {
@@ -5811,34 +5827,38 @@ class Creature extends foundry.abstract.TypeDataModel {
       fortitude: {
         ...this.saves.fortitude,
         label: `${this.saves.fortitude.value > 0 ? "+" : ""}${this.saves.fortitude.value}`,
-        category: getCategoryLabel(
-          savingThrowPerceptionTable,
-          contextLevel,
-          this.saves.fortitude.value,
-          true,
-        ),
       },
       reflex: {
         ...this.saves.reflex,
         label: `${this.saves.reflex.value > 0 ? "+" : ""}${this.saves.reflex.value}`,
-        category: getCategoryLabel(
-          savingThrowPerceptionTable,
-          contextLevel,
-          this.saves.reflex.value,
-          true,
-        ),
       },
       will: {
         ...this.saves.will,
         label: `${this.saves.will.value > 0 ? "+" : ""}${this.saves.will.value}`,
-        category: getCategoryLabel(
-          savingThrowPerceptionTable,
-          contextLevel,
-          this.saves.will.value,
-          true,
-        ),
-      },
+      }
     };
+    if(vagueDescriptions.settings.simpleSaves){
+      setSimpleCategoryLabels(this.saves);
+    } else {
+      this.saves.fortitude.category = getCategoryLabel(
+        savingThrowPerceptionTable,
+        contextLevel,
+        this.saves.fortitude.value,
+        true
+      );
+      this.saves.reflex.category = getCategoryLabel(
+        savingThrowPerceptionTable,
+        contextLevel,
+        this.saves.reflex.value,
+        true,
+      );
+      this.saves.will.category = getCategoryLabel(
+        savingThrowPerceptionTable,
+        contextLevel,
+        this.saves.will.value,
+        true,
+      );
+    }
 
     this.immunities = Object.keys(this.immunities).reduce((acc, key) => {
       const exceptionKeys = Object.keys(this.immunities[key].exceptions);
@@ -7708,34 +7728,38 @@ class Hazard extends foundry.abstract.TypeDataModel {
       fortitude: {
         ...this.saves.fortitude,
         label: `${this.saves.fortitude.value > 0 ? "+" : ""}${this.saves.fortitude.value}`,
-        category: getCategoryLabel(
-          savingThrowPerceptionTable,
-          contextLevel,
-          this.saves.fortitude.value,
-          true,
-        ),
       },
       reflex: {
         ...this.saves.reflex,
         label: `${this.saves.reflex.value > 0 ? "+" : ""}${this.saves.reflex.value}`,
-        category: getCategoryLabel(
-          savingThrowPerceptionTable,
-          contextLevel,
-          this.saves.reflex.value,
-          true,
-        ),
       },
       will: {
         ...this.saves.will,
         label: `${this.saves.will.value > 0 ? "+" : ""}${this.saves.will.value}`,
-        category: getCategoryLabel(
-          savingThrowPerceptionTable,
-          contextLevel,
-          this.saves.will.value,
-          true,
-        ),
-      },
+      }
     };
+    if(vagueDescriptions.settings.simpleSaves){
+      setSimpleCategoryLabels(this.saves);
+    } else {
+      this.saves.fortitude.category = getCategoryLabel(
+        savingThrowPerceptionTable,
+        contextLevel,
+        this.saves.fortitude.value,
+        true
+      );
+      this.saves.reflex.category = getCategoryLabel(
+        savingThrowPerceptionTable,
+        contextLevel,
+        this.saves.reflex.value,
+        true,
+      );
+      this.saves.will.category = getCategoryLabel(
+        savingThrowPerceptionTable,
+        contextLevel,
+        this.saves.will.value,
+        true,
+      );
+    }
 
     this.stealth.category = getMixedCategoryLabel(
       stealthDisableTable,
@@ -8532,10 +8556,10 @@ class VagueDescriptionsMenu extends HandlebarsApplicationMixin$7(
   constructor() {
     super({});
 
-    this.settings = game.settings.get(
+    this.settings = foundry.utils.deepClone(game.settings.get(
       "pf2e-bestiary-tracking",
       "vague-descriptions",
-    );
+    ));
     this.helperSettings = {
       properties: {
         all: Object.keys(this.settings.properties).every(
@@ -8614,12 +8638,30 @@ class VagueDescriptionsMenu extends HandlebarsApplicationMixin$7(
     this.render();
   }
 
-  static async save(options) {
+  static async save() {
+    const requireReload = this.settings.settings.simpleSaves !== game.settings.get('pf2e-bestiary-tracking', 'vague-descriptions').settings.simpleSaves;
+    
     await game.settings.set(
       "pf2e-bestiary-tracking",
       "vague-descriptions",
       this.settings,
     );
+
+    if(requireReload){
+      const reload = await foundry.applications.api.DialogV2.confirm({
+        id: "reload-world-confirm",
+        modal: true,
+        rejectClose: false,
+        window: { title: "SETTINGS.ReloadPromptTitle" },
+        position: { width: 400 },
+        content: `<p>${game.i18n.localize("SETTINGS.ReloadPromptBody")}</p>`
+      });
+      if ( reload ) {
+        await game.socket.emit("reload");
+        foundry.utils.debouncedReload();
+      }
+    }
+
     this.close();
   }
 }
@@ -9265,6 +9307,7 @@ const vagueDescriptions = () => {
         playerBased: false,
         misinformationOptions: false,
         gmNumeric: false,
+        simpleSaves: false,
       },
     },
   });
@@ -14429,8 +14472,12 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     for (var data of game.actors.find((x) => x.type === "party" && x.active)
       ?.system?.details?.members ?? []) {
       const actor = await fromUuid(data.uuid);
-      if(actor) {
-        context.players.push({ id: actor.id, name: actor.name, img: actor.img });
+      if (actor) {
+        context.players.push({
+          id: actor.id,
+          name: actor.name,
+          img: actor.img,
+        });
       }
     }
 
@@ -17146,7 +17193,12 @@ Hooks.on("getChatLogEntryContext", (_, options) => {
       );
 
       return Boolean(
-        bestiary.pages.some((x) => x.system.actorBelongs({ uuid: `Actor.${message.speaker.actor}`, name: message.speaker.alias })),
+        bestiary.pages.some((x) =>
+          x.system.actorBelongs({
+            uuid: `Actor.${message.speaker.actor}`,
+            name: message.speaker.alias,
+          }),
+        ),
       );
     },
     callback: async (li) => {
@@ -17161,28 +17213,49 @@ const updateBestiaryData = async (message) => {
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );
 
-  var page = bestiary.pages.find((x) => x.system.actorBelongs({ uuid: `Actor.${message.speaker.actor}`, name: message.speaker.alias }));  if(!page) return;
+  var page = bestiary.pages.find((x) =>
+    x.system.actorBelongs({
+      uuid: `Actor.${message.speaker.actor}`,
+      name: message.speaker.alias,
+    }),
+  );
+  if (!page) return;
 
   const base = message.flags.pf2e.context ?? message.flags.pf2e.origin;
   const options = base.rollOptions ?? base.options;
-  const id = message.flags.pf2e.origin?.uuid ? message.flags.pf2e.origin.uuid.split('.')[3] : message.flags.pf2e?.context?.identifier ? message.flags.pf2e.context.identifier.split('.')[0] : message.flags.pf2e.modifierName ?? null;
+  const id = message.flags.pf2e.origin?.uuid
+    ? message.flags.pf2e.origin.uuid.split(".")[3]
+    : message.flags.pf2e?.context?.identifier
+      ? message.flags.pf2e.context.identifier.split(".")[0]
+      : (message.flags.pf2e.modifierName ?? null);
   var update = null;
 
   if (id) {
-    switch(base.type){
-      case 'attack-roll':
-        if(page.system.attacks[id]) update = { [`system.attacks.${id}.revealed`]: true };
+    switch (base.type) {
+      case "attack-roll":
+        if (page.system.attacks[id])
+          update = { [`system.attacks.${id}.revealed`]: true };
         break;
-      case 'action': 
-        const isAction = !options.some(x => x === "origin:item:action:type:passive"); 
-        if(isAction && page.system.actions[id]) update = { [`system.actions.${id}.revealed`]: true };
-        else if (page.system.passives[id]) update = { [`system.passives.${id}.revealed`]: true };
+      case "action":
+        const isAction = !options.some(
+          (x) => x === "origin:item:action:type:passive",
+        );
+        if (isAction && page.system.actions[id])
+          update = { [`system.actions.${id}.revealed`]: true };
+        else if (page.system.passives[id])
+          update = { [`system.passives.${id}.revealed`]: true };
         break;
-      case 'spell':
-      case 'spell-cast':
-        const isCantrip = options.some(x => x === 'cantrip');
+      case "spell":
+      case "spell-cast":
+        const isCantrip = options.some((x) => x === "cantrip");
         const entry = message.flags.pf2e.casting.id;
-        const spellLevel = isCantrip ? 'Cantrips' : getBestiarySpellLevel(page.system.spells.entries[entry], valueFromRollOption(options, 'item:level'), id);
+        const spellLevel = isCantrip
+          ? "Cantrips"
+          : getBestiarySpellLevel(
+              page.system.spells.entries[entry],
+              valueFromRollOption(options, "item:level"),
+              id,
+            );
         update = {
           system: {
             spells: {
@@ -17194,18 +17267,18 @@ const updateBestiaryData = async (message) => {
           },
         };
         break;
-      case 'skill-check':
+      case "skill-check":
         update = {
           [`system.skills.${id}.revealed`]: true,
         };
         break;
-      case 'saving-throw':
+      case "saving-throw":
         update = {
           [`system.saves.${id}.revealed`]: true,
         };
         break;
-    }         
-  } 
+    }
+  }
 
   if (page && update) {
     await page.update(update);

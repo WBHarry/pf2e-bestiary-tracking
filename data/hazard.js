@@ -15,6 +15,7 @@ import {
   getCategoryLabel,
   getMixedCategoryLabel,
   getRollAverage,
+  setSimpleCategoryLabels,
 } from "../scripts/statisticsHelper";
 import { recallKnowledgeOutcomes } from "./constants";
 import {
@@ -939,34 +940,38 @@ export class Hazard extends foundry.abstract.TypeDataModel {
       fortitude: {
         ...this.saves.fortitude,
         label: `${this.saves.fortitude.value > 0 ? "+" : ""}${this.saves.fortitude.value}`,
-        category: getCategoryLabel(
-          savingThrowPerceptionTable,
-          contextLevel,
-          this.saves.fortitude.value,
-          true,
-        ),
       },
       reflex: {
         ...this.saves.reflex,
         label: `${this.saves.reflex.value > 0 ? "+" : ""}${this.saves.reflex.value}`,
-        category: getCategoryLabel(
-          savingThrowPerceptionTable,
-          contextLevel,
-          this.saves.reflex.value,
-          true,
-        ),
       },
       will: {
         ...this.saves.will,
         label: `${this.saves.will.value > 0 ? "+" : ""}${this.saves.will.value}`,
-        category: getCategoryLabel(
-          savingThrowPerceptionTable,
-          contextLevel,
-          this.saves.will.value,
-          true,
-        ),
       },
     };
+    if (vagueDescriptions.settings.simpleSaves) {
+      setSimpleCategoryLabels(this.saves);
+    } else {
+      this.saves.fortitude.category = getCategoryLabel(
+        savingThrowPerceptionTable,
+        contextLevel,
+        this.saves.fortitude.value,
+        true,
+      );
+      this.saves.reflex.category = getCategoryLabel(
+        savingThrowPerceptionTable,
+        contextLevel,
+        this.saves.reflex.value,
+        true,
+      );
+      this.saves.will.category = getCategoryLabel(
+        savingThrowPerceptionTable,
+        contextLevel,
+        this.saves.will.value,
+        true,
+      );
+    }
 
     this.stealth.category = getMixedCategoryLabel(
       stealthDisableTable,

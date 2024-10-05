@@ -279,6 +279,7 @@ const vagueDescriptions = () => {
         playerBased: false,
         misinformationOptions: false,
         gmNumeric: false,
+        simpleSaves: false,
       },
     },
   });

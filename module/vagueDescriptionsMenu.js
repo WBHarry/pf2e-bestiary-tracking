@@ -6,9 +6,8 @@ export default class VagueDescriptionsMenu extends HandlebarsApplicationMixin(
   constructor() {
     super({});
 
-    this.settings = game.settings.get(
-      "pf2e-bestiary-tracking",
-      "vague-descriptions",
+    this.settings = foundry.utils.deepClone(
+      game.settings.get("pf2e-bestiary-tracking", "vague-descriptions"),
     );
     this.helperSettings = {
       properties: {
@@ -88,12 +87,33 @@ export default class VagueDescriptionsMenu extends HandlebarsApplicationMixin(
     this.render();
   }
 
-  static async save(options) {
+  static async save() {
+    const requireReload =
+      this.settings.settings.simpleSaves !==
+      game.settings.get("pf2e-bestiary-tracking", "vague-descriptions").settings
+        .simpleSaves;
+
     await game.settings.set(
       "pf2e-bestiary-tracking",
       "vague-descriptions",
       this.settings,
     );
+
+    if (requireReload) {
+      const reload = await foundry.applications.api.DialogV2.confirm({
+        id: "reload-world-confirm",
+        modal: true,
+        rejectClose: false,
+        window: { title: "SETTINGS.ReloadPromptTitle" },
+        position: { width: 400 },
+        content: `<p>${game.i18n.localize("SETTINGS.ReloadPromptBody")}</p>`,
+      });
+      if (reload) {
+        await game.socket.emit("reload");
+        foundry.utils.debouncedReload();
+      }
+    }
+
     this.close();
   }
 }
