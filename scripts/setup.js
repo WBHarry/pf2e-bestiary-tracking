@@ -18,7 +18,7 @@ import bestiaryThemes, {
 } from "../styles/themes/themes.js";
 import BestiaryDisplayMenu from "../module/bestiaryDisplayMenu.js";
 
-export const currentVersion = "1.1.10";
+export const currentVersion = "1.1.11";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
@@ -41,8 +41,7 @@ export const setupTheme = () => {
       property === "--pf2e-bestiary-tracking-application-image" &&
       theme[property] !== "ignore"
     ) {
-      const baseUri = document.baseURI.split("game")[0];
-      root.style.setProperty(property, `url("${baseUri}${theme[property]}")`);
+      root.style.setProperty(property, `url("${theme[property]}")`);
     } else {
       root.style.setProperty(property, theme[property]);
     }

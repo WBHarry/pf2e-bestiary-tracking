@@ -1,6 +1,6 @@
 const viscera = {
   "--pf2e-bestiary-tracking-application-image":
-    "modules/pf2e-bestiary-tracking/assets/Viscera.webp",
+    "../../../modules/pf2e-bestiary-tracking/assets/Viscera.webp",
   "--pf2e-bestiary-tracking-application-header": "transparent",
   "--pf2e-bestiary-tracking-application-image-size": "cover",
   "--pf2e-bestiary-tracking-application-image-repeat": "initial",

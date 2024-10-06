@@ -1,6 +1,6 @@
 const parchment = {
   "--pf2e-bestiary-tracking-application-image":
-    "modules/pf2e-bestiary-tracking/assets/Parchment.webp",
+    "../../../modules/pf2e-bestiary-tracking/assets/Parchment.webp",
   "--pf2e-bestiary-tracking-application-header": "transparent",
   "--pf2e-bestiary-tracking-application-image-size": "cover",
   "--pf2e-bestiary-tracking-application-image-repeat": "initial",

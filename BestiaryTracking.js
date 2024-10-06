@@ -8718,7 +8718,7 @@ const coreLight = {
 
 const nebula = {
   "--pf2e-bestiary-tracking-application-image":
-    "modules/pf2e-bestiary-tracking/assets/Space.webp",
+    "../../../modules/pf2e-bestiary-tracking/assets/Space.webp",
   "--pf2e-bestiary-tracking-application-header": "transparent",
   "--pf2e-bestiary-tracking-application-image-size": "cover",
   "--pf2e-bestiary-tracking-application-image-repeat": "round",
@@ -8745,7 +8745,7 @@ const nebula = {
 
 const viscera = {
   "--pf2e-bestiary-tracking-application-image":
-    "modules/pf2e-bestiary-tracking/assets/Viscera.webp",
+    "../../../modules/pf2e-bestiary-tracking/assets/Viscera.webp",
   "--pf2e-bestiary-tracking-application-header": "transparent",
   "--pf2e-bestiary-tracking-application-image-size": "cover",
   "--pf2e-bestiary-tracking-application-image-repeat": "initial",
@@ -8771,7 +8771,7 @@ const viscera = {
 
 const water = {
   "--pf2e-bestiary-tracking-application-image":
-    "modules/pf2e-bestiary-tracking/assets/Water.webp",
+    "../../../modules/pf2e-bestiary-tracking/assets/Water.webp",
   "--pf2e-bestiary-tracking-application-header": "transparent",
   "--pf2e-bestiary-tracking-application-image-size": "cover",
   "--pf2e-bestiary-tracking-application-image-repeat": "initial",
@@ -9053,7 +9053,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$6(
   }
 }
 
-const currentVersion = "1.1.10";
+const currentVersion = "1.1.11";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -9076,8 +9076,7 @@ const setupTheme = () => {
       property === "--pf2e-bestiary-tracking-application-image" &&
       theme[property] !== "ignore"
     ) {
-      const baseUri = document.baseURI.split("game")[0];
-      root.style.setProperty(property, `url("${baseUri}${theme[property]}")`);
+      root.style.setProperty(property, `url("${theme[property]}")`);
     } else {
       root.style.setProperty(property, theme[property]);
     }
