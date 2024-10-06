@@ -1,5 +1,5 @@
 const coreLight = {
-  "--pf2e-bestiary-tracking-application-image": "../ui/parchment.jpg",
+  "--pf2e-bestiary-tracking-application-image": "../../../ui/parchment.jpg",
   "--pf2e-bestiary-tracking-application-header": "rgb(68, 68, 68)",
   "--pf2e-bestiary-tracking-application-image-repeat": "repeat",
   "--pf2e-bestiary-tracking-application": "initial",

@@ -8694,7 +8694,7 @@ const coreDark = {
 };
 
 const coreLight = {
-  "--pf2e-bestiary-tracking-application-image": "../ui/parchment.jpg",
+  "--pf2e-bestiary-tracking-application-image": "../../../ui/parchment.jpg",
   "--pf2e-bestiary-tracking-application-header": "rgb(68, 68, 68)",
   "--pf2e-bestiary-tracking-application-image-repeat": "repeat",
   "--pf2e-bestiary-tracking-application": "initial",
@@ -9053,7 +9053,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$6(
   }
 }
 
-const currentVersion = "1.1.9";
+const currentVersion = "1.1.10";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
