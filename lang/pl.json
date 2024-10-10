@@ -344,7 +344,8 @@
             "Initiative": "Inicjatywa/Ukrycie (Zagrożenia)",
             "PlayerBased": "Podstawowe opisy na poziomie gracza",
             "MisinformationOptions": "Niejasne i błędne kategorie informacji",
-            "GMNumeric": "MG widzi dokładne wartości"
+            "GMNumeric": "MG widzi dokładne wartości",
+            "SimpleSaves": "Porównawczy opis rzutu obronnego"
           },
           "Sections": {
             "Properties": {
