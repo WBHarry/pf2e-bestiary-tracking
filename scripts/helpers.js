@@ -380,3 +380,26 @@ export const getBestiarySpellLevel = (spells, maxLevel, id) => {
 
   return level;
 };
+
+export const shouldAutomaticReveal = (type) => {
+  const { automaticReveal } = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "chat-message-handling",
+  );
+
+  if (!type || !automaticReveal) return false;
+
+  switch (type) {
+    case "saving-throw":
+      return automaticReveal.saves;
+    case "skill-check":
+      return automaticReveal.skills;
+    case "attack-roll":
+      return automaticReveal.attacks;
+    case "action":
+      return automaticReveal.actions;
+    case "spell":
+    case "spell-cast":
+      return automaticReveal.spells;
+  }
+};

@@ -13,6 +13,7 @@ import { handleDataMigration } from "./scripts/migrationHandler.js";
 import {
   getBestiarySpellLevel,
   isValidEntityType,
+  shouldAutomaticReveal,
   valueFromRollOption,
 } from "./scripts/helpers.js";
 import { libWrapper } from "./libwrapperShim.js";
@@ -338,11 +339,8 @@ Hooks.on("createChatMessage", async (message) => {
     message.flags.pf2e &&
     Object.keys(message.flags.pf2e).length > 0
   ) {
-    const { automaticReveal } = game.settings.get(
-      "pf2e-bestiary-tracking",
-      "chat-message-handling",
-    );
-    if (automaticReveal) {
+    const base = message.flags.pf2e.context ?? message.flags.pf2e.origin;
+    if (shouldAutomaticReveal(base.type)) {
       updateBestiaryData(message);
     }
   }

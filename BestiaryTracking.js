@@ -364,6 +364,29 @@ const getBestiarySpellLevel = (spells, maxLevel, id) => {
   return level;
 };
 
+const shouldAutomaticReveal = (type) => {
+  const { automaticReveal } = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "chat-message-handling",
+  );
+
+  if(!type || !automaticReveal) return false;
+
+  switch(type){
+    case 'saving-throw':
+      return automaticReveal.saves;
+    case 'skill-check':
+      return automaticReveal.skills;
+    case 'attack-roll':
+      return automaticReveal.attacks;
+    case 'action':
+      return automaticReveal.actions;
+    case 'spell':
+    case 'spell-cast':
+      return automaticReveal.spells;
+  }
+};
+
 const getVagueDescriptionLabels = () => ({
   full: {
     extreme: game.i18n.localize(
@@ -9053,7 +9076,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$6(
   }
 }
 
-const currentVersion = "1.1.11";
+const currentVersion = "1.1.12";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -17176,11 +17199,8 @@ Hooks.on("createChatMessage", async (message) => {
     message.flags.pf2e &&
     Object.keys(message.flags.pf2e).length > 0
   ) {
-    const { automaticReveal } = game.settings.get(
-      "pf2e-bestiary-tracking",
-      "chat-message-handling",
-    );
-    if (automaticReveal) {
+    const base = message.flags.pf2e.context ?? message.flags.pf2e.origin;
+    if (shouldAutomaticReveal(base.type)) {
       updateBestiaryData(message);
     }
   }
