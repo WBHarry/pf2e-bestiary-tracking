@@ -918,6 +918,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
     return {
       name: data.name,
       system: {
+        ...this,
         pcData: data.system.isFromPC
           ? {
               ...data.system.pcData,

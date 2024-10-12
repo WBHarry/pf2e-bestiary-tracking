@@ -505,6 +505,7 @@ export class Hazard extends foundry.abstract.TypeDataModel {
     return {
       name: data.name,
       system: {
+        ...this,
         hidden: this.hidden,
         uuid: data.system.uuid,
         version: data.system.version,

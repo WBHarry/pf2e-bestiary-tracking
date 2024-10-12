@@ -370,19 +370,19 @@ const shouldAutomaticReveal = (type) => {
     "chat-message-handling",
   );
 
-  if(!type || !automaticReveal) return false;
+  if (!type || !automaticReveal) return false;
 
-  switch(type){
-    case 'saving-throw':
+  switch (type) {
+    case "saving-throw":
       return automaticReveal.saves;
-    case 'skill-check':
+    case "skill-check":
       return automaticReveal.skills;
-    case 'attack-roll':
+    case "attack-roll":
       return automaticReveal.attacks;
-    case 'action':
+    case "action":
       return automaticReveal.actions;
-    case 'spell':
-    case 'spell-cast':
+    case "spell":
+    case "spell-cast":
       return automaticReveal.spells;
   }
 };
@@ -5186,6 +5186,7 @@ class Creature extends foundry.abstract.TypeDataModel {
     return {
       name: data.name,
       system: {
+        ...this,
         pcData: data.system.isFromPC
           ? {
               ...data.system.pcData,
@@ -7321,6 +7322,7 @@ class Hazard extends foundry.abstract.TypeDataModel {
     return {
       name: data.name,
       system: {
+        ...this,
         hidden: this.hidden,
         uuid: data.system.uuid,
         version: data.system.version,
