@@ -9078,7 +9078,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$6(
   }
 }
 
-const currentVersion = "1.1.13";
+const currentVersion = "1.1.14";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -12040,6 +12040,12 @@ const migrateBestiaryPages = async (bestiary) => {
       } else {
         await page.update({ "system.version": "1.0.1" });
       }
+    }
+    if(versionCompare(page.system.version, "1.1.14")) {
+      await page.update({ system: {
+        version: "1.1.14",
+        isFromPC: Boolean(page.system.pcData)
+      }});
     }
   }
 };
@@ -17253,9 +17259,9 @@ const updateBestiaryData = async (message) => {
   const options = base.rollOptions ?? base.options;
   var update = null;
   let id = null;
-  if(message.flags.pf2e.origin?.uuid){
+  if (message.flags.pf2e.origin?.uuid) {
     const uuidSplit = message.flags.pf2e.origin.uuid.split(".");
-    id = uuidSplit[uuidSplit.length-1];
+    id = uuidSplit[uuidSplit.length - 1];
   } else if (message.flags.pf2e?.context?.identifier) {
     id = message.flags.pf2e.context.identifier.split(".")[0];
   } else {

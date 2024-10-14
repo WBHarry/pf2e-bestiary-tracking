@@ -1477,6 +1477,14 @@ export const migrateBestiaryPages = async (bestiary) => {
         await page.update({ "system.version": "1.0.1" });
       }
     }
+    if (versionCompare(page.system.version, "1.1.14")) {
+      await page.update({
+        system: {
+          version: "1.1.14",
+          isFromPC: Boolean(page.system.pcData),
+        },
+      });
+    }
   }
 };
 
