@@ -18,7 +18,7 @@ import bestiaryThemes, {
 } from "../styles/themes/themes.js";
 import BestiaryDisplayMenu from "../module/bestiaryDisplayMenu.js";
 
-export const currentVersion = "1.1.14";
+export const currentVersion = "1.1.15";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
@@ -587,6 +587,7 @@ const bestiaryIntegration = () => {
         attacks: false,
         actions: false,
         spells: false,
+        iwr: false,
       },
     },
   });

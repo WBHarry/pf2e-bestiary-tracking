@@ -277,6 +277,11 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
   }
 
   static async save(_) {
+    const requireReload =
+      this.settings.chatMessageHandling.automaticReveal.iwr !==
+      game.settings.get("pf2e-bestiary-tracking", "chat-message-handling")
+        .automaticReveal.iwr;
+
     await game.settings.set(
       "pf2e-bestiary-tracking",
       "automatic-combat-registration",
@@ -312,6 +317,21 @@ export default class BestiaryIntegrationMenu extends HandlebarsApplicationMixin(
       "default-revealed",
       this.settings.defaultRevealed,
     );
+
+    if (requireReload) {
+      const reload = await foundry.applications.api.DialogV2.confirm({
+        id: "reload-world-confirm",
+        modal: true,
+        rejectClose: false,
+        window: { title: "SETTINGS.ReloadPromptTitle" },
+        position: { width: 400 },
+        content: `<p>${game.i18n.localize("SETTINGS.ReloadPromptBody")}</p>`,
+      });
+      if (reload) {
+        await game.socket.emit("reload");
+        foundry.utils.debouncedReload();
+      }
+    }
 
     this.close();
   }

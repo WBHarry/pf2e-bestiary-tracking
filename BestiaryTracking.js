@@ -4756,6 +4756,12 @@ class Creature extends foundry.abstract.TypeDataModel {
     };
   }
 
+  get id() {
+    if (!this.uuid) return null;
+    const split = this.uuid.split(".");
+    return split[split.length - 1];
+  }
+
   actorBelongs = (actor) => {
     const sameNameDuplicates = game.settings.get(
       "pf2e-bestiary-tracking",
@@ -8469,6 +8475,10 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$9(
   }
 
   static async save(_) {
+    const requireReload =
+    this.settings.chatMessageHandling.automaticReveal.iwr !==
+    game.settings.get("pf2e-bestiary-tracking", "chat-message-handling").automaticReveal.iwr;
+
     await game.settings.set(
       "pf2e-bestiary-tracking",
       "automatic-combat-registration",
@@ -8504,6 +8514,21 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$9(
       "default-revealed",
       this.settings.defaultRevealed,
     );
+
+    if (requireReload) {
+      const reload = await foundry.applications.api.DialogV2.confirm({
+        id: "reload-world-confirm",
+        modal: true,
+        rejectClose: false,
+        window: { title: "SETTINGS.ReloadPromptTitle" },
+        position: { width: 400 },
+        content: `<p>${game.i18n.localize("SETTINGS.ReloadPromptBody")}</p>`,
+      });
+      if (reload) {
+        await game.socket.emit("reload");
+        foundry.utils.debouncedReload();
+      }
+    }
 
     this.close();
   }
@@ -9078,7 +9103,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$6(
   }
 }
 
-const currentVersion = "1.1.14";
+const currentVersion = "1.1.15";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -9647,6 +9672,7 @@ const bestiaryIntegration = () => {
         attacks: false,
         actions: false,
         spells: false,
+        iwr: false,
       },
     },
   });
@@ -12041,11 +12067,13 @@ const migrateBestiaryPages = async (bestiary) => {
         await page.update({ "system.version": "1.0.1" });
       }
     }
-    if(versionCompare(page.system.version, "1.1.14")) {
-      await page.update({ system: {
-        version: "1.1.14",
-        isFromPC: Boolean(page.system.pcData)
-      }});
+    if (versionCompare(page.system.version, "1.1.14")) {
+      await page.update({
+        system: {
+          version: "1.1.14",
+          isFromPC: Boolean(page.system.pcData),
+        },
+      });
     }
   }
 };
@@ -14289,7 +14317,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const reduceFunc = (npcCategories, combatants) => (acc, entity) => {
       const inCombatType =
         combatants &&
-        combatants.find((x) => x.token.baseActor.uuid === entity.system.uuid);
+        combatants.find((x) => x.token.baseActor?.uuid === entity.system.uuid || x.actorId === entity.system.id);
       if (inCombatType) {
         acc
           .find((x) => x.value === "combat")
@@ -17435,7 +17463,9 @@ Hooks.on("renderApplication", (_, htmlElements) => {
   }
 });
 
-Hooks.on("renderChatMessage", (_, htmlElements) => {
+Hooks.on("renderChatMessage", (message, htmlElements) => {
+  const { automaticReveal } = game.settings.get("pf2e-bestiary-tracking", "chat-message-handling");
+  const isDamageRoll = message.flags.pf2e?.context?.type === 'damage-roll';
   for (var element of htmlElements) {
     const buttons = $(element).find(".pf2e-bestiary-link-button");
     for (var button of buttons) {
@@ -17444,6 +17474,57 @@ Hooks.on("renderChatMessage", (_, htmlElements) => {
       );
       const page = bestiary.pages.get(button.dataset.page);
       button.onclick = () => new PF2EBestiary(page).render(true);
+    }
+
+    if(isDamageRoll && automaticReveal.iwr){
+      const updateIWR = async () => {
+        const targets = canvas.tokens.controlled;
+        if(targets.length === 0) return;
+
+        const bestiary = game.journal.get(game.settings.get('pf2e-bestiary-tracking', 'bestiary-tracking'));
+        if(!bestiary) return;
+
+        const damageTypes = Array.from(new Set(message.flags.pf2e.dice.map(x => x.damageType).concat(message.flags.pf2e.modifiers.map(x => x.damageType)).filter(x => x)));
+        for(var target of targets) {
+          const page = bestiary.pages.find(x => x.system.uuid === (target.document?.baseActor?.uuid ?? null));
+          if(page){
+            var update = ['immunities', 'resistances', 'weaknesses'].reduce((acc, prop) => {
+              const partUpdate = Object.keys(page.system[prop]).reduce((acc, key) => {
+                if(damageTypes.includes(page.system[prop][key].type)){
+                  if(!acc) acc = {};
+                  acc[key] = { revealed: true };
+                }
+  
+                return acc;
+              }, null);
+              if(partUpdate) {
+                if(!acc) acc = { system: {} };
+                acc.system[prop] = partUpdate;
+              }
+
+              return acc;
+            }, null);
+
+            if(update) {
+              await page.update(update);
+              await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+                action: socketEvent.UpdateBestiary,
+                data: {},
+              });
+          
+              Hooks.callAll(socketEvent.UpdateBestiary, {});
+            }
+          }
+        }
+      };
+      
+      const damageApplicationButtons = $(element).find('.damage-application');
+      const damageButton = $(damageApplicationButtons).find('[data-action="apply-damage"]');
+      if(damageButton && damageButton[0]) damageButton[0].onclick = updateIWR;
+      const halfDamageButton = $(damageApplicationButtons).find('[data-action="half-damage"]');
+      if(halfDamageButton && halfDamageButton[0]) halfDamageButton[0].onclick = updateIWR;
+      const criticalDamageButton = $(damageApplicationButtons).find('[data-action="double-damage"]');
+      if(criticalDamageButton && criticalDamageButton[0]) criticalDamageButton[0].onclick = updateIWR;
     }
   }
 });

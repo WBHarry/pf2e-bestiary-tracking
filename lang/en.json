@@ -467,7 +467,8 @@
           "Skills": "Skills",
           "Attacks": "Attacks",
           "Actions": "Actions",
-          "Spells": "Spells"
+          "Spells": "Spells",
+          "IWR": "IWR On Damage"
         },
         "HiddenSettings": {
           "Name": "Default Hidden From Players",

@@ -488,6 +488,12 @@ export class Creature extends foundry.abstract.TypeDataModel {
     };
   }
 
+  get id() {
+    if (!this.uuid) return null;
+    const split = this.uuid.split(".");
+    return split[split.length - 1];
+  }
+
   actorBelongs = (actor) => {
     const sameNameDuplicates = game.settings.get(
       "pf2e-bestiary-tracking",
