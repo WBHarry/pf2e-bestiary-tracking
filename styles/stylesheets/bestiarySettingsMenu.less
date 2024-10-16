@@ -218,6 +218,99 @@
       }
     }
   }
+
+  .menu-input-select {
+    flex: none;
+    width: 100px;
+  }
+
+  .menu-title {
+    position: relative;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    input {
+      background: initial;
+      text-decoration: initial;
+      width: auto;
+      border: 2px solid var(--color-underline-header);
+      font-size: 1.5rem;
+      margin: 4px;
+    }
+
+    .menu-title-button {
+      position: absolute;
+      right: 0;
+      bottom: 4px;
+      width: auto;
+      display: flex;
+      flex-direction: column;
+
+      div {
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      select {
+        font-size: 12px;
+        margin: 0;
+        height: 21px;
+      }
+    }
+  }
+
+  .edit-selections {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    .edit-selection {
+      position: relative;
+      width: calc(25% - 8px);
+      padding: 0 18px;
+
+      &.active {
+        background: var(--button-hover-background-color);
+      }
+
+      .edit-selection-tools {
+        position: absolute;
+        top: 0;
+        font-size: 12px;
+        pointer-events: auto;
+
+        &:hover {
+          filter: drop-shadow(0 0 3px black);
+        }
+
+        &.left {
+          left: 0;
+          margin: 4px 0 0 4px;
+        }
+        &.right {
+          right: 0;
+          margin: 4px 4px 0 0;
+        }
+      }
+    }
+  }
+
+  .theme-section {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    .form-group {
+      width: calc(33% - 4px);
+    }
+  }
 }
 
 &.bestiary-import-dialog {

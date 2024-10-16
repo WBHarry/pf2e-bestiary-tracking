@@ -1,0 +1,243 @@
+<div>
+    <header>
+        <fieldset class="menu-category">
+            <legend>
+                {{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Title"}}
+                <i class="pf2e-bestiary-clickable-icon fa-solid fa-plus" data-action="addTheme"></i>
+                <i class="pf2e-bestiary-clickable-icon fa-fw fas fa-file-import" data-action="importTheme"></i>
+            </legend>
+
+            <div class="edit-selections">
+                {{#each this.customThemes}}
+                    <button class="edit-selection {{#if (eq @key ../this.selectedTheme)}}active{{/if}}" data-action="selectTheme" data-theme="{{@key}}">
+                        <span>{{this.name}}</span>
+                        <i class="edit-selection-tools left pf2e-bestiary-clickable-icon fa-solid fa-circle-xmark" data-action="deleteTheme" data-theme="{{@key}}"></i>
+                        <i class="edit-selection-tools right pf2e-bestiary-clickable-icon fa-fw fas fa-file-export" data-action="exportTheme" data-theme="{{@key}}"></i>
+                    </button>
+                {{/each}}
+            </div>
+        </fieldset>
+    </header>
+    <body>
+        {{#with (lookup this.customThemes this.selectedTheme)}}
+            <div class="menu-title">
+                <input type="text" name={{concat "customThemes." ../this.selectedTheme ".name"}} value="{{this.name}}" />
+                <div class="menu-title-button">
+                    <div>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.TemplateButton"}}</div>
+                    <select>
+                        {{selectOptions ../extendedThemes valueAttr="value" labelAttr="name" localize=true blank=""}}
+                    </select>
+                </div>
+            </div>
+            <fieldset class="menu-category">
+                <legend>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundColors"}}</legend>
+                <div class="flexrow">
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application"}} value="{{this.props.--pf2e-bestiary-tracking-application}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group full">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryDisplay.JournalSettings.Image"}}</label>
+                        <div class="form-fields">
+                            <input type="text" value="{{localize this.props.--pf2e-bestiary-tracking-application-image}}" disabled />
+                            <button data-action="filePicker" data-path="{{concat ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-image"}}" title="Browse Files"><i class="fas fa-file-import fa-fw"></i></button>
+                            <button data-action="clearBackgroundImage"><i class="fa-solid fa-circle-xmark"></i></button>
+                        </div>
+                    </div>
+                </div>
+                {{#if this.props.--pf2e-bestiary-tracking-application-image}}
+                    <div class="flexrow">
+                        <div class="form-group">
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundSize"}}</label>
+                            <div class="form-fields">
+                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-image-size"}}" value="{{this.props.--pf2e-bestiary-tracking-application-image-size}}" />
+                            </div>
+                        </div>
+                        <div class="menu-input-select">
+                            <select class="background-size-select">
+                                {{selectOptions ../backgroundSizeOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flexrow">
+                        <div class="form-group">
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundRepeat"}}</label>
+                            <div class="form-fields">
+                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-image-repeat"}}" value="{{this.props.--pf2e-bestiary-tracking-application-image-repeat}}" />
+                            </div>
+                        </div>
+                        <div class="menu-input-select">
+                            <select class="background-repeat-select">
+                                {{selectOptions ../backgroundRepeatOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
+                            </select>
+                        </div>
+                    </div>
+                     <div class="flexrow">
+                        <div class="form-group">
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundPosition"}}</label>
+                            <div class="form-fields">
+                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-image-position"}}" value="{{this.props.--pf2e-bestiary-tracking-application-image-position}}" />
+                            </div>
+                        </div>
+                        <div class="menu-input-select">
+                            <select class="background-position-select">
+                                {{selectOptions ../backgroundPositionOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
+                            </select>
+                        </div>
+                    </div>
+                {{/if}}
+            </fieldset>
+            <fieldset class="menu-category">
+                <legend>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.MainColors"}}</legend>
+                <div class="theme-section">
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-primary"}} value="{{this.props.--pf2e-bestiary-tracking-primary}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Secondary"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-secondary"}} value="{{this.props.--pf2e-bestiary-tracking-secondary}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Tertiary"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-tertiary"}} value="{{this.props.--pf2e-bestiary-tracking-tertiary}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="menu-category">
+                <legend>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.AccentColors"}}</legend>
+                <div class="theme-section">
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-primary-accent"}} value="{{this.props.--pf2e-bestiary-tracking-primary-accent}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Faded"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-primary-faded"}} value="{{this.props.--pf2e-bestiary-tracking-primary-faded}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Tertiary"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-tertiary-accent"}} value="{{this.props.--pf2e-bestiary-tracking-tertiary-accent}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="menu-category">
+                <legend>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.TextColors"}}</legend>
+                <div class="theme-section">
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-primary-color"}} value="{{this.props.--pf2e-bestiary-tracking-primary-color}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Shadow"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-text-shadow"}} value="{{this.props.--pf2e-bestiary-tracking-text-shadow}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="menu-category">
+                <legend>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.IconColors"}}</legend>
+
+                <div class="theme-section">
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Icon"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-icon"}} value="{{this.props.--pf2e-bestiary-tracking-icon}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.AccentIcon"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-accent-icon"}} value="{{this.props.--pf2e-bestiary-tracking-accent-icon}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="menu-category">
+                <legend>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Hover"}}</legend>
+                <div class="theme-section">
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-main-hover"}} value="{{this.props.--pf2e-bestiary-tracking-main-hover}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="menu-category">
+                <legend>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Borders"}}</legend>
+                <div class="theme-section">
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-border"}} value="{{this.props.--pf2e-bestiary-tracking-border}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Secondary"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-secondary-border"}} value="{{this.props.--pf2e-bestiary-tracking-secondary-border}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Application"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-border"}} value="{{this.props.--pf2e-bestiary-tracking-application-border}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        {{/with}}
+    </body>
+    <footer class="flexrow">
+        <button data-action="togglePreview" {{#if (not this.selectedTheme)}}disabled{{/if}}>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.PreviewTheme"}}</button>
+        <button data-action="save">{{localize "PF2EBestiary.Miscellaneous.Save"}}</button>
+    </footer>
+</div>

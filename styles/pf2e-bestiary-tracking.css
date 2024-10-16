@@ -389,12 +389,15 @@
   font-size: 20px;
   display: flex;
   align-items: center;
+  text-shadow: inherit;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-welcome .sub-title div {
   margin-right: 8px;
+  text-shadow: inherit;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-welcome ul {
   margin-top: 4px;
+  text-shadow: inherit;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-body-view {
   display: flex;
@@ -1467,6 +1470,85 @@
 .bestiary-settings-menu .menu-category .form-group.underlined {
   border-bottom: 1px solid black;
 }
+.bestiary-settings-menu .menu-input-select {
+  flex: none;
+  width: 100px;
+}
+.bestiary-settings-menu .menu-title {
+  position: relative;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bestiary-settings-menu .menu-title input {
+  background: initial;
+  text-decoration: initial;
+  width: auto;
+  border: 2px solid var(--color-underline-header);
+  font-size: 1.5rem;
+  margin: 4px;
+}
+.bestiary-settings-menu .menu-title .menu-title-button {
+  position: absolute;
+  right: 0;
+  bottom: 4px;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+}
+.bestiary-settings-menu .menu-title .menu-title-button div {
+  font-size: 12px;
+  font-weight: bold;
+}
+.bestiary-settings-menu .menu-title .menu-title-button select {
+  font-size: 12px;
+  margin: 0;
+  height: 21px;
+}
+.bestiary-settings-menu .edit-selections {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.bestiary-settings-menu .edit-selections .edit-selection {
+  position: relative;
+  width: calc(25% - 8px);
+  padding: 0 18px;
+}
+.bestiary-settings-menu .edit-selections .edit-selection.active {
+  background: var(--button-hover-background-color);
+}
+.bestiary-settings-menu .edit-selections .edit-selection .edit-selection-tools {
+  position: absolute;
+  top: 0;
+  font-size: 12px;
+  pointer-events: auto;
+}
+.bestiary-settings-menu .edit-selections .edit-selection .edit-selection-tools:hover {
+  filter: drop-shadow(0 0 3px black);
+}
+.bestiary-settings-menu .edit-selections .edit-selection .edit-selection-tools.left {
+  left: 0;
+  margin: 4px 0 0 4px;
+}
+.bestiary-settings-menu .edit-selections .edit-selection .edit-selection-tools.right {
+  right: 0;
+  margin: 4px 4px 0 0;
+}
+.bestiary-settings-menu .theme-section {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.bestiary-settings-menu .theme-section .form-group {
+  width: calc(33% - 4px);
+}
 .bestiary-import-dialog .menu-container {
   display: flex;
   flex-direction: column;
@@ -1549,6 +1631,7 @@ form.pf2e-bestiary-tracking.application {
   background-image: var(--pf2e-bestiary-tracking-application-image);
   background-size: var(--pf2e-bestiary-tracking-application-image-size);
   background-repeat: var(--pf2e-bestiary-tracking-application-image-repeat);
+  background-position: var(--pf2e-bestiary-tracking-application-image-position);
 }
 form.pf2e-bestiary-tracking.application > header {
   background: var(--pf2e-bestiary-tracking-application-header);
@@ -1661,6 +1744,9 @@ form.pf2e-bestiary-tracking.application > header .header-control {
 }
 .pf2e-bestiary-tracking .primary-text-container {
   color: var(--pf2e-bestiary-tracking-primary-color);
+}
+.pf2e-bestiary-tracking .text-shadow-container {
+  text-shadow: 1px 1px 4px var(--pf2e-bestiary-tracking-text-shadow);
 }
 .pf2e-bestiary-tracking .primary-editor button.icon.toggle {
   background-color: var(--pf2e-bestiary-tracking-secondary);

@@ -20,6 +20,13 @@
         "Hint": "Adds the currently selected or targeted creature to the bestiary"
       }
     },
+    "Themes": {
+      "CoreLight": "Core Light",
+      "CoreDark": "Core Dark",
+      "Nebula": "Nebula",
+      "Viscera": "Viscera",
+      "Water": "Water"
+    },
     "DegreeOfSuccess": {
       "CriticalSuccess": "Critical Success",
       "Success": "Success",
@@ -118,6 +125,7 @@
     },
     "Bestiary": {
       "Title": "Bestiary",
+      "PreviewTitle": "Preview Bestiary",
       "ToggleActorSheet": "Toggle Actor Sheet",
       "WindowControls": {
         "RefreshBestiary": "Refresh Bestiary",
@@ -518,6 +526,41 @@
           "Reset": "Reset",
           "Initiative": "Initiative",
           "Stealth": "Stealth"
+        }
+      },
+      "BestiaryThemes": {
+        "Name": "Bestiary Custom Themes",
+        "Menu": {
+          "Name": "Bestiary Custom Themes",
+          "Label": "Custom Themes",
+          "Hint": "Add and edit custom visual themes for the bestiary"
+        },
+        "Import": {
+          "Title": "Import Bestiary Theme",
+          "FaultyImport": "JSON file is not a bestiary theme!"
+        },
+        "CustomThemes": {
+          "Title": "Custom Themes",
+          "TemplateButton": "Copy Template Theme",
+          "BackgroundColors": "Background Properties",
+          "MainColors": "Main Colors",
+          "IconColors": "Icon Colors",
+          "AccentColors": "Accent Colors",
+          "TextColors": "Text Colors",
+          "Borders": "Border Colors",
+          "Primary": "Primary",
+          "Secondary": "Secondary",
+          "Tertiary": "Tertiary",
+          "Shadow": "Shadow",
+          "Faded": "Faded",
+          "Hover": "Hover",
+          "Application": "Bestiary",
+          "Icon": "Icon",
+          "AccentIcon": "Accent Icon",
+          "BackgroundSize": "Background Size",
+          "BackgroundRepeat": "Background Repeat",
+          "BackgroundPosition": "Background Position",
+          "PreviewTheme": "Preview Theme"
         }
       }
     },

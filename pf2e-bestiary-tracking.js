@@ -17,6 +17,7 @@ import {
   valueFromRollOption,
 } from "./scripts/helpers.js";
 import { libWrapper } from "./libwrapperShim.js";
+import { extendedBestiaryThemes } from "./styles/themes/themes.js";
 
 async function bestiaryEnricher(match, _options) {
   const linkElement = document.createElement("span");
@@ -99,7 +100,11 @@ Hooks.once("ready", async () => {
 });
 
 Hooks.once("setup", () => {
-  setupTheme();
+  setupTheme(
+    extendedBestiaryThemes()[
+      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
+    ].props,
+  );
 
   if (typeof libWrapper === "function") {
     libWrapper.register(

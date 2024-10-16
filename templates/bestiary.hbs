@@ -1,7 +1,7 @@
 <div class="primary-text-container">
     {{#if this.selected.type}}
         <header class="bestiary-header">
-            <div class="return-container" data-action="returnButton" data-context-type="{{this.selected.type}}">
+            <div class="return-container text-shadow-container" data-action="returnButton" data-context-type="{{this.selected.type}}">
                 <i class="fa-solid fa-reply"></i>
                 {{this.returnLabel}}
             </div>
@@ -36,7 +36,7 @@
     {{/if}}
     <body>
         {{#if (not this.selected.type)}}
-            <h2 class="bestiary-title primary-border-container">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h2> 
+            <h2 class="bestiary-title primary-border-container text-shadow-container">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h2> 
             <div class="bestiary-main-page">
                 {{#if this.showCategories}}
                     <div class="main-page-category-container">
@@ -44,7 +44,7 @@
                             <div class="main-page-category-card">
                                 <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.creature')}}secondary-border-container{{else}}primary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.creature">
                                     <img src="{{this.categorySettings.creature.image}}" />
-                                    <h4 class="main-page-category-label primary-container">{{localize this.categorySettings.creature.name}}</h4>
+                                    <h4 class="main-page-category-label primary-container text-shadow-container">{{localize this.categorySettings.creature.name}}</h4>
                                 </div>
                             </div>
                         {{/if}}
@@ -52,7 +52,7 @@
                             <div class="main-page-category-card">
                                 <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.npc')}}secondary-border-container{{else}}primary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.npc">
                                     <img src="{{this.categorySettings.npc.image}}" />
-                                    <h4 class="main-page-category-label primary-container">{{localize this.categorySettings.npc.name}}</h4>
+                                    <h4 class="main-page-category-label primary-container text-shadow-container">{{localize this.categorySettings.npc.name}}</h4>
                                 </div>
                             </div>
                         {{/if}}
@@ -60,7 +60,7 @@
                             <div class="main-page-category-card">
                                 <div class="main-page-category-image-container primary-hover-container {{#if (eq this.selected.category 'pf2e-bestiary-tracking.hazard')}}secondary-border-container{{else}}primary-border-container{{/if}}" data-action="selectCategory" data-category="pf2e-bestiary-tracking.hazard">
                                     <img src="{{this.categorySettings.hazard.image}}" />
-                                    <h4 class="main-page-category-label primary-container inactive">{{localize this.categorySettings.hazard.name}}</h4>
+                                    <h4 class="main-page-category-label primary-container text-shadow-container">{{localize this.categorySettings.hazard.name}}</h4>
                                 </div>
                             </div>
                         {{/if}}
@@ -77,7 +77,7 @@
                     </div>
                 {{/if}}
                 <div class="bestiary-info-container flexrow">
-                    <div class="bestiary-welcome flex1">
+                    <div class="bestiary-welcome text-shadow-container flex1">
                         <div class="sub-title">{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.Title"}}</div>
                         <ul>
                             <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.ThemingTip"}}</li>

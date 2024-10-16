@@ -4,6 +4,9 @@ form {
     background-image: var(--pf2e-bestiary-tracking-application-image);
     background-size: var(--pf2e-bestiary-tracking-application-image-size);
     background-repeat: var(--pf2e-bestiary-tracking-application-image-repeat);
+    background-position: var(
+      --pf2e-bestiary-tracking-application-image-position
+    );
 
     > header {
       background: var(--pf2e-bestiary-tracking-application-header);
@@ -151,6 +154,10 @@ form {
   // Text
   .primary-text-container {
     color: var(--pf2e-bestiary-tracking-primary-color);
+  }
+
+  .text-shadow-container {
+    text-shadow: 1px 1px 4px var(--pf2e-bestiary-tracking-text-shadow);
   }
 
   .primary-editor {
