@@ -1,4 +1,3 @@
-import { getIconFilter } from "../scripts/colorsHelper";
 import { saveDataToFile, slugify } from "../scripts/helpers";
 import { setupTheme } from "../scripts/setup";
 import { socketEvent } from "../scripts/socket";
@@ -53,7 +52,6 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
     position: { width: 680, height: "auto" },
     actions: {
       addTheme: this.addTheme,
-      loadTemplate: this.loadTemplate,
       deleteTheme: this.deleteTheme,
       exportTheme: this.exportTheme,
       importTheme: this.importTheme,
@@ -176,13 +174,14 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
   }
 
   getTemplateProps(props) {
-    props["--pf2e-bestiary-tracking-application-image"] =
-      props["--pf2e-bestiary-tracking-application-image"] === "ignore"
+    const copyProps = foundry.utils.deepClone(props);
+    copyProps["--pf2e-bestiary-tracking-application-image"] =
+      copyProps["--pf2e-bestiary-tracking-application-image"] === "ignore"
         ? ""
-        : props["--pf2e-bestiary-tracking-application-image"].split(
+        : copyProps["--pf2e-bestiary-tracking-application-image"].split(
             "../../../",
           )[1];
-    return props;
+    return copyProps;
   }
 
   static getNextName = (customThemes) => {
@@ -219,7 +218,7 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
         "--pf2e-bestiary-tracking-secondary-border": "#FFFFFF",
         "--pf2e-bestiary-tracking-application-border": "#FFFFFF",
         "--pf2e-bestiary-tracking-icon": "#FFFFFF",
-        "--pf2e-bestiary-tracking-accent-icon": "#FFFFFF",
+        "--pf2e-bestiary-tracking-secondary-icon": "#FFFFFF",
         "--pf2e-bestiary-tracking-application-image-size": "cover",
         "--pf2e-bestiary-tracking-application-image-repeat": "round",
       },
@@ -234,6 +233,17 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
       return acc;
     }, {});
     if (button.dataset.theme === this.selectedTheme) this.selectedTheme = null;
+
+    if (
+      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme") ===
+      button.dataset.theme
+    )
+      game.settings.set(
+        "pf2e-bestiary-tracking",
+        "bestiary-theme",
+        "coreLight",
+      );
+
     this.render();
   }
 
@@ -305,11 +315,12 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
 
   static updateTheme(theme) {
     const updateTheme = foundry.utils.deepClone(theme);
-    const filter = getIconFilter(updateTheme["--pf2e-bestiary-tracking-icon"]);
 
-    updateTheme["--pf2e-bestiary-tracking-application-image"] =
-      `../../../${updateTheme["--pf2e-bestiary-tracking-application-image"]}`;
-    updateTheme["--pf2e-bestiary-tracking-icon-filter"] = filter;
+    updateTheme["--pf2e-bestiary-tracking-application-image"] = updateTheme[
+      "--pf2e-bestiary-tracking-application-image"
+    ]
+      ? `../../../${updateTheme["--pf2e-bestiary-tracking-application-image"]}`
+      : "ignore";
 
     setupTheme(updateTheme);
   }
@@ -318,6 +329,7 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
     this.customThemes[this.selectedTheme].props[
       "--pf2e-bestiary-tracking-application-image"
     ] = "";
+    BestiaryThemesMenu.updateTheme(this.customThemes[this.selectedTheme].props);
     this.render();
   }
 
@@ -339,9 +351,6 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
   static async save(options) {
     const caculatedThemes = Object.keys(this.customThemes).reduce(
       (acc, key) => {
-        const filter = getIconFilter(
-          this.customThemes[key].props["--pf2e-bestiary-tracking-icon"],
-        );
         const backgroundImage =
           this.customThemes[key].props[
             "--pf2e-bestiary-tracking-application-image"
@@ -350,7 +359,6 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
           ...this.customThemes[key],
           props: {
             ...this.customThemes[key].props,
-            ["--pf2e-bestiary-tracking-icon-filter"]: filter,
             ["--pf2e-bestiary-tracking-application-image"]: backgroundImage
               ? `../../../${backgroundImage}`
               : "ignore",
@@ -383,11 +391,12 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
   }
 
   close = async (options) => {
-    setupTheme(
-      extendedBestiaryThemes()[
-        game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
-      ].props,
-    );
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.ResetBestiaryTheme,
+      data: {},
+    });
+
+    Hooks.callAll(socketEvent.ResetBestiaryTheme, {});
 
     if (this.previewApp) {
       this.previewApp.close();

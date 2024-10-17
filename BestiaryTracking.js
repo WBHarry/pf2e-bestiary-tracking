@@ -8735,13 +8735,12 @@ const coreDark = {
   "--pf2e-bestiary-tracking-tertiary-accent": "#76963f",
   "--pf2e-bestiary-tracking-primary-color": "#FFFFFF",
   "--pf2e-bestiary-tracking-text-shadow": "#000000",
-  "--pf2e-bestiary-tracking-icon-filter": "none",
   "--pf2e-bestiary-tracking-main-hover": "#FFFFFF",
   "--pf2e-bestiary-tracking-border": "#ababab",
   "--pf2e-bestiary-tracking-secondary-border": "#ffd700",
   "--pf2e-bestiary-tracking-application-border": "#f5deb3",
   "--pf2e-bestiary-tracking-icon": "rgb(247, 243, 232)",
-  "--pf2e-bestiary-tracking-accent-icon": "#ffd700",
+  "--pf2e-bestiary-tracking-secondary-icon": "#FFFFFF",
 };
 
 const coreLight = {
@@ -8757,15 +8756,13 @@ const coreLight = {
   "--pf2e-bestiary-tracking-primary-accent": "#fff1db",
   "--pf2e-bestiary-tracking-tertiary-accent": "#9de0ff",
   "--pf2e-bestiary-tracking-primary-color": "#000000",
-  "--pf2e-bestiary-tracking-text-shadow": "#000000",
-  "--pf2e-bestiary-tracking-icon-filter":
-    "invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%)",
+  "--pf2e-bestiary-tracking-text-shadow": "none",
   "--pf2e-bestiary-tracking-main-hover": "#1c8efe",
   "--pf2e-bestiary-tracking-border": "#000000",
   "--pf2e-bestiary-tracking-secondary-border": "#82acff",
   "--pf2e-bestiary-tracking-application-border": "initial",
   "--pf2e-bestiary-tracking-icon": "#000000",
-  "--pf2e-bestiary-tracking-accent-icon": "#ffd700",
+  "--pf2e-bestiary-tracking-secondary-icon": "#000000",
 };
 
 const nebula = {
@@ -8787,13 +8784,12 @@ const nebula = {
   "--pf2e-bestiary-tracking-tertiary-accent": "#888bc0",
   "--pf2e-bestiary-tracking-primary-color": "rgb(247, 243, 232)",
   "--pf2e-bestiary-tracking-text-shadow": "#000000",
-  "--pf2e-bestiary-tracking-icon-filter": "none",
   "--pf2e-bestiary-tracking-main-hover": "",
   "--pf2e-bestiary-tracking-border": "#e4e41e",
   "--pf2e-bestiary-tracking-secondary-border": "#ffd700",
   "--pf2e-bestiary-tracking-application-border": "#e4e41e",
-  "--pf2e-bestiary-tracking-icon": "",
-  "--pf2e-bestiary-tracking-accent-icon": "",
+  "--pf2e-bestiary-tracking-icon": "#FFFFFF",
+  "--pf2e-bestiary-tracking-secondary-icon": "rgb(247, 243, 232)",
 };
 
 const viscera = {
@@ -8814,13 +8810,12 @@ const viscera = {
   "--pf2e-bestiary-tracking-tertiary-accent": "#c12c2c",
   "--pf2e-bestiary-tracking-primary-color": "#FFFFFF",
   "--pf2e-bestiary-tracking-text-shadow": "#000000",
-  "--pf2e-bestiary-tracking-icon-filter": "none",
   "--pf2e-bestiary-tracking-main-hover": "#ff0000",
   "--pf2e-bestiary-tracking-border": "#ffa500",
   "--pf2e-bestiary-tracking-secondary-border": "#ffd700",
   "--pf2e-bestiary-tracking-application-border": "#ffa500",
-  "--pf2e-bestiary-tracking-icon": "",
-  "--pf2e-bestiary-tracking-accent-icon": "",
+  "--pf2e-bestiary-tracking-icon": "#FFFFFF",
+  "--pf2e-bestiary-tracking-secondary-icon": "#FFFFFF",
 };
 
 const water = {
@@ -8841,41 +8836,43 @@ const water = {
   "--pf2e-bestiary-tracking-tertiary-accent": "#681ad1",
   "--pf2e-bestiary-tracking-primary-color": "rgb(247, 243, 232)",
   "--pf2e-bestiary-tracking-text-shadow": "#000000",
-  "--pf2e-bestiary-tracking-icon-filter": "none",
   "--pf2e-bestiary-tracking-main-hover": "#FFFFFF",
   "--pf2e-bestiary-tracking-border": "#c7ffed",
   "--pf2e-bestiary-tracking-secondary-border": "#ffd700",
   "--pf2e-bestiary-tracking-application-border": "#c7ffed",
-  "--pf2e-bestiary-tracking-icon": "",
-  "--pf2e-bestiary-tracking-accent-icon": "",
+  "--pf2e-bestiary-tracking-icon": "#FFFFFF",
+  "--pf2e-bestiary-tracking-secondary-icon": "rgb(247, 243, 232)",
 };
 
 const bestiaryThemes = {
   coreLight: {
-    name: 'PF2EBestiary.Themes.CoreLight',
+    name: "PF2EBestiary.Themes.CoreLight",
     props: coreLight,
   },
   coreDark: {
-    name: 'PF2EBestiary.Themes.CoreDark',
+    name: "PF2EBestiary.Themes.CoreDark",
     props: coreDark,
   },
   nebula: {
-    name: 'PF2EBestiary.Themes.Nebula',
+    name: "PF2EBestiary.Themes.Nebula",
     props: nebula,
   },
   viscera: {
-    name: 'PF2EBestiary.Themes.Viscera',
+    name: "PF2EBestiary.Themes.Viscera",
     props: viscera,
   },
   water: {
-    name: 'PF2EBestiary.Themes.Water',
+    name: "PF2EBestiary.Themes.Water",
     props: water,
   },
   // parchment: parchment,
 };
 
 const extendedBestiaryThemes = () => {
-  const customThemes = game.settings.get('pf2e-bestiary-tracking', 'custom-themes');
+  const customThemes = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "custom-themes",
+  );
   return { ...bestiaryThemes, ...customThemes };
 };
 
@@ -8889,11 +8886,17 @@ const bestiaryThemeChoices = {
 };
 
 const extendedBestiaryThemeChoices = () => {
-  const customThemes = game.settings.get('pf2e-bestiary-tracking', 'custom-themes');
-  return { ...bestiaryThemeChoices, ...Object.keys(customThemes).reduce((acc, x) => {
-    acc[x] = customThemes[x].name;
-    return acc;
-  }, {}) };
+  const customThemes = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "custom-themes",
+  );
+  return {
+    ...bestiaryThemeChoices,
+    ...Object.keys(customThemes).reduce((acc, x) => {
+      acc[x] = customThemes[x].name;
+      return acc;
+    }, {}),
+  };
 };
 
 const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$7, ApplicationV2: ApplicationV2$7 } = foundry.applications.api;
@@ -8905,6 +8908,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
     super({});
 
     this.settings = {
+      hideTips: game.settings.get("pf2e-bestiary-tracking", "hide-tips"),
       hideAbilityDescriptions: game.settings.get(
         "pf2e-bestiary-tracking",
         "hide-ability-descriptions",
@@ -9015,6 +9019,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
     const data = foundry.utils.expandObject(formData.object);
     this.settings = {
       additionalCreatureTypes: this.settings.additionalCreatureTypes,
+      hideTips: data.hideTips,
       hideAbilityDescriptions: data.hideAbilityDescriptions,
       optionalFields: data.optionalFields,
       detailedInformation: { ...data.detailedInformation },
@@ -9094,6 +9099,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
   }
 
   static async save(_) {
+    await game.settings.set("pf2e-bestiary-tracking", "hide-tips", this.settings.hideTips);
     await game.settings.set(
       "pf2e-bestiary-tracking",
       "additional-creature-types",
@@ -9136,309 +9142,6 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
   }
 }
 
-class Color {
-  constructor(r, g, b) {
-    this.set(r, g, b);
-  }
-  
-  toString() {
-    return `rgb(${Math.round(this.r)}, ${Math.round(this.g)}, ${Math.round(this.b)})`;
-  }
-
-  set(r, g, b) {
-    this.r = this.clamp(r);
-    this.g = this.clamp(g);
-    this.b = this.clamp(b);
-  }
-
-  hueRotate(angle = 0) {
-    angle = angle / 180 * Math.PI;
-    const sin = Math.sin(angle);
-    const cos = Math.cos(angle);
-
-    this.multiply([
-      0.213 + cos * 0.787 - sin * 0.213,
-      0.715 - cos * 0.715 - sin * 0.715,
-      0.072 - cos * 0.072 + sin * 0.928,
-      0.213 - cos * 0.213 + sin * 0.143,
-      0.715 + cos * 0.285 + sin * 0.140,
-      0.072 - cos * 0.072 - sin * 0.283,
-      0.213 - cos * 0.213 - sin * 0.787,
-      0.715 - cos * 0.715 + sin * 0.715,
-      0.072 + cos * 0.928 + sin * 0.072,
-    ]);
-  }
-
-  grayscale(value = 1) {
-    this.multiply([
-      0.2126 + 0.7874 * (1 - value),
-      0.7152 - 0.7152 * (1 - value),
-      0.0722 - 0.0722 * (1 - value),
-      0.2126 - 0.2126 * (1 - value),
-      0.7152 + 0.2848 * (1 - value),
-      0.0722 - 0.0722 * (1 - value),
-      0.2126 - 0.2126 * (1 - value),
-      0.7152 - 0.7152 * (1 - value),
-      0.0722 + 0.9278 * (1 - value),
-    ]);
-  }
-
-  sepia(value = 1) {
-    this.multiply([
-      0.393 + 0.607 * (1 - value),
-      0.769 - 0.769 * (1 - value),
-      0.189 - 0.189 * (1 - value),
-      0.349 - 0.349 * (1 - value),
-      0.686 + 0.314 * (1 - value),
-      0.168 - 0.168 * (1 - value),
-      0.272 - 0.272 * (1 - value),
-      0.534 - 0.534 * (1 - value),
-      0.131 + 0.869 * (1 - value),
-    ]);
-  }
-
-  saturate(value = 1) {
-    this.multiply([
-      0.213 + 0.787 * value,
-      0.715 - 0.715 * value,
-      0.072 - 0.072 * value,
-      0.213 - 0.213 * value,
-      0.715 + 0.285 * value,
-      0.072 - 0.072 * value,
-      0.213 - 0.213 * value,
-      0.715 - 0.715 * value,
-      0.072 + 0.928 * value,
-    ]);
-  }
-
-  multiply(matrix) {
-    const newR = this.clamp(this.r * matrix[0] + this.g * matrix[1] + this.b * matrix[2]);
-    const newG = this.clamp(this.r * matrix[3] + this.g * matrix[4] + this.b * matrix[5]);
-    const newB = this.clamp(this.r * matrix[6] + this.g * matrix[7] + this.b * matrix[8]);
-    this.r = newR;
-    this.g = newG;
-    this.b = newB;
-  }
-
-  brightness(value = 1) {
-    this.linear(value);
-  }
-  contrast(value = 1) {
-    this.linear(value, -(0.5 * value) + 0.5);
-  }
-
-  linear(slope = 1, intercept = 0) {
-    this.r = this.clamp(this.r * slope + intercept * 255);
-    this.g = this.clamp(this.g * slope + intercept * 255);
-    this.b = this.clamp(this.b * slope + intercept * 255);
-  }
-
-  invert(value = 1) {
-    this.r = this.clamp((value + this.r / 255 * (1 - 2 * value)) * 255);
-    this.g = this.clamp((value + this.g / 255 * (1 - 2 * value)) * 255);
-    this.b = this.clamp((value + this.b / 255 * (1 - 2 * value)) * 255);
-  }
-
-  hsl() {
-    // Code taken from https://stackoverflow.com/a/9493060/2688027, licensed under CC BY-SA.
-    const r = this.r / 255;
-    const g = this.g / 255;
-    const b = this.b / 255;
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
-
-    if (max === min) {
-      h = s = 0;
-    } else {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r:
-          h = (g - b) / d + (g < b ? 6 : 0);
-          break;
-
-        case g:
-          h = (b - r) / d + 2;
-          break;
-
-        case b:
-          h = (r - g) / d + 4;
-          break;
-      }
-      h /= 6;
-    }
-
-    return {
-      h: h * 100,
-      s: s * 100,
-      l: l * 100,
-    };
-  }
-
-  clamp(value) {
-    if (value > 255) {
-      value = 255;
-    } else if (value < 0) {
-      value = 0;
-    }
-    return value;
-  }
-}
-
-class Solver {
-  constructor(target, baseColor) {
-    this.target = target;
-    this.targetHSL = target.hsl();
-    this.reusedColor = new Color(0, 0, 0);
-  }
-
-  solve() {
-    const result = this.solveNarrow(this.solveWide());
-    return {
-      values: result.values,
-      loss: result.loss,
-      filter: this.css(result.values),
-    };
-  }
-
-  solveWide() {
-    const A = 5;
-    const c = 15;
-    const a = [60, 180, 18000, 600, 1.2, 1.2];
-
-    let best = { loss: Infinity };
-    for (let i = 0; best.loss > 25 && i < 3; i++) {
-      const initial = [50, 20, 3750, 50, 100, 100];
-      const result = this.spsa(A, a, c, initial, 1000);
-      if (result.loss < best.loss) {
-        best = result;
-      }
-    }
-    return best;
-  }
-
-  solveNarrow(wide) {
-    const A = wide.loss;
-    const c = 2;
-    const A1 = A + 1;
-    const a = [0.25 * A1, 0.25 * A1, A1, 0.25 * A1, 0.2 * A1, 0.2 * A1];
-    return this.spsa(A, a, c, wide.values, 500);
-  }
-
-  spsa(A, a, c, values, iters) {
-    const alpha = 1;
-    const gamma = 0.16666666666666666;
-
-    let best = null;
-    let bestLoss = Infinity;
-    const deltas = new Array(6);
-    const highArgs = new Array(6);
-    const lowArgs = new Array(6);
-
-    for (let k = 0; k < iters; k++) {
-      const ck = c / Math.pow(k + 1, gamma);
-      for (let i = 0; i < 6; i++) {
-        deltas[i] = Math.random() > 0.5 ? 1 : -1;
-        highArgs[i] = values[i] + ck * deltas[i];
-        lowArgs[i] = values[i] - ck * deltas[i];
-      }
-
-      const lossDiff = this.loss(highArgs) - this.loss(lowArgs);
-      for (let i = 0; i < 6; i++) {
-        const g = lossDiff / (2 * ck) * deltas[i];
-        const ak = a[i] / Math.pow(A + k + 1, alpha);
-        values[i] = fix(values[i] - ak * g, i);
-      }
-
-      const loss = this.loss(values);
-      if (loss < bestLoss) {
-        best = values.slice(0);
-        bestLoss = loss;
-      }
-    }
-    return { values: best, loss: bestLoss };
-
-    function fix(value, idx) {
-      let max = 100;
-      if (idx === 2 /* saturate */) {
-        max = 7500;
-      } else if (idx === 4 /* brightness */ || idx === 5 /* contrast */) {
-        max = 200;
-      }
-
-      if (idx === 3 /* hue-rotate */) {
-        if (value > max) {
-          value %= max;
-        } else if (value < 0) {
-          value = max + value % max;
-        }
-      } else if (value < 0) {
-        value = 0;
-      } else if (value > max) {
-        value = max;
-      }
-      return value;
-    }
-  }
-
-  loss(filters) {
-    // Argument is array of percentages.
-    const color = this.reusedColor;
-    color.set(0, 0, 0);
-
-    color.invert(filters[0] / 100);
-    color.sepia(filters[1] / 100);
-    color.saturate(filters[2] / 100);
-    color.hueRotate(filters[3] * 3.6);
-    color.brightness(filters[4] / 100);
-    color.contrast(filters[5] / 100);
-
-    const colorHSL = color.hsl();
-    return (
-      Math.abs(color.r - this.target.r) +
-      Math.abs(color.g - this.target.g) +
-      Math.abs(color.b - this.target.b) +
-      Math.abs(colorHSL.h - this.targetHSL.h) +
-      Math.abs(colorHSL.s - this.targetHSL.s) +
-      Math.abs(colorHSL.l - this.targetHSL.l)
-    );
-  }
-
-  css(filters) {
-    function fmt(idx, multiplier = 1) {
-      return Math.round(filters[idx] * multiplier);
-    }
-    return `filter: brightness(0) saturate(100%) invert(${fmt(0)}%) sepia(${fmt(1)}%) saturate(${fmt(2)}%) hue-rotate(${fmt(3, 3.6)}deg) brightness(${fmt(4)}%) contrast(${fmt(5)}%);`;
-  }
-}
-
-function hexToRgb(hex) {
-  // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-  const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-  hex = hex.replace(shorthandRegex, (m, r, g, b) => {
-    return r + r + g + g + b + b;
-  });
-
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? [
-      parseInt(result[1], 16),
-      parseInt(result[2], 16),
-      parseInt(result[3], 16),
-    ]
-    : null;
-}
-
-const getIconFilter = (hex) => {
-    const rgb = hexToRgb(hex);
-    const color = new Color(rgb[0], rgb[1], rgb[2]);
-    const solver = new Solver(color);
-    const result = solver.solve();
-
-    return ` ${result.filter}`;
-};
-
 function handleSocketEvent({ action = null, data = {} } = {}) {
   switch (action) {
     case socketEvent.UpdateBestiary:
@@ -9446,11 +9149,14 @@ function handleSocketEvent({ action = null, data = {} } = {}) {
         monsterSlug: data.monsterSlug,
       });
       break;
+    case socketEvent.ResetBestiaryTheme:
+      Hooks.callAll(socketEvent.ResetBestiaryTheme, {});
   }
 }
 
 const socketEvent = {
   UpdateBestiary: "UpdateBestiary",
+  ResetBestiaryTheme: "ResetBestiaryTheme",
 };
 
 const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$6, ApplicationV2: ApplicationV2$6 } = foundry.applications.api;
@@ -9582,17 +9288,21 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
     );
     this.customThemes = Object.keys(customThemesSetting).reduce((acc, key) => {
       const theme = customThemesSetting[key];
-      const backgroundImage = theme.props['--pf2e-bestiary-tracking-application-image'];
+      const backgroundImage =
+        theme.props["--pf2e-bestiary-tracking-application-image"];
       acc[key] = {
         ...theme,
         props: {
           ...theme.props,
-          ['--pf2e-bestiary-tracking-application-image']: backgroundImage === 'ignore' ? '' : backgroundImage.split('../../../')[1]
-        }
+          ["--pf2e-bestiary-tracking-application-image"]:
+            backgroundImage === "ignore"
+              ? ""
+              : backgroundImage.split("../../../")[1],
+        },
       };
       return acc;
     }, {});
-    this.selectedTheme = '';
+    this.selectedTheme = "";
     this.previewApp = false;
   }
 
@@ -9607,7 +9317,6 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
     position: { width: 680, height: "auto" },
     actions: {
       addTheme: this.addTheme,
-      loadTemplate: this.loadTemplate,
       deleteTheme: this.deleteTheme,
       exportTheme: this.exportTheme,
       importTheme: this.importTheme,
@@ -9630,130 +9339,172 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
 
   _attachPartListeners(partId, htmlElement, options) {
     super._attachPartListeners(partId, htmlElement, options);
-    $(htmlElement).find(".menu-title-button select")
+    $(htmlElement)
+      .find(".menu-title-button select")
       .on("change", async (event) => {
         this.customThemes[this.selectedTheme] = {
           name: this.customThemes[this.selectedTheme].name,
-          props: this.getTemplateProps(extendedBestiaryThemes()[event.currentTarget.value].props),
+          props: this.getTemplateProps(
+            extendedBestiaryThemes()[event.currentTarget.value].props,
+          ),
         };
         this.render();
-    });
-    $(htmlElement).find(".background-size-select")
-      .on("change", async (event) => {
-        this.customThemes[this.selectedTheme] = {
-          name: this.customThemes[this.selectedTheme].name,
-          props: {
-            ...this.customThemes[this.selectedTheme].props,
-            ['--pf2e-bestiary-tracking-application-image-size']: event.currentTarget.value
-          }
-        };
-        this.render();
-    });
-    $(htmlElement).find(".background-repeat-select")
+      });
+    $(htmlElement)
+      .find(".background-size-select")
       .on("change", async (event) => {
         this.customThemes[this.selectedTheme] = {
           name: this.customThemes[this.selectedTheme].name,
           props: {
             ...this.customThemes[this.selectedTheme].props,
-            ['--pf2e-bestiary-tracking-application-image-repeat']: event.currentTarget.value
-          }
+            ["--pf2e-bestiary-tracking-application-image-size"]:
+              event.currentTarget.value,
+          },
         };
         this.render();
-    });
-    $(htmlElement).find(".background-position-select")
+      });
+    $(htmlElement)
+      .find(".background-repeat-select")
       .on("change", async (event) => {
         this.customThemes[this.selectedTheme] = {
           name: this.customThemes[this.selectedTheme].name,
           props: {
             ...this.customThemes[this.selectedTheme].props,
-            ['--pf2e-bestiary-tracking-application-image-position']: event.currentTarget.value
-          }
+            ["--pf2e-bestiary-tracking-application-image-repeat"]:
+              event.currentTarget.value,
+          },
         };
         this.render();
-    });
+      });
+    $(htmlElement)
+      .find(".background-position-select")
+      .on("change", async (event) => {
+        this.customThemes[this.selectedTheme] = {
+          name: this.customThemes[this.selectedTheme].name,
+          props: {
+            ...this.customThemes[this.selectedTheme].props,
+            ["--pf2e-bestiary-tracking-application-image-position"]:
+              event.currentTarget.value,
+          },
+        };
+        this.render();
+      });
   }
 
   async _prepareContext(_options) {
     const context = await super._prepareContext(_options);
-    context.baseThemes = Object.keys(bestiaryThemes).map(x => ({ name: x, value: x }));
+    context.baseThemes = Object.keys(bestiaryThemes).map((x) => ({
+      name: x,
+      value: x,
+    }));
     context.customThemes = this.customThemes;
     context.selectedTheme = this.selectedTheme;
 
     const extendedThemes = extendedBestiaryThemeChoices();
-    context.extendedThemes = Object.keys(extendedThemes).map(key => ({ value: key, name: extendedThemes[key] }));
-    context.backgroundSizeOptions = [{ value: 'cover', name: 'cover' }];
-    context.backgroundRepeatOptions = [{ value: 'repeat', name: 'repeat' }, { value: 'round', name: 'round' }, { value: 'initial', name: 'initial' }];
-    context.backgroundPositionOptions = [{ value: 'left', name: 'left' }, { value: 'center', name: 'center' }, { value: 'right', name: 'right' }, { value: 'top', name: 'top' }, { value: 'bottom', name: 'bottom' }];
+    context.extendedThemes = Object.keys(extendedThemes).map((key) => ({
+      value: key,
+      name: extendedThemes[key],
+    }));
+    context.backgroundSizeOptions = [{ value: "cover", name: "cover" }];
+    context.backgroundRepeatOptions = [
+      { value: "repeat", name: "repeat" },
+      { value: "round", name: "round" },
+      { value: "initial", name: "initial" },
+    ];
+    context.backgroundPositionOptions = [
+      { value: "left", name: "left" },
+      { value: "center", name: "center" },
+      { value: "right", name: "right" },
+      { value: "top", name: "top" },
+      { value: "bottom", name: "bottom" },
+    ];
 
     return context;
   }
 
   static async updateData(event, element, formData) {
     const { customThemes } = foundry.utils.expandObject(formData.object);
-    this.customThemes = foundry.utils.mergeObject(this.customThemes, customThemes);
-    if(this.previewApp) {
-      BestiaryThemesMenu.updateTheme(this.customThemes[this.selectedTheme].props);
+    this.customThemes = foundry.utils.mergeObject(
+      this.customThemes,
+      customThemes,
+    );
+    if (this.previewApp) {
+      BestiaryThemesMenu.updateTheme(
+        this.customThemes[this.selectedTheme].props,
+      );
       Hooks.callAll(socketEvent.UpdateBestiary, {});
     }
-    
+
     this.render();
   }
 
   getTemplateProps(props) {
-    props['--pf2e-bestiary-tracking-application-image'] = props['--pf2e-bestiary-tracking-application-image'] === 'ignore' ? '' : props['--pf2e-bestiary-tracking-application-image'].split('../../../')[1];
-    return props; 
-  };
+    const copyProps = foundry.utils.deepClone(props);
+    copyProps["--pf2e-bestiary-tracking-application-image"] =
+    copyProps["--pf2e-bestiary-tracking-application-image"] === "ignore"
+        ? ""
+        : copyProps["--pf2e-bestiary-tracking-application-image"].split(
+            "../../../",
+          )[1];
+    return copyProps;  
+  }
 
   static getNextName = (customThemes) => {
     const unnamedNr = Object.values(customThemes).reduce((acc, x) => {
       const match = x.name.match(/^(?:NewTheme)(.*)$/);
-      if(match.length > 1 && !Number.isNaN(match[1])){
-          const nr = Number.parseInt(match[1]);
-          acc = acc ? Math.max(acc, nr) : nr;
+      if (match.length > 1 && !Number.isNaN(match[1])) {
+        const nr = Number.parseInt(match[1]);
+        acc = acc ? Math.max(acc, nr) : nr;
       }
 
       return acc;
     }, null);
 
-    return !unnamedNr ? 'NewTheme1' : `NewTheme${unnamedNr+1}`;
+    return !unnamedNr ? "NewTheme1" : `NewTheme${unnamedNr + 1}`;
   };
 
-  static addTheme(){
+  static addTheme() {
     const newTheme = BestiaryThemesMenu.getNextName(this.customThemes);
     const id = foundry.utils.randomID();
-    this.customThemes[id] = { name: newTheme, props: {
-      "--pf2e-bestiary-tracking-application": "#FFFFFF",
-      "--pf2e-bestiary-tracking-primary": "#FFFFFF",
-      "--pf2e-bestiary-tracking-primary-faded": "#FFFFFF",
-      "--pf2e-bestiary-tracking-secondary": "#FFFFFF",
-      "--pf2e-bestiary-tracking-tertiary": "#FFFFFF",
-      "--pf2e-bestiary-tracking-primary-accent": "#FFFFFF",
-      "--pf2e-bestiary-tracking-tertiary-accent": "#FFFFFF",
-      "--pf2e-bestiary-tracking-primary-color": "#FFFFFF",
-      "--pf2e-bestiary-tracking-text-shadow": "#000000",
-      "--pf2e-bestiary-tracking-main-hover": "#FFFFFF",
-      "--pf2e-bestiary-tracking-border": "#FFFFFF",
-      "--pf2e-bestiary-tracking-secondary-border": "#FFFFFF",
-      "--pf2e-bestiary-tracking-application-border": "#FFFFFF",
-      "--pf2e-bestiary-tracking-icon": "#FFFFFF",
-      "--pf2e-bestiary-tracking-accent-icon": "#FFFFFF",
-      "--pf2e-bestiary-tracking-application-image-size": "cover",
-      "--pf2e-bestiary-tracking-application-image-repeat": "round",
-    }};
+    this.customThemes[id] = {
+      name: newTheme,
+      props: {
+        "--pf2e-bestiary-tracking-application": "#FFFFFF",
+        "--pf2e-bestiary-tracking-primary": "#FFFFFF",
+        "--pf2e-bestiary-tracking-primary-faded": "#FFFFFF",
+        "--pf2e-bestiary-tracking-secondary": "#FFFFFF",
+        "--pf2e-bestiary-tracking-tertiary": "#FFFFFF",
+        "--pf2e-bestiary-tracking-primary-accent": "#FFFFFF",
+        "--pf2e-bestiary-tracking-tertiary-accent": "#FFFFFF",
+        "--pf2e-bestiary-tracking-primary-color": "#FFFFFF",
+        "--pf2e-bestiary-tracking-text-shadow": "#000000",
+        "--pf2e-bestiary-tracking-main-hover": "#FFFFFF",
+        "--pf2e-bestiary-tracking-border": "#FFFFFF",
+        "--pf2e-bestiary-tracking-secondary-border": "#FFFFFF",
+        "--pf2e-bestiary-tracking-application-border": "#FFFFFF",
+        "--pf2e-bestiary-tracking-icon": "#FFFFFF",
+        "--pf2e-bestiary-tracking-secondary-icon": "#FFFFFF",
+        "--pf2e-bestiary-tracking-application-image-size": "cover",
+        "--pf2e-bestiary-tracking-application-image-repeat": "round",
+      },
+    };
     this.selectedTheme = id;
     this.render();
   }
 
-  static deleteTheme(_, button){
+  static deleteTheme(_, button) {
     this.customThemes = Object.keys(this.customThemes).reduce((acc, key) => {
-      if(key !== button.dataset.theme) acc[key] = this.customThemes[key];
+      if (key !== button.dataset.theme) acc[key] = this.customThemes[key];
       return acc;
     }, {});
-    if(button.dataset.theme === this.selectedTheme) this.selectedTheme = null;
+    if (button.dataset.theme === this.selectedTheme) this.selectedTheme = null;
+
+    if(game.settings.get("pf2e-bestiary-tracking", "bestiary-theme") === button.dataset.theme) game.settings.set("pf2e-bestiary-tracking", "bestiary-theme", 'coreLight');
+
     this.render();
   }
 
-  static exportTheme(_, button){
+  static exportTheme(_, button) {
     const theme = this.customThemes[button.dataset.theme];
     saveDataToFile$1(
       JSON.stringify(theme, null, 2),
@@ -9762,13 +9513,15 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
     );
   }
 
-  static importTheme(){
+  static importTheme() {
     new Promise((resolve, reject) => {
       new ImportDialog(
         "PF2EBestiary.Menus.BestiaryThemes.Import.Title",
         (jsonObject) => {
           if (!jsonObject || !jsonObject.props) {
-            return game.i18n.localize("PF2EBestiary.Menus.BestiaryThemes.Import.FaultyImport");
+            return game.i18n.localize(
+              "PF2EBestiary.Menus.BestiaryThemes.Import.FaultyImport",
+            );
           }
 
           return null;
@@ -9776,9 +9529,9 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
         resolve,
         reject,
       ).render(true);
-    }).then(data => {
+    }).then((data) => {
       const match = data.name.match(/^(?:NewTheme)(.*)$/);
-      if(match && match.length > 1){
+      if (match && match.length > 1) {
         data.name = BestiaryThemesMenu.getNextName(this.customThemes);
       }
 
@@ -9798,7 +9551,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
-  static selectTheme(_, button){
+  static selectTheme(_, button) {
     this.selectedTheme = button.dataset.theme;
     this.render();
   }
@@ -9809,7 +9562,9 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
       title: "Image Select",
       callback: async (path) => {
         foundry.utils.setProperty(this.customThemes, button.dataset.path, path);
-        BestiaryThemesMenu.updateTheme(this.customThemes[this.selectedTheme].props);
+        BestiaryThemesMenu.updateTheme(
+          this.customThemes[this.selectedTheme].props,
+        );
         this.render();
       },
     }).render(true);
@@ -9817,26 +9572,29 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
 
   static updateTheme(theme) {
     const updateTheme = foundry.utils.deepClone(theme);
-    const filter = getIconFilter(updateTheme['--pf2e-bestiary-tracking-icon']);
 
-    updateTheme['--pf2e-bestiary-tracking-application-image'] = `../../../${updateTheme['--pf2e-bestiary-tracking-application-image']}`;
-    updateTheme['--pf2e-bestiary-tracking-icon-filter'] = filter;
+    updateTheme["--pf2e-bestiary-tracking-application-image"] = updateTheme["--pf2e-bestiary-tracking-application-image"] ?
+      `../../../${updateTheme["--pf2e-bestiary-tracking-application-image"]}` : 'ignore';
 
     setupTheme(updateTheme);
   }
 
   static clearBackgroundImage() {
-    this.customThemes[this.selectedTheme].props['--pf2e-bestiary-tracking-application-image'] = '';
+    this.customThemes[this.selectedTheme].props[
+      "--pf2e-bestiary-tracking-application-image"
+    ] = "";
+    BestiaryThemesMenu.updateTheme(this.customThemes[this.selectedTheme].props);
     this.render();
   }
 
   static async togglePreview() {
-    if(!this.previewApp){
-      BestiaryThemesMenu.updateTheme(this.customThemes[this.selectedTheme].props);
+    if (!this.previewApp) {
+      BestiaryThemesMenu.updateTheme(
+        this.customThemes[this.selectedTheme].props,
+      );
       this.previewApp = new PF2EBestiary();
       await this.previewApp.render(true);
-    }
-    else {
+    } else {
       this.previewApp.close();
       this.previewApp = null;
     }
@@ -9845,19 +9603,25 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   }
 
   static async save(options) {
-    const caculatedThemes = Object.keys(this.customThemes).reduce((acc, key) => {
-      const filter = getIconFilter(this.customThemes[key].props['--pf2e-bestiary-tracking-icon']);
-      const backgroundImage = this.customThemes[key].props['--pf2e-bestiary-tracking-application-image'];
-      acc[key] = { 
-        ...this.customThemes[key],
-        props: {
-          ...this.customThemes[key].props,
-          ['--pf2e-bestiary-tracking-icon-filter']: filter,
-          ['--pf2e-bestiary-tracking-application-image']: backgroundImage ? `../../../${backgroundImage}` : 'ignore'
-        } 
-      };
-      return acc;
-    }, {});
+    const caculatedThemes = Object.keys(this.customThemes).reduce(
+      (acc, key) => {
+        const backgroundImage =
+          this.customThemes[key].props[
+            "--pf2e-bestiary-tracking-application-image"
+          ];
+        acc[key] = {
+          ...this.customThemes[key],
+          props: {
+            ...this.customThemes[key].props,
+            ["--pf2e-bestiary-tracking-application-image"]: backgroundImage
+              ? `../../../${backgroundImage}`
+              : "ignore",
+          },
+        };
+        return acc;
+      },
+      {},
+    );
     await game.settings.set(
       "pf2e-bestiary-tracking",
       "custom-themes",
@@ -9881,16 +9645,19 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   }
 
   close = async (options) => {
-    setupTheme(extendedBestiaryThemes()[
-      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
-    ].props);
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.ResetBestiaryTheme,
+      data: {},
+    });
 
-    if(this.previewApp){
+    Hooks.callAll(socketEvent.ResetBestiaryTheme, {});
+
+    if (this.previewApp) {
       this.previewApp.close();
     }
-    
+
     return super.close(options);
-  }
+  };
 }
 
 const currentVersion = "1.1.15";
@@ -10058,7 +9825,11 @@ const configSettings = () => {
     hint: game.i18n.localize("PF2EBestiary.Settings.BestiaryTheme.Hint"),
     scope: "client",
     config: true,
-    type: new foundry.data.fields.StringField({ choices: extendedBestiaryThemeChoices, required: true, default: 'coreLight' }),
+    type: new foundry.data.fields.StringField({
+      choices: extendedBestiaryThemeChoices,
+      required: true,
+      default: "coreLight",
+    }),
     requiresReload: true,
     default: "coreLight",
   });
@@ -10239,6 +10010,15 @@ const bestiaryDisplay = () => {
       },
     },
   );
+
+  game.settings.register("pf2e-bestiary-tracking", "hide-tips", {
+    name: game.i18n.localize("PF2EBestiary.Settings.HideTips.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.HideTips.Hint"),
+    scope: "world",
+    config: false,
+    type: Boolean,
+    default: false,
+  });
 
   game.settings.register(
     "pf2e-bestiary-tracking",
@@ -10554,21 +10334,15 @@ const bestiaryIntegration = () => {
 
 const bestiaryThemesMenu = () => {
   game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-themes", {
-    name: game.i18n.localize(
-      "PF2EBestiary.Menus.BestiaryThemes.Menu.Name",
-    ),
-    label: game.i18n.localize(
-      "PF2EBestiary.Menus.BestiaryThemes.Menu.Label",
-    ),
-    hint: game.i18n.localize(
-      "PF2EBestiary.Menus.BestiaryThemes.Menu.Hint",
-    ),
+    name: game.i18n.localize("PF2EBestiary.Menus.BestiaryThemes.Menu.Name"),
+    label: game.i18n.localize("PF2EBestiary.Menus.BestiaryThemes.Menu.Label"),
+    hint: game.i18n.localize("PF2EBestiary.Menus.BestiaryThemes.Menu.Hint"),
     icon: "fa-solid fa-brush",
     type: BestiaryThemesMenu,
     restricted: true,
   });
 
-  game.settings.register('pf2e-bestiary-tracking', 'custom-themes', {
+  game.settings.register("pf2e-bestiary-tracking", "custom-themes", {
     name: game.i18n.localize("PF2EBestiary.Settings.DefaultRevealed.Name"),
     hint: game.i18n.localize("PF2EBestiary.Settings.DefaultReaveled.Hint"),
     scope: "world",
@@ -15176,6 +14950,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "use-token-art",
     );
+    context.hideTips = game.settings.get("pf2e-bestiary-tracking", "hide-tips");
     context.hideAbilityDescriptions = game.settings.get(
       "pf2e-bestiary-tracking",
       "hide-ability-descriptions",
@@ -17682,9 +17457,11 @@ Hooks.once("ready", async () => {
 });
 
 Hooks.once("setup", () => {
-  setupTheme(extendedBestiaryThemes()[
-    game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
-  ].props);
+  setupTheme(
+    extendedBestiaryThemes()[
+      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
+    ].props,
+  );
 
   if (typeof libWrapper === "function") {
     libWrapper.register(
@@ -18369,5 +18146,12 @@ Hooks.on("renderActorSheet", (sheet) => {
     $(actorSheetContainer).addClass("expanded");
     $(bestiaryApp.element).find(".monster-container").addClass("closed");
   }
+});
+
+Hooks.on(socketEvent.ResetBestiaryTheme, () => {
+  const resetTheme = extendedBestiaryThemes()[
+    game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
+  ];
+  setupTheme(resetTheme ? resetTheme.props :  extendedBestiaryThemes()['coreLight'].props);
 });
 //# sourceMappingURL=BestiaryTracking.js.map

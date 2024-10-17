@@ -14,13 +14,12 @@ const parchment = {
   "--pf2e-bestiary-tracking-tertiary-accent": "",
   "--pf2e-bestiary-tracking-primary-color": "rgb(247, 243, 232)",
   "--pf2e-bestiary-tracking-text-shadow": "#000000",
-  "--pf2e-bestiary-tracking-icon-filter": "none",
   "--pf2e-bestiary-tracking-main-hover": "#FFFFFF",
   "--pf2e-bestiary-tracking-border": "#d2c3a5",
   "--pf2e-bestiary-tracking-secondary-border": "",
   "--pf2e-bestiary-tracking-application-border": "#f5deb3",
-  "--pf2e-bestiary-tracking-icon": "",
-  "--pf2e-bestiary-tracking-accent-icon": "",
+  "--pf2e-bestiary-tracking-icon": "#FFFFFF",
+  "--pf2e-bestiary-tracking-secondary-icon": "rgb(247, 243, 232)",
 };
 
 export default parchment;

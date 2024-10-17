@@ -17,13 +17,12 @@ const nebula = {
   "--pf2e-bestiary-tracking-tertiary-accent": "#888bc0",
   "--pf2e-bestiary-tracking-primary-color": "rgb(247, 243, 232)",
   "--pf2e-bestiary-tracking-text-shadow": "#000000",
-  "--pf2e-bestiary-tracking-icon-filter": "none",
   "--pf2e-bestiary-tracking-main-hover": "",
   "--pf2e-bestiary-tracking-border": "#e4e41e",
   "--pf2e-bestiary-tracking-secondary-border": "#ffd700",
   "--pf2e-bestiary-tracking-application-border": "#e4e41e",
-  "--pf2e-bestiary-tracking-icon": "",
-  "--pf2e-bestiary-tracking-accent-icon": "",
+  "--pf2e-bestiary-tracking-icon": "#FFFFFF",
+  "--pf2e-bestiary-tracking-secondary-icon": "rgb(247, 243, 232)",
 };
 
 export default nebula;

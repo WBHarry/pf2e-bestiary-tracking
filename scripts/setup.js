@@ -368,6 +368,15 @@ const bestiaryDisplay = () => {
     },
   );
 
+  game.settings.register("pf2e-bestiary-tracking", "hide-tips", {
+    name: game.i18n.localize("PF2EBestiary.Settings.HideTips.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.HideTips.Hint"),
+    scope: "world",
+    config: false,
+    type: Boolean,
+    default: false,
+  });
+
   game.settings.register(
     "pf2e-bestiary-tracking",
     "hide-ability-descriptions",

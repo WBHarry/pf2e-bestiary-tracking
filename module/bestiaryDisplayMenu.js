@@ -10,6 +10,7 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
     super({});
 
     this.settings = {
+      hideTips: game.settings.get("pf2e-bestiary-tracking", "hide-tips"),
       hideAbilityDescriptions: game.settings.get(
         "pf2e-bestiary-tracking",
         "hide-ability-descriptions",
@@ -120,6 +121,7 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
     const data = foundry.utils.expandObject(formData.object);
     this.settings = {
       additionalCreatureTypes: this.settings.additionalCreatureTypes,
+      hideTips: data.hideTips,
       hideAbilityDescriptions: data.hideAbilityDescriptions,
       optionalFields: data.optionalFields,
       detailedInformation: { ...data.detailedInformation },
@@ -199,6 +201,11 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
   }
 
   static async save(_) {
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "hide-tips",
+      this.settings.hideTips,
+    );
     await game.settings.set(
       "pf2e-bestiary-tracking",
       "additional-creature-types",

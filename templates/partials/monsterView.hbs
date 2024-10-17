@@ -1,7 +1,7 @@
 <div class="tab {{this.tabs.generalSidebar.cssClass}}" data-group="creature" data-tab="generalSidebar">
     <div class="left-monster-container">
         <div class="monster-image-container">
-            {{#if this.user.isGM}}<i class="monster-image-menu fa-solid fa-gears primary-hover-container" data-action="imageMenu"></i>{{/if}}
+            {{#if this.user.isGM}}<i class="monster-image-menu fa-solid fa-gears primary-hover-container secondary-icon" data-action="imageMenu"></i>{{/if}}
             <img class="monster-image primary-outline {{#if this.useTokenArt}}token{{/if}} {{PF2EBTImageState this.user this.system.imageState.hideState}}" src="{{this.system.displayImage}}" data-action="imagePopout" />
         </div>
 
@@ -17,7 +17,7 @@
 
         <div class="monster-left-data primary-container {{PF2EBTToggleContainer this.user this.system.ac}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.ac}}" data-action="toggleRevealed" data-path="system.ac" data-name="{{localize "PF2EBestiary.Miscellaneous.AC"}}" data-vague-property="ac">
             <div class="flex-data">
-                <i class="fa-solid fa-fw fa-shield-halved"></i>
+                <i class="fa-solid fa-fw fa-shield-halved primary-icon"></i>
                 <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.AC"}}</div>
             </div>
             <div class="flex-value">{{#if (or this.system.ac.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.system.ac this.vagueDescriptions.properties.ac}}{{else}}?{{/if}}</div>
@@ -25,7 +25,7 @@
 
         <div class="monster-left-data primary-container {{PF2EBTToggleContainer this.user this.system.hp}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.hp}}" data-action="toggleRevealed" data-path="system.hp" data-name="{{localize "PF2EBestiary.Miscellaneous.HP"}}" data-vague-property="hp">
             <div class="flex-data">
-                <i class="fa-solid fa-heart health-icon"></i>
+                <i class="fa-solid fa-heart health-icon primary-icon"></i>
                 <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.HP"}}</div>
             </div>
             <div class="flex-value">{{#if (or this.system.hp.revealed this.user.isGM)}}{{PF2EBTMonsterValue this.system.hp this.vagueDescriptions.properties.hp}}{{else}}?{{/if}}</div>
@@ -35,11 +35,11 @@
             <div class="monster-left-data bestiary-left-list primary-container list-container">
                 <div class="bestiary-fakable-container">
                     <div class="flex-data {{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.immunities">
-                        <i class="fa-solid fa-fw fa-ankh"></i>
+                        <i class="fa-solid fa-fw fa-ankh primary-icon"></i>
                         <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Immunities"}}</div>
                     </div>
 
-                    {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.immunities" data-name="Immunity" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
+                    {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container secondary-icon" data-action="createMisinformation" data-path="system.immunities" data-name="Immunity" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                 </div>
             </div>
             <div class="monster-data-list">
@@ -89,11 +89,11 @@
             <div class="monster-left-data primary-container list-container">
                 <div class="bestiary-fakable-container bestiary-left-list">
                     <div class="flex-data {{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.weaknesses">
-                        <i class="fa-solid fa-fw fa-heart-broken"></i>
+                        <i class="fa-solid fa-fw fa-heart-broken primary-icon"></i>
                         <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Weaknesses"}}</div>
                     </div>
 
-                    {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.weaknesses" data-name="Weakness" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
+                    {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container secondary-icon" data-action="createMisinformation" data-path="system.weaknesses" data-name="Weakness" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                 </div>
             </div>
             <div class="monster-data-list">
@@ -153,11 +153,11 @@
             <div class="monster-left-data primary-container list-container">
                 <div class="bestiary-fakable-container bestiary-left-list">
                     <div class="flex-data {{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.resistances">
-                        <i class="fa-solid fa-fw fa-shield-virus"></i>
+                        <i class="fa-solid fa-fw fa-shield-virus primary-icon"></i>
                         <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Resistances"}}</div>
                     </div>
 
-                    {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.resistances" data-name="Resistance" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
+                    {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container secondary-icon" data-action="createMisinformation" data-path="system.resistances" data-name="Resistance" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                 </div>
             </div>
             <div class="monster-data-list">
@@ -249,7 +249,7 @@
         <div class="flexcol">
             <div class="monster-left-data bestiary-left-list primary-container list-container">
                 <div class="flex-data {{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.saves">
-                    <i class="fa-solid fa-fw fa-heart-pulse"></i>
+                    <i class="fa-solid fa-fw fa-heart-pulse primary-icon"></i>
                     <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Saves.Title"}}</div>
                 </div>
             </div>
@@ -271,7 +271,7 @@
         <div class="flexcol">
             <div class="monster-left-data bestiary-left-list primary-container list-container">
                 <div class="flex-data {{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.speeds.values" data-type="speed">
-                    <i class="fa-solid fa-fw fa-shoe-prints"></i>
+                    <i class="fa-solid fa-fw fa-shoe-prints primary-icon"></i>
                     <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Speeds"}}</div>
                 </div>
             </div>
@@ -406,7 +406,7 @@
                     {{/each}}
                 </div>
             </div>
-            {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.traits" data-name="Trait" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
+            {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container secondary-icon" data-action="createMisinformation" data-path="system.traits" data-name="Trait" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
         </div>
     </div>
     <div class="tab {{this.tabs.statistics.cssClass}}" data-group="creature" data-tab="statistics">
@@ -415,7 +415,9 @@
                 <div class="data-section primary-container active">
                     <div class="data-header primary-container">
                         <div class="data-header-label">
-                            <i class="fa-solid fa-book"></i>
+                            <div class="data-icon primary-icon">
+                                <i class="fa-solid fa-book"></i>
+                            </div>
                             <div class="flex-value">{{localize "Recall Knowledge"}}</div>
                         </div>
                     </div>
@@ -433,7 +435,9 @@
                 <div class="data-section primary-container active">
                     <div class="data-header primary-container">
                         <div class="data-header-label {{#if this.user.isGM}}primary-hover-container{{/if}}" {{#if this.user.isGM}}data-action="toggleAllRevealed" data-path="system.abilities"{{/if}}>
-                            <img class="data-icon" src="systems/pf2e/icons/default-icons/feat.svg" />
+                            <div class="data-icon primary-icon">
+                                <i class="fa-solid fa-dumbbell"></i>
+                            </div>
                             <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attributes"}}</div>
                         </div>
                     </div>
@@ -453,11 +457,13 @@
                     <div class="data-header primary-container">
                         <div class="bestiary-fakable-container">
                             <div class="data-header-label {{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.senses.senses" data-type="senses">
-                                <img class="data-icon" src="icons/svg/eye.svg" />
+                                <div class="data-icon primary-icon">
+                                    <i class="fa-brands fa-periscope"></i>
+                                </div>
                                 <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Senses"}}</div>
                             </div>
 
-                            {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.senses.senses" data-name="Sense" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
+                            {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container secondary-icon" data-action="createMisinformation" data-path="system.senses.senses" data-name="Sense" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                         </div>
                     </div>
                     <div class="data-body primary-border-container pf2e-bestiary-standard-gap">
@@ -514,7 +520,7 @@
                                 <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Languages"}}</div>
                             </div>
 
-                            {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.languages.values" data-name="Languages" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
+                            {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container secondary-icon" data-action="createMisinformation" data-path="system.languages.values" data-name="Languages" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                         </div>
                     </div>
                     <div class="data-body primary-border-container pf2e-bestiary-standard-gap">
@@ -540,7 +546,9 @@
             <div class="data-section primary-container active">
                 <div class="data-header primary-container">
                     <div class="data-header-label {{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.skills">
-                        <i class="fa-solid fa-medal"></i>
+                        <div class="data-icon primary-icon">
+                            <i class="fa-solid fa-medal"></i>
+                        </div>
                         <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Skills"}}</div>
                     </div>
                 </div>
@@ -567,11 +575,13 @@
                 <div class="data-header primary-container">
                     <div class="bestiary-fakable-container">
                         <div class="data-header-label {{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.attacks" data-type="attacks">
-                            <img class="data-icon" src="icons/svg/combat.svg" />
+                            <div class="data-icon primary-icon">
+                                <i class="fa-solid fa-explosion"></i>
+                            </div>
                             <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Attacks"}}</div>
                         </div>
                     
-                        {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.attacks" data-name="Attack" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
+                        {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container secondary-icon" data-action="createMisinformation" data-path="system.attacks" data-name="Attack" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                     </div>
                 </div>
                 <div class="data-body primary-border-container pf2e-bestiary-standard-gap">
@@ -691,8 +701,10 @@
                 <div class="data-header primary-container">
                     <div class="bestiary-fakable-container">
                         <div class="data-expanded-header">
-                            <div class="data-header-label {{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.actions" data-type="actions">
-                                <img class="data-icon" src="icons/svg/explosion.svg" />
+                            <div class="data-header-label {{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.actions" data-type="actions">   
+                                <div class="data-icon primary-icon">
+                                    <i class="fa-solid fa-bolt-lightning"></i>
+                                </div>                           
                                 <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Actions"}}</div>
                             </div>
                             {{#if (and this.system.pcData this.system.pcData.classDC.dc.value)}}
@@ -709,7 +721,7 @@
                             {{/if}}
                         </div>
 
-                        {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.actions" data-name="Action" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
+                        {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container secondary-icon" data-action="createMisinformation" data-path="system.actions" data-name="Action" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                     </div>
                 </div>
                 <div class="data-body primary-border-container pf2e-bestiary-standard-gap">
@@ -776,11 +788,13 @@
                 <div class="data-header primary-container">
                     <div class="bestiary-fakable-container">
                         <div class="data-header-label {{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.passives" data-type="passives">
-                            <img class="data-icon" src="icons/svg/paralysis.svg" />
+                            <div class="data-icon primary-icon">
+                            <i class="fa-solid fa-hand-sparkles"></i>
+                            </div>
                             <div class="flex-value">{{localize "PF2EBestiary.Miscellaneous.Passives"}}</div>
                         </div>
 
-                        {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container" data-action="createMisinformation" data-path="system.passives" data-name="Passive" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
+                        {{#if this.user.isGM}}<i class="fa-solid fa-user-secret primary-hover-container secondary-icon" data-action="createMisinformation" data-path="system.passives" data-name="Passive" title="{{localize "PF2EBestiary.Bestiary.Misinformation.AddMisinformation"}}"></i>{{/if}}
                     </div>
                 </div>
                 <div class="data-body primary-border-container pf2e-bestiary-standard-gap">

@@ -1,18 +1,18 @@
-<div>
+<div class="menu-container">
     <header>
         <fieldset class="menu-category">
             <legend>
                 {{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Title"}}
-                <i class="pf2e-bestiary-clickable-icon fa-solid fa-plus" data-action="addTheme"></i>
-                <i class="pf2e-bestiary-clickable-icon fa-fw fas fa-file-import" data-action="importTheme"></i>
+                <i class="pf2e-bestiary-clickable-icon fa-solid fa-plus" data-action="addTheme" title="{{localize "PF2EBestiary.Menus.BestiaryThemes.Miscellaneous.AddTheme"}}"></i>
+                <i class="pf2e-bestiary-clickable-icon fa-fw fas fa-file-import" data-action="importTheme" title="{{localize "PF2EBestiary.Menus.BestiaryThemes.Miscellaneous.ImportTheme"}}"></i>
             </legend>
 
             <div class="edit-selections">
                 {{#each this.customThemes}}
                     <button class="edit-selection {{#if (eq @key ../this.selectedTheme)}}active{{/if}}" data-action="selectTheme" data-theme="{{@key}}">
                         <span>{{this.name}}</span>
-                        <i class="edit-selection-tools left pf2e-bestiary-clickable-icon fa-solid fa-circle-xmark" data-action="deleteTheme" data-theme="{{@key}}"></i>
-                        <i class="edit-selection-tools right pf2e-bestiary-clickable-icon fa-fw fas fa-file-export" data-action="exportTheme" data-theme="{{@key}}"></i>
+                        <i class="edit-selection-tools left pf2e-bestiary-clickable-icon fa-solid fa-circle-xmark" data-action="deleteTheme" data-theme="{{@key}}" title="{{localize "PF2EBestiary.Menus.BestiaryThemes.Miscellaneous.DeleteTheme"}}"></i>
+                        <i class="edit-selection-tools right pf2e-bestiary-clickable-icon fa-fw fas fa-file-export" data-action="exportTheme" data-theme="{{@key}}" title="{{localize "PF2EBestiary.Menus.BestiaryThemes.Miscellaneous.ExportTheme"}}"></i>
                     </button>
                 {{/each}}
             </div>
@@ -44,8 +44,8 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryDisplay.JournalSettings.Image"}}</label>
                         <div class="form-fields">
                             <input type="text" value="{{localize this.props.--pf2e-bestiary-tracking-application-image}}" disabled />
-                            <button data-action="filePicker" data-path="{{concat ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-image"}}" title="Browse Files"><i class="fas fa-file-import fa-fw"></i></button>
-                            <button data-action="clearBackgroundImage"><i class="fa-solid fa-circle-xmark"></i></button>
+                            <button data-action="filePicker" data-path="{{concat ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-image"}}" title="{{localize "PF2EBestiary.Miscellaneous.BrowseFiles"}}"><i class="fas fa-file-import fa-fw"></i></button>
+                            <button data-action="clearBackgroundImage" title="{{localize "PF2EBestiary.Miscellaneous.ClearFile"}}"><i class="fa-solid fa-circle-xmark"></i></button>
                         </div>
                     </div>
                 </div>
@@ -175,7 +175,7 @@
 
                 <div class="theme-section">
                     <div class="form-group">
-                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Icon"}}</label>
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
                                 <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-icon"}} value="{{this.props.--pf2e-bestiary-tracking-icon}}" placeholder="#ffffff"></color-picker>
@@ -183,10 +183,10 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.AccentIcon"}}</label>
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Secondary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-accent-icon"}} value="{{this.props.--pf2e-bestiary-tracking-accent-icon}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-secondary-icon"}} value="{{this.props.--pf2e-bestiary-tracking-secondary-icon}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>

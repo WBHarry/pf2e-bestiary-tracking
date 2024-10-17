@@ -16,13 +16,12 @@ const viscera = {
   "--pf2e-bestiary-tracking-tertiary-accent": "#c12c2c",
   "--pf2e-bestiary-tracking-primary-color": "#FFFFFF",
   "--pf2e-bestiary-tracking-text-shadow": "#000000",
-  "--pf2e-bestiary-tracking-icon-filter": "none",
   "--pf2e-bestiary-tracking-main-hover": "#ff0000",
   "--pf2e-bestiary-tracking-border": "#ffa500",
   "--pf2e-bestiary-tracking-secondary-border": "#ffd700",
   "--pf2e-bestiary-tracking-application-border": "#ffa500",
-  "--pf2e-bestiary-tracking-icon": "",
-  "--pf2e-bestiary-tracking-accent-icon": "",
+  "--pf2e-bestiary-tracking-icon": "#FFFFFF",
+  "--pf2e-bestiary-tracking-secondary-icon": "#FFFFFF",
 };
 
 export default viscera;

@@ -338,6 +338,7 @@
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-info-container {
   gap: 8px;
   align-items: end;
+  justify-content: end;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .recall-knowledge-container {
   position: relative;
@@ -775,6 +776,7 @@
 .pf2e-bestiary-tracking.bestiary .monster-container .data-icon {
   width: 16px;
   border: 0;
+  text-align: center;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .data-sections {
   display: flex;
@@ -1739,8 +1741,8 @@ form.pf2e-bestiary-tracking.application > header .header-control {
 .pf2e-bestiary-tracking .primary-icon {
   color: var(--pf2e-bestiary-tracking-icon);
 }
-.pf2e-bestiary-tracking .primary-accent-icon {
-  color: var(--pf2e-bestiary-tracking-accent-icon);
+.pf2e-bestiary-tracking .secondary-icon {
+  color: var(--pf2e-bestiary-tracking-secondary-icon);
 }
 .pf2e-bestiary-tracking .primary-text-container {
   color: var(--pf2e-bestiary-tracking-primary-color);

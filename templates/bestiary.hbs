@@ -8,15 +8,15 @@
             {{#if (not this.selected.monster)}}
                 <div class="bestiary-toolbar">
                     <div class="bestiary-layout-settings secondary-container">
-                        <i class="fa-solid fa-table-cells-large primary-hover-container {{#if (eq this.layout.categories.layout 0)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="0"></i>
-                        <i class="fa-solid fa-table-cells primary-hover-container {{#if (eq this.layout.categories.layout 1)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="1"></i>
-                        <i class="fa-solid fa-maximize primary-hover-container {{#if (eq this.layout.categories.layout 2)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="2"></i>
+                        <i class="fa-solid fa-table-cells-large primary-hover-container secondary-icon {{#if (eq this.layout.categories.layout 0)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="0"></i>
+                        <i class="fa-solid fa-table-cells primary-hover-container secondary-icon {{#if (eq this.layout.categories.layout 1)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="1"></i>
+                        <i class="fa-solid fa-maximize primary-hover-container secondary-icon {{#if (eq this.layout.categories.layout 2)}}selected{{/if}}" data-action="setCategoriesLayout" data-option="2"></i>
                     </div>
                     <div class="bestiary-filter-container secondary-container">
-                        <i class="primary-hover-container fa-solid {{#if (eq this.layout.categories.filter.direction 0)}}fa-arrow-up-z-a{{else}}fa-arrow-down-z-a{{/if}}" data-action="toggleFilterDirection"></i>
+                        <i class="primary-hover-container fa-solid secondary-icon {{#if (eq this.layout.categories.filter.direction 0)}}fa-arrow-up-z-a{{else}}fa-arrow-down-z-a{{/if}}" data-action="toggleFilterDirection"></i>
                     </div>
                     <div class="bestiary-search-container">
-                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <i class="fa-solid fa-magnifying-glass search-icon secondary-icon"></i>
                         <input class="secondary-container" type="text" name="search.name" value="{{this.search.name}}" />
                         {{#if search.name}}<i class="fa-solid fa-circle-xmark clear-icon primary-hover-container" data-action="clearSearch"></i>{{/if}}
                     </div>
@@ -25,10 +25,10 @@
                 {{#if this.user.isGM}}
                 <div class="flexrow">
                     <div class="link-menu-container">
-                        <button class="header-button link-menu-button {{#if (not this.selected.monster.system.uuid)}}unlinked{{/if}} secondary-container primary-hover-container" data-action="openActorLinkMenu" title="{{localize "Actor Link Menu"}}"><i class="fa-solid fa-users"></i></button>
+                        <button class="header-button link-menu-button {{#if (not this.selected.monster.system.uuid)}}unlinked{{/if}} secondary-container primary-hover-container" data-action="openActorLinkMenu" title="{{localize "Actor Link Menu"}}"><i class="fa-solid fa-users secondary-icon"></i></button>
                     </div>
 
-                    <button class="header-button secondary-container primary-hover-container" data-action="toggleActorSheet"><i class="fa-solid fa-user"></i> {{localize "PF2EBestiary.Bestiary.ToggleActorSheet"}}</button>
+                    <button class="header-button secondary-container primary-hover-container" data-action="toggleActorSheet"><i class="fa-solid fa-user secondary-icon"></i> {{localize "PF2EBestiary.Bestiary.ToggleActorSheet"}}</button>
                 </div>
                 {{/if}}
             {{/if}}
@@ -36,7 +36,7 @@
     {{/if}}
     <body>
         {{#if (not this.selected.type)}}
-            <h2 class="bestiary-title primary-border-container text-shadow-container">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h2> 
+            <h2 class="bestiary-title primary-border-container primary-text-container text-shadow-container">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h2> 
             <div class="bestiary-main-page">
                 {{#if this.showCategories}}
                     <div class="main-page-category-container">
@@ -77,24 +77,26 @@
                     </div>
                 {{/if}}
                 <div class="bestiary-info-container flexrow">
-                    <div class="bestiary-welcome text-shadow-container flex1">
-                        <div class="sub-title">{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.Title"}}</div>
-                        <ul>
-                            <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.ThemingTip"}}</li>
-                            <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.NavigationTip"}}</li>
-                            <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.MacroTip"}}</li>
-                        </ul>
+                    {{#if (not this.hideTips)}} 
+                        <div class="bestiary-welcome text-shadow-container flex1">
+                            <div class="sub-title">{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.Title"}}</div>
+                            <ul>
+                                <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.ThemingTip"}}</li>
+                                <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.NavigationTip"}}</li>
+                                <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.MacroTip"}}</li>
+                            </ul>
 
-                        <div class="sub-title">
-                            <div>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.Title"}}</div>
+                            <div class="sub-title">
+                                <div>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.Title"}}</div>
+                            </div>
+                            <ul>
+                                <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.AddCreaturesTip"}}</li>
+                                <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ModuleSettingsTip"}}</li>
+                                <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.LeftClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleInformationTip"}}</li>
+                                <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RightClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleMisinformationTip"}}</li>
+                            </ul>
                         </div>
-                        <ul>
-                            <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.AddCreaturesTip"}}</li>
-                            <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ModuleSettingsTip"}}</li>
-                            <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.LeftClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleInformationTip"}}</li>
-                            <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RightClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleMisinformationTip"}}</li>
-                        </ul>
-                    </div>
+                    {{/if}}
                     {{#if (and this.journalSettings.active (or this.user.isGM this.recallKnowledgeJournal))}}
                         <div class="recall-knowledge-container secondary-border-container {{#if (not this.recallKnowledgeJournal)}}empty{{/if}}" {{#if (not this.recallKnowledgeJournal)}}title="{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeJournalMissing"}}"{{/if}}>
                             <div class="main-page-category-card">

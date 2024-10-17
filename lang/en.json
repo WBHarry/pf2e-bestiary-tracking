@@ -121,7 +121,9 @@
       "Confirm": "Confirm",
       "Cancel": "Cancel",
       "AttackLabel": "Attack",
-      "DCLabel": "DC"
+      "DCLabel": "DC",
+      "BrowseFiles": "Browse Files",
+      "ClearFile": "Clear File"
     },
     "Bestiary": {
       "Title": "Bestiary",
@@ -432,7 +434,8 @@
         "SheetSettings": {
           "AddButton": "Bestiary Button In Actor Sheet"
         },
-        "HideAbilityDescriptions": "Hide Ability Descriptions"
+        "HideAbilityDescriptions": "Hide Ability Descriptions",
+        "HideTips": "Hide Bestiary Welcome Tips"
       },
       "BestiaryAppearance": {
         "Name": "Bestiary Appearance",
@@ -555,12 +558,16 @@
           "Faded": "Faded",
           "Hover": "Hover",
           "Application": "Bestiary",
-          "Icon": "Icon",
-          "AccentIcon": "Accent Icon",
           "BackgroundSize": "Background Size",
           "BackgroundRepeat": "Background Repeat",
           "BackgroundPosition": "Background Position",
           "PreviewTheme": "Preview Theme"
+        },
+        "Miscellaneous": {
+          "AddTheme": "Add New Theme",
+          "DeleteTheme": "Delete Theme",
+          "ImportTheme": "Import Theme",
+          "ExportTheme": "Export Theme"
         }
       }
     },

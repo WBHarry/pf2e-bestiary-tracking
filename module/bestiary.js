@@ -964,6 +964,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "use-token-art",
     );
+    context.hideTips = game.settings.get("pf2e-bestiary-tracking", "hide-tips");
     context.hideAbilityDescriptions = game.settings.get(
       "pf2e-bestiary-tracking",
       "hide-ability-descriptions",

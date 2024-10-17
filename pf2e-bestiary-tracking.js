@@ -790,3 +790,13 @@ Hooks.on("renderActorSheet", (sheet) => {
     $(bestiaryApp.element).find(".monster-container").addClass("closed");
   }
 });
+
+Hooks.on(socketEvent.ResetBestiaryTheme, () => {
+  const resetTheme =
+    extendedBestiaryThemes()[
+      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
+    ];
+  setupTheme(
+    resetTheme ? resetTheme.props : extendedBestiaryThemes()["coreLight"].props,
+  );
+});

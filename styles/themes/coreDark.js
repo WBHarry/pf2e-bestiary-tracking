@@ -9,13 +9,12 @@ const coreDark = {
   "--pf2e-bestiary-tracking-tertiary-accent": "#76963f",
   "--pf2e-bestiary-tracking-primary-color": "#FFFFFF",
   "--pf2e-bestiary-tracking-text-shadow": "#000000",
-  "--pf2e-bestiary-tracking-icon-filter": "none",
   "--pf2e-bestiary-tracking-main-hover": "#FFFFFF",
   "--pf2e-bestiary-tracking-border": "#ababab",
   "--pf2e-bestiary-tracking-secondary-border": "#ffd700",
   "--pf2e-bestiary-tracking-application-border": "#f5deb3",
   "--pf2e-bestiary-tracking-icon": "rgb(247, 243, 232)",
-  "--pf2e-bestiary-tracking-accent-icon": "#ffd700",
+  "--pf2e-bestiary-tracking-secondary-icon": "#FFFFFF",
 };
 
 export default coreDark;
