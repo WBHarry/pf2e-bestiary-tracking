@@ -18,6 +18,16 @@
                 {{#if settings.usedSections.hazard}}<i class="fa-regular fa-circle-check"></i>{{else}}<i class="fa-regular fa-circle"></i>{{/if}}
             </button>
         </div>
+        <div class="form-group">
+            <label>{{localize "PF2EBestiary.Menus.BestiaryDisplay.UsedSections.Position"}}</label>
+            <div class="form-fields">
+                <div class="form-fields">
+                    <select name="sectionsPosition">
+                        {{selectOptions this.positionOptions selected=this.settings.sectionsPosition valueAttr="value" labelAttr="name" localize=true}}
+                    </select>
+                </div>
+            </div>
+        </div>
     </fieldset>
 
     <fieldset class="menu-category">
@@ -156,6 +166,15 @@
             </div>
         </div>
     </fieldset>
+
+    <div class="form-group">
+        <label>{{localize "PF2EBestiary.Menus.BestiaryDisplay.HideWelcome"}}</label>
+        <div class="form-fields">
+            <div class="form-fields">
+                <input type="checkbox" name="hideWelcome" {{checked settings.hideWelcome}} />
+            </div>
+        </div>
+    </div>
 
     <div class="form-group">
         <label>{{localize "PF2EBestiary.Menus.BestiaryDisplay.HideTips"}}</label>

@@ -293,6 +293,18 @@
   justify-content: space-between;
   height: 100%;
 }
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container.bottom {
+  justify-content: end;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container.top {
+  justify-content: start;
+}
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container {
   display: flex;
   align-items: center;
@@ -300,6 +312,7 @@
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container img {
   height: 200px;
+  width: 200px;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-card {
   position: relative;
@@ -369,7 +382,6 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  height: 100%;
   align-items: start;
   margin-top: 8px;
 }

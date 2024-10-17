@@ -8,7 +8,7 @@ const viscera = {
   "--pf2e-bestiary-tracking-application-secondary-image": "",
   "--pf2e-bestiary-tracking-application": "",
   "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px #808080)",
-  "--pf2e-bestiary-tracking-primary": "rgb(129 63 63)",
+  "--pf2e-bestiary-tracking-primary": "#813f3f",
   "--pf2e-bestiary-tracking-primary-faded": "#813f3f80",
   "--pf2e-bestiary-tracking-secondary": "#483c70",
   "--pf2e-bestiary-tracking-tertiary": "#ed143d",

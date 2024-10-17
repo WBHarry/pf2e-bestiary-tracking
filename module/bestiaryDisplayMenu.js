@@ -10,7 +10,12 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
     super({});
 
     this.settings = {
+      hideWelcome: game.settings.get("pf2e-bestiary-tracking", "hide-welcome"),
       hideTips: game.settings.get("pf2e-bestiary-tracking", "hide-tips"),
+      sectionsPosition: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "sections-position",
+      ),
       hideAbilityDescriptions: game.settings.get(
         "pf2e-bestiary-tracking",
         "hide-ability-descriptions",
@@ -113,6 +118,20 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
     ).length;
 
     context.toBestiaryOptions = toBestiaryOptions;
+    context.positionOptions = [
+      {
+        value: "top",
+        name: "PF2EBestiary.Menus.BestiaryDisplay.PositionOptions.Top",
+      },
+      {
+        value: "center",
+        name: "PF2EBestiary.Menus.BestiaryDisplay.PositionOptions.Center",
+      },
+      {
+        value: "bottom",
+        name: "PF2EBestiary.Menus.BestiaryDisplay.PositionOptions.Bottom",
+      },
+    ];
 
     return context;
   }
@@ -121,7 +140,9 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
     const data = foundry.utils.expandObject(formData.object);
     this.settings = {
       additionalCreatureTypes: this.settings.additionalCreatureTypes,
+      hideWelcome: data.hideWelcome,
       hideTips: data.hideTips,
+      sectionsPosition: data.sectionsPosition,
       hideAbilityDescriptions: data.hideAbilityDescriptions,
       optionalFields: data.optionalFields,
       detailedInformation: { ...data.detailedInformation },
@@ -203,8 +224,18 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
   static async save(_) {
     await game.settings.set(
       "pf2e-bestiary-tracking",
+      "hide-welcome",
+      this.settings.hideWelcome,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
       "hide-tips",
       this.settings.hideTips,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "sections-position",
+      this.settings.sectionsPosition,
     );
     await game.settings.set(
       "pf2e-bestiary-tracking",

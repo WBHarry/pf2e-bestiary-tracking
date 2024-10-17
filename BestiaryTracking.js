@@ -8727,8 +8727,8 @@ class VagueDescriptionsMenu extends HandlebarsApplicationMixin$8(
 const coreDark = {
   "--pf2e-bestiary-tracking-application-image": "ignore",
   "--pf2e-bestiary-tracking-application": "#12101fe6",
-  "--pf2e-bestiary-tracking-primary": "rgb(94 0 0)",
-  "--pf2e-bestiary-tracking-primary-faded": "rgb(94 0 0 / 50%)",
+  "--pf2e-bestiary-tracking-primary": "#5e0000",
+  "--pf2e-bestiary-tracking-primary-faded": "#5e000080",
   "--pf2e-bestiary-tracking-secondary": "#4b4b8c",
   "--pf2e-bestiary-tracking-tertiary": "#007149",
   "--pf2e-bestiary-tracking-primary-accent": "#ad0303",
@@ -8739,18 +8739,18 @@ const coreDark = {
   "--pf2e-bestiary-tracking-border": "#ababab",
   "--pf2e-bestiary-tracking-secondary-border": "#ffd700",
   "--pf2e-bestiary-tracking-application-border": "#f5deb3",
-  "--pf2e-bestiary-tracking-icon": "rgb(247, 243, 232)",
+  "--pf2e-bestiary-tracking-icon": "#f7f3e8",
   "--pf2e-bestiary-tracking-secondary-icon": "#FFFFFF",
 };
 
 const coreLight = {
   "--pf2e-bestiary-tracking-application-image": "../../../ui/parchment.jpg",
-  "--pf2e-bestiary-tracking-application-header": "rgb(68, 68, 68)",
+  "--pf2e-bestiary-tracking-application-header": "#444444",
   "--pf2e-bestiary-tracking-application-image-repeat": "repeat",
   "--pf2e-bestiary-tracking-application-image-position": "left",
   "--pf2e-bestiary-tracking-application": "initial",
-  "--pf2e-bestiary-tracking-primary": "rgb(212 189 172)",
-  "--pf2e-bestiary-tracking-primary-faded": "rgb(212 189 172 / 25%)",
+  "--pf2e-bestiary-tracking-primary": "#d4bdac",
+  "--pf2e-bestiary-tracking-primary-faded": "#d4bdac40",
   "--pf2e-bestiary-tracking-secondary": "#62b356",
   "--pf2e-bestiary-tracking-tertiary": "#62acce",
   "--pf2e-bestiary-tracking-primary-accent": "#fff1db",
@@ -8777,19 +8777,19 @@ const nebula = {
   "--pf2e-bestiary-tracking-application": "",
   "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px #808080)",
   "--pf2e-bestiary-tracking-primary": "rgb(115 169 188)",
-  "--pf2e-bestiary-tracking-primary-faded": "rgb(115 169 188 / 50%)",
+  "--pf2e-bestiary-tracking-primary-faded": "#73a9bc80",
   "--pf2e-bestiary-tracking-secondary": "#cd7e23",
   "--pf2e-bestiary-tracking-tertiary": "#7476a6",
   "--pf2e-bestiary-tracking-primary-accent": "#0888b5",
   "--pf2e-bestiary-tracking-tertiary-accent": "#888bc0",
-  "--pf2e-bestiary-tracking-primary-color": "rgb(247, 243, 232)",
+  "--pf2e-bestiary-tracking-primary-color": "#f7f3e8",
   "--pf2e-bestiary-tracking-text-shadow": "#000000",
   "--pf2e-bestiary-tracking-main-hover": "",
   "--pf2e-bestiary-tracking-border": "#e4e41e",
   "--pf2e-bestiary-tracking-secondary-border": "#ffd700",
   "--pf2e-bestiary-tracking-application-border": "#e4e41e",
   "--pf2e-bestiary-tracking-icon": "#FFFFFF",
-  "--pf2e-bestiary-tracking-secondary-icon": "rgb(247, 243, 232)",
+  "--pf2e-bestiary-tracking-secondary-icon": "#f7f3e8",
 };
 
 const viscera = {
@@ -8802,7 +8802,7 @@ const viscera = {
   "--pf2e-bestiary-tracking-application-secondary-image": "",
   "--pf2e-bestiary-tracking-application": "",
   "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px #808080)",
-  "--pf2e-bestiary-tracking-primary": "rgb(129 63 63)",
+  "--pf2e-bestiary-tracking-primary": "#813f3f",
   "--pf2e-bestiary-tracking-primary-faded": "#813f3f80",
   "--pf2e-bestiary-tracking-secondary": "#483c70",
   "--pf2e-bestiary-tracking-tertiary": "#ed143d",
@@ -8828,20 +8828,20 @@ const water = {
   "--pf2e-bestiary-tracking-application-secondary-image": "",
   "--pf2e-bestiary-tracking-application": "",
   "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px #808080)",
-  "--pf2e-bestiary-tracking-primary": "rgb(28 166 113)",
-  "--pf2e-bestiary-tracking-primary-faded": "rgb(28 166 113 / 50%)",
+  "--pf2e-bestiary-tracking-primary": "#1ca671",
+  "--pf2e-bestiary-tracking-primary-faded": "#1ca67180",
   "--pf2e-bestiary-tracking-secondary": "#8b0d8b",
   "--pf2e-bestiary-tracking-tertiary": "#602fa1",
   "--pf2e-bestiary-tracking-primary-accent": "#0f7e2fbf",
   "--pf2e-bestiary-tracking-tertiary-accent": "#681ad1",
-  "--pf2e-bestiary-tracking-primary-color": "rgb(247, 243, 232)",
+  "--pf2e-bestiary-tracking-primary-color": "#f7f3e8",
   "--pf2e-bestiary-tracking-text-shadow": "#000000",
   "--pf2e-bestiary-tracking-main-hover": "#FFFFFF",
   "--pf2e-bestiary-tracking-border": "#c7ffed",
   "--pf2e-bestiary-tracking-secondary-border": "#ffd700",
   "--pf2e-bestiary-tracking-application-border": "#c7ffed",
   "--pf2e-bestiary-tracking-icon": "#FFFFFF",
-  "--pf2e-bestiary-tracking-secondary-icon": "rgb(247, 243, 232)",
+  "--pf2e-bestiary-tracking-secondary-icon": "#f7f3e8",
 };
 
 const bestiaryThemes = {
@@ -8908,7 +8908,9 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
     super({});
 
     this.settings = {
+      hideWelcome: game.settings.get("pf2e-bestiary-tracking", "hide-welcome"),
       hideTips: game.settings.get("pf2e-bestiary-tracking", "hide-tips"),
+      sectionsPosition: game.settings.get("pf2e-bestiary-tracking", "sections-position"),
       hideAbilityDescriptions: game.settings.get(
         "pf2e-bestiary-tracking",
         "hide-ability-descriptions",
@@ -9011,6 +9013,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
     ).length;
 
     context.toBestiaryOptions = toBestiaryOptions;
+    context.positionOptions = [{ value: 'top', name: 'PF2EBestiary.Menus.BestiaryDisplay.PositionOptions.Top' }, { value: 'center', name: 'PF2EBestiary.Menus.BestiaryDisplay.PositionOptions.Center'}, { value: 'bottom', name: 'PF2EBestiary.Menus.BestiaryDisplay.PositionOptions.Bottom' }];
 
     return context;
   }
@@ -9019,7 +9022,9 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
     const data = foundry.utils.expandObject(formData.object);
     this.settings = {
       additionalCreatureTypes: this.settings.additionalCreatureTypes,
+      hideWelcome: data.hideWelcome,
       hideTips: data.hideTips,
+      sectionsPosition: data.sectionsPosition,
       hideAbilityDescriptions: data.hideAbilityDescriptions,
       optionalFields: data.optionalFields,
       detailedInformation: { ...data.detailedInformation },
@@ -9099,7 +9104,21 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
   }
 
   static async save(_) {
-    await game.settings.set("pf2e-bestiary-tracking", "hide-tips", this.settings.hideTips);
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "hide-welcome",
+      this.settings.hideWelcome,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "hide-tips",
+      this.settings.hideTips,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking", 
+      "sections-position",
+      this.settings.sectionsPosition
+    );
     await game.settings.set(
       "pf2e-bestiary-tracking",
       "additional-creature-types",
@@ -9441,12 +9460,12 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   getTemplateProps(props) {
     const copyProps = foundry.utils.deepClone(props);
     copyProps["--pf2e-bestiary-tracking-application-image"] =
-    copyProps["--pf2e-bestiary-tracking-application-image"] === "ignore"
+      copyProps["--pf2e-bestiary-tracking-application-image"] === "ignore"
         ? ""
         : copyProps["--pf2e-bestiary-tracking-application-image"].split(
             "../../../",
           )[1];
-    return copyProps;  
+    return copyProps;
   }
 
   static getNextName = (customThemes) => {
@@ -9499,7 +9518,15 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
     }, {});
     if (button.dataset.theme === this.selectedTheme) this.selectedTheme = null;
 
-    if(game.settings.get("pf2e-bestiary-tracking", "bestiary-theme") === button.dataset.theme) game.settings.set("pf2e-bestiary-tracking", "bestiary-theme", 'coreLight');
+    if (
+      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme") ===
+      button.dataset.theme
+    )
+      game.settings.set(
+        "pf2e-bestiary-tracking",
+        "bestiary-theme",
+        "coreLight",
+      );
 
     this.render();
   }
@@ -9573,8 +9600,11 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   static updateTheme(theme) {
     const updateTheme = foundry.utils.deepClone(theme);
 
-    updateTheme["--pf2e-bestiary-tracking-application-image"] = updateTheme["--pf2e-bestiary-tracking-application-image"] ?
-      `../../../${updateTheme["--pf2e-bestiary-tracking-application-image"]}` : 'ignore';
+    updateTheme["--pf2e-bestiary-tracking-application-image"] = updateTheme[
+      "--pf2e-bestiary-tracking-application-image"
+    ]
+      ? `../../../${updateTheme["--pf2e-bestiary-tracking-application-image"]}`
+      : "ignore";
 
     setupTheme(updateTheme);
   }
@@ -10011,6 +10041,15 @@ const bestiaryDisplay = () => {
     },
   );
 
+  game.settings.register("pf2e-bestiary-tracking", "hide-welcome", {
+    name: game.i18n.localize("PF2EBestiary.Settings.HideWelcome.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.HideWelcome.Hint"),
+    scope: "world",
+    config: false,
+    type: Boolean,
+    default: false,
+  });
+
   game.settings.register("pf2e-bestiary-tracking", "hide-tips", {
     name: game.i18n.localize("PF2EBestiary.Settings.HideTips.Name"),
     hint: game.i18n.localize("PF2EBestiary.Settings.HideTips.Hint"),
@@ -10018,6 +10057,15 @@ const bestiaryDisplay = () => {
     config: false,
     type: Boolean,
     default: false,
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "sections-position", {
+    name: game.i18n.localize("PF2EBestiary.Settings.SectionsPosition.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.SectionsPosition.Hint"),
+    scope: "world",
+    config: false,
+    type: String,
+    default: 'top',
   });
 
   game.settings.register(
@@ -14951,6 +14999,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       "use-token-art",
     );
     context.hideTips = game.settings.get("pf2e-bestiary-tracking", "hide-tips");
+    context.hideWelcome = game.settings.get("pf2e-bestiary-tracking", "hide-welcome");
+    context.sectionsPositioning = game.settings.get("pf2e-bestiary-tracking", 'sections-position');
     context.hideAbilityDescriptions = game.settings.get(
       "pf2e-bestiary-tracking",
       "hide-ability-descriptions",
@@ -18149,9 +18199,12 @@ Hooks.on("renderActorSheet", (sheet) => {
 });
 
 Hooks.on(socketEvent.ResetBestiaryTheme, () => {
-  const resetTheme = extendedBestiaryThemes()[
-    game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
-  ];
-  setupTheme(resetTheme ? resetTheme.props :  extendedBestiaryThemes()['coreLight'].props);
+  const resetTheme =
+    extendedBestiaryThemes()[
+      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
+    ];
+  setupTheme(
+    resetTheme ? resetTheme.props : extendedBestiaryThemes()["coreLight"].props,
+  );
 });
 //# sourceMappingURL=BestiaryTracking.js.map

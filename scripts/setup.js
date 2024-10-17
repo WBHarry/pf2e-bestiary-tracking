@@ -368,6 +368,15 @@ const bestiaryDisplay = () => {
     },
   );
 
+  game.settings.register("pf2e-bestiary-tracking", "hide-welcome", {
+    name: game.i18n.localize("PF2EBestiary.Settings.HideWelcome.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.HideWelcome.Hint"),
+    scope: "world",
+    config: false,
+    type: Boolean,
+    default: false,
+  });
+
   game.settings.register("pf2e-bestiary-tracking", "hide-tips", {
     name: game.i18n.localize("PF2EBestiary.Settings.HideTips.Name"),
     hint: game.i18n.localize("PF2EBestiary.Settings.HideTips.Hint"),
@@ -375,6 +384,15 @@ const bestiaryDisplay = () => {
     config: false,
     type: Boolean,
     default: false,
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "sections-position", {
+    name: game.i18n.localize("PF2EBestiary.Settings.SectionsPosition.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.SectionsPosition.Hint"),
+    scope: "world",
+    config: false,
+    type: String,
+    default: "top",
   });
 
   game.settings.register(

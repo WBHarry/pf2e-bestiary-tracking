@@ -283,6 +283,21 @@
       justify-content: space-between;
       height: 100%;
 
+      .main-page-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex: 1;
+
+        &.bottom {
+          justify-content: end;
+        }
+
+        &.top {
+          justify-content: start;
+        }
+      }
+
       .main-page-category-container {
         display: flex;
         align-items: center;
@@ -290,6 +305,7 @@
 
         img {
           height: 200px;
+          width: 200px;
         }
       }
 
@@ -372,7 +388,6 @@
         display: flex;
         align-items: center;
         gap: 4px;
-        height: 100%;
         align-items: start;
         margin-top: 8px;
 

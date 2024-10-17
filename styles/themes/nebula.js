@@ -10,19 +10,19 @@ const nebula = {
   "--pf2e-bestiary-tracking-application": "",
   "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px #808080)",
   "--pf2e-bestiary-tracking-primary": "rgb(115 169 188)",
-  "--pf2e-bestiary-tracking-primary-faded": "rgb(115 169 188 / 50%)",
+  "--pf2e-bestiary-tracking-primary-faded": "#73a9bc80",
   "--pf2e-bestiary-tracking-secondary": "#cd7e23",
   "--pf2e-bestiary-tracking-tertiary": "#7476a6",
   "--pf2e-bestiary-tracking-primary-accent": "#0888b5",
   "--pf2e-bestiary-tracking-tertiary-accent": "#888bc0",
-  "--pf2e-bestiary-tracking-primary-color": "rgb(247, 243, 232)",
+  "--pf2e-bestiary-tracking-primary-color": "#f7f3e8",
   "--pf2e-bestiary-tracking-text-shadow": "#000000",
   "--pf2e-bestiary-tracking-main-hover": "",
   "--pf2e-bestiary-tracking-border": "#e4e41e",
   "--pf2e-bestiary-tracking-secondary-border": "#ffd700",
   "--pf2e-bestiary-tracking-application-border": "#e4e41e",
   "--pf2e-bestiary-tracking-icon": "#FFFFFF",
-  "--pf2e-bestiary-tracking-secondary-icon": "rgb(247, 243, 232)",
+  "--pf2e-bestiary-tracking-secondary-icon": "#f7f3e8",
 };
 
 export default nebula;
