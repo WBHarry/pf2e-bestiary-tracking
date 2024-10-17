@@ -12,9 +12,9 @@
                 {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-left-right" title="PF2EBestiary.Bestiary.NPC.Weight" editMode=this.npcState.editMode path="system.npcData.general.weight" data=this.general.weight }}
             {{/if}}
             <div class="flexcol flex1 data-section primary-container active">
-                <div class="data-header primary-container">
+                <div class="data-header secondary-container">
                     <div class="data-header-label">
-                        <i class="fa-solid fa-chart-column"></i>
+                        <i class="fa-solid fa-chart-column secondary-icon"></i>
                         <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Dispositions"}}</div>
                     </div>
                 </div>
@@ -40,7 +40,7 @@
             <div class="data-section full primary-container active">
                 <div class="data-header primary-container">
                     <div class="data-header-label">
-                        <i class="fa-solid fa-brain"></i>
+                        <i class="fa-solid fa-brain secondary-icon"></i>
                         <div class="flex-value">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RecallKnowledgeAttempts"}}</div>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
         <div class="data-section primary-container npc-players-container active">
             <div class="data-header primary-container" title="{{localize "PF2EBestiary.Bestiary.NPC.GMPlayersContainerTip"}}">
                 <div class="data-header-label">
-                    <i class="fa-solid fa-person-burst"></i>
+                    <i class="fa-solid fa-person-burst secondary-icon"></i>
                     <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.GMPlayersContainerTitle"}}</div>
                 </div>
             </div>
@@ -101,7 +101,7 @@
             <div class="flexcol flex1 data-section primary-container active">
                 <div class="data-header primary-container">
                     <div class="data-header-label {{#if this.user.isGM}}{{PF2EBTToggleContainer this.user this.influence.premise}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.influence.premise}}" data-action="toggleRevealed" data-path="system.npcData.influence.premise">
-                        <i class="fa-solid fa-chart-column"></i>
+                        <i class="fa-solid fa-chart-column secondary-icon"></i>
                         <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.PremiseLabel"}}</div>
                     </div>
                 </div>
@@ -188,7 +188,7 @@
             <div class="flexcol flex1 data-section primary-container active">
                 <div class="data-header primary-container">
                     <div class="data-header-label {{#if this.user.isGM}}{{PF2EBTToggleContainer this.user this.general.background}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.general.background}}" data-action="toggleRevealed" data-path="system.npcData.general.background">
-                        <i class="header-icon fa-solid fa-house-chimney"></i>
+                        <i class="header-icon fa-solid fa-house-chimney primary-icon"></i>
                         <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Background"}}</div>
                     </div>
 
@@ -216,7 +216,7 @@
             <div class="flexcol data-section primary-container active">
                 <div class="data-header primary-container">
                     <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.npcData.influence.discovery">
-                        <i class="header-icon fa-solid fa-brain"></i>
+                        <i class="header-icon fa-solid fa-brain primary-icon"></i>
                         <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Discovery"}}</div>
                     </div>
                     {{#if this.npcState.editMode}}<i class="fa-solid fa-plus primary-hover-container" data-action="addInfluence" data-type="discovery"></i>{{/if}}
@@ -256,7 +256,7 @@
             <div class="flexcol data-section primary-container active">
                 <div class="data-header primary-container">
                     <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.npcData.influence.influenceSkills">
-                        <i class="header-icon fa-solid fa-book"></i>
+                        <i class="header-icon fa-solid fa-book primary-icon"></i>
                         <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.InfluenceSkills"}}</div>
                     </div>
                     {{#if this.npcState.editMode}}<i class="fa-solid fa-plus primary-hover-container" data-action="addInfluence" data-type="influenceSkills"></i>{{/if}}
@@ -319,7 +319,7 @@
                 <div class="data-header primary-container">
                     <div class="data-header-label">
                         <div class="data-header-label">
-                            <i class="header-icon fa-solid fa-hand-holding-heart"></i>
+                            <i class="header-icon fa-solid fa-hand-holding-heart primary-icon"></i>
                             <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Influence"}}</div>
                         </div>
                         <div class="influence-points-container">
@@ -368,7 +368,7 @@
             <div class="flexcol data-section primary-container active">
                 <div class="data-header primary-container">
                     <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.npcData.influence.weaknesses">
-                        <i class="header-icon fa-solid fa-fw fa-heart-broken"></i>
+                        <i class="header-icon fa-solid fa-fw fa-heart-broken primary-icon"></i>
                         <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Weaknesses"}}</div>
                     </div>
                     {{#if this.npcState.editMode}}<i class="fa-solid fa-plus primary-hover-container" data-action="addInfluence" data-type="weakness"></i>{{/if}}
@@ -412,7 +412,7 @@
             <div class="flexcol data-section primary-container active">
                 <div class="data-header primary-container">
                     <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.npcData.influence.resistances">
-                        <i class="fa-solid fa-fw fa-shield-virus"></i>
+                        <i class="fa-solid fa-fw fa-shield-virus primary-icon"></i>
                         <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Resistances"}}</div>
                     </div>
                     {{#if this.npcState.editMode}}<i class="fa-solid fa-plus primary-hover-container" data-action="addInfluence" data-type="resistance"></i>{{/if}}
@@ -456,7 +456,7 @@
             <div class="flexcol data-section primary-container active">
                 <div class="data-header primary-container">
                     <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.npcData.influence.penalties">
-                        <i class="fa-solid fa-handcuffs"></i>
+                        <i class="fa-solid fa-handcuffs primary-icon"></i>
                         <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Penalties"}}</div>
                     </div>
                     {{#if this.npcState.editMode}}<i class="fa-solid fa-plus primary-hover-container" data-action="addInfluence" data-type="penalty"></i>{{/if}}

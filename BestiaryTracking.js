@@ -8910,7 +8910,10 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
     this.settings = {
       hideWelcome: game.settings.get("pf2e-bestiary-tracking", "hide-welcome"),
       hideTips: game.settings.get("pf2e-bestiary-tracking", "hide-tips"),
-      sectionsPosition: game.settings.get("pf2e-bestiary-tracking", "sections-position"),
+      sectionsPosition: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "sections-position",
+      ),
       hideAbilityDescriptions: game.settings.get(
         "pf2e-bestiary-tracking",
         "hide-ability-descriptions",
@@ -9013,7 +9016,20 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
     ).length;
 
     context.toBestiaryOptions = toBestiaryOptions;
-    context.positionOptions = [{ value: 'top', name: 'PF2EBestiary.Menus.BestiaryDisplay.PositionOptions.Top' }, { value: 'center', name: 'PF2EBestiary.Menus.BestiaryDisplay.PositionOptions.Center'}, { value: 'bottom', name: 'PF2EBestiary.Menus.BestiaryDisplay.PositionOptions.Bottom' }];
+    context.positionOptions = [
+      {
+        value: "top",
+        name: "PF2EBestiary.Menus.BestiaryDisplay.PositionOptions.Top",
+      },
+      {
+        value: "center",
+        name: "PF2EBestiary.Menus.BestiaryDisplay.PositionOptions.Center",
+      },
+      {
+        value: "bottom",
+        name: "PF2EBestiary.Menus.BestiaryDisplay.PositionOptions.Bottom",
+      },
+    ];
 
     return context;
   }
@@ -9115,9 +9131,9 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
       this.settings.hideTips,
     );
     await game.settings.set(
-      "pf2e-bestiary-tracking", 
+      "pf2e-bestiary-tracking",
       "sections-position",
-      this.settings.sectionsPosition
+      this.settings.sectionsPosition,
     );
     await game.settings.set(
       "pf2e-bestiary-tracking",
@@ -10065,7 +10081,7 @@ const bestiaryDisplay = () => {
     scope: "world",
     config: false,
     type: String,
-    default: 'top',
+    default: "top",
   });
 
   game.settings.register(
@@ -14999,8 +15015,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       "use-token-art",
     );
     context.hideTips = game.settings.get("pf2e-bestiary-tracking", "hide-tips");
-    context.hideWelcome = game.settings.get("pf2e-bestiary-tracking", "hide-welcome");
-    context.sectionsPositioning = game.settings.get("pf2e-bestiary-tracking", 'sections-position');
+    context.hideWelcome = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "hide-welcome",
+    );
+    context.sectionsPositioning = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "sections-position",
+    );
     context.hideAbilityDescriptions = game.settings.get(
       "pf2e-bestiary-tracking",
       "hide-ability-descriptions",
