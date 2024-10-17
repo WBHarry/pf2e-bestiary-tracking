@@ -467,7 +467,8 @@
           "Skills": "Umiejętności",
           "Attacks": "Ataki",
           "Actions": "Akcje",
-          "Spells": "Zaklęcia"
+          "Spells": "Zaklęcia",
+          "IWR": "NPO na obrażeniach"
         },
         "HiddenSettings": {
           "Name": "Domyślnie ukryte przed graczami",
