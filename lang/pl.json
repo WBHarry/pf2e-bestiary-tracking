@@ -20,6 +20,13 @@
         "Hint": "Dodaje aktualnie wybraną lub namierzoną istotę do bestiariusza"
       }
     },
+    "Themes": {
+      "CoreLight": "Podstawowy Jasny",
+      "CoreDark": "Podstawowy Ciemny",
+      "Nebula": "Mgławica",
+      "Viscera": "Wiskoza",
+      "Water": "Woda"
+    },
     "DegreeOfSuccess": {
       "CriticalSuccess": "Krytyczny Sukces",
       "Success": "Sukces",
@@ -114,10 +121,13 @@
       "Confirm": "Potwierdź",
       "Cancel": "Anuluj",
       "AttackLabel": "Atak",
-      "DCLabel": "ST"
+      "DCLabel": "ST",
+      "BrowseFiles": "Przeglądaj pliki",
+      "ClearFile": "Wyczyść plik"
     },
     "Bestiary": {
       "Title": "Bestiariusz",
+      "PreviewTitle": "Podgląd Bestiariusza",
       "ToggleActorSheet": "Przełącz kartę aktora",
       "WindowControls": {
         "RefreshBestiary": "Odśwież Bestiariusz",
@@ -390,11 +400,17 @@
           "Label": "Ustawienia zawartości bestiariusza",
           "Hint": "Dostosuj, co jest wyświetlane i jak jest wyświetlane w Bestiariuszu"
         },
+        "PositionOptions": {
+          "Top": "Góra",
+          "Center": "Środek",
+          "Bottom": "Dół"
+        },
         "UsedSections": {
           "Name": "Używane sekcje bestiariusza",
           "Creature": "Stworzenia",
           "NPC": "Galeria BNów",
-          "Hazard": "Zagrożenia"
+          "Hazard": "Zagrożenia",
+          "Position": "Sekcje Pozycja"
         },
         "AdditionalCreatureTypes": {
           "Name": "Dodatkowe typy stworzeń",
@@ -424,7 +440,9 @@
         "SheetSettings": {
           "AddButton": "Przycisk bestiariusza na karcie aktora"
         },
-        "HideAbilityDescriptions": "Ukryj opisy zdolności"
+        "HideAbilityDescriptions": "Ukryj opisy zdolności",
+        "HideTips": "Ukryj wskazówki powitalne Bestiariusza",
+        "HideWelcome": "Ukryj wiadomość powitalną"
       },
       "BestiaryAppearance": {
         "Name": "Wygląd bestiariusza",
@@ -518,6 +536,45 @@
           "Reset": "Reset",
           "Initiative": "Inicjatywa",
           "Stealth": "Ukrycie"
+        }
+      },
+      "BestiaryThemes": {
+        "Name": "Niestandardowe motywy Bestiariusza",
+        "Menu": {
+          "Name": "Niestandardowe motywy Bestiariusza",
+          "Label": "Niestandardowe motywy",
+          "Hint": "Dodawanie i edytowanie niestandardowych motywów wizualnych dla bestiariusza"
+        },
+        "Import": {
+          "Title": "Importuj motyw Bestiariusza",
+          "FaultyImport": "Plik JSON nie jest motywem bestiariusza!"
+        },
+        "CustomThemes": {
+          "Title": "Niestandardowe motywy",
+          "TemplateButton": "Kopiuj szablon motywu",
+          "BackgroundColors": "Właściwości tła",
+          "MainColors": "Główne kolory",
+          "IconColors": "Kolory ikon",
+          "AccentColors": "Kolory akcentu",
+          "TextColors": "Kolory tekstu",
+          "Borders": "Kolory obramowania",
+          "Primary": "Główny",
+          "Secondary": "Drugorzędny",
+          "Tertiary": "Trzeciorzędowy",
+          "Shadow": "Cień",
+          "Faded": "Blaknięcie",
+          "Hover": "Najechanie",
+          "Application": "Bestiariusz",
+          "BackgroundSize": "Rozmiar tła",
+          "BackgroundRepeat": "Powtarzanie tła",
+          "BackgroundPosition": "Pozycja tła",
+          "PreviewTheme": "Podgląd motywu"
+        },
+        "Miscellaneous": {
+          "AddTheme": "Dodaj nowy motyw",
+          "DeleteTheme": "Usuń motyw",
+          "ImportTheme": "Importuj motyw",
+          "ExportTheme": "Eksportuj motyw"
         }
       }
     },
