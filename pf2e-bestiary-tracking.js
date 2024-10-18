@@ -598,14 +598,17 @@ Hooks.on("renderChatMessage", (message, htmlElements) => {
         );
         if (!bestiary) return;
 
-        const damageTypes = Array.from(
-          new Set(
-            message.flags.pf2e.dice
-              .map((x) => x.damageType)
-              .concat(message.flags.pf2e.modifiers.map((x) => x.damageType))
-              .filter((x) => x),
-          ),
-        );
+        let damageTypes =
+          message.rolls && message.rolls.length > 0
+            ? Array.from(
+                new Set(
+                  message.rolls.flatMap((roll) =>
+                    roll.instances.map((x) => x.type),
+                  ),
+                ),
+              )
+            : [];
+
         for (var target of targets) {
           const page = bestiary.pages.find(
             (x) => x.system.uuid === (target.document?.baseActor?.uuid ?? null),
