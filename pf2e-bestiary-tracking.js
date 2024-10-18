@@ -100,11 +100,11 @@ Hooks.once("ready", async () => {
 });
 
 Hooks.once("setup", () => {
-  setupTheme(
-    extendedBestiaryThemes()[
-      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
-    ].props,
-  );
+  const theme =
+    game.user.getFlag("pf2e-bestiary-tracking", "bestiary-theme") ??
+    "coreLight";
+  game.settings.set("pf2e-bestiary-tracking", "bestiary-theme", theme);
+  setupTheme(extendedBestiaryThemes()[theme].props);
 
   if (typeof libWrapper === "function") {
     libWrapper.register(
@@ -345,7 +345,7 @@ Hooks.on("createChatMessage", async (message) => {
     Object.keys(message.flags.pf2e).length > 0
   ) {
     const base = message.flags.pf2e.context ?? message.flags.pf2e.origin;
-    if (shouldAutomaticReveal(base.type)) {
+    if (base?.type && shouldAutomaticReveal(base.type)) {
       updateBestiaryData(message);
     }
   }

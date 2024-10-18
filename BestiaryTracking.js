@@ -9877,6 +9877,11 @@ const configSettings = () => {
       default: "coreLight",
     }),
     requiresReload: true,
+    onChange: async (value) => {
+      if (!value) return;
+      
+      game.user.setFlag('pf2e-bestiary-tracking', 'bestiary-theme', value);
+    },
     default: "coreLight",
   });
 };
@@ -17529,10 +17534,10 @@ Hooks.once("ready", async () => {
 });
 
 Hooks.once("setup", () => {
+  const theme = game.user.getFlag('pf2e-bestiary-tracking', 'bestiary-theme') ?? 'coreLight';
+  game.settings.set('pf2e-bestiary-tracking', 'bestiary-theme', theme);
   setupTheme(
-    extendedBestiaryThemes()[
-      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
-    ].props,
+    extendedBestiaryThemes()[theme].props,
   );
 
   if (typeof libWrapper === "function") {
@@ -17774,7 +17779,7 @@ Hooks.on("createChatMessage", async (message) => {
     Object.keys(message.flags.pf2e).length > 0
   ) {
     const base = message.flags.pf2e.context ?? message.flags.pf2e.origin;
-    if (shouldAutomaticReveal(base.type)) {
+    if (base?.type && shouldAutomaticReveal(base.type)) {
       updateBestiaryData(message);
     }
   }
@@ -18027,8 +18032,16 @@ Hooks.on("renderChatMessage", (message, htmlElements) => {
         );
         if (!bestiary) return;
 
-        let damageTypes = message.rolls && message.rolls.length > 0 ?
-          Array.from(new Set(message.rolls.flatMap(roll => roll.instances.map(x => x.type)))) : [];
+        let damageTypes =
+          message.rolls && message.rolls.length > 0
+            ? Array.from(
+                new Set(
+                  message.rolls.flatMap((roll) =>
+                    roll.instances.map((x) => x.type),
+                  ),
+                ),
+              )
+            : [];
 
         for (var target of targets) {
           const page = bestiary.pages.find(

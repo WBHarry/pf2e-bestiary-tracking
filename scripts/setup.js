@@ -188,6 +188,11 @@ const configSettings = () => {
       default: "coreLight",
     }),
     requiresReload: true,
+    onChange: async (value) => {
+      if (!value) return;
+
+      game.user.setFlag("pf2e-bestiary-tracking", "bestiary-theme", value);
+    },
     default: "coreLight",
   });
 };
