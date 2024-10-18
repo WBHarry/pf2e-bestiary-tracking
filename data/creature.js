@@ -1578,7 +1578,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
       ? game.user.character.system.details.level.value
       : null;
     const contextLevel = vagueDescriptions.settings.playerBased
-      ? !Number.isNaN(gmLevel) && game.user.isGM
+      ? gmLevel && !Number.isNaN(gmLevel) && game.user.isGM
         ? gmLevel
         : (playerLevel ?? this.level.value)
       : this.level.value;

@@ -5846,7 +5846,7 @@ class Creature extends foundry.abstract.TypeDataModel {
       ? game.user.character.system.details.level.value
       : null;
     const contextLevel = vagueDescriptions.settings.playerBased
-      ? !Number.isNaN(gmLevel) && game.user.isGM
+      ? (gmLevel && !Number.isNaN(gmLevel) && game.user.isGM)
         ? gmLevel
         : (playerLevel ?? this.level.value)
       : this.level.value;
@@ -9721,7 +9721,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   };
 }
 
-const currentVersion = "1.1.16";
+const currentVersion = "1.1.17";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -9891,7 +9891,7 @@ const configSettings = () => {
       required: true,
     }),
     requiresReload: true,
-    default: 'coreLight'
+    default: "coreLight",
   });
 
   game.settings.register("pf2e-bestiary-tracking", "bestiary-theme", {
@@ -9909,10 +9909,10 @@ const configSettings = () => {
 
       game.user.setFlag("pf2e-bestiary-tracking", "bestiary-theme", value);
     },
-    default: 'default'
+    default: "default",
   });
 };
-  
+
 const generalNonConfigSettings = () => {
   game.settings.register("pf2e-bestiary-tracking", "version", {
     name: game.i18n.localize("PF2EBestiary.Settings.Version.Name"),
@@ -17561,13 +17561,22 @@ Hooks.once("ready", async () => {
 });
 
 Hooks.once("setup", () => {
-  const userTheme = game.user.getFlag("pf2e-bestiary-tracking", "bestiary-theme");
-  if(userTheme){
+  const userTheme = game.user.getFlag(
+    "pf2e-bestiary-tracking",
+    "bestiary-theme",
+  );
+  if (userTheme) {
     game.settings.set("pf2e-bestiary-tracking", "bestiary-theme", userTheme);
   }
 
-  const selectedTheme = game.settings.get("pf2e-bestiary-tracking", "bestiary-theme");
-  const theme = selectedTheme === 'default' ? game.settings.get("pf2e-bestiary-tracking", "bestiary-default-theme") : selectedTheme;
+  const selectedTheme = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "bestiary-theme",
+  );
+  const theme =
+    selectedTheme === "default"
+      ? game.settings.get("pf2e-bestiary-tracking", "bestiary-default-theme")
+      : selectedTheme;
   setupTheme(extendedBestiaryThemes()[theme].props);
 
   if (typeof libWrapper === "function") {
@@ -18259,10 +18268,15 @@ Hooks.on("renderActorSheet", (sheet) => {
 });
 
 Hooks.on(socketEvent.ResetBestiaryTheme, () => {
-  const selectedTheme = game.settings.get("pf2e-bestiary-tracking", "bestiary-theme");
-  const theme = selectedTheme === 'default' ? game.settings.get("pf2e-bestiary-tracking", "bestiary-default-theme") : selectedTheme;
-  const resetTheme =
-    extendedBestiaryThemes()[theme];
+  const selectedTheme = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "bestiary-theme",
+  );
+  const theme =
+    selectedTheme === "default"
+      ? game.settings.get("pf2e-bestiary-tracking", "bestiary-default-theme")
+      : selectedTheme;
+  const resetTheme = extendedBestiaryThemes()[theme];
   setupTheme(
     resetTheme ? resetTheme.props : extendedBestiaryThemes()["coreLight"].props,
   );
