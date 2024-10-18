@@ -3,6 +3,7 @@ import { setupTheme } from "../scripts/setup";
 import { socketEvent } from "../scripts/socket";
 import {
   bestiaryThemes,
+  defaultThemeChoices,
   extendedBestiaryThemeChoices,
   extendedBestiaryThemes,
 } from "../styles/themes/themes";
@@ -135,7 +136,7 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
     context.customThemes = this.customThemes;
     context.selectedTheme = this.selectedTheme;
 
-    const extendedThemes = extendedBestiaryThemeChoices();
+    const extendedThemes = defaultThemeChoices();
     context.extendedThemes = Object.keys(extendedThemes).map((key) => ({
       value: key,
       name: extendedThemes[key],

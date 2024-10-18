@@ -45,12 +45,27 @@ export const bestiaryThemeChoices = {
   // parchment: 'Parchment',
 };
 
+export const defaultThemeChoices = () => {
+  const customThemes = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "custom-themes",
+  );
+  return {
+    ...bestiaryThemeChoices,
+    ...Object.keys(customThemes).reduce((acc, x) => {
+      acc[x] = customThemes[x].name;
+      return acc;
+    }, {}),
+  };
+};
+
 export const extendedBestiaryThemeChoices = () => {
   const customThemes = game.settings.get(
     "pf2e-bestiary-tracking",
     "custom-themes",
   );
   return {
+    default: "PF2EBestiary.Themes.Default",
     ...bestiaryThemeChoices,
     ...Object.keys(customThemes).reduce((acc, x) => {
       acc[x] = customThemes[x].name;

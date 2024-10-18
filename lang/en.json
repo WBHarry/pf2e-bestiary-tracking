@@ -21,6 +21,7 @@
       }
     },
     "Themes": {
+      "Default": "Default",
       "CoreLight": "Core Light",
       "CoreDark": "Core Dark",
       "Nebula": "Nebula",
@@ -619,6 +620,10 @@
       "ContrastRevealState": {
         "Name": "Contrast Reveal State",
         "Hint": "Option for GMs to see hidden/revealed fields in contrast colors"
+      },
+      "BestiaryDefaultTheme": {
+        "Name": "Bestiary Default Theme",
+        "Hint": "Select the default visual theme for the Bestiary"
       },
       "BestiaryTheme": {
         "Name": "Bestiary Theme",

@@ -9,7 +9,7 @@ const nebula = {
     "linear-gradient(#8a549c, #9198e5)",
   "--pf2e-bestiary-tracking-application": "",
   "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px #808080)",
-  "--pf2e-bestiary-tracking-primary": "rgb(115 169 188)",
+  "--pf2e-bestiary-tracking-primary": "#73a9bc",
   "--pf2e-bestiary-tracking-primary-faded": "#73a9bc80",
   "--pf2e-bestiary-tracking-secondary": "#cd7e23",
   "--pf2e-bestiary-tracking-tertiary": "#7476a6",

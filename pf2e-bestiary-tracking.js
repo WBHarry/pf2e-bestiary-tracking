@@ -100,10 +100,22 @@ Hooks.once("ready", async () => {
 });
 
 Hooks.once("setup", () => {
+  const userTheme = game.user.getFlag(
+    "pf2e-bestiary-tracking",
+    "bestiary-theme",
+  );
+  if (userTheme) {
+    game.settings.set("pf2e-bestiary-tracking", "bestiary-theme", userTheme);
+  }
+
+  const selectedTheme = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "bestiary-theme",
+  );
   const theme =
-    game.user.getFlag("pf2e-bestiary-tracking", "bestiary-theme") ??
-    "coreLight";
-  game.settings.set("pf2e-bestiary-tracking", "bestiary-theme", theme);
+    selectedTheme === "default"
+      ? game.settings.get("pf2e-bestiary-tracking", "bestiary-default-theme")
+      : selectedTheme;
   setupTheme(extendedBestiaryThemes()[theme].props);
 
   if (typeof libWrapper === "function") {
@@ -795,10 +807,15 @@ Hooks.on("renderActorSheet", (sheet) => {
 });
 
 Hooks.on(socketEvent.ResetBestiaryTheme, () => {
-  const resetTheme =
-    extendedBestiaryThemes()[
-      game.settings.get("pf2e-bestiary-tracking", "bestiary-theme")
-    ];
+  const selectedTheme = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "bestiary-theme",
+  );
+  const theme =
+    selectedTheme === "default"
+      ? game.settings.get("pf2e-bestiary-tracking", "bestiary-default-theme")
+      : selectedTheme;
+  const resetTheme = extendedBestiaryThemes()[theme];
   setupTheme(
     resetTheme ? resetTheme.props : extendedBestiaryThemes()["coreLight"].props,
   );

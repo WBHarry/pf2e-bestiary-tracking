@@ -13,7 +13,10 @@ import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
 import { imageSettings, toBestiaryOptions } from "../data/constants.js";
-import { extendedBestiaryThemeChoices } from "../styles/themes/themes.js";
+import {
+  defaultThemeChoices,
+  extendedBestiaryThemeChoices,
+} from "../styles/themes/themes.js";
 import BestiaryDisplayMenu from "../module/bestiaryDisplayMenu.js";
 import BestiaryThemesMenu from "../module/bestiaryThemesMenu.js";
 
@@ -177,6 +180,19 @@ const configSettings = () => {
     },
   });
 
+  game.settings.register("pf2e-bestiary-tracking", "bestiary-default-theme", {
+    name: game.i18n.localize("PF2EBestiary.Settings.BestiaryDefaultTheme.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.BestiaryDefaultTheme.Hint"),
+    scope: "world",
+    config: true,
+    type: new foundry.data.fields.StringField({
+      choices: defaultThemeChoices,
+      required: true,
+    }),
+    requiresReload: true,
+    default: "coreLight",
+  });
+
   game.settings.register("pf2e-bestiary-tracking", "bestiary-theme", {
     name: game.i18n.localize("PF2EBestiary.Settings.BestiaryTheme.Name"),
     hint: game.i18n.localize("PF2EBestiary.Settings.BestiaryTheme.Hint"),
@@ -185,7 +201,6 @@ const configSettings = () => {
     type: new foundry.data.fields.StringField({
       choices: extendedBestiaryThemeChoices,
       required: true,
-      default: "coreLight",
     }),
     requiresReload: true,
     onChange: async (value) => {
@@ -193,7 +208,7 @@ const configSettings = () => {
 
       game.user.setFlag("pf2e-bestiary-tracking", "bestiary-theme", value);
     },
-    default: "coreLight",
+    default: "default",
   });
 };
 
