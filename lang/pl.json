@@ -21,6 +21,7 @@
       }
     },
     "Themes": {
+      "Default": "Domyślne",
       "CoreLight": "Podstawowy Jasny",
       "CoreDark": "Podstawowy Ciemny",
       "Nebula": "Mgławica",
@@ -619,6 +620,10 @@
       "ContrastRevealState": {
         "Name": "Kontrastowy stan ujawnienia",
         "Hint": "Opcja dla MG, aby zobaczyć ukryte/ujawnione pola w kontrastowych kolorach."
+      },
+      "BestiaryDefaultTheme": {
+        "Name": "Domyślny motyw Bestiariusza",
+        "Hint": "Wybierz domyślny motyw dla Bestiariusza"
       },
       "BestiaryTheme": {
         "Name": "Motyw Bestiariusza",
