@@ -20,7 +20,7 @@ import {
 import BestiaryDisplayMenu from "../module/bestiaryDisplayMenu.js";
 import BestiaryThemesMenu from "../module/bestiaryThemesMenu.js";
 
-export const currentVersion = "1.1.18";
+export const currentVersion = "1.1.19";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {

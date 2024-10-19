@@ -585,8 +585,12 @@ Hooks.on("renderApplication", (_, htmlElements) => {
 });
 
 Hooks.on("updateChatMessage", async (message, { flags }) => {
+  const { automaticReveal } = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "chat-message-handling",
+  );
   const appliedDamage = flags["pf2e-toolbelt"]?.targetHelper?.applied;
-  if (appliedDamage) {
+  if (appliedDamage && automaticReveal.iwr) {
     let damageTypes =
       message.rolls && message.rolls.length > 0
         ? Array.from(
