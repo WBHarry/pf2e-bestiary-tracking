@@ -5846,7 +5846,7 @@ class Creature extends foundry.abstract.TypeDataModel {
       ? game.user.character.system.details.level.value
       : null;
     const contextLevel = vagueDescriptions.settings.playerBased
-      ? (gmLevel && !Number.isNaN(gmLevel) && game.user.isGM)
+      ? gmLevel && !Number.isNaN(gmLevel) && game.user.isGM
         ? gmLevel
         : (playerLevel ?? this.level.value)
       : this.level.value;
@@ -9721,7 +9721,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   };
 }
 
-const currentVersion = "1.1.17";
+const currentVersion = "1.1.18";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -18045,6 +18045,27 @@ Hooks.on("renderApplication", (_, htmlElements) => {
   }
 });
 
+Hooks.on("updateChatMessage", async (message, {flags}) => {
+  const appliedDamage = flags['pf2e-toolbelt']?.targetHelper?.applied;
+  if(appliedDamage){
+    let damageTypes =
+    message.rolls && message.rolls.length > 0
+      ? Array.from(
+          new Set(
+            message.rolls.flatMap((roll) =>
+              roll.instances.map((x) => x.type),
+            ),
+          ),
+        )
+      : [];
+    
+    for(var tokenId of Object.keys(appliedDamage)) {
+      const token = canvas.scene.tokens.get(tokenId);
+      await updateIWR(token, damageTypes);
+    }
+  }
+});
+
 Hooks.on("renderChatMessage", (message, htmlElements) => {
   const { automaticReveal } = game.settings.get(
     "pf2e-bestiary-tracking",
@@ -18062,14 +18083,9 @@ Hooks.on("renderChatMessage", (message, htmlElements) => {
     }
 
     if (isDamageRoll && automaticReveal.iwr) {
-      const updateIWR = async () => {
+      const updateIWRFunc = async () => {
         const targets = canvas.tokens.controlled;
         if (targets.length === 0) return;
-
-        const bestiary = game.journal.get(
-          game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
-        );
-        if (!bestiary) return;
 
         let damageTypes =
           message.rolls && message.rolls.length > 0
@@ -18083,43 +18099,7 @@ Hooks.on("renderChatMessage", (message, htmlElements) => {
             : [];
 
         for (var target of targets) {
-          const page = bestiary.pages.find(
-            (x) => x.system.uuid === (target.document?.baseActor?.uuid ?? null),
-          );
-          if (page) {
-            var update = ["immunities", "resistances", "weaknesses"].reduce(
-              (acc, prop) => {
-                const partUpdate = Object.keys(page.system[prop]).reduce(
-                  (acc, key) => {
-                    if (damageTypes.includes(page.system[prop][key].type)) {
-                      if (!acc) acc = {};
-                      acc[key] = { revealed: true };
-                    }
-
-                    return acc;
-                  },
-                  null,
-                );
-                if (partUpdate) {
-                  if (!acc) acc = { system: {} };
-                  acc.system[prop] = partUpdate;
-                }
-
-                return acc;
-              },
-              null,
-            );
-
-            if (update) {
-              await page.update(update);
-              await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-                action: socketEvent.UpdateBestiary,
-                data: {},
-              });
-
-              Hooks.callAll(socketEvent.UpdateBestiary, {});
-            }
-          }
+          await updateIWR(target, damageTypes);
         }
       };
 
@@ -18127,20 +18107,67 @@ Hooks.on("renderChatMessage", (message, htmlElements) => {
       const damageButton = $(damageApplicationButtons).find(
         '[data-action="apply-damage"]',
       );
-      if (damageButton && damageButton[0]) damageButton[0].onclick = updateIWR;
+      if (damageButton && damageButton[0]) damageButton[0].onclick = updateIWRFunc;
       const halfDamageButton = $(damageApplicationButtons).find(
         '[data-action="half-damage"]',
       );
       if (halfDamageButton && halfDamageButton[0])
-        halfDamageButton[0].onclick = updateIWR;
+        halfDamageButton[0].onclick = updateIWRFunc;
       const criticalDamageButton = $(damageApplicationButtons).find(
         '[data-action="double-damage"]',
       );
       if (criticalDamageButton && criticalDamageButton[0])
-        criticalDamageButton[0].onclick = updateIWR;
+        criticalDamageButton[0].onclick = updateIWRFunc;
     }
   }
 });
+
+const updateIWR = async (target, damageTypes) => {
+  const bestiary = game.journal.get(
+    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+  );
+  const actor = target.baseActor ?? target.document?.baseActor ?? { uuid: null, name: target.actor.name ?? target.name };
+
+  if (!bestiary || !actor) return;
+
+  var page = bestiary.pages.find((x) =>
+    x.system.actorBelongs(actor),
+  );
+  if (page) {
+    var update = ["immunities", "resistances", "weaknesses"].reduce(
+      (acc, prop) => {
+        const partUpdate = Object.keys(page.system[prop]).reduce(
+          (acc, key) => {
+            if (damageTypes.includes(page.system[prop][key].type)) {
+              if (!acc) acc = {};
+              acc[key] = { revealed: true };
+            }
+
+            return acc;
+          },
+          null,
+        );
+        if (partUpdate) {
+          if (!acc) acc = { system: {} };
+          acc.system[prop] = partUpdate;
+        }
+
+        return acc;
+      },
+      null,
+    );
+
+    if (update) {
+      await page.update(update);
+      await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+        action: socketEvent.UpdateBestiary,
+        data: {},
+      });
+
+      Hooks.callAll(socketEvent.UpdateBestiary, {});
+    }
+  }
+};
 
 Hooks.on("updateCombatant", async (combatant, changes) => {
   if (changes.hidden === false) {
