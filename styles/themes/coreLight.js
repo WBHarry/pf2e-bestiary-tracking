@@ -1,6 +1,10 @@
 const coreLight = {
   "--pf2e-bestiary-tracking-application-image": "../../../ui/parchment.jpg",
   "--pf2e-bestiary-tracking-application-header": "#444444",
+  "--pf2e-bestiary-tracking-application-header-image": "ignore",
+  "--pf2e-bestiary-tracking-application-header-image-size": "cover",
+  "--pf2e-bestiary-tracking-application-header-image-repeat": "initial",
+  "--pf2e-bestiary-tracking-application-header-image-position": "left",
   "--pf2e-bestiary-tracking-application-image-repeat": "repeat",
   "--pf2e-bestiary-tracking-application-image-position": "left",
   "--pf2e-bestiary-tracking-application": "initial",

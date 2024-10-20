@@ -26,6 +26,8 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
       const theme = customThemesSetting[key];
       const backgroundImage =
         theme.props["--pf2e-bestiary-tracking-application-image"];
+      const headerBackgroundImage =
+        theme.props["--pf2e-bestiary-tracking-application-header-image"];
       acc[key] = {
         ...theme,
         props: {
@@ -34,6 +36,10 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
             backgroundImage === "ignore"
               ? ""
               : backgroundImage.split("../../../")[1],
+          ["--pf2e-bestiary-tracking-application-header-image"]:
+            headerBackgroundImage === "ignore"
+              ? ""
+              : headerBackgroundImage.split("../../../")[1],
         },
       };
       return acc;
@@ -93,8 +99,7 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
           name: this.customThemes[this.selectedTheme].name,
           props: {
             ...this.customThemes[this.selectedTheme].props,
-            ["--pf2e-bestiary-tracking-application-image-size"]:
-              event.currentTarget.value,
+            [event.currentTarget.dataset.theme]: event.currentTarget.value,
           },
         };
         this.render();
@@ -106,8 +111,7 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
           name: this.customThemes[this.selectedTheme].name,
           props: {
             ...this.customThemes[this.selectedTheme].props,
-            ["--pf2e-bestiary-tracking-application-image-repeat"]:
-              event.currentTarget.value,
+            [event.currentTarget.dataset.theme]: event.currentTarget.value,
           },
         };
         this.render();
@@ -119,8 +123,7 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
           name: this.customThemes[this.selectedTheme].name,
           props: {
             ...this.customThemes[this.selectedTheme].props,
-            ["--pf2e-bestiary-tracking-application-image-position"]:
-              event.currentTarget.value,
+            [event.currentTarget.dataset.theme]: event.currentTarget.value,
           },
         };
         this.render();
@@ -141,8 +144,12 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
       value: key,
       name: extendedThemes[key],
     }));
-    context.backgroundSizeOptions = [{ value: "cover", name: "cover" }];
+    context.backgroundSizeOptions = [
+      { value: "initial", name: "initial" },
+      { value: "cover", name: "cover" },
+    ];
     context.backgroundRepeatOptions = [
+      { value: "no-repeat", name: "no-repeat" },
       { value: "repeat", name: "repeat" },
       { value: "round", name: "round" },
       { value: "initial", name: "initial" },
@@ -182,6 +189,13 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
         : copyProps["--pf2e-bestiary-tracking-application-image"].split(
             "../../../",
           )[1];
+    copyProps["--pf2e-bestiary-tracking-application-header-image"] =
+      copyProps["--pf2e-bestiary-tracking-application-header-image"] ===
+      "ignore"
+        ? ""
+        : copyProps["--pf2e-bestiary-tracking-application-header-image"].split(
+            "../../../",
+          )[1];
     return copyProps;
   }
 
@@ -206,6 +220,10 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
       name: newTheme,
       props: {
         "--pf2e-bestiary-tracking-application": "#FFFFFF",
+        "--pf2e-bestiary-tracking-application-header": "transparent",
+        "--pf2e-bestiary-tracking-application-header-image-size": "cover",
+        "--pf2e-bestiary-tracking-application-header-image-repeat": "round",
+        "--pf2e-bestiary-tracking-application-header-image-position": "top",
         "--pf2e-bestiary-tracking-primary": "#FFFFFF",
         "--pf2e-bestiary-tracking-primary-faded": "#FFFFFF",
         "--pf2e-bestiary-tracking-secondary": "#FFFFFF",
@@ -222,6 +240,7 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
         "--pf2e-bestiary-tracking-secondary-icon": "#FFFFFF",
         "--pf2e-bestiary-tracking-application-image-size": "cover",
         "--pf2e-bestiary-tracking-application-image-repeat": "round",
+        "--pf2e-bestiary-tracking-application-image-position": "top",
       },
     };
     this.selectedTheme = id;
@@ -323,13 +342,17 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
       ? `../../../${updateTheme["--pf2e-bestiary-tracking-application-image"]}`
       : "ignore";
 
+    updateTheme["--pf2e-bestiary-tracking-application-header-image"] =
+      updateTheme["--pf2e-bestiary-tracking-application-header-image"]
+        ? `../../../${updateTheme["--pf2e-bestiary-tracking-application-header-image"]}`
+        : "ignore";
+
     setupTheme(updateTheme);
   }
 
-  static clearBackgroundImage() {
-    this.customThemes[this.selectedTheme].props[
-      "--pf2e-bestiary-tracking-application-image"
-    ] = "";
+  static clearBackgroundImage(_, button) {
+    this.customThemes[this.selectedTheme].props[button.dataset.theme] =
+      "ignore";
     BestiaryThemesMenu.updateTheme(this.customThemes[this.selectedTheme].props);
     this.render();
   }
@@ -356,6 +379,10 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
           this.customThemes[key].props[
             "--pf2e-bestiary-tracking-application-image"
           ];
+        const headerBackgroundImage =
+          this.customThemes[key].props[
+            "--pf2e-bestiary-tracking-application-header-image"
+          ];
         acc[key] = {
           ...this.customThemes[key],
           props: {
@@ -363,6 +390,10 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
             ["--pf2e-bestiary-tracking-application-image"]: backgroundImage
               ? `../../../${backgroundImage}`
               : "ignore",
+            ["--pf2e-bestiary-tracking-application-header-image"]:
+              headerBackgroundImage
+                ? `../../../${headerBackgroundImage}`
+                : "ignore",
           },
         };
         return acc;

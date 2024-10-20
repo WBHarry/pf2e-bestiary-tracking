@@ -556,6 +556,7 @@
           "Title": "Custom Themes",
           "TemplateButton": "Copy Template Theme",
           "BackgroundColors": "Background Properties",
+          "HeaderColors": "Header Properties",
           "MainColors": "Main Colors",
           "IconColors": "Icon Colors",
           "AccentColors": "Accent Colors",

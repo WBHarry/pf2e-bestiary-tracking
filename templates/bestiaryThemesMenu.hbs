@@ -45,11 +45,11 @@
                         <div class="form-fields">
                             <input type="text" value="{{localize this.props.--pf2e-bestiary-tracking-application-image}}" disabled />
                             <button data-action="filePicker" data-path="{{concat ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-image"}}" title="{{localize "PF2EBestiary.Miscellaneous.BrowseFiles"}}"><i class="fas fa-file-import fa-fw"></i></button>
-                            <button data-action="clearBackgroundImage" title="{{localize "PF2EBestiary.Miscellaneous.ClearFile"}}"><i class="fa-solid fa-circle-xmark"></i></button>
+                            <button data-action="clearBackgroundImage" title="{{localize "PF2EBestiary.Miscellaneous.ClearFile"}}" data-theme="--pf2e-bestiary-tracking-application-image"><i class="fa-solid fa-circle-xmark"></i></button>
                         </div>
                     </div>
                 </div>
-                {{#if this.props.--pf2e-bestiary-tracking-application-image}}
+                {{#if (and this.props.--pf2e-bestiary-tracking-application-image (not (eq this.props.--pf2e-bestiary-tracking-application-image 'ignore')))}}
                     <div class="flexrow">
                         <div class="form-group">
                             <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundSize"}}</label>
@@ -58,7 +58,7 @@
                             </div>
                         </div>
                         <div class="menu-input-select">
-                            <select class="background-size-select">
+                            <select class="background-size-select" data-theme="--pf2e-bestiary-tracking-application-image-size">
                                 {{selectOptions ../backgroundSizeOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
                             </select>
                         </div>
@@ -71,7 +71,7 @@
                             </div>
                         </div>
                         <div class="menu-input-select">
-                            <select class="background-repeat-select">
+                            <select class="background-repeat-select" data-theme="--pf2e-bestiary-tracking-application-image-repeat">
                                 {{selectOptions ../backgroundRepeatOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
                             </select>
                         </div>
@@ -84,7 +84,69 @@
                             </div>
                         </div>
                         <div class="menu-input-select">
-                            <select class="background-position-select">
+                            <select class="background-position-select" data-theme="--pf2e-bestiary-tracking-application-image-position">
+                                {{selectOptions ../backgroundPositionOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
+                            </select>
+                        </div>
+                    </div>
+                {{/if}}
+            </fieldset>
+            <fieldset class="menu-category">
+                <legend>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.HeaderColors"}}</legend>
+                <div class="flexrow">
+                    <div class="form-group">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
+                        <div class="form-fields">
+                            <div class="form-fields">
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-header"}} value="{{this.props.--pf2e-bestiary-tracking-application-header}}" placeholder="#ffffff"></color-picker>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group full">
+                        <label>{{localize "PF2EBestiary.Menus.BestiaryDisplay.JournalSettings.Image"}}</label>
+                        <div class="form-fields">
+                            <input type="text" value="{{localize this.props.--pf2e-bestiary-tracking-application-header-image}}" disabled />
+                            <button data-action="filePicker" data-path="{{concat ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-header-image"}}" title="{{localize "PF2EBestiary.Miscellaneous.BrowseFiles"}}"><i class="fas fa-file-import fa-fw"></i></button>
+                            <button data-action="clearBackgroundImage" title="{{localize "PF2EBestiary.Miscellaneous.ClearFile"}}" data-theme="--pf2e-bestiary-tracking-application-header-image"><i class="fa-solid fa-circle-xmark"></i></button>
+                        </div>
+                    </div>
+                </div>
+                {{#if (and this.props.--pf2e-bestiary-tracking-application-header-image (not (eq this.props.--pf2e-bestiary-tracking-application-header-image 'ignore')))}}
+                    <div class="flexrow">
+                        <div class="form-group">
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundSize"}}</label>
+                            <div class="form-fields">
+                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-header-image-size"}}" value="{{this.props.--pf2e-bestiary-tracking-application-header-image-size}}" />
+                            </div>
+                        </div>
+                        <div class="menu-input-select">
+                            <select class="background-size-select" data-theme="--pf2e-bestiary-tracking-application-header-image-size">
+                                {{selectOptions ../backgroundSizeOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flexrow">
+                        <div class="form-group">
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundRepeat"}}</label>
+                            <div class="form-fields">
+                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-header-image-repeat"}}" value="{{this.props.--pf2e-bestiary-tracking-application-header-image-repeat}}" />
+                            </div>
+                        </div>
+                        <div class="menu-input-select">
+                            <select class="background-repeat-select" data-theme="--pf2e-bestiary-tracking-application-header-image-repeat">
+                                {{selectOptions ../backgroundRepeatOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
+                            </select>
+                        </div>
+                    </div>
+                     <div class="flexrow">
+                        <div class="form-group">
+                            <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundPosition"}}</label>
+                            <div class="form-fields">
+                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-header-image-position"}}" value="{{this.props.--pf2e-bestiary-tracking-application-header-image-position}}" />
+                            </div>
+                        </div>
+                        <div class="menu-input-select">
+                            <select class="background-position-select" data-theme="--pf2e-bestiary-tracking-application-header-image-position">
                                 {{selectOptions ../backgroundPositionOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
                             </select>
                         </div>

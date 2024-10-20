@@ -8761,6 +8761,11 @@ class VagueDescriptionsMenu extends HandlebarsApplicationMixin$8(
 const coreDark = {
   "--pf2e-bestiary-tracking-application-image": "ignore",
   "--pf2e-bestiary-tracking-application": "#12101fe6",
+  "--pf2e-bestiary-tracking-application-header": "transparent",
+  "--pf2e-bestiary-tracking-application-header-image": "ignore",
+  "--pf2e-bestiary-tracking-application-header-image-size": "cover",
+  "--pf2e-bestiary-tracking-application-header-image-repeat": "initial",
+  "--pf2e-bestiary-tracking-application-header-image-position": "left",
   "--pf2e-bestiary-tracking-primary": "#5e0000",
   "--pf2e-bestiary-tracking-primary-faded": "#5e000080",
   "--pf2e-bestiary-tracking-secondary": "#4b4b8c",
@@ -8780,6 +8785,10 @@ const coreDark = {
 const coreLight = {
   "--pf2e-bestiary-tracking-application-image": "../../../ui/parchment.jpg",
   "--pf2e-bestiary-tracking-application-header": "#444444",
+  "--pf2e-bestiary-tracking-application-header-image": "ignore",
+  "--pf2e-bestiary-tracking-application-header-image-size": "cover",
+  "--pf2e-bestiary-tracking-application-header-image-repeat": "initial",
+  "--pf2e-bestiary-tracking-application-header-image-position": "left",
   "--pf2e-bestiary-tracking-application-image-repeat": "repeat",
   "--pf2e-bestiary-tracking-application-image-position": "left",
   "--pf2e-bestiary-tracking-application": "initial",
@@ -8803,6 +8812,10 @@ const nebula = {
   "--pf2e-bestiary-tracking-application-image":
     "../../../modules/pf2e-bestiary-tracking/assets/Space.webp",
   "--pf2e-bestiary-tracking-application-header": "transparent",
+  "--pf2e-bestiary-tracking-application-header-image": "ignore",
+  "--pf2e-bestiary-tracking-application-header-image-size": "cover",
+  "--pf2e-bestiary-tracking-application-header-image-repeat": "initial",
+  "--pf2e-bestiary-tracking-application-header-image-position": "left",
   "--pf2e-bestiary-tracking-application-image-size": "cover",
   "--pf2e-bestiary-tracking-application-image-repeat": "round",
   "--pf2e-bestiary-tracking-application-image-position": "left",
@@ -8830,6 +8843,10 @@ const viscera = {
   "--pf2e-bestiary-tracking-application-image":
     "../../../modules/pf2e-bestiary-tracking/assets/Viscera.webp",
   "--pf2e-bestiary-tracking-application-header": "transparent",
+  "--pf2e-bestiary-tracking-application-header-image": "ignore",
+  "--pf2e-bestiary-tracking-application-header-image-size": "cover",
+  "--pf2e-bestiary-tracking-application-header-image-repeat": "initial",
+  "--pf2e-bestiary-tracking-application-header-image-position": "left",
   "--pf2e-bestiary-tracking-application-image-size": "cover",
   "--pf2e-bestiary-tracking-application-image-repeat": "initial",
   "--pf2e-bestiary-tracking-application-image-position": "left",
@@ -8855,10 +8872,14 @@ const viscera = {
 const water = {
   "--pf2e-bestiary-tracking-application-image":
     "../../../modules/pf2e-bestiary-tracking/assets/Water.webp",
-  "--pf2e-bestiary-tracking-application-header": "transparent",
   "--pf2e-bestiary-tracking-application-image-size": "cover",
   "--pf2e-bestiary-tracking-application-image-repeat": "initial",
   "--pf2e-bestiary-tracking-application-image-position": "left",
+  "--pf2e-bestiary-tracking-application-header": "transparent",
+  "--pf2e-bestiary-tracking-application-header-image": "ignore",
+  "--pf2e-bestiary-tracking-application-header-image-size": "cover",
+  "--pf2e-bestiary-tracking-application-header-image-repeat": "initial",
+  "--pf2e-bestiary-tracking-application-header-image-position": "left",
   "--pf2e-bestiary-tracking-application-secondary-image": "",
   "--pf2e-bestiary-tracking-application": "",
   "--pf2e-bestiary-tracking-primary-outline": "drop-shadow(0 0 3px #808080)",
@@ -9374,6 +9395,8 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
       const theme = customThemesSetting[key];
       const backgroundImage =
         theme.props["--pf2e-bestiary-tracking-application-image"];
+      const headerBackgroundImage =
+        theme.props["--pf2e-bestiary-tracking-application-header-image"];
       acc[key] = {
         ...theme,
         props: {
@@ -9382,6 +9405,10 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
             backgroundImage === "ignore"
               ? ""
               : backgroundImage.split("../../../")[1],
+          ["--pf2e-bestiary-tracking-application-header-image"]:
+            headerBackgroundImage === "ignore"
+              ? ""
+              : headerBackgroundImage.split("../../../")[1],
         },
       };
       return acc;
@@ -9441,7 +9468,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
           name: this.customThemes[this.selectedTheme].name,
           props: {
             ...this.customThemes[this.selectedTheme].props,
-            ["--pf2e-bestiary-tracking-application-image-size"]:
+            [event.currentTarget.dataset.theme]:
               event.currentTarget.value,
           },
         };
@@ -9454,7 +9481,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
           name: this.customThemes[this.selectedTheme].name,
           props: {
             ...this.customThemes[this.selectedTheme].props,
-            ["--pf2e-bestiary-tracking-application-image-repeat"]:
+            [event.currentTarget.dataset.theme]:
               event.currentTarget.value,
           },
         };
@@ -9467,7 +9494,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
           name: this.customThemes[this.selectedTheme].name,
           props: {
             ...this.customThemes[this.selectedTheme].props,
-            ["--pf2e-bestiary-tracking-application-image-position"]:
+            [event.currentTarget.dataset.theme]:
               event.currentTarget.value,
           },
         };
@@ -9489,8 +9516,12 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
       value: key,
       name: extendedThemes[key],
     }));
-    context.backgroundSizeOptions = [{ value: "cover", name: "cover" }];
+    context.backgroundSizeOptions = [
+      { value: "initial", name: "initial" },
+      { value: "cover", name: "cover" }
+    ];
     context.backgroundRepeatOptions = [
+      { value: 'no-repeat', name: 'no-repeat' },
       { value: "repeat", name: "repeat" },
       { value: "round", name: "round" },
       { value: "initial", name: "initial" },
@@ -9530,6 +9561,12 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
         : copyProps["--pf2e-bestiary-tracking-application-image"].split(
             "../../../",
           )[1];
+    copyProps["--pf2e-bestiary-tracking-application-header-image"] =
+      copyProps["--pf2e-bestiary-tracking-application-header-image"] === "ignore"
+        ? ""
+        : copyProps["--pf2e-bestiary-tracking-application-header-image"].split(
+            "../../../",
+          )[1];
     return copyProps;
   }
 
@@ -9554,6 +9591,10 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
       name: newTheme,
       props: {
         "--pf2e-bestiary-tracking-application": "#FFFFFF",
+        "--pf2e-bestiary-tracking-application-header": "transparent",
+        "--pf2e-bestiary-tracking-application-header-image-size": "cover",
+        "--pf2e-bestiary-tracking-application-header-image-repeat": "round",
+        "--pf2e-bestiary-tracking-application-header-image-position": "top",
         "--pf2e-bestiary-tracking-primary": "#FFFFFF",
         "--pf2e-bestiary-tracking-primary-faded": "#FFFFFF",
         "--pf2e-bestiary-tracking-secondary": "#FFFFFF",
@@ -9570,6 +9611,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
         "--pf2e-bestiary-tracking-secondary-icon": "#FFFFFF",
         "--pf2e-bestiary-tracking-application-image-size": "cover",
         "--pf2e-bestiary-tracking-application-image-repeat": "round",
+        "--pf2e-bestiary-tracking-application-image-position": "top"
       },
     };
     this.selectedTheme = id;
@@ -9671,13 +9713,19 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
       ? `../../../${updateTheme["--pf2e-bestiary-tracking-application-image"]}`
       : "ignore";
 
+    updateTheme["--pf2e-bestiary-tracking-application-header-image"] = updateTheme[
+      "--pf2e-bestiary-tracking-application-header-image"
+    ]
+      ? `../../../${updateTheme["--pf2e-bestiary-tracking-application-header-image"]}`
+      : "ignore";
+
     setupTheme(updateTheme);
   }
 
-  static clearBackgroundImage() {
+  static clearBackgroundImage(_, button) {
     this.customThemes[this.selectedTheme].props[
-      "--pf2e-bestiary-tracking-application-image"
-    ] = "";
+      button.dataset.theme
+    ] = "ignore";
     BestiaryThemesMenu.updateTheme(this.customThemes[this.selectedTheme].props);
     this.render();
   }
@@ -9704,12 +9752,19 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
           this.customThemes[key].props[
             "--pf2e-bestiary-tracking-application-image"
           ];
+        const headerBackgroundImage =
+          this.customThemes[key].props[
+            "--pf2e-bestiary-tracking-application-header-image"
+          ];
         acc[key] = {
           ...this.customThemes[key],
           props: {
             ...this.customThemes[key].props,
             ["--pf2e-bestiary-tracking-application-image"]: backgroundImage
               ? `../../../${backgroundImage}`
+              : "ignore",
+            ["--pf2e-bestiary-tracking-application-header-image"]: headerBackgroundImage
+              ? `../../../${headerBackgroundImage}`
               : "ignore",
           },
         };
@@ -9771,7 +9826,7 @@ const setupTheme = (theme) => {
   const root = document.querySelector(":root");
   for (var property of Object.keys(theme)) {
     if (
-      property === "--pf2e-bestiary-tracking-application-image" &&
+      ["--pf2e-bestiary-tracking-application-image", "--pf2e-bestiary-tracking-application-header-image"].includes(property) &&
       theme[property] !== "ignore"
     ) {
       root.style.setProperty(property, `url("${theme[property]}")`);

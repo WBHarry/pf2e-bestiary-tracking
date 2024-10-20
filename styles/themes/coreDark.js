@@ -1,6 +1,11 @@
 const coreDark = {
   "--pf2e-bestiary-tracking-application-image": "ignore",
   "--pf2e-bestiary-tracking-application": "#12101fe6",
+  "--pf2e-bestiary-tracking-application-header": "transparent",
+  "--pf2e-bestiary-tracking-application-header-image": "ignore",
+  "--pf2e-bestiary-tracking-application-header-image-size": "cover",
+  "--pf2e-bestiary-tracking-application-header-image-repeat": "initial",
+  "--pf2e-bestiary-tracking-application-header-image-position": "left",
   "--pf2e-bestiary-tracking-primary": "#5e0000",
   "--pf2e-bestiary-tracking-primary-faded": "#5e000080",
   "--pf2e-bestiary-tracking-secondary": "#4b4b8c",
