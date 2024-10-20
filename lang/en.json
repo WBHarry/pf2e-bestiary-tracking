@@ -79,6 +79,7 @@
     },
     "Miscellaneous": {
       "Name": "Name",
+      "Blurb": "Name Info",
       "Title": "Title",
       "Level": "Level",
       "AC": "AC",
@@ -509,6 +510,7 @@
           "NPC": "NPC",
           "Hazard": "Hazard",
           "Name": "Name",
+          "NameInfo": "Name Info",
           "Traits": "Traits",
           "Attributes": "Attributes",
           "Description": "Description",

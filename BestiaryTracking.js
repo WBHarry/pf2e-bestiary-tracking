@@ -388,14 +388,16 @@ const shouldAutomaticReveal = (type) => {
 };
 
 const getAllFolderEntries = (folder) => {
-  return [...folder.contents, ...getFolderChildren(folder)]
+  return [...folder.contents, ...getFolderChildren(folder)];
 };
 
 const getFolderChildren = (folder) => {
   const children = [];
-  for(var child of folder.children){
-    if(child.entries.length > 0){
-      children.push(...[...Array.from(child.entries), ...getFolderChildren(child)]);
+  for (var child of folder.children) {
+    if (child.entries.length > 0) {
+      children.push(
+        ...[...Array.from(child.entries), ...getFolderChildren(child)],
+      );
     }
   }
 
@@ -2672,6 +2674,7 @@ const recallKnowledgeOutcomes = {
 const defaultRevealing = {
   creature: {
     name: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Name",
+    nameInfo: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.NameInfo",
     traits: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Traits",
     attributes:
       "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attributes",
@@ -2902,6 +2905,7 @@ const getCreatureData = async (actor, pcBase) => {
         actorLinks: actor.actorLinks ?? [],
       },
       name: { value: actor.name, revealed: defaultRevealed.name },
+      blurb: { value: actor.system.details.blurb ? actor.system.details.blurb : null, revealed: defaultRevealed.nameInfo },
       hardness: { value: actor.system.attributes.hardness },
       allSaves: { value: actor.system.attributes.allSaves?.value },
       publication: actor.system.details.publication,
@@ -3440,6 +3444,7 @@ const getPCCreatureData = async (actor) => {
       texture: actor.prototypeToken.texture.src,
       imageState: { hideState: imageSettings.hideState },
       name: { value: actor.name, revealed: defaultRevealed.name },
+      blurb: { value: actor.system.details.blurb ? actor.system.details.blurb : null, revealed: defaultRevealed.nameInfo },
       hardness: { value: actor.system.attributes.hardness },
       allSaves: { value: actor.system.attributes.allSaves?.value },
       publication: actor.system.details.publication,
@@ -4368,6 +4373,10 @@ class Creature extends foundry.abstract.TypeDataModel {
         }),
       ),
       name: toggleStringField(),
+      blurb: new fields.SchemaField({
+        value: new fields.StringField({ nullable: true, initial: null }),
+        revealed: new fields.BooleanField({ initial: false }),
+      }),
       publication: new fields.SchemaField({
         authors: new fields.StringField({}),
         license: new fields.StringField({}),
@@ -5234,6 +5243,10 @@ class Creature extends foundry.abstract.TypeDataModel {
           ...data.system.name,
           revealed: this.name.revealed,
           custom: this.name.custom,
+        },
+        blurb: {
+          ...data.system.blurb,
+          revealed: this.blurb.revealed,
         },
         ac: {
           ...data.system.ac,
@@ -10395,6 +10408,7 @@ const bestiaryIntegration = () => {
     default: {
       creature: {
         name: false,
+        nameInfo: false,
         traits: false,
         attributes: false,
         description: false,
@@ -11846,6 +11860,20 @@ const handleDataMigration = async () => {
         saves: false,
         iwr: false,
       },
+    });
+
+    await game.settings.set("pf2e-bestiary-tracking", "version", version);
+  }
+
+  if (versionCompare(version, "1.1.20")) {
+    version = "1.1.20";
+    const defaultRevealed = game.settings.get("pf2e-bestiary-tracking", "default-revealed");
+    await game.settings.set("pf2e-bestiary-tracking", "default-revealed", {
+      ...defaultRevealed,
+      creature: {
+        ...defaultRevealed.creature,
+        nameInfo: false,
+      }
     });
 
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
@@ -16921,9 +16949,12 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const data = TextEditor.getDragEventData(event);
     const dataItem = await fromUuid(data.uuid);
 
-    const items = dataItem.collectionName === 'folders' ? getAllFolderEntries(dataItem) : [dataItem];
+    const items =
+      dataItem.collectionName === "folders"
+        ? getAllFolderEntries(dataItem)
+        : [dataItem];
 
-    for(var baseItem of items){
+    for (var baseItem of items) {
       if (!data.type) {
         this.dragData.bookmarkActive = false;
         let categories = this.bestiary.getFlag(
@@ -16937,7 +16968,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         let bookmarkTarget = $(dropTarget).find(".bookmark")[0];
         $(bookmarkTarget).removeClass("drop-hover");
 
-        if (!bookmarkTarget || bookmarkTarget.dataset.bookmark === data.bookmark)
+        if (
+          !bookmarkTarget ||
+          bookmarkTarget.dataset.bookmark === data.bookmark
+        )
           return;
 
         bookmarkTarget = $(dropTarget).find(".bookmark")[0];
@@ -17132,7 +17166,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         "doubleClickOpen",
       );
       if (doubleClickOpenActivated) {
-        const ownership = item.ownership.default > 1 ? item.ownership.default : 1;
+        const ownership =
+          item.ownership.default > 1 ? item.ownership.default : 1;
         await item.update({ "ownership.default": ownership });
       }
     }
@@ -18005,31 +18040,36 @@ Hooks.on("getActorDirectoryFolderContext", (folder, buttons) => {
       if (!game.user.isGM) return false;
 
       const folder = game.folders.get(li[0].parentElement.dataset.folderId);
-      const bestiaryEntries = game.journal
-      .get(game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"))
-      .pages;
+      const bestiaryEntries = game.journal.get(
+        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+      ).pages;
       const validActors = getAllFolderEntries(folder).reduce((acc, actor) => {
         if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
           return acc;
-  
-        return acc || !Boolean(
-          bestiaryEntries.find((page) => page.system.actorBelongs(actor)),
+
+        return (
+          acc ||
+          !Boolean(
+            bestiaryEntries.find((page) => page.system.actorBelongs(actor)),
+          )
         );
       }, false);
 
       return validActors;
     },
     callback: async (li) => {
-      const folderEntries = getAllFolderEntries(game.folders.get(li[0].parentElement.dataset.folderId));
+      const folderEntries = getAllFolderEntries(
+        game.folders.get(li[0].parentElement.dataset.folderId),
+      );
       const added = [];
       const exists = [];
-     
-      for(var actor of folderEntries){
+
+      for (var actor of folderEntries) {
         if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
           continue;
 
         const successfull = await PF2EBestiary.addMonster(actor);
-        if(successfull) {
+        if (successfull) {
           added.push(actor.name);
         } else {
           exists.push(actor.name);

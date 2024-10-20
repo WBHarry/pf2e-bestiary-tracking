@@ -130,6 +130,10 @@ export const getCreatureData = async (actor, pcBase) => {
         actorLinks: actor.actorLinks ?? [],
       },
       name: { value: actor.name, revealed: defaultRevealed.name },
+      blurb: {
+        value: actor.system.details.blurb ? actor.system.details.blurb : null,
+        revealed: defaultRevealed.nameInfo,
+      },
       hardness: { value: actor.system.attributes.hardness },
       allSaves: { value: actor.system.attributes.allSaves?.value },
       publication: actor.system.details.publication,
@@ -668,6 +672,10 @@ const getPCCreatureData = async (actor) => {
       texture: actor.prototypeToken.texture.src,
       imageState: { hideState: imageSettings.hideState },
       name: { value: actor.name, revealed: defaultRevealed.name },
+      blurb: {
+        value: actor.system.details.blurb ? actor.system.details.blurb : null,
+        revealed: defaultRevealed.nameInfo,
+      },
       hardness: { value: actor.system.attributes.hardness },
       allSaves: { value: actor.system.attributes.allSaves?.value },
       publication: actor.system.details.publication,

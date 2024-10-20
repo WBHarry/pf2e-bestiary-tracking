@@ -85,6 +85,10 @@ export class Creature extends foundry.abstract.TypeDataModel {
         }),
       ),
       name: toggleStringField(),
+      blurb: new fields.SchemaField({
+        value: new fields.StringField({ nullable: true, initial: null }),
+        revealed: new fields.BooleanField({ initial: false }),
+      }),
       publication: new fields.SchemaField({
         authors: new fields.StringField({}),
         license: new fields.StringField({}),
@@ -951,6 +955,10 @@ export class Creature extends foundry.abstract.TypeDataModel {
           ...data.system.name,
           revealed: this.name.revealed,
           custom: this.name.custom,
+        },
+        blurb: {
+          ...data.system.blurb,
+          revealed: this.blurb.revealed,
         },
         ac: {
           ...data.system.ac,

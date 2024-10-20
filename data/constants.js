@@ -57,6 +57,7 @@ export const recallKnowledgeOutcomes = {
 export const defaultRevealing = {
   creature: {
     name: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Name",
+    nameInfo: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.NameInfo",
     traits: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Traits",
     attributes:
       "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attributes",

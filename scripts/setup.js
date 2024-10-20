@@ -679,6 +679,7 @@ const bestiaryIntegration = () => {
     default: {
       creature: {
         name: false,
+        nameInfo: false,
         traits: false,
         attributes: false,
         description: false,
