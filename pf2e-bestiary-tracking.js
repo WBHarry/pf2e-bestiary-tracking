@@ -101,7 +101,6 @@ Hooks.once("ready", async () => {
 });
 
 Hooks.once("setup", () => {
-  CONFIG.debug.hooks = true;
   const userTheme = game.user.getFlag(
     "pf2e-bestiary-tracking",
     "bestiary-theme",
