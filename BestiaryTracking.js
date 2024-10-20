@@ -2905,7 +2905,10 @@ const getCreatureData = async (actor, pcBase) => {
         actorLinks: actor.actorLinks ?? [],
       },
       name: { value: actor.name, revealed: defaultRevealed.name },
-      blurb: { value: actor.system.details.blurb ? actor.system.details.blurb : null, revealed: defaultRevealed.nameInfo },
+      blurb: {
+        value: actor.system.details.blurb ? actor.system.details.blurb : null,
+        revealed: defaultRevealed.nameInfo,
+      },
       hardness: { value: actor.system.attributes.hardness },
       allSaves: { value: actor.system.attributes.allSaves?.value },
       publication: actor.system.details.publication,
@@ -3444,7 +3447,10 @@ const getPCCreatureData = async (actor) => {
       texture: actor.prototypeToken.texture.src,
       imageState: { hideState: imageSettings.hideState },
       name: { value: actor.name, revealed: defaultRevealed.name },
-      blurb: { value: actor.system.details.blurb ? actor.system.details.blurb : null, revealed: defaultRevealed.nameInfo },
+      blurb: {
+        value: actor.system.details.blurb ? actor.system.details.blurb : null,
+        revealed: defaultRevealed.nameInfo,
+      },
       hardness: { value: actor.system.attributes.hardness },
       allSaves: { value: actor.system.attributes.allSaves?.value },
       publication: actor.system.details.publication,
@@ -11867,13 +11873,16 @@ const handleDataMigration = async () => {
 
   if (versionCompare(version, "1.1.20")) {
     version = "1.1.20";
-    const defaultRevealed = game.settings.get("pf2e-bestiary-tracking", "default-revealed");
+    const defaultRevealed = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "default-revealed",
+    );
     await game.settings.set("pf2e-bestiary-tracking", "default-revealed", {
       ...defaultRevealed,
       creature: {
         ...defaultRevealed.creature,
         nameInfo: false,
-      }
+      },
     });
 
     await game.settings.set("pf2e-bestiary-tracking", "version", version);

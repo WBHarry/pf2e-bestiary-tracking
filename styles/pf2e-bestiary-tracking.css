@@ -94,6 +94,10 @@
 .theme-dark .pf2e-bestiary-tracking.bestiary .monster-container .toggle-container {
   border-color: #ababab;
 }
+.theme-dark .pf2e-bestiary-tracking.bestiary.application .window-content {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
 .application.pf2e-bestiary-tracking .bestiary-actor-sheet .window-app .tabs > [data-tab] {
   flex: 0;
 }
