@@ -11,6 +11,7 @@ import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
 import { handleDataMigration } from "./scripts/migrationHandler.js";
 import {
+  getAllFolderEntries,
   getBestiarySpellLevel,
   isValidEntityType,
   shouldAutomaticReveal,
@@ -100,6 +101,7 @@ Hooks.once("ready", async () => {
 });
 
 Hooks.once("setup", () => {
+  CONFIG.debug.hooks = true;
   const userTheme = game.user.getFlag(
     "pf2e-bestiary-tracking",
     "bestiary-theme",
@@ -513,6 +515,67 @@ Hooks.on("getDirectoryApplicationEntryContext", (_, buttons) => {
           ),
         );
       }
+    },
+  });
+});
+
+Hooks.on("getActorDirectoryFolderContext", (folder, buttons) => {
+  buttons.push({
+    name: game.i18n.localize("PF2EBestiary.Interactivity.RegisterInBestiary"),
+    icon: '<i class="fa-solid fa-spaghetti-monster-flying"></i>',
+    condition: (li) => {
+      if (!game.user.isGM) return false;
+
+      const folder = game.folders.get(li[0].parentElement.dataset.folderId);
+      const bestiaryEntries = game.journal.get(
+        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+      ).pages;
+      const validActors = getAllFolderEntries(folder).reduce((acc, actor) => {
+        if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
+          return acc;
+
+        return (
+          acc ||
+          !Boolean(
+            bestiaryEntries.find((page) => page.system.actorBelongs(actor)),
+          )
+        );
+      }, false);
+
+      return validActors;
+    },
+    callback: async (li) => {
+      const folderEntries = getAllFolderEntries(
+        game.folders.get(li[0].parentElement.dataset.folderId),
+      );
+      const added = [];
+      const exists = [];
+
+      for (var actor of folderEntries) {
+        if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
+          continue;
+
+        const successfull = await PF2EBestiary.addMonster(actor);
+        if (successfull) {
+          added.push(actor.name);
+        } else {
+          exists.push(actor.name);
+        }
+      }
+
+      exists?.length &&
+        ui.notifications.info(
+          game.i18n.format(
+            "PF2EBestiary.Bestiary.Info.AlreadyExistsInBestiary",
+            { creatures: exists.join(", ") },
+          ),
+        );
+      added?.length &&
+        ui.notifications.info(
+          game.i18n.format("PF2EBestiary.Bestiary.Info.AddedToBestiary", {
+            creatures: added.join(", "),
+          }),
+        );
     },
   });
 });

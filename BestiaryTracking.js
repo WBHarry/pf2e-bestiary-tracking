@@ -387,6 +387,21 @@ const shouldAutomaticReveal = (type) => {
   }
 };
 
+const getAllFolderEntries = (folder) => {
+  return [...folder.contents, ...getFolderChildren(folder)]
+};
+
+const getFolderChildren = (folder) => {
+  const children = [];
+  for(var child of folder.children){
+    if(child.entries.length > 0){
+      children.push(...[...Array.from(child.entries), ...getFolderChildren(child)]);
+    }
+  }
+
+  return children;
+};
+
 const getVagueDescriptionLabels = () => ({
   full: {
     extreme: game.i18n.localize(
@@ -16904,87 +16919,51 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     if (!game.user.isGM) return;
 
     const data = TextEditor.getDragEventData(event);
-    const baseItem = await fromUuid(data.uuid);
+    const dataItem = await fromUuid(data.uuid);
 
-    if (!data.type) {
-      this.dragData.bookmarkActive = false;
-      let categories = this.bestiary.getFlag(
-        "pf2e-bestiary-tracking",
-        "npcCategories",
-      );
-      let self = $(event.target)[0];
-      let dropTarget = self.matches(".bookmark-container")
-        ? self
-        : self.closest(".bookmark-container");
-      let bookmarkTarget = $(dropTarget).find(".bookmark")[0];
-      $(bookmarkTarget).removeClass("drop-hover");
+    const items = dataItem.collectionName === 'folders' ? getAllFolderEntries(dataItem) : [dataItem];
 
-      if (!bookmarkTarget || bookmarkTarget.dataset.bookmark === data.bookmark)
-        return;
+    for(var baseItem of items){
+      if (!data.type) {
+        this.dragData.bookmarkActive = false;
+        let categories = this.bestiary.getFlag(
+          "pf2e-bestiary-tracking",
+          "npcCategories",
+        );
+        let self = $(event.target)[0];
+        let dropTarget = self.matches(".bookmark-container")
+          ? self
+          : self.closest(".bookmark-container");
+        let bookmarkTarget = $(dropTarget).find(".bookmark")[0];
+        $(bookmarkTarget).removeClass("drop-hover");
 
-      bookmarkTarget = $(dropTarget).find(".bookmark")[0];
-      const bookmark = categories.find(
-        (x) => x.value === bookmarkTarget.dataset.bookmark,
-      );
-      const position = bookmark
-        ? bookmark.position < Number.parseInt(data.position)
-          ? bookmark.position + 1
-          : bookmark.position
-        : 0;
+        if (!bookmarkTarget || bookmarkTarget.dataset.bookmark === data.bookmark)
+          return;
 
-      if (position === Number.parseInt(data.position)) return;
+        bookmarkTarget = $(dropTarget).find(".bookmark")[0];
+        const bookmark = categories.find(
+          (x) => x.value === bookmarkTarget.dataset.bookmark,
+        );
+        const position = bookmark
+          ? bookmark.position < Number.parseInt(data.position)
+            ? bookmark.position + 1
+            : bookmark.position
+          : 0;
 
-      const orig = categories.splice(
-        categories.indexOf(categories.find((x) => x.value === data.bookmark)),
-        1,
-      )[0];
+        if (position === Number.parseInt(data.position)) return;
 
-      categories = categories.map((x, index) => ({ ...x, position: index }));
-      categories.splice(position, 0, orig);
+        const orig = categories.splice(
+          categories.indexOf(categories.find((x) => x.value === data.bookmark)),
+          1,
+        )[0];
 
-      await this.bestiary.setFlag(
-        "pf2e-bestiary-tracking",
-        "npcCategories",
-        categories.map((x, index) => ({ ...x, position: index })),
-      );
+        categories = categories.map((x, index) => ({ ...x, position: index }));
+        categories.splice(position, 0, orig);
 
-      await game.socket.emit(`module.pf2e-bestiary-tracking`, {
-        action: socketEvent.UpdateBestiary,
-        data: {},
-      });
-
-      Hooks.callAll(socketEvent.UpdateBestiary, {});
-      return;
-    }
-
-    if (
-      event.currentTarget?.classList?.contains("npc-players-inner-container")
-    ) {
-      const playerCharacter = game.actors.get(event.currentTarget.id);
-      const newDropEvent = new DragEvent("drop", {
-        altKey: game.keyboard.isModifierActive("Alt"),
-      });
-      playerCharacter.sheet._onDropItem(newDropEvent, {
-        type: "item",
-        data: baseItem,
-      });
-      event.stopPropagation();
-      return;
-    }
-
-    if (data.type === "JournalEntry") {
-      if (
-        event.currentTarget.classList.contains("recall-knowledge-container")
-      ) {
         await this.bestiary.setFlag(
           "pf2e-bestiary-tracking",
-          "recall-knowledge-journal",
-          baseItem.uuid,
-        );
-        ui.notifications.info(
-          game.i18n.localize(
-            "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeAttachedNotification",
-          ),
+          "npcCategories",
+          categories.map((x, index) => ({ ...x, position: index })),
         );
 
         await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -16993,131 +16972,170 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         });
 
         Hooks.callAll(socketEvent.UpdateBestiary, {});
+        return;
       }
 
-      const gmEditor = event.target.parentElement.parentElement;
-      if (gmEditor.classList.contains("gm-notes")) {
-        const dialog = new foundry.applications.api.DialogV2({
-          buttons: [
-            foundry.utils.mergeObject(
-              {
-                action: "ok",
-                label: "Confirm",
-                icon: "fas fa-check",
-                default: true,
-              },
-              {
-                callback: async (_, button) => {
-                  const page = Array.from(baseItem.pages)[
-                    Number.parseInt(button.form.elements.page.value)
-                  ];
-                  await this.selected.monster.update({
-                    "system.notes.gm.value": page.text.content,
-                  });
-
-                  Hooks.callAll(socketEvent.UpdateBestiary, {});
-                },
-              },
-            ),
-          ],
-          content: `
-            <div style="display: flex; flex-direction: column; gap:8px;">
-              <div>${game.i18n.localize("PF2EBestiary.Bestiary.NPC.GMNotesImportText")}</div>
-              ${
-                new foundry.data.fields.StringField({
-                  choices: baseItem.pages.map((x) => ({
-                    id: x.id,
-                    name: x.name,
-                  })),
-                  label: game.i18n.localize(
-                    "PF2EBestiary.Bestiary.NPC.GMNotesPageTitle",
-                  ),
-                  required: true,
-                }).toFormGroup(
-                  {},
-                  { name: "page", nameAttr: "id", labelAttr: "name" },
-                ).outerHTML
-              }
-            </div>
-          `,
-          rejectClose: false,
-          modal: false,
-          window: {
-            title: game.i18n.localize(
-              "PF2EBestiary.Bestiary.NPC.GMNotesImportTitle",
-            ),
-          },
-          position: { width: 400 },
+      if (
+        event.currentTarget?.classList?.contains("npc-players-inner-container")
+      ) {
+        const playerCharacter = game.actors.get(event.currentTarget.id);
+        const newDropEvent = new DragEvent("drop", {
+          altKey: game.keyboard.isModifierActive("Alt"),
         });
-
-        await dialog.render(true);
+        playerCharacter.sheet._onDropItem(newDropEvent, {
+          type: "item",
+          data: baseItem,
+        });
+        event.stopPropagation();
+        return;
       }
 
-      return;
-    }
+      if (data.type === "JournalEntry") {
+        if (
+          event.currentTarget.classList.contains("recall-knowledge-container")
+        ) {
+          await this.bestiary.setFlag(
+            "pf2e-bestiary-tracking",
+            "recall-knowledge-journal",
+            baseItem.uuid,
+          );
+          ui.notifications.info(
+            game.i18n.localize(
+              "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeAttachedNotification",
+            ),
+          );
 
-    if (!baseItem || !isValidEntityType(baseItem.type)) {
-      ui.notifications.error(
-        game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedType"),
+          await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+            action: socketEvent.UpdateBestiary,
+            data: {},
+          });
+
+          Hooks.callAll(socketEvent.UpdateBestiary, {});
+        }
+
+        const gmEditor = event.target.parentElement.parentElement;
+        if (gmEditor.classList.contains("gm-notes")) {
+          const dialog = new foundry.applications.api.DialogV2({
+            buttons: [
+              foundry.utils.mergeObject(
+                {
+                  action: "ok",
+                  label: "Confirm",
+                  icon: "fas fa-check",
+                  default: true,
+                },
+                {
+                  callback: async (_, button) => {
+                    const page = Array.from(baseItem.pages)[
+                      Number.parseInt(button.form.elements.page.value)
+                    ];
+                    await this.selected.monster.update({
+                      "system.notes.gm.value": page.text.content,
+                    });
+
+                    Hooks.callAll(socketEvent.UpdateBestiary, {});
+                  },
+                },
+              ),
+            ],
+            content: `
+              <div style="display: flex; flex-direction: column; gap:8px;">
+                <div>${game.i18n.localize("PF2EBestiary.Bestiary.NPC.GMNotesImportText")}</div>
+                ${
+                  new foundry.data.fields.StringField({
+                    choices: baseItem.pages.map((x) => ({
+                      id: x.id,
+                      name: x.name,
+                    })),
+                    label: game.i18n.localize(
+                      "PF2EBestiary.Bestiary.NPC.GMNotesPageTitle",
+                    ),
+                    required: true,
+                  }).toFormGroup(
+                    {},
+                    { name: "page", nameAttr: "id", labelAttr: "name" },
+                  ).outerHTML
+                }
+              </div>
+            `,
+            rejectClose: false,
+            modal: false,
+            window: {
+              title: game.i18n.localize(
+                "PF2EBestiary.Bestiary.NPC.GMNotesImportTitle",
+              ),
+            },
+            position: { width: 400 },
+          });
+
+          await dialog.render(true);
+        }
+
+        return;
+      }
+
+      if (!baseItem || !isValidEntityType(baseItem.type)) {
+        ui.notifications.error(
+          game.i18n.localize("PF2EBestiary.Bestiary.Errors.UnsupportedType"),
+        );
+        return;
+      }
+
+      const item = baseItem.pack
+        ? await Actor.implementation.create(baseItem.toObject())
+        : baseItem;
+
+      const bestiary = game.journal.get(
+        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
       );
-      return;
-    }
+      const existingPage = bestiary.pages.find((x) =>
+        x.system.actorBelongs(item),
+      );
+      if (existingPage) {
+        await existingPage.system.refreshData(item);
+      } else {
+        const itemRules = {};
+        for (var subItem of item.items) {
+          if (subItem.type === "effect") {
+            itemRules[subItem.id] = subItem.system.rules;
+            await subItem.update({ "system.rules": [] });
+          }
+        }
 
-    const item = baseItem.pack
-      ? await Actor.implementation.create(baseItem.toObject())
-      : baseItem;
+        var pageData = null;
+        switch (getEntityType(item)) {
+          case "creature":
+            pageData = await getCreatureData(item);
+            break;
+          case "creatureCharacter":
+            pageData = await getCreatureData(item, true);
+            break;
+          case "character":
+            pageData = await getNPCData(item, true);
+            break;
+          case "npc":
+            pageData = await getNPCData(item);
+            break;
+          case "hazard":
+            pageData = getHazardData(item);
+            break;
+        }
 
-    const bestiary = game.journal.get(
-      game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
-    );
-    const existingPage = bestiary.pages.find((x) =>
-      x.system.actorBelongs(item),
-    );
-    if (existingPage) {
-      await existingPage.system.refreshData(item);
-    } else {
-      const itemRules = {};
-      for (var subItem of item.items) {
-        if (subItem.type === "effect") {
-          itemRules[subItem.id] = subItem.system.rules;
-          await subItem.update({ "system.rules": [] });
+        await bestiary.createEmbeddedDocuments("JournalEntryPage", [pageData]);
+        for (var key in itemRules) {
+          await item.items.get(key).update({ "system.rules": itemRules[key] });
         }
       }
 
-      var pageData = null;
-      switch (getEntityType(item)) {
-        case "creature":
-          pageData = await getCreatureData(item);
-          break;
-        case "creatureCharacter":
-          pageData = await getCreatureData(item, true);
-          break;
-        case "character":
-          pageData = await getNPCData(item, true);
-          break;
-        case "npc":
-          pageData = await getNPCData(item);
-          break;
-        case "hazard":
-          pageData = getHazardData(item);
-          break;
-      }
-
-      await bestiary.createEmbeddedDocuments("JournalEntryPage", [pageData]);
-      for (var key in itemRules) {
-        await item.items.get(key).update({ "system.rules": itemRules[key] });
+      const doubleClickOpenActivated = game.settings.get(
+        "pf2e-bestiary-tracking",
+        "doubleClickOpen",
+      );
+      if (doubleClickOpenActivated) {
+        const ownership = item.ownership.default > 1 ? item.ownership.default : 1;
+        await item.update({ "ownership.default": ownership });
       }
     }
-
-    const doubleClickOpenActivated = game.settings.get(
-      "pf2e-bestiary-tracking",
-      "doubleClickOpen",
-    );
-    if (doubleClickOpenActivated) {
-      const ownership = item.ownership.default > 1 ? item.ownership.default : 1;
-      await item.update({ "ownership.default": ownership });
-    }
-
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,
       data: {},
@@ -17561,6 +17579,7 @@ Hooks.once("ready", async () => {
 });
 
 Hooks.once("setup", () => {
+  CONFIG.debug.hooks = true;
   const userTheme = game.user.getFlag(
     "pf2e-bestiary-tracking",
     "bestiary-theme",
@@ -17974,6 +17993,62 @@ Hooks.on("getDirectoryApplicationEntryContext", (_, buttons) => {
           ),
         );
       }
+    },
+  });
+});
+
+Hooks.on("getActorDirectoryFolderContext", (folder, buttons) => {
+  buttons.push({
+    name: game.i18n.localize("PF2EBestiary.Interactivity.RegisterInBestiary"),
+    icon: '<i class="fa-solid fa-spaghetti-monster-flying"></i>',
+    condition: (li) => {
+      if (!game.user.isGM) return false;
+
+      const folder = game.folders.get(li[0].parentElement.dataset.folderId);
+      const bestiaryEntries = game.journal
+      .get(game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"))
+      .pages;
+      const validActors = getAllFolderEntries(folder).reduce((acc, actor) => {
+        if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
+          return acc;
+  
+        return acc || !Boolean(
+          bestiaryEntries.find((page) => page.system.actorBelongs(actor)),
+        );
+      }, false);
+
+      return validActors;
+    },
+    callback: async (li) => {
+      const folderEntries = getAllFolderEntries(game.folders.get(li[0].parentElement.dataset.folderId));
+      const added = [];
+      const exists = [];
+     
+      for(var actor of folderEntries){
+        if (!actor || !isValidEntityType(actor.type) || actor.hasPlayerOwner)
+          continue;
+
+        const successfull = await PF2EBestiary.addMonster(actor);
+        if(successfull) {
+          added.push(actor.name);
+        } else {
+          exists.push(actor.name);
+        }
+      }
+
+      exists?.length &&
+        ui.notifications.info(
+          game.i18n.format(
+            "PF2EBestiary.Bestiary.Info.AlreadyExistsInBestiary",
+            { creatures: exists.join(", ") },
+          ),
+        );
+      added?.length &&
+        ui.notifications.info(
+          game.i18n.format("PF2EBestiary.Bestiary.Info.AddedToBestiary", {
+            creatures: added.join(", "),
+          }),
+        );
     },
   });
 });

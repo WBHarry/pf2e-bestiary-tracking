@@ -403,3 +403,20 @@ export const shouldAutomaticReveal = (type) => {
       return automaticReveal.spells;
   }
 };
+
+export const getAllFolderEntries = (folder) => {
+  return [...folder.contents, ...getFolderChildren(folder)];
+};
+
+const getFolderChildren = (folder) => {
+  const children = [];
+  for (var child of folder.children) {
+    if (child.entries.length > 0) {
+      children.push(
+        ...[...Array.from(child.entries), ...getFolderChildren(child)],
+      );
+    }
+  }
+
+  return children;
+};
