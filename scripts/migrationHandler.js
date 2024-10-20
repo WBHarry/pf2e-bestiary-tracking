@@ -581,6 +581,59 @@ export const handleDataMigration = async () => {
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
 
+  if (versionCompare(version, "1.1.22")) {
+    version = "1.1.22";
+
+    const customThemes = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "custom-themes",
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "custom-themes",
+      Object.keys(customThemes).reduce((acc, key) => {
+        const theme = customThemes[key];
+        acc[key] = {
+          ...theme,
+          props: {
+            ...theme.props,
+            ["--pf2e-bestiary-tracking-application-image"]: theme.props[
+              "--pf2e-bestiary-tracking-application-image"
+            ]
+              ? theme.props["--pf2e-bestiary-tracking-application-image"]
+              : "ignore",
+            ["--pf2e-bestiary-tracking-application-header-image"]:
+              theme.props[
+                "--pf2e-bestiary-tracking-application-header-image"
+              ] ?? "ignore",
+            ["--pf2e-bestiary-tracking-application-header"]:
+              theme.props["--pf2e-bestiary-tracking-application-header"] ??
+              "transparent",
+            ["--pf2e-bestiary-tracking-application-header-image-size"]:
+              theme.props[
+                "--pf2e-bestiary-tracking-application-header-image-size"
+              ] ?? "cover",
+            ["--pf2e-bestiary-tracking-application-header-image-repeat"]:
+              theme.props[
+                "--pf2e-bestiary-tracking-application-header-image-repeat"
+              ] ?? "round",
+            ["--pf2e-bestiary-tracking-application-header-image-position"]:
+              theme.props[
+                "--pf2e-bestiary-tracking-application-header-image-position"
+              ] ?? "top",
+            ["--pf2e-bestiary-tracking-application-image-position"]:
+              theme.props[
+                "--pf2e-bestiary-tracking-application-image-position"
+              ] ?? "top",
+          },
+        };
+        return acc;
+      }, {}),
+    );
+
+    await game.settings.set("pf2e-bestiary-tracking", "version", version);
+  }
+
   await handleBestiaryMigration(
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );

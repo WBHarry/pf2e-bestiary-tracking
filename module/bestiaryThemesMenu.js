@@ -34,11 +34,11 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
           ...theme.props,
           ["--pf2e-bestiary-tracking-application-image"]:
             backgroundImage === "ignore"
-              ? ""
+              ? "ignore"
               : backgroundImage.split("../../../")[1],
           ["--pf2e-bestiary-tracking-application-header-image"]:
             headerBackgroundImage === "ignore"
-              ? ""
+              ? "ignore"
               : headerBackgroundImage.split("../../../")[1],
         },
       };
@@ -220,7 +220,12 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
       name: newTheme,
       props: {
         "--pf2e-bestiary-tracking-application": "#FFFFFF",
+        "--pf2e-bestiary-tracking-application-image": "ignore",
+        "--pf2e-bestiary-tracking-application-image-size": "cover",
+        "--pf2e-bestiary-tracking-application-image-repeat": "round",
+        "--pf2e-bestiary-tracking-application-image-position": "top",
         "--pf2e-bestiary-tracking-application-header": "transparent",
+        "--pf2e-bestiary-tracking-application-header-image": "ignore",
         "--pf2e-bestiary-tracking-application-header-image-size": "cover",
         "--pf2e-bestiary-tracking-application-header-image-repeat": "round",
         "--pf2e-bestiary-tracking-application-header-image-position": "top",
@@ -238,9 +243,6 @@ export default class BestiaryThemesMenu extends HandlebarsApplicationMixin(
         "--pf2e-bestiary-tracking-application-border": "#FFFFFF",
         "--pf2e-bestiary-tracking-icon": "#FFFFFF",
         "--pf2e-bestiary-tracking-secondary-icon": "#FFFFFF",
-        "--pf2e-bestiary-tracking-application-image-size": "cover",
-        "--pf2e-bestiary-tracking-application-image-repeat": "round",
-        "--pf2e-bestiary-tracking-application-image-position": "top",
       },
     };
     this.selectedTheme = id;
