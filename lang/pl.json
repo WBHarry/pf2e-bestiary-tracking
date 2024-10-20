@@ -79,6 +79,7 @@
     },
     "Miscellaneous": {
       "Name": "Nazwa",
+      "Blurb": "Informacje dodatkowe",
       "Title": "Tytuł",
       "Level": "Poziom",
       "AC": "KP",
@@ -509,6 +510,7 @@
           "NPC": "BN",
           "Hazard": "Zagrożenie",
           "Name": "Nazwa",
+          "NameInfo": "Informacje dodatkowe",
           "Traits": "Cechy",
           "Attributes": "Atrybuty",
           "Description": "Opis",
@@ -554,6 +556,7 @@
           "Title": "Niestandardowe motywy",
           "TemplateButton": "Kopiuj szablon motywu",
           "BackgroundColors": "Właściwości tła",
+          "HeaderColors": "Właściwości nagłówka",
           "MainColors": "Główne kolory",
           "IconColors": "Kolory ikon",
           "AccentColors": "Kolory akcentu",
