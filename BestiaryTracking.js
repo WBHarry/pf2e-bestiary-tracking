@@ -9502,7 +9502,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   static getNextName = (customThemes) => {
     const unnamedNr = Object.values(customThemes).reduce((acc, x) => {
       const match = x.name.match(/^(?:NewTheme)(.*)$/);
-      if (match.length > 1 && !Number.isNaN(match[1])) {
+      if (match?.length > 1 && !Number.isNaN(match[1])) {
         const nr = Number.parseInt(match[1]);
         acc = acc ? Math.max(acc, nr) : nr;
       }
@@ -9721,7 +9721,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   };
 }
 
-const currentVersion = "1.1.19";
+const currentVersion = "1.1.20";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
