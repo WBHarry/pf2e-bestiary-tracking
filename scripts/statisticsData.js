@@ -2003,6 +2003,7 @@ export const hardnessTable = {
 };
 
 export const levelDCTable = {
+  "-1": 13,
   0: 14,
   1: 15,
   2: 16,
