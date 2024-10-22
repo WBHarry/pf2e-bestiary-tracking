@@ -1645,8 +1645,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     if (!game.user.isGM) return;
     this.toggleControls(false);
 
+    ui.notifications.info(
+      game.i18n.localize("PF2EBestiary.Bestiary.Info.RefreshStarted"),
+    );
+
+    const failedActors = [];
     for (var bestiaryPage of this.bestiary.pages) {
-      await bestiaryPage.system.refreshData();
+      const succeeded = await bestiaryPage.system.refreshData();
+      if (!succeeded) failedActors.push(bestiaryPage.system.name.value);
     }
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -1655,6 +1661,17 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     });
 
     Hooks.callAll(socketEvent.UpdateBestiary, {});
+
+    if (failedActors.length === 0)
+      ui.notifications.info(
+        game.i18n.localize("PF2EBestiary.Bestiary.Info.RefreshFinished"),
+      );
+    else
+      ui.notifications.info(
+        game.i18n.format("PF2EBestiary.Bestiary.Info.RefreshFinishedPartial", {
+          entities: failedActors.join(", "),
+        }),
+      );
   }
 
   static async handleSaveSlots() {

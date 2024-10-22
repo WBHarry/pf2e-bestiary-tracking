@@ -309,7 +309,10 @@
         "AddedToBestiary": "[{creatures}] were added to the Bestiary",
         "AlreadyExistsInBestiary": "[{creatures}] already exists in the Bestiary.",
         "BestiaryEntryLinkTip": "Copy link (+Alt to send to chat)",
-        "BestiaryEntryLink": "Bestiary Entry {entity} copied to clipboard."
+        "BestiaryEntryLink": "Bestiary Entry {entity} copied to clipboard.",
+        "RefreshStarted": "Bestiary refresh started",
+        "RefreshFinished": "Bestiary refresh finished",
+        "RefreshFinishedPartial": "Bestiary refresh finished. Some entities did not have linked actors and were not refreshed [{entities}]"
       },
       "Sheet": {
         "BestiaryAddTitle": "Add To Bestiary",

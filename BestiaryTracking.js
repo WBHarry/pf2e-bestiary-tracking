@@ -2313,7 +2313,7 @@ const hardnessTable = {
 };
 
 const levelDCTable = {
-  '-1': 13,
+  "-1": 13,
   0: 14,
   1: 15,
   2: 16,
@@ -5578,7 +5578,7 @@ class Creature extends foundry.abstract.TypeDataModel {
 
   async refreshData() {
     const actor = await fromUuid(this.uuid);
-    if (!actor) return;
+    if (!actor) return false;
 
     const itemRules = {};
     for (var subItem of actor.items) {
@@ -5597,6 +5597,8 @@ class Creature extends foundry.abstract.TypeDataModel {
     for (var key in itemRules) {
       await actor.items.get(key).update({ "system.rules": itemRules[key] });
     }
+
+    return true;
   }
 
   _getToggleUpdate(state) {
@@ -7611,7 +7613,7 @@ class Hazard extends foundry.abstract.TypeDataModel {
 
   async refreshData() {
     const actor = await fromUuid(this.uuid);
-    if (!actor) return;
+    if (!actor) return false;
 
     const itemRules = {};
     for (var subItem of actor.items) {
@@ -7629,6 +7631,8 @@ class Hazard extends foundry.abstract.TypeDataModel {
     for (var key in itemRules) {
       await actor.items.get(key).update({ "system.rules": itemRules[key] });
     }
+
+    return true;
   }
 
   _getToggleUpdate(state) {
@@ -9810,7 +9814,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   };
 }
 
-const currentVersion = "1.1.22";
+const currentVersion = "1.1.23";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -15889,8 +15893,12 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     if (!game.user.isGM) return;
     this.toggleControls(false);
 
+    ui.notifications.info(game.i18n.localize("PF2EBestiary.Bestiary.Info.RefreshStarted"));
+
+    const failedActors = [];
     for (var bestiaryPage of this.bestiary.pages) {
-      await bestiaryPage.system.refreshData();
+      const succeeded = await bestiaryPage.system.refreshData();
+      if(!succeeded) failedActors.push(bestiaryPage.system.name.value);
     }
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -15899,6 +15907,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     });
 
     Hooks.callAll(socketEvent.UpdateBestiary, {});
+
+    if(failedActors.length === 0) ui.notifications.info(game.i18n.localize("PF2EBestiary.Bestiary.Info.RefreshFinished"));
+    else ui.notifications.info(game.i18n.format("PF2EBestiary.Bestiary.Info.RefreshFinishedPartial", { entities: failedActors.join(', ') }));
   }
 
   static async handleSaveSlots() {

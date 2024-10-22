@@ -753,7 +753,7 @@ export class Hazard extends foundry.abstract.TypeDataModel {
 
   async refreshData() {
     const actor = await fromUuid(this.uuid);
-    if (!actor) return;
+    if (!actor) return false;
 
     const itemRules = {};
     for (var subItem of actor.items) {
@@ -771,6 +771,8 @@ export class Hazard extends foundry.abstract.TypeDataModel {
     for (var key in itemRules) {
       await actor.items.get(key).update({ "system.rules": itemRules[key] });
     }
+
+    return true;
   }
 
   _getToggleUpdate(state) {
