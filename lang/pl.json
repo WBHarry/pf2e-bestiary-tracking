@@ -309,7 +309,10 @@
         "AddedToBestiary": "[{creatures}] zostały dodane do Bestiariusza",
         "AlreadyExistsInBestiary": "[{creatures}] już istnieje w Bestiariuszu.",
         "BestiaryEntryLinkTip": "Kopiuj link (+Alt, aby wysłać do czatu)",
-        "BestiaryEntryLink": "Wpis z bestiariusza {entity} został skopiowany do schowka."
+        "BestiaryEntryLink": "Wpis z bestiariusza {entity} został skopiowany do schowka.",
+        "RefreshStarted": "Rozpoczęto odświeżanie bestiariusza",
+        "RefreshFinished": "Odświeżanie bestiariusza zakończone",
+        "RefreshFinishedPartial": "Zakończono odświeżanie bestiariusza. Niektóre jednostki nie miały powiązanych aktorów i nie zostały odświeżone [{entities}]."
       },
       "Sheet": {
         "BestiaryAddTitle": "Dodaj do Bestiariusza",
