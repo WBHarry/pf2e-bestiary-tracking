@@ -2818,7 +2818,7 @@ const getCreatureData = async (actor, pcBase) => {
   const itemKeys = Array.from(actor.items);
 
   const combatant = game.combat?.combatants?.find(
-    (x) => (x.token?.baseActor?.uuid ?? x.actor.uuid) === actor.uuid,
+    (x) => (x.token?.baseActor?.uuid ?? x.actor?.uuid) === actor.uuid,
   );
 
   const spellEntries = itemKeys.reduce((acc, entry) => {
@@ -3292,7 +3292,7 @@ const getPCCreatureData = async (actor) => {
   const itemKeys = Array.from(actor.items);
 
   const combatant = game.combat?.combatants?.find(
-    (x) => (x.token?.baseActor?.uuid ?? x.actor.uuid) === actor.uuid,
+    (x) => (x.token?.baseActor?.uuid ?? x.actor?.uuid) === actor.uuid,
   );
 
   const spellEntries = itemKeys.reduce((acc, entry) => {
@@ -3767,7 +3767,7 @@ const getNPCData = async (actor, pcBase) => {
   );
 
   const combatant = game.combat?.combatants?.find(
-    (x) => (x.token?.baseActor?.uuid ?? x.actor.uuid) === actor.uuid,
+    (x) => (x.token?.baseActor?.uuid ?? x.actor?.uuid) === actor.uuid,
   );
 
   const isSimple = actor.sheet.options.classes.includes("simple");
@@ -3906,7 +3906,7 @@ const getHazardData = (actor) => {
   );
 
   const combatant = game.combat?.combatants?.find(
-    (x) => (x.token?.baseActor?.uuid ?? x.actor.uuid) === actor.uuid,
+    (x) => (x.token?.baseActor?.uuid ?? x.actor?.uuid) === actor.uuid,
   );
 
   const immunitiesKeys = Object.keys(actor.system.attributes.immunities);
@@ -15893,12 +15893,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     if (!game.user.isGM) return;
     this.toggleControls(false);
 
-    ui.notifications.info(game.i18n.localize("PF2EBestiary.Bestiary.Info.RefreshStarted"));
+    ui.notifications.info(
+      game.i18n.localize("PF2EBestiary.Bestiary.Info.RefreshStarted"),
+    );
 
     const failedActors = [];
     for (var bestiaryPage of this.bestiary.pages) {
       const succeeded = await bestiaryPage.system.refreshData();
-      if(!succeeded) failedActors.push(bestiaryPage.system.name.value);
+      if (!succeeded) failedActors.push(bestiaryPage.system.name.value);
     }
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -15908,8 +15910,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     Hooks.callAll(socketEvent.UpdateBestiary, {});
 
-    if(failedActors.length === 0) ui.notifications.info(game.i18n.localize("PF2EBestiary.Bestiary.Info.RefreshFinished"));
-    else ui.notifications.info(game.i18n.format("PF2EBestiary.Bestiary.Info.RefreshFinishedPartial", { entities: failedActors.join(', ') }));
+    if (failedActors.length === 0)
+      ui.notifications.info(
+        game.i18n.localize("PF2EBestiary.Bestiary.Info.RefreshFinished"),
+      );
+    else
+      ui.notifications.info(
+        game.i18n.format("PF2EBestiary.Bestiary.Info.RefreshFinishedPartial", {
+          entities: failedActors.join(", "),
+        }),
+      );
   }
 
   static async handleSaveSlots() {
