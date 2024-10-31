@@ -254,16 +254,19 @@ export const chunkArray = (arr, size) => {
   );
 };
 
-export const alphaSort = (a, b, prop) => {
-  if (prop) {
-    if (a[prop] < b[prop]) return -1;
-    if (a[prop] > b[prop]) return 1;
-    else return 0;
+export const alphaSort = (a, b, prop, desc) => {
+  const compA = prop ? a[prop].toLowerCase() : a.toLowerCase();
+  const compB = prop ? b[prop].toLowerCase() : b.toLowerCase();
+
+  if (desc) {
+    if (compA > compB) return -1;
+    if (compA < compB) return 1;
+  } else {
+    if (compA < compB) return -1;
+    if (compA > compB) return 1;
   }
 
-  if (a < b) return -1;
-  if (a > b) return 1;
-  else return 0;
+  return 0;
 };
 
 export const versionCompare = (current, target) => {

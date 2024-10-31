@@ -10,11 +10,16 @@ import {
   getUsedBestiaryTypes,
   saveDataToFile,
   getAllFolderEntries,
+  alphaSort,
 } from "../scripts/helpers.js";
 import { resetBestiary } from "../scripts/macros.js";
 import { socketEvent } from "../scripts/socket.js";
 import { getCategoryRange } from "../scripts/statisticsHelper.js";
-import { dispositions, recallKnowledgeOutcomes } from "../data/constants.js";
+import {
+  dispositions,
+  npcCategorySortOptions,
+  recallKnowledgeOutcomes,
+} from "../data/constants.js";
 import Tagify from "@yaireo/tagify";
 import {
   getCreatureData,
@@ -50,8 +55,18 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       monsterCreatureType = page.system.initialType;
     }
 
+    const { active: bestiaryJournalActive } = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "bestiary-journal-settings",
+    );
+    const defaultCategory =
+      bestiaryJournalActive ||
+      !game.settings.get("pf2e-bestiary-tracking", "hide-tips")
+        ? null
+        : getUsedBestiaryTypes()[0];
+
     this.selected = {
-      category: options?.category ?? page?.type ?? getUsedBestiaryTypes()[0],
+      category: options?.category ?? page?.type ?? defaultCategory,
       type: options?.type ?? monsterCreatureType,
       monster: page,
       abilities: defaultSelectedAbilities(),
@@ -221,6 +236,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     $(htmlElement)
       .find(".bestiary-tab.hideable")
       .on("contextmenu", this.hideTab.bind(this));
+    $(htmlElement)
+      .find(".npcCategorySortSelect")
+      .on("change", this.updateNPCCategorySort.bind(this));
 
     this._dragDrop.forEach((d) => d.bind(htmlElement));
 
@@ -953,6 +971,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "bestiary-layout",
     );
+    context.settings = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "bestiary-settings",
+    );
+    context.npcCategorySortOptions = npcCategorySortOptions;
     context.optionalFields = game.settings.get(
       "pf2e-bestiary-tracking",
       "optional-fields",
@@ -2207,7 +2230,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         "pf2e-bestiary-tracking",
         "npcCategories",
       );
-      await this.bestiary.setFlag("pf2e-bestiary-tracking", "npcCategories", [
+      let newCategories = [
         ...categories,
         {
           value: categoryKey,
@@ -2216,7 +2239,30 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
             .npcCategories,
         },
-      ]);
+      ];
+      const bestiarySettings = game.settings.get(
+        "pf2e-bestiary-tracking",
+        "bestiary-settings",
+      );
+
+      switch (bestiarySettings.npc.categorySort) {
+        case 1:
+          newCategories = newCategories
+            .sort((a, b) => alphaSort(a, b, "name"))
+            .map((x, index) => ({ ...x, position: index }));
+          break;
+        case 2:
+          newCategories = newCategories
+            .sort((a, b) => alphaSort(a, b, "name", true))
+            .map((x, index) => ({ ...x, position: index }));
+          break;
+      }
+
+      await this.bestiary.setFlag(
+        "pf2e-bestiary-tracking",
+        "npcCategories",
+        newCategories,
+      );
       this.npcData.newCategory.text = null;
 
       await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -2523,6 +2569,52 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     await this.selected.monster.update({
       [`system.tabStates.${tab}.hidden`]:
         !this.selected.monster.system.tabStates[tab].hidden,
+    });
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  async updateNPCCategorySort(event) {
+    const value = Number.parseInt(event.currentTarget.value);
+    const currentCategories = this.bestiary.getFlag(
+      "pf2e-bestiary-tracking",
+      "npcCategories",
+    );
+    switch (value) {
+      case 1:
+        await this.bestiary.setFlag(
+          "pf2e-bestiary-tracking",
+          "npcCategories",
+          currentCategories
+            .sort((a, b) => alphaSort(a, b, "name"))
+            .map((category, index) => ({ ...category, position: index })),
+        );
+        break;
+      case 2:
+        await this.bestiary.setFlag(
+          "pf2e-bestiary-tracking",
+          "npcCategories",
+          currentCategories
+            .sort((a, b) => alphaSort(a, b, "name", true))
+            .map((category, index) => ({ ...category, position: index })),
+        );
+        break;
+    }
+
+    const current = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "bestiary-settings",
+    );
+    await game.settings.set("pf2e-bestiary-tracking", "bestiary-settings", {
+      ...current,
+      npc: {
+        ...current.npc,
+        categorySort: value,
+      },
     });
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {

@@ -12,7 +12,11 @@ import BestiaryIntegrationMenu from "../module/bestiaryIntegrationMenu.js";
 import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import { newMigrateBestiary } from "./migrationHandler.js";
-import { imageSettings, toBestiaryOptions } from "../data/constants.js";
+import {
+  imageSettings,
+  npcCategorySortOptions,
+  toBestiaryOptions,
+} from "../data/constants.js";
 import {
   defaultThemeChoices,
   extendedBestiaryThemeChoices,
@@ -20,7 +24,7 @@ import {
 import BestiaryDisplayMenu from "../module/bestiaryDisplayMenu.js";
 import BestiaryThemesMenu from "../module/bestiaryThemesMenu.js";
 
-export const currentVersion = "1.1.23";
+export const currentVersion = "1.1.24";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
@@ -256,6 +260,19 @@ const generalNonConfigSettings = () => {
           type: 0,
           direction: 0,
         },
+      },
+    },
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "bestiary-settings", {
+    name: "",
+    hint: "",
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      npc: {
+        categorySort: npcCategorySortOptions.manual.value,
       },
     },
   });

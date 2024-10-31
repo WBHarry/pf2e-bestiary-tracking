@@ -212,7 +212,7 @@
         "ToggleHideTabs": "Rightclick to toggle a hidden tab"
       },
       "NPC": {
-        "NPCCategoryDescription": "NPCs are sorted into categories created by the GM. You can add one below. Remove categories by rightclicking their bookmarks.",
+        "NPCCategoryDescription": "NPCs are sorted into categories created by the GM. Remove categories by rightclicking their bookmarks.",
         "NewCategory": "New NPC Category",
         "NPCViewText": "NPC View Toggle",
         "EditModeText": "Edit Mode Toggle",
@@ -254,7 +254,15 @@
         "GMNotesPageTitle": "Page",
         "GMPlayersContainerTitle": "Players",
         "GMPlayersContainerTip": "Dropping anything on a player's image acts the same as dropping them on the player token.",
-        "GMTextZoneTip": "Drag and drop a journal onto the text area to import text from it."
+        "GMTextZoneTip": "Drag and drop a journal onto the text area to import text from it.",
+        "SortAlphabetical": "Sort Alphabetically",
+        "CategoryHandlingTitle": "NPC Category Handling",
+        "CategorySorting": "Category Sorting",
+        "CategorySortOptions": {
+          "Manual": "Manual Order",
+          "AscAlpha": "Alphabetical (Ascending)",
+          "DescAlpha": "Alphabetical (Descending)"
+        }
       },
       "Hazards": {
         "Simple": "Simple",

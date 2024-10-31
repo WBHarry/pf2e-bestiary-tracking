@@ -319,6 +319,20 @@
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container.top {
   justify-content: start;
 }
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container .npc-category-handling {
+  margin-top: 8px;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container .npc-category-handling legend {
+  margin: 0 auto;
+  font-size: 20px;
+  font-weight: bold;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container .npc-category-handling .npc-category-handling-inner {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 8px;
+}
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container {
   display: flex;
   align-items: center;
@@ -395,16 +409,20 @@
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .category-container {
   display: flex;
   align-items: center;
-  gap: 4px;
-  align-items: start;
+  gap: 8px;
   margin-top: 8px;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .category-container .category-section {
   flex: 1;
-  gap: 8px;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .category-container .category-section .category-label {
   white-space: nowrap;
+  font-weight: bold;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .category-container .category-body {
+  flex: 2;
+  display: flex;
+  gap: 8px;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .bestiary-welcome {
   display: flex;

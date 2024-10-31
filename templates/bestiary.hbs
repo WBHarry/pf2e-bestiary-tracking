@@ -68,49 +68,69 @@
                         </div>
                     {{/if}}
                     {{#if (and this.user.isGM (eq this.selected.category 'pf2e-bestiary-tracking.npc'))}}
-                        <div style="margin-top: 8px;">{{localize "PF2EBestiary.Bestiary.NPC.NPCCategoryDescription"}}</div>
-                        <div class="category-container">
-                            <div class="category-section flexrow">
-                                <div class="category-label flex0">{{localize "PF2EBestiary.Bestiary.NPC.NewCategory"}}</div>
-                                <input class="data-container primary-container" type="text" name="npcData.newCategory.text" value="{{this.npcState.newCategory.text}}" />
-                                <button data-action="addNpcCategory" {{#if (not this.npcState.newCategory.text)}}disabled{{else}}class="primary-container"{{/if}}><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.Miscellaneous.Add"}}</button>
-                            </div>
-                        </div>
-                    {{/if}}
-                </div>
-                <div class="bestiary-info-container flexrow">
-                    {{#if (not this.hideTips)}} 
-                        <div class="bestiary-welcome text-shadow-container flex1">
-                            <div class="sub-title">{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.Title"}}</div>
-                            <ul>
-                                <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.ThemingTip"}}</li>
-                                <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.NavigationTip"}}</li>
-                                <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.MacroTip"}}</li>
-                            </ul>
+                        <fieldset class="npc-category-handling">
+                            <legend>{{localize "PF2EBestiary.Bestiary.NPC.CategoryHandlingTitle"}}</legend>
 
-                            <div class="sub-title">
-                                <div>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.Title"}}</div>
-                            </div>
-                            <ul>
-                                <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.AddCreaturesTip"}}</li>
-                                <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ModuleSettingsTip"}}</li>
-                                <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.LeftClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleInformationTip"}}</li>
-                                <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RightClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleMisinformationTip"}}</li>
-                            </ul>
-                        </div>
-                    {{/if}}
-                    {{#if (and this.journalSettings.active (or this.user.isGM this.recallKnowledgeJournal))}}
-                        <div class="recall-knowledge-container secondary-border-container {{#if (not this.recallKnowledgeJournal)}}empty{{/if}}" {{#if (not this.recallKnowledgeJournal)}}title="{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeJournalMissing"}}"{{/if}}>
-                            <div class="main-page-category-card">
-                                <div class="main-page-category-image-container secondary-border-container {{#if this.recallKnowledgeJournal}}primary-hover-container{{/if}}" {{#if this.recallKnowledgeJournal}}data-action="openDocument"{{/if}} data-uuid="{{this.recallKnowledgeJournal}}">
-                                    <img src="{{this.journalSettings.image}}" />
-                                    <h4 class="main-page-category-label primary-container">{{localize this.journalSettings.name}}</h4>
-                                    {{#if (and this.user.isGM this.recallKnowledgeJournal)}}<i class="recall-knowledge-unlink-icon fa-solid fa-link-slash primary-hover-container" data-action="removeRecallKnowledgeJournal"></i>{{/if}}
+                            <div class="npc-category-handling-inner">
+                                <div>{{localize "PF2EBestiary.Bestiary.NPC.NPCCategoryDescription"}}</div>
+                                <div class="category-container">
+                                    <div class="category-section flexrow">
+                                        <div class="category-label flex0">{{localize "PF2EBestiary.Bestiary.NPC.NewCategory"}}</div>
+                                    </div>
+                                    <div class="category-body flexrow">
+                                        <input class="data-container primary-container" type="text" name="npcData.newCategory.text" value="{{this.npcState.newCategory.text}}" />
+                                        <button data-action="addNpcCategory" {{#if (not this.npcState.newCategory.text)}}disabled{{else}}class="primary-container"{{/if}}><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.Miscellaneous.Add"}}</button>
+                                    </div>
+                                </div>
+                                <div class="category-container">
+                                    <div class="category-section flexrow">
+                                        <div class="category-label flex0">{{localize "PF2EBestiary.Bestiary.NPC.CategorySorting"}}</div>
+                                    </div>
+                                    <div class="category-body flexrow">
+                                        <select class="npcCategorySortSelect" data-dtype="Number">
+                                            {{selectOptions this.npcCategorySortOptions selected=this.settings.npc.categorySort valueAttr="value" labelAttr="name" localize=true}}
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </fieldset>
                     {{/if}}
                 </div>
+                {{#if (not this.selected.category)}}
+                    <div class="bestiary-info-container flexrow">
+                        {{#if (not this.hideTips)}} 
+                            <div class="bestiary-welcome text-shadow-container flex1">
+                                <div class="sub-title">{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.Title"}}</div>
+                                <ul>
+                                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.ThemingTip"}}</li>
+                                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.NavigationTip"}}</li>
+                                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.PlayersSection.MacroTip"}}</li>
+                                </ul>
+
+                                <div class="sub-title">
+                                    <div>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.Title"}}</div>
+                                </div>
+                                <ul>
+                                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.AddCreaturesTip"}}</li>
+                                    <li>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ModuleSettingsTip"}}</li>
+                                    <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.LeftClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleInformationTip"}}</li>
+                                    <li><span class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Bestiary.Miscellaneous.RightClick"}}:&nbsp;</span>{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.ToggleMisinformationTip"}}</li>
+                                </ul>
+                            </div>
+                        {{/if}}
+                        {{#if (and this.journalSettings.active (or this.user.isGM this.recallKnowledgeJournal))}}
+                            <div class="recall-knowledge-container secondary-border-container {{#if (not this.recallKnowledgeJournal)}}empty{{/if}}" {{#if (not this.recallKnowledgeJournal)}}title="{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeJournalMissing"}}"{{/if}}>
+                                <div class="main-page-category-card">
+                                    <div class="main-page-category-image-container secondary-border-container {{#if this.recallKnowledgeJournal}}primary-hover-container{{/if}}" {{#if this.recallKnowledgeJournal}}data-action="openDocument"{{/if}} data-uuid="{{this.recallKnowledgeJournal}}">
+                                        <img src="{{this.journalSettings.image}}" />
+                                        <h4 class="main-page-category-label primary-container">{{localize this.journalSettings.name}}</h4>
+                                        {{#if (and this.user.isGM this.recallKnowledgeJournal)}}<i class="recall-knowledge-unlink-icon fa-solid fa-link-slash primary-hover-container" data-action="removeRecallKnowledgeJournal"></i>{{/if}}
+                                    </div>
+                                </div>
+                            </div>
+                        {{/if}}
+                    </div>
+                {{/if}}
             </div>
         {{else}}
             {{#if this.selected.monster}}

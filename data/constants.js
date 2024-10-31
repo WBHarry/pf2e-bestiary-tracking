@@ -163,3 +163,18 @@ export const toBestiaryOptions = {
     value: 2,
   },
 };
+
+export const npcCategorySortOptions = {
+  manual: {
+    name: "PF2EBestiary.Bestiary.NPC.CategorySortOptions.Manual",
+    value: 0,
+  },
+  ascAlpha: {
+    name: "PF2EBestiary.Bestiary.NPC.CategorySortOptions.AscAlpha",
+    value: 1,
+  },
+  descAlpha: {
+    name: "PF2EBestiary.Bestiary.NPC.CategorySortOptions.DescAlpha",
+    value: 2,
+  },
+};
