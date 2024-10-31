@@ -330,8 +330,10 @@
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container .npc-category-handling .npc-category-handling-inner {
   display: flex;
   flex-direction: column;
-  text-align: center;
   gap: 8px;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container .npc-category-handling .npc-category-handling-inner .helper-text {
+  text-align: center;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container {
   display: flex;

@@ -72,14 +72,14 @@
                             <legend>{{localize "PF2EBestiary.Bestiary.NPC.CategoryHandlingTitle"}}</legend>
 
                             <div class="npc-category-handling-inner">
-                                <div>{{localize "PF2EBestiary.Bestiary.NPC.NPCCategoryDescription"}}</div>
+                                <div class="helper-text">{{localize "PF2EBestiary.Bestiary.NPC.NPCCategoryDescription"}}</div>
                                 <div class="category-container">
                                     <div class="category-section flexrow">
                                         <div class="category-label flex0">{{localize "PF2EBestiary.Bestiary.NPC.NewCategory"}}</div>
                                     </div>
                                     <div class="category-body flexrow">
                                         <input class="data-container primary-container" type="text" name="npcData.newCategory.text" value="{{this.npcState.newCategory.text}}" />
-                                        <button data-action="addNpcCategory" {{#if (not this.npcState.newCategory.text)}}disabled{{else}}class="primary-container"{{/if}}><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.Miscellaneous.Add"}}</button>
+                                        <button class="secondary-container" data-action="addNpcCategory" {{#if (not this.npcState.newCategory.text)}}disabled{{else}}class="primary-container"{{/if}}><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.Miscellaneous.Add"}}</button>
                                     </div>
                                 </div>
                                 <div class="category-container">
@@ -87,7 +87,7 @@
                                         <div class="category-label flex0">{{localize "PF2EBestiary.Bestiary.NPC.CategorySorting"}}</div>
                                     </div>
                                     <div class="category-body flexrow">
-                                        <select class="npcCategorySortSelect" data-dtype="Number">
+                                        <select class="npcCategorySortSelect primary-container" data-dtype="Number">
                                             {{selectOptions this.npcCategorySortOptions selected=this.settings.npc.categorySort valueAttr="value" labelAttr="name" localize=true}}
                                         </select>
                                     </div>
