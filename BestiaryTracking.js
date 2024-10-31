@@ -475,6 +475,13 @@ const rangeOptions = ["extreme", "high", "moderate", "low", "terrible"];
 const savingThrowPerceptionTable = {
   range: ["extreme", "high", "moderate", "low", "terrible"],
   values: {
+    "-2": {
+      extreme: 8,
+      high: 7,
+      moderate: 4,
+      low: 1,
+      terrible: -1,
+    },
     "-1": {
       extreme: 9,
       high: 8,
@@ -657,12 +664,25 @@ const savingThrowPerceptionTable = {
       low: 36,
       terrible: 32,
     },
+    24: {
+      extreme: 48,
+      high: 44,
+      moderate: 40,
+      low: 38,
+      terrible: 34,
+    },
   },
 };
 
 const acTable = {
   range: ["extreme", "high", "moderate", "low"],
   values: {
+    "-2": {
+      extreme: 17,
+      high: 14,
+      moderate: 13,
+      low: 11,
+    },
     "-1": {
       extreme: 18,
       high: 15,
@@ -819,12 +839,23 @@ const acTable = {
       moderate: 50,
       low: 48,
     },
+    25: {
+      extreme: 56,
+      high: 53,
+      moderate: 52,
+      low: 50,
+    },
   },
 };
 
 const hpTable = {
   range: ["high", "moderate", "low"],
   values: {
+    "-2": {
+      high: { high: 9, low: 9 },
+      moderate: { high: 8, low: 7 },
+      low: { high: 6, low: 5 },
+    },
     "-1": {
       high: { high: 9, low: 9 },
       moderate: { high: 8, low: 7 },
@@ -955,12 +986,23 @@ const hpTable = {
       moderate: { high: 508, low: 492 },
       low: { high: 383, low: 367 },
     },
+    25: {
+      high: { high: 633, low: 617 },
+      moderate: { high: 508, low: 492 },
+      low: { high: 383, low: 367 },
+    },
   },
 };
 
 const attributeTable = {
   range: ["extreme", "high", "moderate", "low"],
   values: {
+    "-2": {
+      extreme: null,
+      high: 3,
+      moderate: 2,
+      low: 0,
+    },
     "-1": {
       extreme: null,
       high: 3,
@@ -1117,12 +1159,27 @@ const attributeTable = {
       moderate: 9,
       low: 7,
     },
+    25: {
+      extreme: 13,
+      high: 12,
+      moderate: 9,
+      low: 7,
+    },
   },
 };
 
 const skillTable = {
   range: ["extreme", "high", "moderate", "low"],
   values: {
+    "-2": {
+      extreme: 6,
+      high: 3,
+      moderate: 2,
+      low: {
+        high: 0,
+        low: -1,
+      },
+    },
     "-1": {
       extreme: 8,
       high: 5,
@@ -1357,12 +1414,25 @@ const skillTable = {
         low: 33,
       },
     },
+    24: {
+      extreme: 50,
+      high: 47,
+      moderate: 42,
+      low: {
+        high: 40,
+        low: 35,
+      },
+    },
   },
 };
 
 const weaknessTable = {
   range: ["high", "low"],
   values: {
+    "-2": {
+      high: 1,
+      low: 1,
+    },
     "-1": {
       high: 1,
       low: 1,
@@ -1467,12 +1537,22 @@ const weaknessTable = {
       high: 26,
       low: 13,
     },
+    25: {
+      high: 26,
+      low: 13,
+    },
   },
 };
 
 const attackTable = {
   range: ["extreme", "high", "moderate", "low"],
   values: {
+    "-2": {
+      extreme: 8,
+      high: 6,
+      moderate: 4,
+      low: 2,
+    },
     "-1": {
       extreme: 10,
       high: 8,
@@ -1629,12 +1709,24 @@ const attackTable = {
       moderate: 42,
       low: 36,
     },
+    25: {
+      extreme: 48,
+      high: 46,
+      moderate: 44,
+      low: 38,
+    },
   },
 };
 
 const damageTable = {
   range: ["extreme", "high", "moderate", "low"],
   values: {
+    "-2": {
+      extreme: 2,
+      high: 1,
+      moderate: 1,
+      low: 0,
+    },
     "-1": {
       extreme: 4,
       high: 3,
@@ -1791,12 +1883,23 @@ const damageTable = {
       moderate: 44,
       low: 35,
     },
+    25: {
+      extreme: 70,
+      high: 54,
+      moderate: 46,
+      low: 37,
+    },
   },
 };
 
 const spellDCTable = {
   range: ["extreme", "high", "moderate"],
   values: {
+    "-2": {
+      extreme: 17,
+      high: 14,
+      moderate: 11,
+    },
     "-1": {
       extreme: 19,
       high: 16,
@@ -1927,12 +2030,22 @@ const spellDCTable = {
       high: 48,
       moderate: 45,
     },
+    24: {
+      extreme: 54,
+      high: 50,
+      moderate: 47,
+    },
   },
 };
 
 const spellAttackTable = {
   range: ["extreme", "high", "moderate"],
   values: {
+    "-2": {
+      extreme: 9,
+      high: 6,
+      moderate: 3,
+    },
     "-1": {
       extreme: 11,
       high: 8,
@@ -2063,12 +2176,22 @@ const spellAttackTable = {
       high: 40,
       moderate: 37,
     },
+    25: {
+      extreme: 54,
+      high: 42,
+      moderate: 39,
+    },
   },
 };
 
 const stealthDisableTable = {
   range: ["extreme", "high", "low"],
   values: {
+    "-2": {
+      extreme: 16,
+      high: 13,
+      low: { high: 10, low: 9 },
+    },
     "-1": {
       extreme: 18,
       high: 15,
@@ -2199,12 +2322,21 @@ const stealthDisableTable = {
       high: 55,
       low: { high: 48, low: 43 },
     },
+    25: {
+      extreme: 60,
+      high: 57,
+      low: { high: 50, low: 45 },
+    },
   },
 };
 
 const hardnessTable = {
   range: ["high", "low"],
   values: {
+    "-2": {
+      high: 2,
+      low: 1,
+    },
     "-1": {
       high: 4,
       low: 2,
@@ -2309,10 +2441,15 @@ const hardnessTable = {
       high: 50,
       low: 46,
     },
+    25: {
+      high: 54,
+      low: 50,
+    },
   },
 };
 
 const levelDCTable = {
+  "-2": 12,
   "-1": 13,
   0: 14,
   1: 15,
@@ -2340,6 +2477,7 @@ const levelDCTable = {
   23: 46,
   24: 48,
   25: 50,
+  26: 52,
 };
 
 const dcModificationTable = {
