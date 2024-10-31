@@ -9970,7 +9970,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   };
 }
 
-const currentVersion = "1.1.24";
+const currentVersion = "1.1.25";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -15220,10 +15220,15 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       const inCombatType =
         combatants &&
         combatants.find(
-          (x) =>
-            x.token?.baseActor?.uuid === entity.system.uuid ||
-            x.actorId === entity.system.id,
-        );
+          (x) => {
+            const token = x.token ?? game.combat.scene.tokens.find(token => token.actorId === x.actorId);
+            if(token){
+              return token.baseActor?.uuid === entity.system.uuid ||
+              x.actorId === entity.system.id;
+            }
+
+            return false;
+        });
       if (inCombatType) {
         acc
           .find((x) => x.value === "combat")
