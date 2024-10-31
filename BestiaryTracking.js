@@ -17229,6 +17229,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const dataItem = await fromUuid(data.uuid);
 
     const items =
+      !dataItem ? [data] :
       dataItem.collectionName === "folders"
         ? getAllFolderEntries(dataItem)
         : [dataItem];

@@ -2842,8 +2842,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     const data = TextEditor.getDragEventData(event);
     const dataItem = await fromUuid(data.uuid);
 
-    const items =
-      dataItem.collectionName === "folders"
+    const items = !dataItem
+      ? [data]
+      : dataItem.collectionName === "folders"
         ? getAllFolderEntries(dataItem)
         : [dataItem];
 
