@@ -212,7 +212,7 @@
         "ToggleHideTabs": "Kliknij prawym przyciskiem myszy, aby przełączyć ukrytą kartę"
       },
       "NPC": {
-        "NPCCategoryDescription": "Postacie niezależne są podzielone na kategorie stworzone przez MG. Możesz dodać jedną z nich poniżej. Kategorie można usuwać, klikając ich zakładki prawym przyciskiem myszy.",
+        "NPCCategoryDescription": "Postacie niezależne są posortowane według kategorii stworzonych przez MG. Kategorie można usuwać, klikając ich zakładki prawym przyciskiem myszy.",
         "NewCategory": "Nowa kategoria BN",
         "NPCViewText": "Przełącznik widoku BN",
         "EditModeText": "Przełącznik trybu edycji",
@@ -254,7 +254,15 @@
         "GMNotesPageTitle": "Strona",
         "GMPlayersContainerTitle": "Gracze",
         "GMPlayersContainerTip": "Upuszczenie czegokolwiek na obrazek gracza działa tak samo, jak upuszczenie go na token gracza.",
-        "GMTextZoneTip": "Przeciągnij i upuść dziennik na obszar tekstowy, aby zaimportować z niego tekst."
+        "GMTextZoneTip": "Przeciągnij i upuść dziennik na obszar tekstowy, aby zaimportować z niego tekst.",
+        "SortAlphabetical": "Sortuj alfabetycznie",
+        "CategoryHandlingTitle": "Obsługa kategorii BN",
+        "CategorySorting": "Sortowanie kategorii",
+        "CategorySortOptions": {
+          "Manual": "Ręczna kolejność",
+          "AscAlpha": "Alfabetycznie (rosnąco)",
+          "DescAlpha": "Alfabetycznie (malejąco)"
+        }
       },
       "Hazards": {
         "Simple": "Proste",
