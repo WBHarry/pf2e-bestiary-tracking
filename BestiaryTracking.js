@@ -2674,26 +2674,27 @@ const getCategoryRange = async (name) => {
     "pf2e-bestiary-tracking",
     "bestiary-labels",
   );
+
   switch (name) {
     case "ac":
-      return acTable.range.map((category) => vagueDescriptions.full[category]);
+      return acTable.range.map((category) => game.i18n.localize(vagueDescriptions.full[category]));
     case "hp":
-      return hpTable.range.map((category) => vagueDescriptions.full[category]);
+      return hpTable.range.map((category) => game.i18n.localize(vagueDescriptions.full[category]));
     case "attributes":
       return attributeTable.range.map(
-        (category) => vagueDescriptions.full[category],
+        (category) => game.i18n.localize(vagueDescriptions.full[category]),
       );
     case "saves":
       return savingThrowPerceptionTable.range.map(
-        (category) => vagueDescriptions.short[category],
+        (category) => game.i18n.localize(vagueDescriptions.short[category]),
       );
     case "perception":
       return savingThrowPerceptionTable.range.map(
-        (category) => vagueDescriptions.full[category],
+        (category) => game.i18n.localize(vagueDescriptions.full[category]),
       );
     case "skills":
       return skillTable.range.map(
-        (category) => vagueDescriptions.short[category],
+        (category) => game.i18n.localize(vagueDescriptions.short[category]),
       );
   }
 };
@@ -4586,6 +4587,7 @@ class Creature extends foundry.abstract.TypeDataModel {
           ),
           label: new fields.StringField({}),
           value: new fields.StringField({ required: true }),
+          custom: new fields.StringField({ nullable: true }),
           totalModifier: new fields.NumberField({
             required: false,
             integer: true,
@@ -15217,17 +15219,20 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     };
 
     const reduceFunc = (npcCategories, combatants) => (acc, entity) => {
+      combatants.forEach(x => x.token === null);
       const inCombatType =
         combatants &&
-        combatants.find(
-          (x) => {
-            const token = x.token ?? game.combat.scene.tokens.find(token => token.actorId === x.actorId);
-            if(token){
-              return token.baseActor?.uuid === entity.system.uuid ||
-              x.actorId === entity.system.id;
-            }
+        combatants.find((x) => {
+          const token =
+            x.token ??
+            game.combat.scene.tokens.find(
+              (token) => token.actorId === x.actorId,
+            );
 
-            return false;
+            return (
+              token?.baseActor?.uuid === entity.system.uuid ||
+              x.actorId === entity.system.id
+            );
         });
       if (inCombatType) {
         acc
@@ -17099,66 +17104,90 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "vague-descriptions",
     );
-    if (
-      vagueDescriptions.settings.misinformationOptions &&
-      vagueDescriptions.properties[event.currentTarget.dataset.vagueProperty]
-    ) {
-      const choices = await getCategoryRange(
-        event.currentTarget.dataset.vagueProperty,
-      );
-      const content = new foundry.data.fields.StringField({
-        label: game.i18n.format(
-          "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
-          { property: event.currentTarget.dataset.name },
-        ),
-        choices: choices,
-        required: true,
-      }).toFormGroup({}, { name: "misinformation" }).outerHTML;
+    const vagueProperty = event.currentTarget.dataset.vagueProperty;
 
-      async function callback(_, button) {
-        const choice =
-          choices[Number.parseInt(button.form.elements.misinformation.value)];
-        await setValue(choice);
+    if(event.altKey && vagueDescriptions.properties[vagueProperty]) {
+      const currentValue = game.i18n.localize(foundry.utils.getProperty(this.selected.monster, event.currentTarget.dataset.path).category).toLowerCase();
+      const getRandomValue = (table) => {
+        const choices = table.range.filter(x => x !== currentValue);
+        const randomChoice = choices[Math.floor(Math.random() * choices.length)];
+        return game.i18n.localize(`PF2EBestiary.Menus.BestiaryLabels.VagueDescriptions.ShortOptions.${randomChoice.capitalize()}`);
+      };
+
+      switch(vagueProperty){
+        case 'saves': setValue(getRandomValue(savingThrowPerceptionTable)); break;
+        case 'skills': setValue(getRandomValue(skillTable)); break;
+        case 'attributes': setValue(getRandomValue(attributeTable)); break;
+        case 'resistance':
+        case 'weakness':
+          setValue(getRandomValue(weaknessTable)); break;
+        case 'ac': setValue(getRandomValue(acTable)); break;
+        case 'hp': setValue(getRandomValue(hpTable)); break;
+        case 'perception': setValue(getRandomValue(savingThrowPerceptionTable)); break;
       }
-
-      await foundry.applications.api.DialogV2.prompt({
-        content: content,
-        rejectClose: false,
-        modal: true,
-        ok: { callback: callback },
-        window: {
-          title: game.i18n.localize(
-            "PF2EBestiary.Bestiary.Misinformation.Dialog.Title",
+    }
+    else {
+      if (
+        vagueDescriptions.settings.misinformationOptions &&
+        vagueDescriptions.properties[vagueProperty]
+      ) {
+        const choices = await getCategoryRange(
+          vagueProperty,
+        );
+        const content = new foundry.data.fields.StringField({
+          label: game.i18n.format(
+            "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
+            { property: event.currentTarget.dataset.name },
           ),
-        },
-        position: { width: 400 },
-      });
-    } else {
-      const content = new foundry.data.fields.StringField({
-        label: game.i18n.format(
-          "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
-          { property: event.currentTarget.dataset.name },
-        ),
-        required: true,
-      }).toFormGroup({}, { name: "misinformation" }).outerHTML;
+          choices: choices,
+          required: true,
+        }).toFormGroup({}, { name: "misinformation", localize: true }).outerHTML;
 
-      async function callback(_, button) {
-        const choice = button.form.elements.misinformation.value;
-        await setValue(choice);
+        async function callback(_, button) {
+          const choice =
+            choices[Number.parseInt(button.form.elements.misinformation.value)];
+          await setValue(choice);
+        }
+
+        await foundry.applications.api.DialogV2.prompt({
+          content: content,
+          rejectClose: false,
+          modal: true,
+          ok: { callback: callback },
+          window: {
+            title: game.i18n.localize(
+              "PF2EBestiary.Bestiary.Misinformation.Dialog.Title",
+            ),
+          },
+          position: { width: 400 },
+        });
+      } else {
+        const content = new foundry.data.fields.StringField({
+          label: game.i18n.format(
+            "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
+            { property: event.currentTarget.dataset.name },
+          ),
+          required: true,
+        }).toFormGroup({}, { name: "misinformation" }).outerHTML;
+
+        async function callback(_, button) {
+          const choice = button.form.elements.misinformation.value;
+          await setValue(choice);
+        }
+
+        await foundry.applications.api.DialogV2.prompt({
+          content: content,
+          rejectClose: false,
+          modal: true,
+          ok: { callback: callback },
+          window: {
+            title: game.i18n.localize(
+              "PF2EBestiary.Bestiary.Misinformation.Dialog.Title",
+            ),
+          },
+          position: { width: 400 },
+        });
       }
-
-      await foundry.applications.api.DialogV2.prompt({
-        content: content,
-        rejectClose: false,
-        modal: true,
-        ok: { callback: callback },
-        window: {
-          title: game.i18n.localize(
-            "PF2EBestiary.Bestiary.Misinformation.Dialog.Title",
-          ),
-        },
-        position: { width: 400 },
-      });
     }
   }
 

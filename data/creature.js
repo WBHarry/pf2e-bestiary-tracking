@@ -135,6 +135,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           ),
           label: new fields.StringField({}),
           value: new fields.StringField({ required: true }),
+          custom: new fields.StringField({ nullable: true }),
           totalModifier: new fields.NumberField({
             required: false,
             integer: true,

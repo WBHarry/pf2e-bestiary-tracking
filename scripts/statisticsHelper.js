@@ -184,26 +184,31 @@ export const getCategoryRange = async (name) => {
     "pf2e-bestiary-tracking",
     "bestiary-labels",
   );
+
   switch (name) {
     case "ac":
-      return acTable.range.map((category) => vagueDescriptions.full[category]);
+      return acTable.range.map((category) =>
+        game.i18n.localize(vagueDescriptions.full[category]),
+      );
     case "hp":
-      return hpTable.range.map((category) => vagueDescriptions.full[category]);
+      return hpTable.range.map((category) =>
+        game.i18n.localize(vagueDescriptions.full[category]),
+      );
     case "attributes":
-      return attributeTable.range.map(
-        (category) => vagueDescriptions.full[category],
+      return attributeTable.range.map((category) =>
+        game.i18n.localize(vagueDescriptions.full[category]),
       );
     case "saves":
-      return savingThrowPerceptionTable.range.map(
-        (category) => vagueDescriptions.short[category],
+      return savingThrowPerceptionTable.range.map((category) =>
+        game.i18n.localize(vagueDescriptions.short[category]),
       );
     case "perception":
-      return savingThrowPerceptionTable.range.map(
-        (category) => vagueDescriptions.full[category],
+      return savingThrowPerceptionTable.range.map((category) =>
+        game.i18n.localize(vagueDescriptions.full[category]),
       );
     case "skills":
-      return skillTable.range.map(
-        (category) => vagueDescriptions.short[category],
+      return skillTable.range.map((category) =>
+        game.i18n.localize(vagueDescriptions.short[category]),
       );
   }
 };
