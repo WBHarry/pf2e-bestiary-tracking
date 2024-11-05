@@ -2677,24 +2677,28 @@ const getCategoryRange = async (name) => {
 
   switch (name) {
     case "ac":
-      return acTable.range.map((category) => game.i18n.localize(vagueDescriptions.full[category]));
+      return acTable.range.map((category) =>
+        game.i18n.localize(vagueDescriptions.full[category]),
+      );
     case "hp":
-      return hpTable.range.map((category) => game.i18n.localize(vagueDescriptions.full[category]));
+      return hpTable.range.map((category) =>
+        game.i18n.localize(vagueDescriptions.full[category]),
+      );
     case "attributes":
-      return attributeTable.range.map(
-        (category) => game.i18n.localize(vagueDescriptions.full[category]),
+      return attributeTable.range.map((category) =>
+        game.i18n.localize(vagueDescriptions.short[category]),
       );
     case "saves":
-      return savingThrowPerceptionTable.range.map(
-        (category) => game.i18n.localize(vagueDescriptions.short[category]),
+      return savingThrowPerceptionTable.range.map((category) =>
+        game.i18n.localize(vagueDescriptions.short[category]),
       );
     case "perception":
-      return savingThrowPerceptionTable.range.map(
-        (category) => game.i18n.localize(vagueDescriptions.full[category]),
+      return savingThrowPerceptionTable.range.map((category) =>
+        game.i18n.localize(vagueDescriptions.full[category]),
       );
     case "skills":
-      return skillTable.range.map(
-        (category) => game.i18n.localize(vagueDescriptions.short[category]),
+      return skillTable.range.map((category) =>
+        game.i18n.localize(vagueDescriptions.full[category]),
       );
   }
 };
@@ -9972,7 +9976,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   };
 }
 
-const currentVersion = "1.1.25";
+const currentVersion = "1.1.26";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -15219,7 +15223,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     };
 
     const reduceFunc = (npcCategories, combatants) => (acc, entity) => {
-      combatants.forEach(x => x.token === null);
+      combatants.forEach((x) => x.token === null);
       const inCombatType =
         combatants &&
         combatants.find((x) => {
@@ -15229,10 +15233,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
               (token) => token.actorId === x.actorId,
             );
 
-            return (
-              token?.baseActor?.uuid === entity.system.uuid ||
-              x.actorId === entity.system.id
-            );
+          return (
+            token?.baseActor?.uuid === entity.system.uuid ||
+            x.actorId === entity.system.id
+          );
         });
       if (inCombatType) {
         acc
@@ -16208,7 +16212,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         });
         return {
           width: 400,
-          content: new foundry.data.fields.StringField({
+          content: `<div class="flexrow">
+          ${new foundry.data.fields.StringField({
             label: game.i18n.format(
               "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
               { property: name },
@@ -16223,7 +16228,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
               nameAttr: "value",
               labelAttr: "label",
             },
-          ).outerHTML,
+          ).outerHTML}
+          <button class="flex0 misinformation-randomise"><i class="fa-solid fa-arrows-rotate" style="margin: 0;" title="${game.i18n.localize("PF2EBestiary.Miscellaneous.Randomise")}"></i></button>
+          </div>`,
           getValue: (elements) => {
             if (!elements.misinformation?.value)
               return { value: null, errors: [`Fake ${name}`] };
@@ -16243,6 +16250,17 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
               errors: [],
             };
           },
+          functions: [
+            {
+              selector: "misinformation-randomise",
+              onClick: (event) => {
+                event.preventDefault();
+                const randomTrait = allTypes.indexOf(allTypes[Math.floor(Math.random() * allTypes.length)]).toString();
+                const input = event.currentTarget.parentElement.querySelector('[name="misinformation"]');
+                input.value = randomTrait;
+              },
+            }
+          ],
         };
       case "HazardTrait":
         const allHazardTypes = Object.keys(CONFIG.PF2E.hazardTraits)
@@ -16563,6 +16581,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const {
       content,
       getValue,
+      functions,
       width,
       tagify = [],
     } = this.getMisinformationDialogData(button.dataset.name);
@@ -16595,6 +16614,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     });
 
     await dialog.render(true);
+
+    for(var func of functions){
+      const functionElement = dialog.element.getElementsByClassName(func.selector)[0];
+      functionElement.onclick = func.onClick;
+    }
 
     for (var tag of tagify) {
       const element = $(dialog.element).find(`input[name="${tag.element}"]`);
@@ -17106,34 +17130,52 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     );
     const vagueProperty = event.currentTarget.dataset.vagueProperty;
 
-    if(event.altKey && vagueDescriptions.properties[vagueProperty]) {
-      const currentValue = game.i18n.localize(foundry.utils.getProperty(this.selected.monster, event.currentTarget.dataset.path).category).toLowerCase();
-      const getRandomValue = (table) => {
-        const choices = table.range.filter(x => x !== currentValue);
-        const randomChoice = choices[Math.floor(Math.random() * choices.length)];
-        return game.i18n.localize(`PF2EBestiary.Menus.BestiaryLabels.VagueDescriptions.ShortOptions.${randomChoice.capitalize()}`);
+    if (event.altKey && vagueDescriptions.properties[vagueProperty]) {
+      const { vagueDescriptions } = game.settings.get("pf2e-bestiary-tracking", "bestiary-labels");
+
+      const currentValue = foundry.utils.getProperty(
+        this.selected.monster,
+        event.currentTarget.dataset.path,
+      ).category;
+      const getRandomValue = (table, short) => {
+        const choices = table.range.reduce((acc, x) => {
+          const label = ['saves', 'attributes'].includes(vagueProperty) ? vagueDescriptions.short[x] : vagueDescriptions.full[x];
+          if(label !== currentValue){
+            acc.push(label);
+          }
+
+          return acc;
+        }, []);
+
+        return choices[Math.floor(Math.random() * choices.length)];
       };
 
-      switch(vagueProperty){
-        case 'saves': setValue(getRandomValue(savingThrowPerceptionTable)); break;
-        case 'skills': setValue(getRandomValue(skillTable)); break;
-        case 'attributes': setValue(getRandomValue(attributeTable)); break;
-        case 'resistance':
-        case 'weakness':
-          setValue(getRandomValue(weaknessTable)); break;
-        case 'ac': setValue(getRandomValue(acTable)); break;
-        case 'hp': setValue(getRandomValue(hpTable)); break;
-        case 'perception': setValue(getRandomValue(savingThrowPerceptionTable)); break;
+      switch (vagueProperty) {
+        case "saves":
+          setValue(getRandomValue(savingThrowPerceptionTable));
+          break;
+        case "skills":
+          setValue(getRandomValue(skillTable));
+          break;
+        case "attributes":
+          setValue(getRandomValue(attributeTable));
+          break;
+        case "ac":
+          setValue(getRandomValue(acTable));
+          break;
+        case "hp":
+          setValue(getRandomValue(hpTable));
+          break;
+        case "perception":
+          setValue(getRandomValue(savingThrowPerceptionTable));
+          break;
       }
-    }
-    else {
+    } else {
       if (
         vagueDescriptions.settings.misinformationOptions &&
         vagueDescriptions.properties[vagueProperty]
       ) {
-        const choices = await getCategoryRange(
-          vagueProperty,
-        );
+        const choices = await getCategoryRange(vagueProperty);
         const content = new foundry.data.fields.StringField({
           label: game.i18n.format(
             "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
@@ -17141,7 +17183,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           ),
           choices: choices,
           required: true,
-        }).toFormGroup({}, { name: "misinformation", localize: true }).outerHTML;
+        }).toFormGroup(
+          {},
+          { name: "misinformation", localize: true },
+        ).outerHTML;
 
         async function callback(_, button) {
           const choice =

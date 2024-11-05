@@ -196,7 +196,7 @@ export const getCategoryRange = async (name) => {
       );
     case "attributes":
       return attributeTable.range.map((category) =>
-        game.i18n.localize(vagueDescriptions.full[category]),
+        game.i18n.localize(vagueDescriptions.short[category]),
       );
     case "saves":
       return savingThrowPerceptionTable.range.map((category) =>
@@ -208,7 +208,7 @@ export const getCategoryRange = async (name) => {
       );
     case "skills":
       return skillTable.range.map((category) =>
-        game.i18n.localize(vagueDescriptions.short[category]),
+        game.i18n.localize(vagueDescriptions.full[category]),
       );
   }
 };

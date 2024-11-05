@@ -1802,22 +1802,27 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         });
         return {
           width: 400,
-          content: new foundry.data.fields.StringField({
-            label: game.i18n.format(
-              "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
-              { property: name },
-            ),
-            choices: allTypes,
-            required: true,
-          }).toFormGroup(
-            {},
-            {
-              name: "misinformation",
-              localize: true,
-              nameAttr: "value",
-              labelAttr: "label",
-            },
-          ).outerHTML,
+          content: `<div class="flexrow">
+          ${
+            new foundry.data.fields.StringField({
+              label: game.i18n.format(
+                "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
+                { property: name },
+              ),
+              choices: allTypes,
+              required: true,
+            }).toFormGroup(
+              {},
+              {
+                name: "misinformation",
+                localize: true,
+                nameAttr: "value",
+                labelAttr: "label",
+              },
+            ).outerHTML
+          }
+          <button class="flex0 misinformation-randomise"><i class="fa-solid fa-arrows-rotate" style="margin: 0;" title="${game.i18n.localize("PF2EBestiary.Miscellaneous.Randomise")}"></i></button>
+          </div>`,
           getValue: (elements) => {
             if (!elements.misinformation?.value)
               return { value: null, errors: [`Fake ${name}`] };
@@ -1837,6 +1842,23 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
               errors: [],
             };
           },
+          functions: [
+            {
+              selector: "misinformation-randomise",
+              onClick: (event) => {
+                event.preventDefault();
+                const randomTrait = allTypes
+                  .indexOf(
+                    allTypes[Math.floor(Math.random() * allTypes.length)],
+                  )
+                  .toString();
+                const input = event.currentTarget.parentElement.querySelector(
+                  '[name="misinformation"]',
+                );
+                input.value = randomTrait;
+              },
+            },
+          ],
         };
       case "HazardTrait":
         const allHazardTypes = Object.keys(CONFIG.PF2E.hazardTraits)
@@ -2157,6 +2179,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     const {
       content,
       getValue,
+      functions,
       width,
       tagify = [],
     } = this.getMisinformationDialogData(button.dataset.name);
@@ -2189,6 +2212,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     });
 
     await dialog.render(true);
+
+    for (var func of functions) {
+      const functionElement = dialog.element.getElementsByClassName(
+        func.selector,
+      )[0];
+      functionElement.onclick = func.onClick;
+    }
 
     for (var tag of tagify) {
       const element = $(dialog.element).find(`input[name="${tag.element}"]`);
@@ -2701,36 +2731,39 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     const vagueProperty = event.currentTarget.dataset.vagueProperty;
 
     if (event.altKey && vagueDescriptions.properties[vagueProperty]) {
-      const currentValue = game.i18n
-        .localize(
-          foundry.utils.getProperty(
-            this.selected.monster,
-            event.currentTarget.dataset.path,
-          ).category,
-        )
-        .toLowerCase();
-      const getRandomValue = (table) => {
-        const choices = table.range.filter((x) => x !== currentValue);
-        const randomChoice =
-          choices[Math.floor(Math.random() * choices.length)];
-        return game.i18n.localize(
-          `PF2EBestiary.Menus.BestiaryLabels.VagueDescriptions.ShortOptions.${randomChoice.capitalize()}`,
-        );
+      const { vagueDescriptions } = game.settings.get(
+        "pf2e-bestiary-tracking",
+        "bestiary-labels",
+      );
+
+      const currentValue = foundry.utils.getProperty(
+        this.selected.monster,
+        event.currentTarget.dataset.path,
+      ).category;
+      const getRandomValue = (table, short) => {
+        const choices = table.range.reduce((acc, x) => {
+          const label = ["saves", "attributes"].includes(vagueProperty)
+            ? vagueDescriptions.short[x]
+            : vagueDescriptions.full[x];
+          if (label !== currentValue) {
+            acc.push(label);
+          }
+
+          return acc;
+        }, []);
+
+        return choices[Math.floor(Math.random() * choices.length)];
       };
 
       switch (vagueProperty) {
         case "saves":
-          setValue(getRandomValue(savingThrowPerceptionTable));
+          setValue(getRandomValue(savingThrowPerceptionTable, true));
           break;
         case "skills":
           setValue(getRandomValue(skillTable));
           break;
         case "attributes":
-          setValue(getRandomValue(attributeTable));
-          break;
-        case "resistance":
-        case "weakness":
-          setValue(getRandomValue(weaknessTable));
+          setValue(getRandomValue(attributeTable, true));
           break;
         case "ac":
           setValue(getRandomValue(acTable));

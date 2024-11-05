@@ -125,7 +125,8 @@
       "AttackLabel": "Attack",
       "DCLabel": "DC",
       "BrowseFiles": "Browse Files",
-      "ClearFile": "Clear File"
+      "ClearFile": "Clear File",
+      "Randomise": "Randomise"
     },
     "Bestiary": {
       "Title": "Bestiary",
