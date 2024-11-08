@@ -815,7 +815,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     };
 
     const reduceFunc = (npcCategories, combatants) => (acc, entity) => {
-      combatants.forEach((x) => x.token === null);
+      combatants?.forEach((x) => x.token === null);
       const inCombatType =
         combatants &&
         combatants.find((x) => {
