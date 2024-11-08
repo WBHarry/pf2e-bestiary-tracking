@@ -14477,9 +14477,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "bestiary-journal-settings",
     );
-    const defaultCategory =
-      bestiaryJournalActive ||
-      !game.settings.get("pf2e-bestiary-tracking", "hide-tips")
+    const usedBestiaryTypes = getUsedBestiaryTypes();
+    const defaultCategory = usedBestiaryTypes.length > 1 && 
+      (bestiaryJournalActive ||
+      !game.settings.get("pf2e-bestiary-tracking", "hide-tips"))
         ? null
         : getUsedBestiaryTypes()[0];
 
@@ -16213,22 +16214,24 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         return {
           width: 400,
           content: `<div class="flexrow">
-          ${new foundry.data.fields.StringField({
-            label: game.i18n.format(
-              "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
-              { property: name },
-            ),
-            choices: allTypes,
-            required: true,
-          }).toFormGroup(
-            {},
-            {
-              name: "misinformation",
-              localize: true,
-              nameAttr: "value",
-              labelAttr: "label",
-            },
-          ).outerHTML}
+          ${
+            new foundry.data.fields.StringField({
+              label: game.i18n.format(
+                "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
+                { property: name },
+              ),
+              choices: allTypes,
+              required: true,
+            }).toFormGroup(
+              {},
+              {
+                name: "misinformation",
+                localize: true,
+                nameAttr: "value",
+                labelAttr: "label",
+              },
+            ).outerHTML
+          }
           <button class="flex0 misinformation-randomise"><i class="fa-solid fa-arrows-rotate" style="margin: 0;" title="${game.i18n.localize("PF2EBestiary.Miscellaneous.Randomise")}"></i></button>
           </div>`,
           getValue: (elements) => {
@@ -16255,11 +16258,17 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
               selector: "misinformation-randomise",
               onClick: (event) => {
                 event.preventDefault();
-                const randomTrait = allTypes.indexOf(allTypes[Math.floor(Math.random() * allTypes.length)]).toString();
-                const input = event.currentTarget.parentElement.querySelector('[name="misinformation"]');
+                const randomTrait = allTypes
+                  .indexOf(
+                    allTypes[Math.floor(Math.random() * allTypes.length)],
+                  )
+                  .toString();
+                const input = event.currentTarget.parentElement.querySelector(
+                  '[name="misinformation"]',
+                );
                 input.value = randomTrait;
               },
-            }
+            },
           ],
         };
       case "HazardTrait":
@@ -16615,8 +16624,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     await dialog.render(true);
 
-    for(var func of functions){
-      const functionElement = dialog.element.getElementsByClassName(func.selector)[0];
+    for (var func of functions) {
+      const functionElement = dialog.element.getElementsByClassName(
+        func.selector,
+      )[0];
       functionElement.onclick = func.onClick;
     }
 
@@ -17131,7 +17142,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const vagueProperty = event.currentTarget.dataset.vagueProperty;
 
     if (event.altKey && vagueDescriptions.properties[vagueProperty]) {
-      const { vagueDescriptions } = game.settings.get("pf2e-bestiary-tracking", "bestiary-labels");
+      const { vagueDescriptions } = game.settings.get(
+        "pf2e-bestiary-tracking",
+        "bestiary-labels",
+      );
 
       const currentValue = foundry.utils.getProperty(
         this.selected.monster,
@@ -17139,8 +17153,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       ).category;
       const getRandomValue = (table, short) => {
         const choices = table.range.reduce((acc, x) => {
-          const label = ['saves', 'attributes'].includes(vagueProperty) ? vagueDescriptions.short[x] : vagueDescriptions.full[x];
-          if(label !== currentValue){
+          const label = ["saves", "attributes"].includes(vagueProperty)
+            ? vagueDescriptions.short[x]
+            : vagueDescriptions.full[x];
+          if (label !== currentValue) {
             acc.push(label);
           }
 

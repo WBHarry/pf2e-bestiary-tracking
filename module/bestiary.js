@@ -67,9 +67,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "bestiary-journal-settings",
     );
+    const usedBestiaryTypes = getUsedBestiaryTypes();
     const defaultCategory =
-      bestiaryJournalActive ||
-      !game.settings.get("pf2e-bestiary-tracking", "hide-tips")
+      usedBestiaryTypes.length > 1 &&
+      (bestiaryJournalActive ||
+        !game.settings.get("pf2e-bestiary-tracking", "hide-tips"))
         ? null
         : getUsedBestiaryTypes()[0];
 
