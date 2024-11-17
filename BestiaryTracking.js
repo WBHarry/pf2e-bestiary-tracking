@@ -4661,6 +4661,7 @@ class Creature extends foundry.abstract.TypeDataModel {
           source: new fields.StringField({}),
           customLabel: new fields.StringField({}),
           value: new fields.NumberField({ required: true, integer: true }),
+          valueRevealed: new fields.BooleanField({ initial: false }),
           exceptions: new MappingField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
@@ -4681,6 +4682,7 @@ class Creature extends foundry.abstract.TypeDataModel {
           source: new fields.StringField({}),
           customLabel: new fields.StringField({}),
           value: new fields.NumberField({ required: true, integer: true }),
+          valueRevealed: new fields.BooleanField({ initial: false }),
           exceptions: new MappingField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
@@ -9976,7 +9978,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   };
 }
 
-const currentVersion = "1.1.26";
+const currentVersion = "1.1.27";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -10433,6 +10435,7 @@ const bestiaryDisplay = () => {
         attackTraits: false,
         damageTypes: false,
         abilityTraits: false,
+        iwr: true,
       },
     },
   );
@@ -12176,6 +12179,13 @@ const handleDataMigration = async () => {
     );
 
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
+  }
+
+  if(versionCompare(version, "1.1.27")){
+    await game.settings.set("pf2e-bestiary-tracking", "detailed-information-toggles", {
+      ...game.settings.get("pf2e-bestiary-tracking", "detailed-information-toggles"),
+      iwr: true,
+    });
   }
 
   await handleBestiaryMigration(

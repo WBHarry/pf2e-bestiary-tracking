@@ -634,6 +634,20 @@ export const handleDataMigration = async () => {
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
 
+  if (versionCompare(version, "1.1.27")) {
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "detailed-information-toggles",
+      {
+        ...game.settings.get(
+          "pf2e-bestiary-tracking",
+          "detailed-information-toggles",
+        ),
+        iwr: true,
+      },
+    );
+  }
+
   await handleBestiaryMigration(
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );

@@ -443,7 +443,8 @@
           "ExceptionsDoubleVs": "(IWR) Exceptions And Double",
           "AttackTraits": "Attack Traits",
           "DamageTypes": "Damage Types",
-          "AbilityTraits": "Ability Traits"
+          "AbilityTraits": "Ability Traits",
+          "IWR": "IWR"
         },
         "JournalSettings": {
           "Title": "Accompanying Journal",

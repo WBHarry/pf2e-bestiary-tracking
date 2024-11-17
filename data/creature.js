@@ -205,6 +205,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           source: new fields.StringField({}),
           customLabel: new fields.StringField({}),
           value: new fields.NumberField({ required: true, integer: true }),
+          valueRevealed: new fields.BooleanField({ initial: false }),
           exceptions: new MappingField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
@@ -225,6 +226,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           source: new fields.StringField({}),
           customLabel: new fields.StringField({}),
           value: new fields.NumberField({ required: true, integer: true }),
+          valueRevealed: new fields.BooleanField({ initial: false }),
           exceptions: new MappingField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({

@@ -108,7 +108,16 @@
                             >
                                 {{#if (and ../vagueDescriptions.properties.weaknesses (and weakness.category (not ../gmNumeric)))}}{{localize this.category}}{{/if}}
                                 <span>{{PF2EBTCaptialize (localize weakness.label)}}</span>
-                                {{#if (or (not ../vagueDescriptions.properties.weaknesses) (or (not weakness.category) ../gmNumeric))}}{{this.value}}{{/if}}
+                                {{#if (or (not ../vagueDescriptions.properties.weaknesses) (or (not weakness.category) ../gmNumeric))}}
+                                    <span 
+                                        class="toggle-container inner {{#if ../detailedInformation.iwr}}detailed primary-hover-container{{/if}} {{#if weakness.valueRevealed}}revealed{{/if}}" 
+                                        {{#if ../detailedInformation.iwr}}data-action="toggleRevealed"{{/if}}
+                                        data-path="{{concat 'system.weaknesses.' key}}"
+                                        data-key="valueRevealed"
+                                    >
+                                        {{this.value}}
+                                    </span>
+                                {{/if}}
                                 {{#if (gt (PF2EBTNrKeys weakness.exceptions) 0)}}
                                     <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                     {{#each weakness.exceptions as |exception index|}}
@@ -134,7 +143,7 @@
                         >
                             {{#if (and ../vagueDescriptions.properties.weaknesses this.category)}}{{localize this.category}}{{/if}}
                             <span>{{PF2EBTCaptialize (localize this.label)}}</span>
-                            {{#if (or (not ../vagueDescriptions.properties.weaknesses) (not this.category))}}{{this.value}}{{/if}}
+                            {{#if (and (or (not ../detailedInformation.iwr) this.valueRevealed) (or (not ../vagueDescriptions.properties.weaknesses) (not this.category)))}}{{this.value}}{{/if}}
                             {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
                                 {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}<span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>{{/if}}
                                 {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
@@ -172,7 +181,16 @@
                             >
                                 {{#if (and ../vagueDescriptions.properties.resistances (and this.category (not ../gmNumeric)))}}{{localize this.category}}{{/if}}
                                 <span>{{PF2EBTCaptialize (localize this.label)}}</span>
-                                {{#if (or (not ../vagueDescriptions.properties.resistances) (or (not this.category) ../gmNumeric))}}{{this.value}}{{/if}}
+                                {{#if (or (not ../vagueDescriptions.properties.resistances) (or (not this.category) ../gmNumeric))}}
+                                    <span 
+                                        class="toggle-container inner {{#if ../detailedInformation.iwr}}detailed primary-hover-container{{/if}} {{#if this.valueRevealed}}revealed{{/if}}" 
+                                        {{#if ../detailedInformation.iwr}}data-action="toggleRevealed"{{/if}}
+                                        data-path="{{concat 'system.resistances.' this.key}}"
+                                        data-key="valueRevealed"
+                                    >
+                                        {{this.value}}
+                                    </span>
+                                {{/if}}
                                 {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}
                                     <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                     {{#PF2EBTEach this.exceptions}}
@@ -222,7 +240,7 @@
                         >
                             {{#if (and ../vagueDescriptions.properties.resistances this.category)}}{{localize this.category}}{{/if}}
                             <span>{{PF2EBTCaptialize (localize this.label)}}</span>
-                            {{#if (or (not ../vagueDescriptions.properties.resistances) (not this.category))}}{{this.value}}{{/if}}
+                            {{#if (and (or (not ../detailedInformation.iwr) this.valueRevealed) (or (not ../vagueDescriptions.properties.resistances) (not this.category)))}}{{this.value}}{{/if}}
                             {{#if (and (gt (PF2EBTNrKeys this.exceptions ) 0) (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0)))}}
                                 <span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>
                                 {{#PF2EBTFilter 'revealed' '' 0 this.exceptions ../detailedInformation.exceptionsDouble}}
