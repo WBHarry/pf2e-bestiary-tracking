@@ -125,7 +125,8 @@
       "AttackLabel": "Atak",
       "DCLabel": "ST",
       "BrowseFiles": "Przeglądaj pliki",
-      "ClearFile": "Wyczyść plik"
+      "ClearFile": "Wyczyść plik",
+      "Randomise": "Losowo"
     },
     "Bestiary": {
       "Title": "Bestiariusz",
@@ -442,7 +443,8 @@
           "ExceptionsDoubleVs": "(NPO) Wyjątki i podwójne",
           "AttackTraits": "Cechy ataku",
           "DamageTypes": "Rodzaje obrażeń",
-          "AbilityTraits": "Cechy zdolności"
+          "AbilityTraits": "Cechy zdolności",
+          "IWR": "Niewrażliwości, Podatności, Odporności"
         },
         "JournalSettings": {
           "Title": "Dziennik uzupełniający",
