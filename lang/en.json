@@ -42,13 +42,13 @@
       "MissingName": "You must provide a name for the imported Bestiary Entry!"
     },
     "BestiarySelection": {
-      "Name": "Bestiary Selection",
+      "Name": "Bestiary Management",
       "AddBestiary": "Add New Bestiary",
       "MissingFolderError": "You have deleted the Bestiary folder. Cannot create new bestiary.",
       "EditDialogTitle": "Edit Bestiary",
       "BestiaryNameText": "Bestiary Name",
       "BestiaryImageText": "Bestiary Image",
-      "EditBestiaryTitle": "Edit",
+      "EditBestiaryTitle": "Settings",
       "ImportBestiaryTitle": "Import",
       "ExportBestiaryTitle": "Export",
       "DeleteBestiaryTitle": "Delete Bestiary",
@@ -134,7 +134,7 @@
       "ToggleActorSheet": "Toggle Actor Sheet",
       "WindowControls": {
         "RefreshBestiary": "Refresh Bestiary",
-        "BestiarySelection": "Change Bestiary",
+        "BestiarySelection": "Bestiary Management",
         "ResetBestiary": "Reset Bestiary",
         "RevealAll": "Reveal Creature",
         "HideAll": "Hide Creature",

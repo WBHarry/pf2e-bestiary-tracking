@@ -87,6 +87,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
       name: toggleStringField(),
       blurb: new fields.SchemaField({
         value: new fields.StringField({ nullable: true, initial: null }),
+        custom: new fields.StringField({ nullable: true }),
         revealed: new fields.BooleanField({ initial: false }),
       }),
       publication: new fields.SchemaField({

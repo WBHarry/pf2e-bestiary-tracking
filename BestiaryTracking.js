@@ -4543,6 +4543,7 @@ class Creature extends foundry.abstract.TypeDataModel {
       name: toggleStringField(),
       blurb: new fields.SchemaField({
         value: new fields.StringField({ nullable: true, initial: null }),
+        custom: new fields.StringField({ nullable: true }),
         revealed: new fields.BooleanField({ initial: false }),
       }),
       publication: new fields.SchemaField({
@@ -12181,11 +12182,18 @@ const handleDataMigration = async () => {
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
 
-  if(versionCompare(version, "1.1.27")){
-    await game.settings.set("pf2e-bestiary-tracking", "detailed-information-toggles", {
-      ...game.settings.get("pf2e-bestiary-tracking", "detailed-information-toggles"),
-      iwr: true,
-    });
+  if (versionCompare(version, "1.1.27")) {
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "detailed-information-toggles",
+      {
+        ...game.settings.get(
+          "pf2e-bestiary-tracking",
+          "detailed-information-toggles",
+        ),
+        iwr: true,
+      },
+    );
   }
 
   await handleBestiaryMigration(

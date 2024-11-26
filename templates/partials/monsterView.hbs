@@ -371,7 +371,7 @@
                 </div>
                 {{#if (and this.system.blurb.value (or this.user.isGM this.system.blurb.revealed))}}
                     <div class="monster-name monster-name-blurb primary-container {{PF2EBTToggleContainer this.user this.system.blurb}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.system.blurb}}" data-action="toggleRevealed" data-path="system.blurb" data-name="{{localize "PF2EBestiary.Miscellaneous.Blurb"}}">
-                        {{this.system.blurb.value}}
+                        {{PF2EBTTertiary this.system.blurb.custom this.system.blurb.value}}
                     </div>
                 {{/if}}
             </div>
