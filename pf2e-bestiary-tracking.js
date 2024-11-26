@@ -150,6 +150,14 @@ Hooks.once("setup", () => {
           return wrapped(...args);
         }
 
+        var actorIsItemPile =
+          game.modules.get("item-piles")?.active &&
+          args[0].currentTarget.actor.flags["item-piles"] &&
+          args[0].currentTarget.actor.flags["item-piles"].data?.enabled;
+        if (actorIsItemPile && !args[0].altKey) {
+          return wrapped(...args);
+        }
+
         const bestiary = game.journal.get(
           game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
         );
