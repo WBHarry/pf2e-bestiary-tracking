@@ -9979,7 +9979,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   };
 }
 
-const currentVersion = "1.1.27";
+const currentVersion = "1.1.28";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -13274,11 +13274,17 @@ const handleDeactivatedPages = async () => {
 };
 
 const handleJournalPermissions = () => {
-  game.journal.filter(x => x.pages.some(x => [
-    "pf2e-bestiary-tracking.creature",
-    "pf2e-bestiary-tracking.npc",
-    "pf2e-bestiary-tracking.hazard",
-  ].includes(x.type))).forEach(journal => journal.update({ "ownership": { default: 3 } }));
+  game.journal
+    .filter((x) =>
+      x.pages.some((x) =>
+        [
+          "pf2e-bestiary-tracking.creature",
+          "pf2e-bestiary-tracking.npc",
+          "pf2e-bestiary-tracking.hazard",
+        ].includes(x.type),
+      ),
+    )
+    .forEach((journal) => journal.update({ ownership: { default: 3 } }));
 };
 
 const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$4, ApplicationV2: ApplicationV2$4 } = foundry.applications.api;
@@ -18693,7 +18699,7 @@ Hooks.on("updateChatMessage", async (message, { flags }) => {
     "pf2e-bestiary-tracking",
     "chat-message-handling",
   );
-  const appliedDamage = flags["pf2e-toolbelt"]?.targetHelper?.applied;
+  const appliedDamage = flags ? flags["pf2e-toolbelt"]?.targetHelper?.applied : null;
   if (appliedDamage && automaticReveal.iwr) {
     let damageTypes =
       message.rolls && message.rolls.length > 0
