@@ -26,7 +26,7 @@ export default class RegisterHandlebarsHelpers {
 
   static monsterValue(prop, flag, ignoreLabel, context) {
     return (
-      prop.custom ??
+      game.i18n.localize(prop.custom) ??
       (flag &&
       (!game.user.isGM ||
         !game.settings.get("pf2e-bestiary-tracking", "vague-descriptions")

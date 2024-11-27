@@ -17810,7 +17810,7 @@ class RegisterHandlebarsHelpers {
 
   static monsterValue(prop, flag, ignoreLabel, context) {
     return (
-      prop.custom ??
+      game.i18n.localize(prop.custom) ??
       (flag &&
       (!game.user.isGM ||
         !game.settings.get("pf2e-bestiary-tracking", "vague-descriptions")
@@ -17834,8 +17834,8 @@ class RegisterHandlebarsHelpers {
       containerClass = containerClass.concat(" revealed ");
     if (user.isGM) {
       containerClass = containerClass.concat(" toggle-container");
-      if (property.custom || property.fake)
-        containerClass = containerClass.concat(" misinformation");
+    if (property.custom || property.fake)
+      containerClass = containerClass.concat(" misinformation");
     }
 
     return containerClass;
@@ -18699,7 +18699,9 @@ Hooks.on("updateChatMessage", async (message, { flags }) => {
     "pf2e-bestiary-tracking",
     "chat-message-handling",
   );
-  const appliedDamage = flags ? flags["pf2e-toolbelt"]?.targetHelper?.applied : null;
+  const appliedDamage = flags
+    ? flags["pf2e-toolbelt"]?.targetHelper?.applied
+    : null;
   if (appliedDamage && automaticReveal.iwr) {
     let damageTypes =
       message.rolls && message.rolls.length > 0

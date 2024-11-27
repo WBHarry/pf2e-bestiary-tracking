@@ -703,6 +703,7 @@
 
       .toggle-container {
         cursor: pointer;
+        line-height: 1;
 
         &.inner.detailed:not(.revealed) {
           text-decoration: line-through;
@@ -717,7 +718,11 @@
           text-decoration-line: underline;
           text-decoration-thickness: 1px;
           text-decoration-style: wavy;
-          text-decoration-line: grammar-error;
+          text-decoration-color: var(--pf2e-bestiary-tracking-primary-color);
+          font-family: "Font Awesome 5 Pro";
+          font-style: italic;
+          font-variant-caps: all-small-caps;
+          text-shadow: 0 0 2px var(--pf2e-bestiary-tracking-primary-color);
         }
       }
 
