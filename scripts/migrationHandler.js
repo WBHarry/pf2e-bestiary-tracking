@@ -20,6 +20,7 @@ export const handleDataMigration = async () => {
   if (!game.user.isGM) return;
 
   await handleDeactivatedPages();
+  await handleJournalPermissions();
 
   var version = game.settings.get("pf2e-bestiary-tracking", "version");
   if (!version) {
@@ -1722,4 +1723,18 @@ const handleDeactivatedPages = async () => {
       "deactivated-data",
     );
   }
+};
+
+const handleJournalPermissions = () => {
+  game.journal
+    .filter((x) =>
+      x.pages.some((x) =>
+        [
+          "pf2e-bestiary-tracking.creature",
+          "pf2e-bestiary-tracking.npc",
+          "pf2e-bestiary-tracking.hazard",
+        ].includes(x.type),
+      ),
+    )
+    .forEach((journal) => journal.update({ ownership: { default: 3 } }));
 };

@@ -11568,6 +11568,7 @@ const handleDataMigration = async () => {
   if (!game.user.isGM) return;
 
   await handleDeactivatedPages();
+  await handleJournalPermissions();
 
   var version = game.settings.get("pf2e-bestiary-tracking", "version");
   if (!version) {
@@ -13270,6 +13271,14 @@ const handleDeactivatedPages = async () => {
       "deactivated-data",
     );
   }
+};
+
+const handleJournalPermissions = () => {
+  game.journal.filter(x => x.pages.some(x => [
+    "pf2e-bestiary-tracking.creature",
+    "pf2e-bestiary-tracking.npc",
+    "pf2e-bestiary-tracking.hazard",
+  ].includes(x.type))).forEach(journal => journal.update({ "ownership": { default: 3 } }));
 };
 
 const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$4, ApplicationV2: ApplicationV2$4 } = foundry.applications.api;
@@ -18176,8 +18185,10 @@ Hooks.once("setup", () => {
         }
 
         var actorIsItemPile =
-          game.modules.get("item-piles")?.active && args[0].currentTarget.actor.flags['item-piles'] && args[0].currentTarget.actor.flags['item-piles'].data?.enabled;
-        if(actorIsItemPile && !args[0].altKey){
+          game.modules.get("item-piles")?.active &&
+          args[0].currentTarget.actor.flags["item-piles"] &&
+          args[0].currentTarget.actor.flags["item-piles"].data?.enabled;
+        if (actorIsItemPile && !args[0].altKey) {
           return wrapped(...args);
         }
 
