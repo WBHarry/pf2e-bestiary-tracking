@@ -42,13 +42,13 @@
       "MissingName": "Musisz podać nazwę dla importowanego wpisu do Bestiariusza!"
     },
     "BestiarySelection": {
-      "Name": "Wybór bestiariusza",
+      "Name": "Zarządzanie bestiariuszem",
       "AddBestiary": "Dodaj nowy bestiariusz",
       "MissingFolderError": "Folder Bestiariusza został usunięty. Nie można utworzyć nowego bestiariusza.",
       "EditDialogTitle": "Edytuj Bestiariusz",
       "BestiaryNameText": "Nazwa Bestiariusza",
       "BestiaryImageText": "Obraz Bestiariusza",
-      "EditBestiaryTitle": "Edytuj",
+      "EditBestiaryTitle": "Ustawienia",
       "ImportBestiaryTitle": "Importuj",
       "ExportBestiaryTitle": "Eksportuj",
       "DeleteBestiaryTitle": "Usuń Bestiariusz",
@@ -134,7 +134,7 @@
       "ToggleActorSheet": "Przełącz kartę aktora",
       "WindowControls": {
         "RefreshBestiary": "Odśwież Bestiariusz",
-        "BestiarySelection": "Zmiana Bestiariusza",
+        "BestiarySelection": "Zarządzanie bestiariuszem",
         "ResetBestiary": "Reset Bestiariusza",
         "RevealAll": "Ujawnij stworzenie",
         "HideAll": "Ukryj stworzenie",
