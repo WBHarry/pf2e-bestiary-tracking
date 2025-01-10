@@ -1,0 +1,693 @@
+{
+  "PF2EBestiary": {
+    "Name": "Bestiary Tracker",
+    "BestiaryName": "Bestiário",
+    "KeyBindings": {
+      "OpenBestiary": {
+        "Name": "Abrir Bestiário",
+        "Hint": "Abre o bestiário"
+      },
+      "OpenBestiaryCombat": {
+        "Name": "Abre a Seção Combate do Bestiário",
+        "Hint": "Leva você diretamente a todas as criaturas envolvidas no combate"
+      },
+      "ShowMonster": {
+        "Name": "Mostrar Monstro",
+        "Hint": "Abre o bestiário para a criatura sob a mira ou seleção"
+      },
+      "AddMonster": {
+        "Name": "Adicionar Monstro",
+        "Hint": "Adiciona ao bestiário a criatura sob a mira ou seleção"
+      }
+    },
+    "Themes": {
+      "Default": "Padrão",
+      "CoreLight": "Modo Claro",
+      "CoreDark": "Modo Escuro",
+      "Nebula": "Nebulosa",
+      "Viscera": "Visceral",
+      "Water": "Aquático"
+    },
+    "DegreeOfSuccess": {
+      "CriticalSuccess": "Sucesso Crítico",
+      "Success": "Sucesso",
+      "Failure": "Falha",
+      "CriticalFailure": "Falha Crítica"
+    },
+    "ImportDialog": {
+      "JournalTitle": "Importe de Bestiário",
+      "EntryTitle": "Importar Registro do Bestiário",
+      "FaultyImport": "O arquivo JSON selecionado não é válido como Registro do Bestiário.",
+      "UnusedBestiaryType": "Você não está usando este tipo de Registro do Bestiário. Verifique as configurações do módulo.",
+      "MissingName": "Você deve fornecr um nome para o Registro do Bestiário!"
+    },
+    "BestiarySelection": {
+      "Name": "Gestão de Bestiário",
+      "AddBestiary": "Adicionar Novo Bestiário",
+      "MissingFolderError": "Você deletou a pasta Bestiário. Não é possível criar um novo bestiário.",
+      "EditDialogTitle": "Editar Bestiário",
+      "BestiaryNameText": "Nome do Bestiário",
+      "BestiaryImageText": "Imagem do Bestiário",
+      "EditBestiaryTitle": "Configurações",
+      "ImportBestiaryTitle": "Importar",
+      "ExportBestiaryTitle": "Exportar",
+      "DeleteBestiaryTitle": "Deletar Bestiário",
+      "DeleteBestiaryText": "Você tem certeza que deseja deletar este bestiário?",
+      "ImportOldSaves": "Importar Espaços de Armazenamento Antigos",
+      "OldSaveStateImported": "Espaço de armazenamento antigo importado com sucesso. Sinta-se livre para deletá-lo.",
+      "OldSaveInvalid": "O arquivo que você tentou importar é inválido."
+    },
+    "LinkMenu": {
+      "Title": "Menu de Vinculação de Atores",
+      "DuplicatesLinkedInfo": "{nr} duplicar atores vinculados",
+      "NewLink": "Nova Vinculação",
+      "NewLinkTip": "Arrastar Ator Para Vincular",
+      "Notifications": {
+        "DuplicatesImported": "{nr} duplicar atores encontrados.",
+        "MissmatchedType": "Erro de conrrespodência no tipo de entidade. O ator arrastado é {novo} e não é o {atual}.",
+        "ActorAlreadyLinked": "O Ator já está vinculado"
+      }
+    },
+    "ActorLinkSettingsMenu": {
+      "Title": "Configurações de Vinculação de Atores",
+      "ImportSettings": "Seções a copiar",
+      "General": "Seção Geral",
+      "Influence": "Seção de Influência",
+      "Notes": "Seção de Notas",
+      "GM": "Seção do Mestre",
+      "Import": "Importar"
+    },
+    "Miscellaneous": {
+      "Name": "Nome",
+      "Blurb": "Informação de Nome",
+      "Title": "Título",
+      "Level": "Nível",
+      "AC": "CA",
+      "HP": "PVs",
+      "Defenses": "Defesas",
+      "Initiative": "Iniciativa",
+      "Immunities": "Immunidades",
+      "None": "Nenhuma",
+      "Weaknesses": "Fraquezas",
+      "Weakness": "Fraqueza",
+      "Resistances": "Resistências",
+      "Resistance": "Resistência",
+      "Saves": {
+        "Title": "Salvamentos",
+        "Fortitude": {
+          "Short": "Fort"
+        },
+        "Reflex": {
+          "Short": "Refl"
+        },
+        "Will": {
+          "Short": "Vont"
+        }
+      },
+      "Speeds": "Velocidades",
+      "Attributes": "Modificadores de Atributos",
+      "Perception": "Percepção,
+      "Senses": "Sentidos",
+      "Attacks": "Ataques",
+      "Languages": "Idiomas",
+      "Skills": "Perícias",
+      "Actions": "Ações",
+      "Passives": "Passivas",
+      "Save": "Salvar",
+      "Close": "Fechar",
+      "Except": "exceto",
+      "Double": "dobro",
+      "Or": "ou",
+      "NPC": "PNJ",
+      "Add": "Adicionar",
+      "Confirm": "Confirmar",
+      "Cancel": "Cancelar",
+      "AttackLabel": "Ataque",
+      "DCLabel": "CD",
+      "BrowseFiles": "Navegar nos Diretórios",
+      "ClearFile": "Limpar Diretórios",
+      "Randomise": "Selecionar Aleatoriamente"
+    },
+    "Bestiary": {
+      "Title": "Bestiário",
+      "PreviewTitle": "Prévia do Bestiário",
+      "ToggleActorSheet": "Alternar Ficha de Ator",
+      "WindowControls": {
+        "RefreshBestiary": "Atualizar Bestiário",
+        "BestiarySelection": "Gestão de Bestiário",
+        "ResetBestiary": "Redefinir Bestiário",
+        "RevealAll": "Revelar Criatura",
+        "HideAll": "Ocultar Creatura",
+        "OpenActorSheet": "AbrirFichaAtor",
+        "ExportEntity": "Exportar Entidade",
+        "ImportEntity": "Importar Entidade",
+        "ExportBestiary": "Exportar Bestiário",
+        "TransformCreature": "Transformar em PNJ",
+        "TransformNPC": "Transformar em Criatura"
+      },
+      "Category": {
+        "Creatures": "Criaturas",
+        "NPC": "Galeria de PNJs",
+        "Hazards": "Perigos"
+      },
+      "Welcome": {
+        "Greeting": "Bem Vindo(a) ao Bestiário!",
+        "PlayersSection": {
+          "Title": "Para Jogadores",
+          "ThemingTip": "Selecione o seu tema visual favorito para o Bestiário nas configurações do módulo",
+          "NavigationTip": "Navigue entre diferentes categorias de criaturas usandos os marcadores à esquerda.",
+          "MacroTip": "Verifique o compêndio do módulo e adicione macros úteis à sua hotbar."
+        },
+        "GMsSection": {
+          "Title": "Para Mestres",
+          "AddCreaturesTip": "Adicione novas criaturas que os Jogadores encontraram arrastando-as para bestiário.",
+          "ModuleSettingsTip": "Personalize o comportamento do módulo e a forma como informações de criaturas são apresentadas nas configurações do módulo.",
+          "ToggleInformationTip": "Alterna as informações conhecidas sobre criaturas individuais à medida que os jogadores aprendem.",
+          "ToggleMisinformationTip": "Alterne a desinformação em um campo. Insira informações falsas e remova-as da mesma forma.",
+          "RecallKnowledgeRulesTitle": "Regras de Recordar Conhecimento",
+          "RecallKnowledgeJournalMissing": "Arraste um Jornal até aqui para fornecer informações sobre sobre as regras de recordar conhecimento.",
+          "RecallKnowledgeAttachedNotification": "Você adicionou um campo de regras de recordar conhecimento."
+        }
+      },
+      "ReturnMessages": {
+        "ReturnToCategory": "Voltar para a categoria {type}",
+        "ReturnToWelcome": "Voltar para a página principal"
+      },
+      "CategoryView": {
+        "EmptyText": "Nenhuma criatura da categoria {category} foi encontrada até agora. Aproveite enquanto você pode.",
+        "UnknownText": "Perigos desconhecidos estão sempre à espreita..",
+        "EmptyCategoryText": "Você não conheceu ninguém que se encaixa nesta classificação",
+        "EmptyHazardText": "Você ainda não deu de cara com um Perigo {category}. Ainda.",
+        "UnaffiliatedText": "Você não conhece nenhuma pessoa sem filiações.."
+      },
+      "AvatarMenu": {
+        "Title": "Meno de Avatares",
+        "HideState": "Filtro de Imagens",
+        "HideImage": "Ocultar Imagens",
+        "Save": "Aplicar Mudanças"
+      },
+      "Miscellaneous": {
+        "UnknownCreature": "Criatura Desconhecida",
+        "UnknownNPC": "PNJ Desconhecido",
+        "UnknownHazard": "Perigo Desconhecido",
+        "Unknown": "Desconhecido",
+        "Unaffiliated": "Sem Filiação",
+        "InCombat": "Em Combate",
+        "CategoryPlaceholder": "Adicione categorias em que o PNJ está afiliado",
+        "LeftClick": "Clique Com o Botão Esquerdo",
+        "RightClick": "Clique Com o Botão Direito",
+        "RecallKnowledgeAttempts": "Tentativas de Recordar Conhecimento"
+      },
+      "Tabs": {
+        "Statistics": "Estatísticas",
+        "Spells": "Magias",
+        "Lore": "Saberes",
+        "Notes": "Anotações"
+      },
+      "NPCTabs": {
+        "General": "Geral",
+        "Influence": "Influência",
+        "GM": "Mestre"
+      },
+      "Tips": {
+        "ToggleHideTabs": "Clique com o botão direito do mouse para alternar entre uma aba oculta"
+      },
+      "NPC": {
+        "NPCCategoryDescription": "PNJs são dispostos em categorias criadas pelo Mestre. Remova categorias ao clicar com o botão direito do mouse em seus marcadores.",
+        "NewCategory": "Nova Categoria de PNJ",
+        "NPCViewText": "Alternar Visibilidade do PNJ",
+        "EditModeText": "Alternar Modo de Edição",
+        "NPCSimpleText": "Alternar PNJ Simplificado",
+        "Dispositions": "Inclinações",
+        "Height": "Altura",
+        "Weight": "Peso",
+        "Personality": "Personalidade",
+        "Appearance": "Aparência",
+        "Background": "Biografia",
+        "Disposition": {
+          "Helpful": "Prestativo",
+          "Friendly": "Amistoso",
+          "Indifferent": "Indiferente",
+          "Unfriendly": "Inamistoso",
+          "Hostile": "Hostil"
+        },
+        "Discovery": "Discoberta",
+        "InfluenceSkills": "Perícias de Influência",
+        "Influence": "Influência",
+        "Weaknesses": "Fraquezas",
+        "Resistances": "Resistências",
+        "Penalties": "Penalidades",
+        "SkillLabel": "Perícias",
+        "DCLabel": "CD",
+        "LoreLabel": "Sabers",
+        "DescriptionLabel": "Descrição",
+        "InfluencePointsLabel": "Pontos de Influência",
+        "IWRModifierLabel": "Modificadores",
+        "Active": "Ativado",
+        "Inactive": "Desativado",
+        "ToggleModifier": "Alternar Modificadores",
+        "PremiseLabel": "Premissa",
+        "TransformCreatureTitle": "Transformar em PNJ",
+        "TransformNPCTitle": "Transformar em Criatura",
+        "TransformNPCText": "Você tem certeza que deseja transformar este PNJ em uma criatura? Qualquer dado de PNJ adicionado será perdido.",
+        "GMNotesImportTitle": "Importar Anotações de Mestre dos Jornais",
+        "GMNotesImportText": "Selecione uma página para importar o texto. Isto irá sobrescrever qualquer texto existente nas Anotações de Mestre.",
+        "GMNotesPageTitle": "Página",
+        "GMPlayersContainerTitle": "Jogadores",
+        "GMPlayersContainerTip": "Arrastar qualquer item sobre a imagem de um jogador funciona da mesma forma que largar um objeto sobre o token do jogador.",
+        "GMTextZoneTip": "Drag and drop a journal onto the text area to import text from it.",
+        "SortAlphabetical": "Organizar em Ordem Alfabética",
+        "CategoryHandlingTitle": "NPC Category Handling",
+        "CategorySorting": "Organização de Categorias",
+        "CategorySortOptions": {
+          "Manual": "Ordem Manual",
+          "AscAlpha": "Alfabética (Crescente)",
+          "DescAlpha": "Alfabética (Decrescente)"
+        }
+      },
+      "Hazards": {
+        "Simple": "Simples",
+        "Complex": "Complexa",
+        "StealthTitle": "Furtividade",
+        "DescriptionTitle": "Descrição",
+        "DisableTitle": "Disabilitar",
+        "ResetTitle": "Redefinir",
+        "RoutineTitle": "Routina",
+        "Hardness": "DUREZA"
+      },
+      "Lore": {
+        "Public": "Descrição",
+        "Private": "Anotações Privadas"
+      },
+      "PlayerNotes": {
+        "Title": "Anotações de Jogador"
+      },
+      "GMNotes": {
+        "Title": "Anotações de Mestre"
+      },
+      "Misinformation": {
+        "AddMisinformation": "Adicionar Desinformação",
+        "Dialog": {
+          "Title": "Selecionar Desinformação",
+          "SelectLabel": "{property} Falsa",
+          "Traitlabel": "Traços",
+          "Attack": {
+            "Range": "Alcance",
+            "Actions": "Ações",
+            "Damage": "Dano"
+          },
+          "Ability": {
+            "Description": "Descrição"
+          },
+          "Errors": {
+            "RequiredFields": "Campos obrigatórios não preenchidos: {fields}"
+          }
+        }
+      },
+      "UnlinkedDialog": {
+        "Title": "Manuseio de Criação Desvinculado",
+        "Content": "A critura atual não possui um ator no mundo. Você gostaria de criar um?"
+      },
+      "Errors": {
+        "UnsupportedType": "O tipo de ator não possui suporte!",
+        "DataMissing": "Alguns dados estão em falta. Você terá que reimportar a criatura. Sinto muito por isso.",
+        "ActorMissing": "Esta entidade não possui um Ator vinculado existente no mundo."
+      },
+      "Info": {
+        "GMOnly": "This is a GM only function.",
+        "AddedToBestiary": "[{creatures}] were added to the Bestiary",
+        "AlreadyExistsInBestiary": "[{creatures}] already exists in the Bestiary.",
+        "BestiaryEntryLinkTip": "Copy link (+Alt to send to chat)",
+        "BestiaryEntryLink": "Bestiary Entry {entity} copied to clipboard.",
+        "RefreshStarted": "Bestiary refresh started",
+        "RefreshFinished": "Bestiary refresh finished",
+        "RefreshFinishedPartial": "Bestiary refresh finished. Some entities did not have linked actors and were not refreshed [{entities}]"
+      },
+      "Sheet": {
+        "BestiaryAddTitle": "Add To Bestiary",
+        "BestiaryAddText": "This actor is not currently in the Bestiary. Do you want to add it?",
+        "BestiaryOptions": {
+          "No": "No",
+          "Icon": "Icon",
+          "IconAndText": "IconAndText"
+        }
+      },
+      "RemoveBookmarkTitle": "Remove Category",
+      "RemoveBookmarkText": "Are you sure you want to remove the {category} category?",
+      "ResetRecallAttemptsTitle": "Reset Recall Attempts",
+      "ResetRecallAttemptsText": "Are you sure you want to reset the recall attempt history of {character}?"
+    },
+    "Menus": {
+      "Title": "Bestiary Tracking",
+      "Data": {
+        "Name": "Bestiary data",
+        "Hint": "Monster data for the Bestiary."
+      },
+      "VagueDescriptions": {
+        "Name": "Vague Descriptions",
+        "Hint": "Toggle which monster qualities should be displayed using High/Medium/Low instead of exact values.",
+        "Menu": {
+          "Name": "Vague Descriptions",
+          "Label": "Vague Description Settings",
+          "Hint": "Toggle monster properties where values should be vague",
+          "Options": {
+            "AC": "AC",
+            "HP": "HP",
+            "Hardness": "Hardness",
+            "Immunities": "Immunities",
+            "Resistances": "Resistances",
+            "Weaknesses": "Weaknesses",
+            "Saves": "Saves",
+            "Perception": "Perception",
+            "Speed": "Speed",
+            "Attributes": "Attributes",
+            "Skills": "Skills",
+            "Spells": "Spells",
+            "Attacks": "Attacks",
+            "Damage": "Damage",
+            "Initiative": "Initiative/Stealth (Hazards)",
+            "PlayerBased": "Base Descriptions On Player Level",
+            "MisinformationOptions": "Vague Misinformation Categories",
+            "GMNumeric": "GM Sees Exact Values",
+            "SimpleSaves": "Comparative Save Descriptions"
+          },
+          "Sections": {
+            "Properties": {
+              "Title": "Vague Properties"
+            },
+            "Settings": {
+              "Title": "Settings"
+            }
+          }
+        }
+      },
+      "BestiaryLabels": {
+        "Name": "Bestiary Labels",
+        "Hint": "Exchange labels used in the bestiary for custom ones",
+        "Menu": {
+          "Name": "Bestiary Labels",
+          "Label": "Bestiary Label Settings",
+          "Hint": "Customize labels and used in the Bestiary"
+        },
+        "VagueDescriptions": {
+          "Name": "Vague Descriptions",
+          "FullOptions": {
+            "Extreme": "Extreme",
+            "High": "High",
+            "Moderate": "Moderate",
+            "Low": "Low",
+            "Terrible": "Terrible"
+          },
+          "ShortOptions": {
+            "Extreme": "Ex",
+            "High": "High",
+            "Moderate": "Mod",
+            "Low": "Low",
+            "Terrible": "Ter"
+          }
+        }
+      },
+      "BestiaryDisplay": {
+        "Name": "Bestiary Contents",
+        "Menu": {
+          "Name": "Bestiary Contents",
+          "Label": "Bestiary Content Settings",
+          "Hint": "Customize what is displayed, and how it's displayed within the Bestiary"
+        },
+        "PositionOptions": {
+          "Top": "Top",
+          "Center": "Center",
+          "Bottom": "Bottom"
+        },
+        "UsedSections": {
+          "Name": "Used Sections Of The Bestiary",
+          "Creature": "Creatures",
+          "NPC": "NPC Gallery",
+          "Hazard": "Hazards",
+          "Position": "Sections Position"
+        },
+        "AdditionalCreatureTypes": {
+          "Name": "Additional Creature Types",
+          "SubText": "You can add more available creature traits to choose from in the PF2E System Settings for Homebrew."
+        },
+        "OptionalFields": {
+          "Name": "Optional Fields",
+          "Level": "Creature Level",
+          "Languages": "Languages Known",
+          "Height": "Height",
+          "Weight": "Weight",
+          "Birthplace": "Birthplace"
+        },
+        "DetailedInformation": {
+          "Name": "Detailed Information Toggles",
+          "ExceptionsDoubleVs": "(IWR) Exceptions And Double",
+          "AttackTraits": "Attack Traits",
+          "DamageTypes": "Damage Types",
+          "AbilityTraits": "Ability Traits",
+          "IWR": "IWR"
+        },
+        "JournalSettings": {
+          "Title": "Accompanying Journal",
+          "Enabled": "Enabled",
+          "Name": "Name",
+          "Image": "Image"
+        },
+        "SheetSettings": {
+          "AddButton": "Bestiary Button In Actor Sheet"
+        },
+        "HideAbilityDescriptions": "Hide Ability Descriptions",
+        "HideTips": "Hide Bestiary Welcome Tips",
+        "HideWelcome": "Hide Welcome Message"
+      },
+      "BestiaryAppearance": {
+        "Name": "Bestiary Appearance",
+        "Hint": "Customize the appearance of the Bestiary",
+        "Menu": {
+          "Name": "Bestiary Appearance",
+          "Label": "Bestiary Appearance Settings",
+          "Hint": "Customize the appearance of the Bestiary"
+        },
+        "UseTokenArt": "Use Token Art",
+        "ContrastRevealedState": {
+          "Name": "Contrast Revealed State",
+          "Enabled": "Enabled",
+          "Revealed": "Revealed",
+          "Hidden": "Hidden"
+        },
+        "ImageSettings": {
+          "Title": "Avatar Settings",
+          "HideState": "Default Filter",
+          "HiddenImage": "Hidden Image"
+        },
+        "CategorySettings": {
+          "Title": "Bestiary Category Customization",
+          "Image": "Image"
+        }
+      },
+      "BestiaryIntegration": {
+        "Name": "Bestiary Integration",
+        "Menu": {
+          "Name": "Bestiary Integration",
+          "Label": "Bestiary Integration Settings",
+          "Hint": "Customize the way you can interact with the Bestiary"
+        },
+        "CreatureRegistration": {
+          "Name": "Bestiary Registration"
+        },
+        "AutomaticRevealing": {
+          "Name": "Auto Reveal When Used",
+          "Saves": "Saving Throws",
+          "Skills": "Skills",
+          "Attacks": "Attacks",
+          "Actions": "Actions",
+          "Spells": "Spells",
+          "IWR": "IWR On Damage"
+        },
+        "HiddenSettings": {
+          "Name": "Default Hidden From Players",
+          "Monster": "Monster",
+          "NPC": "NPC",
+          "Hazard": "Hazard",
+          "NPCCategories": "NPC Categories",
+          "ImageHideState": {
+            "Title": "Image Initial Hidden State",
+            "Revealed": "Revealed",
+            "Outline": "Outline",
+            "Hidden": "Hidden",
+            "Sepia": "Sepia"
+          }
+        },
+        "DefaultRevealed": {
+          "Title": "Default Revealed Properties",
+          "Creature": "Creature",
+          "NPC": "NPC",
+          "Hazard": "Hazard",
+          "Name": "Name",
+          "NameInfo": "Name Info",
+          "Traits": "Traits",
+          "Attributes": "Attributes",
+          "Description": "Description",
+          "AC": "AC",
+          "HP": "HP",
+          "Saves": "Saves",
+          "IWR": "IWR",
+          "Speeds": "Speeds",
+          "Senses": "Senses",
+          "Skills": "Skills",
+          "Attacks": "Attacks",
+          "Abilities": "Abilities",
+          "Spells": "Spells",
+          "Perception": "Perception",
+          "Level": "Level",
+          "Languages": "Languages",
+          "Appearance": "Appearance",
+          "Personality": "Personality",
+          "Background": "Background",
+          "Height": "Height",
+          "Weight": "Weight",
+          "Premise": "Premise (Influence)",
+          "Hardness": "Hardness",
+          "Disable": "Disable",
+          "Routine": "Routine",
+          "Reset": "Reset",
+          "Initiative": "Initiative",
+          "Stealth": "Stealth"
+        }
+      },
+      "BestiaryThemes": {
+        "Name": "Bestiary Custom Themes",
+        "Menu": {
+          "Name": "Bestiary Custom Themes",
+          "Label": "Custom Themes",
+          "Hint": "Add and edit custom visual themes for the bestiary"
+        },
+        "Import": {
+          "Title": "Import Bestiary Theme",
+          "FaultyImport": "JSON file is not a bestiary theme!"
+        },
+        "CustomThemes": {
+          "Title": "Custom Themes",
+          "TemplateButton": "Copy Template Theme",
+          "BackgroundColors": "Background Properties",
+          "HeaderColors": "Header Properties",
+          "MainColors": "Main Colors",
+          "IconColors": "Icon Colors",
+          "AccentColors": "Accent Colors",
+          "TextColors": "Text Colors",
+          "Borders": "Border Colors",
+          "Primary": "Primary",
+          "Secondary": "Secondary",
+          "Tertiary": "Tertiary",
+          "Shadow": "Shadow",
+          "Faded": "Faded",
+          "Hover": "Hover",
+          "Application": "Bestiary",
+          "BackgroundSize": "Background Size",
+          "BackgroundRepeat": "Background Repeat",
+          "BackgroundPosition": "Background Position",
+          "PreviewTheme": "Preview Theme"
+        },
+        "Miscellaneous": {
+          "AddTheme": "Add New Theme",
+          "DeleteTheme": "Delete Theme",
+          "ImportTheme": "Import Theme",
+          "ExportTheme": "Export Theme"
+        }
+      }
+    },
+    "Settings": {
+      "Version": {
+        "Name": "Version",
+        "Hint": "The Module Version"
+      },
+      "AutomaticCombatRegistration": {
+        "Name": "Combat Registration",
+        "Hint": "Automtically add new enemies to the Bestiary during a selected stage of combat.",
+        "Choices": {
+          "Never": "Never",
+          "StartOfCombat": "Start Of Combat",
+          "CreatureDefeated": "On Creature Defeated"
+        }
+      },
+      "NPCRegistation": {
+        "Name": "NPC Registration",
+        "Hint": "Select the way NPCs will be recognised by the bestiary",
+        "Choices": {
+          "Unique": "By Unique Rarity",
+          "Tag": "By NPC Tag",
+          "UniqueTag": "Either Unique Rarity or NPC Tag"
+        }
+      },
+      "HideTokenNames": {
+        "Name": "Mystify Token Names",
+        "Hint": "Set token names based on their bestiary status so as to not reveal information."
+      },
+      "AutomaticallyOpenMonster": {
+        "Name": "Auto Open Bestiary Entry",
+        "Hint": "Automatically open the bestiary entry for monsters you drop into it."
+      },
+      "SameNameDuplicates": {
+        "Name": "Same Name Actors Are Duplicates"
+      },
+      "DoubleClickOpen": {
+        "Name": "Double Click Open",
+        "Hint": "Opens a creature's Bestiary entry when their token is doubleclicked(+ ALT for GM). With this setting active, all creatures in the Bestiary get their Ownership level set to 'Limited' for the players."
+      },
+      "ContrastRevealState": {
+        "Name": "Contrast Reveal State",
+        "Hint": "Option for GMs to see hidden/revealed fields in contrast colors"
+      },
+      "BestiaryDefaultTheme": {
+        "Name": "Bestiary Default Theme",
+        "Hint": "Select the default visual theme for the Bestiary"
+      },
+      "BestiaryTheme": {
+        "Name": "Bestiary Theme",
+        "Hint": "Select the visual theme for the Bestiary"
+      }
+    },
+    "Macros": {
+      "ShowMonster": {
+        "NoTarget": "No monster selected or targeted.",
+        "NoActor": "The creature has no actor in the world and is unlinked in the Bestiary.",
+        "InvalidTarget": "Target must be an NPC creature!",
+        "TargetNotInBestiary": "That monster hasn't been added to the bestiary yet!"
+      },
+      "OpenBestiaryCombat": {
+        "NoActiveCombat": "There is no current active combat"
+      },
+      "AddMonster": {
+        "GMOnly": "This macro can only be used by the GM.",
+        "TargetAlreadyInBestiary": "That creature is already in the bestiary!"
+      },
+      "ResetBestiary": {
+        "Title": "Reset Bestiary",
+        "Text": "This will remove all current data from your bestiary. Are you sure you want to do this?"
+      },
+      "DeactivateModule": {
+        "GMOnly": "This macro can only be used by the GM.",
+        "Title": "PF2E Bestiary Tracking Deactivation",
+        "Name": "Deactivate Bestiary Tracking Module",
+        "Text": {
+          "FirstPart": "This will deactivate the module and safely store the Bestiary data in the journal folder BestiaryTracking Bestiares.",
+          "SecondPart": "If you delete this folder's contents and active the module again, the Bestiary data will be gone.",
+          "Link": "https://github.com/WBHarry/pf2e-bestiary-tracking/wiki/Module-Deactivation"
+        },
+        "DependencyResolutionWarning": "Use the {name} macro instead to avoid console errors after deactivation."
+      }
+    },
+    "Interactivity": {
+      "RevealAbility": "Reveal Ability In Bestiary",
+      "RegisterInBestiary": "Add To Bestiary"
+    }
+  },
+  "TYPES": {
+    "JournalEntryPage": {
+      "pf2e-bestiary-tracking": {
+        "creature": "Creature",
+        "npc": "NPC",
+        "hazard": "Hazard"
+      }
+    }
+  }
+}
