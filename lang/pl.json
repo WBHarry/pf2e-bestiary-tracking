@@ -214,7 +214,9 @@
       },
       "NPC": {
         "NPCCategoryDescription": "Postacie niezależne są posortowane według kategorii stworzonych przez MG. Kategorie można usuwać, klikając ich zakładki prawym przyciskiem myszy.",
-        "NewCategory": "Nowa kategoria BN",
+        "NewCategoryTitle": "Dodaj kategorię",
+        "NewCategory": "Nazwa kategorii",
+        "NewCategoryDescription": "Opcjonalny opis",
         "NPCViewText": "Przełącznik widoku BN",
         "EditModeText": "Przełącznik trybu edycji",
         "NPCSimpleText": "Prosty przełącznik BN",
@@ -258,7 +260,8 @@
         "GMTextZoneTip": "Przeciągnij i upuść dziennik na obszar tekstowy, aby zaimportować z niego tekst.",
         "SortAlphabetical": "Sortuj alfabetycznie",
         "CategoryHandlingTitle": "Obsługa kategorii BN",
-        "CategorySorting": "Sortowanie kategorii",
+        "CategorySortingTitle": "Sortowanie kategorii",
+        "CategorySorting": "Rodzaj sortowania",
         "CategorySortOptions": {
           "Manual": "Ręczna kolejność",
           "AscAlpha": "Alfabetycznie (rosnąco)",
