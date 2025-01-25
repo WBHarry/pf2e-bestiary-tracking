@@ -109,6 +109,21 @@ export const registerKeyBindings = () => {
     reservedModifiers: [],
     precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
   });
+
+  game.keybindings.register("pf2e-bestiary-tracking", "view-as-player", {
+    name: game.i18n.localize("PF2EBestiary.KeyBindings.ViewAsPlayer.Name"),
+    hint: game.i18n.localize("PF2EBestiary.KeyBindings.ViewAsPlayer.Hint"),
+    uneditable: [],
+    editable: [
+      {
+        key: "ControlLeft",
+        modifiers: [],
+      },
+    ],
+    restricted: true,
+    reservedModifiers: [],
+    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
+  });
 };
 
 export const registerGameSettings = () => {

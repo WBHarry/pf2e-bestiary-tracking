@@ -3341,7 +3341,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   switchPlayerMode = (e) => {
     if (!game.user.isGM) return;
 
-    if (e.key == "Control") {
+    if (
+      game.keybindings
+        .get("pf2e-bestiary-tracking", "view-as-player")
+        .some((binding) => binding.key === e.code)
+    ) {
       this.gmView = false;
       this.render();
     }
@@ -3350,7 +3354,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   resetPlayerMode = (e) => {
     if (!game.user.isGM) return;
 
-    if (e.key == "Control") {
+    if (
+      game.keybindings
+        .get("pf2e-bestiary-tracking", "view-as-player")
+        .some((binding) => binding.key === e.code)
+    ) {
       this.gmView = true;
       this.render();
     }

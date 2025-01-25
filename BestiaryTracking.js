@@ -10065,6 +10065,21 @@ const registerKeyBindings = () => {
     reservedModifiers: [],
     precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
   });
+
+  game.keybindings.register("pf2e-bestiary-tracking", "view-as-player", {
+    name: game.i18n.localize("PF2EBestiary.KeyBindings.ViewAsPlayer.Name"),
+    hint: game.i18n.localize("PF2EBestiary.KeyBindings.ViewAsPlayer.Hint"),
+    uneditable: [],
+    editable: [
+      {
+          key: "ControlLeft",
+          modifiers: [],
+      }
+    ],
+    restricted: true,
+    reservedModifiers: [],
+    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
+  });
 };
 
 const registerGameSettings = () => {
@@ -15235,9 +15250,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         const npcCategory = npcCategories.find(
           (category) => category.value === x.value,
         );
-        return (
-          this.gmView || (!x.hidden && npcCategory && !npcCategory.hidden)
-        );
+        return this.gmView || (!x.hidden && npcCategory && !npcCategory.hidden);
       });
       var usedCategories =
         categories.length > 0
@@ -17808,19 +17821,19 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     });
   }
 
-  switchPlayerMode = e => {
-    if(!game.user.isGM) return;
+  switchPlayerMode = (e) => {
+    if (!game.user.isGM) return;
 
-    if (e.key == 'Control') {
+    if (game.keybindings.get('pf2e-bestiary-tracking', 'view-as-player').some(binding => binding.key === e.code)) {
       this.gmView = false;
       this.render();
     }
   };
 
-  resetPlayerMode = e => {
-    if(!game.user.isGM) return;
+  resetPlayerMode = (e) => {
+    if (!game.user.isGM) return;
 
-    if (e.key == 'Control') {
+    if (game.keybindings.get('pf2e-bestiary-tracking', 'view-as-player').some(binding => binding.key === e.code)) {
       this.gmView = true;
       this.render();
     }

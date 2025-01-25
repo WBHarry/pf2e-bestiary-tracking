@@ -18,6 +18,10 @@
       "AddMonster": {
         "Name": "Add Monster",
         "Hint": "Adds the currently selected or targeted creature to the bestiary"
+      },
+      "ViewAsPlayer": {
+        "Name": "View Bestiary As Player",
+        "Hint": "Holding this key lets you view the bestiary as if you were a player"
       }
     },
     "Themes": {
