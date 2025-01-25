@@ -24,11 +24,11 @@ export default class RegisterHandlebarsHelpers {
       : 0;
   }
 
-  static monsterValue(prop, flag, ignoreLabel, context) {
+  static monsterValue(gmView, prop, flag, ignoreLabel, context) {
     return (
       game.i18n.localize(prop.custom) ??
       (flag &&
-      (!game.user.isGM ||
+      (!gmView ||
         !game.settings.get("pf2e-bestiary-tracking", "vague-descriptions")
           .settings.gmNumeric) &&
       prop.category
@@ -43,12 +43,12 @@ export default class RegisterHandlebarsHelpers {
     return value.slice(0, length);
   }
 
-  static toggleContainer(user, property) {
+  static toggleContainer(gmView, property) {
     var containerClass = " data-container";
 
-    if (property.revealed || !user.isGM)
+    if (property.revealed || !gmView)
       containerClass = containerClass.concat(" revealed ");
-    if (user.isGM) {
+    if (gmView) {
       containerClass = containerClass.concat(" toggle-container");
       if (property.custom || property.fake)
         containerClass = containerClass.concat(" misinformation");
@@ -57,8 +57,8 @@ export default class RegisterHandlebarsHelpers {
     return containerClass;
   }
 
-  static toggleContainerOverride(contrastRevealedState, property) {
-    if (!game.user.isGM || !contrastRevealedState.enabled) return "";
+  static toggleContainerOverride(gmView, contrastRevealedState, property) {
+    if (!gmView || !contrastRevealedState.enabled) return "";
 
     if (property.revealed)
       return `background: ${contrastRevealedState.revealed}`;
@@ -129,7 +129,7 @@ export default class RegisterHandlebarsHelpers {
     return ret;
   }
 
-  static imageState(user, state) {
+  static imageState(state) {
     switch (state) {
       case 1:
         return "outline";

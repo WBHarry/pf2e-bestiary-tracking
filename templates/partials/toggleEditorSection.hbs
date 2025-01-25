@@ -1,17 +1,17 @@
 <div class="flexcol flex1 data-section primary-container active">
     <div class="data-header primary-container">
-        <div class="data-header-label {{#if this.user.isGM}}{{PF2EBTToggleContainer this.user data}}{{/if}}" data-action="toggleRevealed" data-path="{{path}}">
+        <div class="data-header-label {{#if this.gmView}}{{PF2EBTToggleContainer this.user data}}{{/if}}" data-action="toggleRevealed" data-path="{{path}}">
             <i class="header-icon {{icon}}"></i>
             <div class="flex-value">{{localize title}}</div>
         </div>
     </div>
     <div class="data-body primary-border-container flex1">
-        {{#if (and this.user.isGM editMode)}}
+        {{#if (and this.gmView editMode)}}
             <prose-mirror class="data-input primary-editor" name="{{concat path ".value"}}" value="{{data.value}}">
                 {{{data.enriched}}}
             </prose-mirror>
         {{else}}
-            {{#if (or this.user.isGM data.revealed)}}{{{data.enrichedValue}}}{{else}}?{{/if}}
+            {{#if (or this.gmView data.revealed)}}{{{data.enrichedValue}}}{{else}}?{{/if}}
         {{/if}}
     </div>
 </div>

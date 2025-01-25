@@ -1,7 +1,7 @@
 <div class="left-monster-container">
     <div class="monster-image-container">
-        {{#if this.user.isGM}}<i class="monster-image-menu fa-solid fa-gears primary-hover-container" data-action="imageMenu"></i>{{/if}}
-        <img class="monster-image primary-outline {{#if this.useTokenArt}}token{{/if}} {{PF2EBTImageState this.user this.creatureData.system.imageState.hideState}}" src="{{this.creatureData.system.displayImage}}" data-action="imagePopout" />
+        {{#if this.gmView}}<i class="monster-image-menu fa-solid fa-gears primary-hover-container" data-action="imageMenu"></i>{{/if}}
+        <img class="monster-image primary-outline {{#if this.useTokenArt}}token{{/if}} {{PF2EBTImageState this.creatureData.system.imageState.hideState}}" src="{{this.creatureData.system.displayImage}}" data-action="imagePopout" />
     </div>
     <div class="tab minor {{this.tabs.general.cssClass}}" data-group="npc" data-tab="general">
         <div class="flexcol">
@@ -48,16 +48,16 @@
                     <div class="recall-knowledge-info-container">
                         {{#each this.creatureData.system.recallKnowledgeAttempts}}
                             <div class="flexcol">
-                                <h4 class="recall-knowledge-label {{#if ../user.isGM}}primary-hover-container{{/if}}" {{#if ../user.isGM}}data-action="resetRecallAttempts" data-character="{{this.id}}"{{/if}}>
+                                <h4 class="recall-knowledge-label {{#if ../gmView}}primary-hover-container{{/if}}" {{#if ../gmView}}data-action="resetRecallAttempts" data-character="{{this.id}}"{{/if}}>
                                     {{this.name}}
                                 </h4>
                                 <div class="recall-knowledge-attempt-container">
                                     {{#each this.values}}
                                         <div class="recall-knowledge-attempt-inner-container">
                                             <label>#{{add @key 1}}</label>
-                                            <div class="recall-knowledge-attempt primary-border-container {{#if ../../user.isGM}}primary-hover-container{{/if}}" {{#if ../../user.isGM}}{{#if (not (eq this.value 'none'))}}title="{{localize this.name}}"{{/if}} data-action="toggleRecallAttempt" data-character="{{../id}}" data-attempt="{{@key}}"{{/if}}>
+                                            <div class="recall-knowledge-attempt primary-border-container {{#if ../../gmView}}primary-hover-container{{/if}}" {{#if ../../gmView}}{{#if (not (eq this.value 'none'))}}title="{{localize this.name}}"{{/if}} data-action="toggleRecallAttempt" data-character="{{../id}}" data-attempt="{{@key}}"{{/if}}>
                                                 {{#if this.icon}}
-                                                    {{#if ../../user.isGM}}
+                                                    {{#if ../../gmView}}
                                                         <i class="{{this.icon}}"></i>
                                                     {{else}}
                                                         <i class="fa-solid fa-x"></i>
@@ -100,7 +100,7 @@
             {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-fw fa-heart-pulse" title="PF2EBestiary.Miscellaneous.Saves.Will.Short" editMode=this.npcState.editMode path="system.saves.will" data=this.creatureData.system.saves.will noEdit="true" number="true" }}
             <div class="flexcol flex1 data-section primary-container active">
                 <div class="data-header primary-container">
-                    <div class="data-header-label {{#if this.user.isGM}}{{PF2EBTToggleContainer this.user this.influence.premise}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.influence.premise}}" data-action="toggleRevealed" data-path="system.npcData.influence.premise">
+                    <div class="data-header-label {{#if this.gmView}}{{PF2EBTToggleContainer this.gmView this.influence.premise}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.gmView this.contrastRevealedState this.influence.premise}}" data-action="toggleRevealed" data-path="system.npcData.influence.premise">
                         <i class="fa-solid fa-chart-column secondary-icon"></i>
                         <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.PremiseLabel"}}</div>
                     </div>
@@ -109,7 +109,7 @@
                     {{#if this.npcState.editMode}}
                         <textarea class="premise-editor data-input secondary-container" name="system.npcData.influence.premise.value">{{this.influence.premise.value}}</textarea>
                     {{else}}
-                        {{#if (or this.user.isGM this.influence.premise.revealed)}}
+                        {{#if (or this.gmView this.influence.premise.revealed)}}
                             {{{this.influence.premise.value}}}
                         {{else}}
                             ?
@@ -124,15 +124,15 @@
     <div class="flexcol">
         <div class="monster-name-container">
             <div class="monster-name-inner-container">
-                <div class="monster-name primary-container {{PF2EBTToggleContainer this.user this.creatureData.system.name}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.creatureData.system.name}}" data-action="toggleRevealed" data-path="system.name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}">
-                    {{#if (or this.user.isGM this.creatureData.system.name.revealed)}}
+                <div class="monster-name primary-container {{PF2EBTToggleContainer this.gmView this.creatureData.system.name}}" style="{{PF2EBTToggleContainerOverride this.gmView this.contrastRevealedState this.creatureData.system.name}}" data-action="toggleRevealed" data-path="system.name" data-name="{{localize "PF2EBestiary.Miscellaneous.Name"}}">
+                    {{#if (or this.gmView this.creatureData.system.name.revealed)}}
                         {{PF2EBTTertiary this.creatureData.system.name.custom this.creatureData.system.name.value}}
                     {{else}}
                         {{localize "PF2EBestiary.Bestiary.Miscellaneous.UnknownCreature"}}
                     {{/if}}
                 </div>
-                {{#if (and this.creatureData.system.blurb.value (or this.user.isGM this.creatureData.system.blurb.revealed))}}
-                    <div class="monster-name monster-name-blurb primary-container {{PF2EBTToggleContainer this.user this.creatureData.system.blurb}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.creatureData.system.blurb}}" data-action="toggleRevealed" data-path="system.blurb" data-name="{{localize "PF2EBestiary.Miscellaneous.Blurb"}}">
+                {{#if (and this.creatureData.system.blurb.value (or this.gmView this.creatureData.system.blurb.revealed))}}
+                    <div class="monster-name monster-name-blurb primary-container {{PF2EBTToggleContainer this.gmView this.creatureData.system.blurb}}" style="{{PF2EBTToggleContainerOverride this.gmView this.contrastRevealedState this.creatureData.system.blurb}}" data-action="toggleRevealed" data-path="system.blurb" data-name="{{localize "PF2EBestiary.Miscellaneous.Blurb"}}">
                         {{PF2EBTTertiary this.creatureData.system.blurb.custom this.creatureData.system.blurb.value}}
                     </div>
                 {{/if}}
@@ -146,7 +146,7 @@
                                 <input type="checkbox" name="npcData.npcView" {{checked this.npcState.npcView}} title="{{localize "PF2EBestiary.Bestiary.NPC.NPCViewText"}}" />
                             </div>
                         {{/if}}
-                        {{#if this.user.isGM}}
+                        {{#if this.gmView}}
                             <div class="toggle-switch">
                                 <i class="fa-solid fa-screwdriver-wrench"></i>
                                 <input type="checkbox" name="npcData.editMode" {{checked this.npcState.editMode}} title="{{localize "PF2EBestiary.Bestiary.NPC.EditModeText"}}" />
@@ -163,7 +163,7 @@
                 </div>
                 <nav class="bestiary-tabs tabs">
                     {{#each this.tabs as |tab|}}
-                        {{#if (or ../user.isGM (not tab.hidden))}}
+                        {{#if (or ../gmView (not tab.hidden))}}
                             <a 
                                 class="bestiary-tab {{#if tab.hideable}}hideable{{/if}} secondary-container primary-tab {{tab.cssClass}}" 
                                 data-action="tab" 
@@ -171,7 +171,7 @@
                                 data-tab="{{tab.id}}"
                                 {{#if tab.hideable}}title="{{localize "PF2EBestiary.Bestiary.Tips.ToggleHideTabs"}}"{{/if}}
                             >
-                                {{#if (and ../user.isGM tab.hideable)}}<i class="tab-hide-icon {{#if tab.hidden}}fa solid fa-eye-slash{{else}}fa-solid fa-eye{{/if}}"></i>{{/if}}
+                                {{#if (and ../gmView tab.hideable)}}<i class="tab-hide-icon {{#if tab.hidden}}fa solid fa-eye-slash{{else}}fa-solid fa-eye{{/if}}"></i>{{/if}}
                                 <i class="{{tab.icon}}"></i>
                                 <label>{{tab.label}}</label>
                             </a>
@@ -180,7 +180,7 @@
                 </nav>
             </div>
         </div>
-        {{#if this.user.isGM}}
+        {{#if this.gmView}}
             <input class="npc-category-input primary-border-container" value="{{this.inputCategories}}" />
         {{/if}}
     </div>
@@ -194,25 +194,25 @@
             {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleTextSection.hbs" icon="fa-solid fa-person-rays" title="PF2EBestiary.Bestiary.NPC.Appearance" editMode=this.npcState.editMode path="system.npcData.general.appearance" data=this.general.appearance }}
             <div class="flexcol flex1 data-section primary-container active">
                 <div class="data-header primary-container">
-                    <div class="data-header-label {{#if this.user.isGM}}{{PF2EBTToggleContainer this.user this.general.background}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.general.background}}" data-action="toggleRevealed" data-path="system.npcData.general.background">
+                    <div class="data-header-label {{#if this.gmView}}{{PF2EBTToggleContainer this.gmView this.general.background}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.gmView this.contrastRevealedState this.general.background}}" data-action="toggleRevealed" data-path="system.npcData.general.background">
                         <i class="header-icon fa-solid fa-house-chimney primary-icon"></i>
                         <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Background"}}</div>
                     </div>
 
                     {{#if (and this.optionalFields.birthplace this.general.birthplace.value)}}
-                        <div class="data-header-label {{#if this.user.isGM}}{{PF2EBTToggleContainer this.user this.general.birthplace}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.general.birthplace}}" data-action="toggleRevealed" data-path="system.npcData.general.birthplace">
+                        <div class="data-header-label {{#if this.gmView}}{{PF2EBTToggleContainer this.gmView this.general.birthplace}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.gmView this.contrastRevealedState this.general.birthplace}}" data-action="toggleRevealed" data-path="system.npcData.general.birthplace">
                             <div class="flex-value"><strong>{{localize "Birthplace"}}:</strong></div>
-                            {{#if (or this.user.isGM this.general.birthplace.revealed)}}<div>{{this.general.birthplace.value}}</div>{{else}}?{{/if}}
+                            {{#if (or this.gmView this.general.birthplace.revealed)}}<div>{{this.general.birthplace.value}}</div>{{else}}?{{/if}}
                         </div>
                     {{/if}}
                 </div>
                 <div class="data-body primary-border-container flex1">
-                    {{#if (and this.user.isGM this.npcState.editMode)}}
+                    {{#if (and this.gmView this.npcState.editMode)}}
                         <prose-mirror class="data-input primary-editor" name="system.npcData.general.background.value" value="{{this.general.background.value}}">
                             {{{this.general.background.enriched}}}
                         </prose-mirror>
                     {{else}}
-                        {{#if (or this.user.isGM this.general.background.revealed)}}{{{this.general.background.enrichedValue}}}{{else}}?{{/if}}
+                        {{#if (or this.gmView this.general.background.revealed)}}{{{this.general.background.enrichedValue}}}{{else}}?{{/if}}
                     {{/if}}
                 </div>
             </div>
@@ -250,9 +250,9 @@
                             </div>
                         {{/each}}
                     {{else}}
-                        <div class="option-field-check-container {{#if this.user.isGM}}gm{{/if}}">
-                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.discovery (not this.user.isGM)}}
-                                <div class="secondary-container {{PF2EBTToggleContainer ../user this}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.discovery." this.key}}">
+                        <div class="option-field-check-container {{#if this.gmView}}gm{{/if}}">
+                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.discovery (not this.gmView)}}
+                                <div class="secondary-container {{PF2EBTToggleContainer ../gmView this}}" style="{{PF2EBTToggleContainerOverride ../gmView ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.discovery." this.key}}">
                                     {{{this.label}}}
                                 </div>
                             {{/PF2EBTFilter}}
@@ -297,12 +297,12 @@
                             </div>
                         {{/each}}
                     {{else}}
-                        <div class="option-field-check-container {{#if this.user.isGM}}gm{{/if}}">
-                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.influenceSkills (not this.user.isGM)}}
-                                <div class="secondary-container {{PF2EBTToggleContainer ../user this}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.influenceSkills." this.key}}">
+                        <div class="option-field-check-container {{#if this.gmView}}gm{{/if}}">
+                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.influenceSkills (not this.gmView)}}
+                                <div class="secondary-container {{PF2EBTToggleContainer ../gmView this}}" style="{{PF2EBTToggleContainerOverride ../gmView ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.influenceSkills." this.key}}">
                                     {{{this.label}}}
                                     {{#if this.description.value}}
-                                        {{#if ../user.isGM}}
+                                        {{#if ../gmView}}
                                             <span 
                                                 class="toggle-container inner detailed {{#if this.description.revealed}}revealed{{/if}} primary-hover-container" 
                                                 data-action="toggleRevealed"
@@ -331,7 +331,7 @@
                         </div>
                         <div class="influence-points-container">
                             <div class="value">{{this.influence.influencePoints}}</div>
-                            {{#if this.user.isGM}}
+                            {{#if this.gmView}}
                                 <div class="flexcol">
                                     <i class="fa-solid fa-caret-up primary-hover-container" data-action="increaseInfluence"></i>
                                     <i class="fa-solid fa-caret-down primary-hover-container" data-action="decreaseInfluence"></i>
@@ -357,12 +357,12 @@
                         {{/each}}
                     {{else}}
                         <div class="option-field-check-container vertical">
-                            {{#if (and (not this.user.isGM) (eq (PF2EBTNrKeys this.influence.influence 'revealed') 0))}}
+                            {{#if (and (not this.gmView) (eq (PF2EBTNrKeys this.influence.influence 'revealed') 0))}}
                                 ?
                             {{else}}
                                 {{#each this.influence.influence}}
-                                    {{#if (or ../user.isGM this.revealed)}}
-                                        <div class="data-container secondary-container {{#if (not this.revealed)}}automatic-lock{{/if}} {{PF2EBTToggleContainer ../user this}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.influence." @key}}">
+                                    {{#if (or ../gmView this.revealed)}}
+                                        <div class="data-container secondary-container {{#if (not this.revealed)}}automatic-lock{{/if}} {{PF2EBTToggleContainer ../gmView this}}" style="{{PF2EBTToggleContainerOverride ../gmView ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.influence." @key}}">
                                             {{#if this.points}}<strong>{{this.points}}:&nbsp;</strong>{{/if}}{{{this.description}}}
                                         </div>
                                     {{/if}}
@@ -396,12 +396,12 @@
                         {{/each}}
                     {{else}}
                         <div class="option-field-check-container vertical">
-                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.weaknesses (not this.user.isGM)}}
+                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.weaknesses (not this.gmView)}}
                                 <div class="influence-modifier-container">
-                                    <div class="influence-modifier-text secondary-container {{PF2EBTToggleContainer ../user this}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.weaknesses." this.key}}">
+                                    <div class="influence-modifier-text secondary-container {{PF2EBTToggleContainer ../gmView this}}" style="{{PF2EBTToggleContainerOverride ../gmView ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.weaknesses." this.key}}">
                                         {{{this.description}}}
                                         </div>
-                                        {{#if (and ../user.isGM this.modifier.value)}}
+                                        {{#if (and ../gmView this.modifier.value)}}
                                         <fieldset class="influence-modifier-inner-container {{#if this.modifier.revealed}}active{{/if}} secondary-container primary-hover-container" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.weaknesses." this.key ".modifier"}}" title="{{localize "PF2EBestiary.Bestiary.NPC.ToggleModifier"}}">
                                             <legend>
                                                 {{#if (not this.modifier.revealed)}}<i class="fa-solid fa-slash hidden-icon"></i>{{/if}}
@@ -440,12 +440,12 @@
                         {{/each}}
                     {{else}}
                         <div class="option-field-check-container vertical">
-                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.resistances (not this.user.isGM)}}
+                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.resistances (not this.gmView)}}
                                 <div class="influence-modifier-container">
-                                    <div class="influence-modifier-text secondary-container {{PF2EBTToggleContainer ../user this}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.resistances." this.key}}">
+                                    <div class="influence-modifier-text secondary-container {{PF2EBTToggleContainer ../gmView this}}" style="{{PF2EBTToggleContainerOverride ../gmView ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.resistances." this.key}}">
                                         {{{this.description}}}
                                     </div>
-                                    {{#if (and ../user.isGM this.modifier.value)}}
+                                    {{#if (and ../gmView this.modifier.value)}}
                                         <fieldset class="influence-modifier-inner-container {{#if this.modifier.revealed}}active{{/if}} secondary-container primary-hover-container" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.resistances." this.key ".modifier"}}" title="{{localize "PF2EBestiary.Bestiary.NPC.ToggleModifier"}}">
                                             <legend>
                                                 {{#if (not this.modifier.revealed)}}<i class="fa-solid fa-slash hidden-icon"></i>{{/if}}
@@ -484,12 +484,12 @@
                         {{/each}}
                     {{else}}
                         <div class="option-field-check-container vertical">
-                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.penalties (not this.user.isGM)}}
+                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.penalties (not this.gmView)}}
                                 <div class="influence-modifier-container">
-                                    <div class="influence-modifier-text secondary-container {{PF2EBTToggleContainer ../user this}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.penalties." this.key}}">
+                                    <div class="influence-modifier-text secondary-container {{PF2EBTToggleContainer ../gmView this}}" style="{{PF2EBTToggleContainerOverride ../gmView ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.penalties." this.key}}">
                                         {{{this.description}}}
                                     </div>
-                                    {{#if (and ../user.isGM this.modifier.value)}}
+                                    {{#if (and ../gmView this.modifier.value)}}
                                         <fieldset class="influence-modifier-inner-container {{#if this.modifier.revealed}}active{{/if}} secondary-container primary-hover-container" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.penalties." this.key ".modifier"}}" title="{{localize "PF2EBestiary.Bestiary.NPC.ToggleModifier"}}">
                                             <legend>
                                                 {{#if (not this.modifier.revealed)}}<i class="fa-solid fa-slash hidden-icon"></i>{{/if}}

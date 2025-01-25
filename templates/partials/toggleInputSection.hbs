@@ -5,10 +5,10 @@
                 <i class="header-icon primary-icon {{icon}}"></i>
                 <div class="flex-value">{{localize title}}</div>
             </div>
-            {{#if (and (not this.noEdit) (and this.user.isGM editMode))}}
+            {{#if (and (not this.noEdit) (and this.gmView editMode))}}
                 <input class="data-input secondary-container" type="text" value="{{data.value}}" name="{{concat path ".value"}}" />
             {{else}}
-                {{#if (or this.user.isGM data.revealed)}}
+                {{#if (or this.gmView data.revealed)}}
                     {{#if this.number}}
                         <div>{{#if (gte data.value 0)}}+{{else}}-{{/if}}{{data.value}}</div>
                     {{else}}

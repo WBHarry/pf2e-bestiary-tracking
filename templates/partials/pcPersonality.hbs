@@ -1,6 +1,6 @@
 <div class="flexcol data-section primary-container active">
     <div class="data-header primary-container">
-        <div class="data-header-label {{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.npcData.general.personality" data-type="personality">
+        <div class="data-header-label {{#if this.gmView}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.npcData.general.personality" data-type="personality">
             <i class="header-icon fa-solid fa-user primary-icon"></i>
             <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Personality"}}</div>
         </div>
@@ -9,34 +9,34 @@
         <div class="biography-data-grouping flexrow">
             <div class="biography-data-container secondary-container {{PF2EBTToggleContainer this.user this.general.personality.data.attitude}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.general.personality.data.attitude}}" data-action="toggleRevealed" data-path="system.npcData.general.personality.data.attitude">
                 <div class="biography-data-title">{{localize "Attitude"}}</div>
-                <div class="biography-data-text">{{#if (or this.user.isGM this.general.personality.data.attitude.revealed)}}{{{localize this.general.personality.data.attitude.value}}}{{else}}?{{/if}}</div>
+                <div class="biography-data-text">{{#if (or this.gmView this.general.personality.data.attitude.revealed)}}{{{localize this.general.personality.data.attitude.value}}}{{else}}?{{/if}}</div>
             </div>
             <div class="biography-data-container secondary-container {{PF2EBTToggleContainer this.user this.general.personality.data.beliefs}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.general.personality.data.beliefs}}" data-action="toggleRevealed" data-path="system.npcData.general.personality.data.beliefs">
                 <div class="biography-data-title">{{localize "Beliefs"}}</div>
-                <div class="biography-data-text">{{#if (or this.user.isGM this.general.personality.data.beliefs.revealed)}}{{{localize this.general.personality.data.beliefs.value}}}{{else}}?{{/if}}</div>
+                <div class="biography-data-text">{{#if (or this.gmView this.general.personality.data.beliefs.revealed)}}{{{localize this.general.personality.data.beliefs.value}}}{{else}}?{{/if}}</div>
             </div>
         </div>
         <div class="biography-data-grouping flexrow">
             <div class="biography-data-container secondary-container {{PF2EBTToggleContainer this.user this.general.personality.data.likes}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.general.personality.data.likes}}" data-action="toggleRevealed" data-path="system.npcData.general.personality.data.likes">
                 <div class="biography-data-title">{{localize "Likes"}}</div>
-                <div class="biography-data-text">{{#if (or this.user.isGM this.general.personality.data.likes.revealed)}}{{{localize this.general.personality.data.likes.value}}}{{else}}?{{/if}}</div>
+                <div class="biography-data-text">{{#if (or this.gmView this.general.personality.data.likes.revealed)}}{{{localize this.general.personality.data.likes.value}}}{{else}}?{{/if}}</div>
             </div>
             <div class="biography-data-container secondary-container {{PF2EBTToggleContainer this.user this.general.personality.data.dislikes}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.general.personality.data.dislikes}}" data-action="toggleRevealed" data-path="system.npcData.general.personality.data.dislikes">
                 <div class="biography-data-title">{{localize "Dislikes"}}</div>
-                <div class="biography-data-text">{{#if (or this.user.isGM this.general.personality.data.dislikes.revealed)}}{{{localize this.general.personality.data.dislikes.value}}}{{else}}?{{/if}}</div>
+                <div class="biography-data-text">{{#if (or this.gmView this.general.personality.data.dislikes.revealed)}}{{{localize this.general.personality.data.dislikes.value}}}{{else}}?{{/if}}</div>
             </div>
         </div>
         <div class="biography-data-container secondary-container {{PF2EBTToggleContainer this.user this.general.personality.data.catchphrases}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState this.general.personality.data.catchphrases}}" data-action="toggleRevealed" data-path="system.npcData.general.personality.data.catchphrases">
             <div class="biography-data-title">{{localize "Catchphrases"}}</div>
-            <div class="biography-data-text">{{#if (or this.user.isGM this.general.personality.data.catchphrases.revealed)}}{{{localize this.general.personality.data.catchphrases.value}}}{{else}}?{{/if}}</div>
+            <div class="biography-data-text">{{#if (or this.gmView this.general.personality.data.catchphrases.revealed)}}{{{localize this.general.personality.data.catchphrases.value}}}{{else}}?{{/if}}</div>
         </div>
         {{#if (gt (PF2EBTNrKeys this.general.personality.data.edicts) 0)}}
             <fieldset class="biography-data-fieldset">
-                <legend class="{{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.npcData.general.personality.data.edicts">{{localize "Edicts"}}</legend>
+                <legend class="{{#if this.gmView}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.npcData.general.personality.data.edicts">{{localize "Edicts"}}</legend>
 
-                {{#if (and (not this.user.isGM) (eq (PF2EBTNrKeys this.general.personality.data.edicts 'revealed') 0))}}?{{/if}}
+                {{#if (and (not this.gmView) (eq (PF2EBTNrKeys this.general.personality.data.edicts 'revealed') 0))}}?{{/if}}
                 {{#each this.general.personality.data.edicts}}
-                    {{#if (or ../user.isGM this.revealed)}}
+                    {{#if (or ../gmView this.revealed)}}
                         <div class="biography-data-chip secondary-container {{PF2EBTToggleContainer ../user this}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.general.personality.data.edicts." @key}}">
                             {{{localize this.value}}}
                         </div>
@@ -46,11 +46,11 @@
         {{/if}}
         {{#if (gt (PF2EBTNrKeys this.general.personality.data.anathema) 0)}}
             <fieldset class="biography-data-fieldset">
-                <legend class="{{#if this.user.isGM}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.npcData.general.personality.data.anathema">{{localize "Anathema"}}</legend>
+                <legend class="{{#if this.gmView}}primary-hover-container{{/if}}" data-action="toggleAllRevealed" data-path="system.npcData.general.personality.data.anathema">{{localize "Anathema"}}</legend>
 
-                {{#if (and (not this.user.isGM) (eq (PF2EBTNrKeys this.general.personality.data.anathema 'revealed') 0))}}?{{/if}}
+                {{#if (and (not this.gmView) (eq (PF2EBTNrKeys this.general.personality.data.anathema 'revealed') 0))}}?{{/if}}
                 {{#each this.general.personality.data.anathema}}
-                    {{#if (or ../user.isGM this.revealed)}}
+                    {{#if (or ../gmView this.revealed)}}
                         <div class="biography-data-chip secondary-container {{PF2EBTToggleContainer ../user this}}" style="{{PF2EBTToggleContainerOverride ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.general.personality.data.anathema." @key}}">
                             {{{localize this.value}}}
                         </div>

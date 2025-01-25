@@ -221,6 +221,33 @@
   width: 14px;
   text-align: center;
 }
+.pf2e-bestiary-tracking.bestiary .bestiary-container .gm-view-label-container {
+  position: absolute;
+  left: 0px;
+  top: 34px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-container .gm-view-label-container .gm-view-text-container {
+  position: relative;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-container .gm-view-label-container .gm-view-text-container span {
+  border-width: 1px;
+  border-style: solid;
+  font-size: 10px;
+  padding: 0 4px;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-container .gm-view-label-container .gm-view-text-container .exclamation-container {
+  position: absolute;
+  font-size: 15px;
+  border: none;
+  right: -12px;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-container .gm-view-label-container .gm-view-text-container .exclamation-container.left {
+  left: -12px;
+}
 .pf2e-bestiary-tracking.bestiary .bestiary-header {
   display: flex;
   align-items: center;

@@ -1,4 +1,13 @@
-<div class="primary-text-container">
+<div class="primary-text-container bestiary-container">
+    <div class="gm-view-label-container">
+        {{#if (and this.user.isGM (not this.gmView))}}
+            <div class="gm-view-text-container">
+                <span class="exclamation-container left primary-icon">!</span>
+                <span class="tertiary-container primary-text-container primary-border-container">{{localize "Using Player View"}}</span>
+                <span class="exclamation-container primary-icon">!</span>
+            </div>
+        {{/if}}
+    </div>
     {{#if this.selected.type}}
         <header class="bestiary-header">
             <div class="return-container text-shadow-container" data-action="returnButton" data-context-type="{{this.selected.type}}">
@@ -22,7 +31,7 @@
                     </div>
                 </div>
             {{else}}
-                {{#if this.user.isGM}}
+                {{#if this.gmView}}
                 <div class="flexrow">
                     <div class="link-menu-container">
                         <button class="header-button link-menu-button {{#if (not this.selected.monster.system.uuid)}}unlinked{{/if}} secondary-container primary-hover-container" data-action="openActorLinkMenu" title="{{localize "Actor Link Menu"}}"><i class="fa-solid fa-users secondary-icon"></i></button>
@@ -67,7 +76,7 @@
                             {{/if}}
                         </div>
                     {{/if}}
-                    {{#if (and this.user.isGM (eq this.selected.category 'pf2e-bestiary-tracking.npc'))}}
+                    {{#if (and this.gmView (eq this.selected.category 'pf2e-bestiary-tracking.npc'))}}
                         <div class="npc-category-handling">
                             <legend class="main-legend">{{localize "PF2EBestiary.Bestiary.NPC.CategoryHandlingTitle"}}</legend>
 
@@ -81,7 +90,6 @@
                                         </div>
                                         <div class="category-body flexrow">
                                             <input class="data-container primary-container" type="text" name="npcData.newCategory.text" value="{{this.npcState.newCategory.text}}" />
-                                            {{!-- <button class="secondary-container" {{#if (not this.npcState.newCategory.text)}}disabled{{else}}class="primary-container"{{/if}}><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.Miscellaneous.Add"}}</button> --}}
                                         </div>
                                     </div>
                                     <div class="category-container">
@@ -132,13 +140,13 @@
                                 </ul>
                             </div>
                         {{/if}}
-                        {{#if (and this.journalSettings.active (or this.user.isGM this.recallKnowledgeJournal))}}
+                        {{#if (and this.journalSettings.active (or this.gmView this.recallKnowledgeJournal))}}
                             <div class="recall-knowledge-container secondary-border-container {{#if (not this.recallKnowledgeJournal)}}empty{{/if}}" {{#if (not this.recallKnowledgeJournal)}}title="{{localize "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeJournalMissing"}}"{{/if}}>
                                 <div class="main-page-category-card">
                                     <div class="main-page-category-image-container secondary-border-container {{#if this.recallKnowledgeJournal}}primary-hover-container{{/if}}" {{#if this.recallKnowledgeJournal}}data-action="openDocument"{{/if}} data-uuid="{{this.recallKnowledgeJournal}}">
                                         <img src="{{this.journalSettings.image}}" />
                                         <h4 class="main-page-category-label primary-container">{{localize this.journalSettings.name}}</h4>
-                                        {{#if (and this.user.isGM this.recallKnowledgeJournal)}}<i class="recall-knowledge-unlink-icon fa-solid fa-link-slash primary-hover-container" data-action="removeRecallKnowledgeJournal"></i>{{/if}}
+                                        {{#if (and this.gmView this.recallKnowledgeJournal)}}<i class="recall-knowledge-unlink-icon fa-solid fa-link-slash primary-hover-container" data-action="removeRecallKnowledgeJournal"></i>{{/if}}
                                     </div>
                                 </div>
                             </div>
@@ -167,6 +175,7 @@
                                     partyDispositions=../selected.monster.system.partyDispositions
                                     skillTypes=../skillTypes
                                     players=../players
+                                    gmView=../gmView
                                 }}
                             {{/with}}
                         {{else}}
@@ -185,6 +194,7 @@
                                         contrastRevealedState =../contrastRevealedState 
                                         detailedInformation = ../detailedInformation
                                         npcState=../npcState
+                                        gmView=../gmView
                                     }}
                                 {{/with}}
                             {{else}}
@@ -202,6 +212,7 @@
                                         contrastRevealedState =../contrastRevealedState 
                                         detailedInformation = ../detailedInformation
                                         npcState=../npcState
+                                        gmView=../gmView
                                     }}
                                 {{/with}}
                             {{/if}}
@@ -226,9 +237,9 @@
                     {{else}}
                         {{#each this.bookmarkEntities}}
                             <div class="type-container primary-container {{#if (eq ../layout.categories.layout 1)}}trio{{/if}}{{#if (eq ../layout.categories.layout 2)}}quarter{{/if}}" data-action="selectMonster" data-monster="{{this.id}}">
-                                <img class="monster-image {{PF2EBTImageState ../user this.hideState}}" src="{{this.img}}" />
+                                <img class="monster-image {{PF2EBTImageState this.hideState}}" src="{{this.img}}" />
                                 <div class="type-text-container">
-                                    {{#if ../user.isGM}}
+                                    {{#if ../gmView}}
                                         {{this.name.value}}
                                     {{else}}
                                         {{#if this.name.revealed}}
@@ -239,7 +250,7 @@
                                     {{/if}}
                                 </div>
 
-                                {{#if ../user.isGM}}
+                                {{#if ../gmView}}
                                     <i class="{{#if this.hidden}}fa-solid fa-eye-slash{{else}}fa-solid fa-eye{{/if}} toggle-hide-button primary-hover-container" data-action="toggleHideMonster" data-id="{{this.id}}"></i>
                                     <i class="fa-solid fa-delete-left delete-button primary-hover-container" data-action="removeMonster" data-monster="{{this.id}}"></i>
                                 {{/if}}
@@ -264,7 +275,7 @@
                     {{this.name}}
                     {{#if this.endIcon}}<i class="{{this.endIcon}}"></i>{{/if}}
                 </div>
-                {{#if (and ../user.isGM (and (and (not (eq this.value 'unaffiliated')) (not (eq this.value 'combat'))) (eq ../selected.category 'pf2e-bestiary-tracking.npc')))}}
+                {{#if (and ../gmView (and (and (not (eq this.value 'unaffiliated')) (not (eq this.value 'combat'))) (eq ../selected.category 'pf2e-bestiary-tracking.npc')))}}
                     <i class="hide-icon {{#if this.hidden}}fa-solid fa-eye-slash visible{{else}}fa-solid fa-eye{{/if}} primary-hover-container" data-action="toggleHideNPCCategory" data-category="{{this.value}}"></i>
                 {{/if}}
             </div>

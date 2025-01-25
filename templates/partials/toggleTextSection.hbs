@@ -1,15 +1,15 @@
 <div class="flexcol data-section primary-container active">
     <div class="data-header primary-container">
-        <div class="data-header-label {{#if this.user.isGM}}{{PF2EBTToggleContainer this.user data}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState data}}" data-action="toggleRevealed" data-path="{{path}}">
+        <div class="data-header-label {{#if this.gmView}}{{PF2EBTToggleContainer this.user data}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.contrastRevealedState data}}" data-action="toggleRevealed" data-path="{{path}}">
             <i class="header-icon primary-icon {{icon}}"></i>
             <div class="flex-value">{{localize title}}</div>
         </div>
     </div>
     <div class="data-body primary-border-container flex1">
-        {{#if (and this.user.isGM editMode)}}
+        {{#if (and this.gmView editMode)}}
             <textarea class="data-input secondary-container" name="{{concat path ".value"}}">{{data.value}}</textarea>
         {{else}}
-            {{#if (or this.user.isGM data.revealed)}}{{#if data.enrichedValue}}{{{data.enrichedValue}}}{{else}}{{data.value}}{{/if}}{{else}}?{{/if}}
+            {{#if (or this.gmView data.revealed)}}{{#if data.enrichedValue}}{{{data.enrichedValue}}}{{else}}{{data.value}}{{/if}}{{else}}?{{/if}}
         {{/if}}
     </div>
 </div>

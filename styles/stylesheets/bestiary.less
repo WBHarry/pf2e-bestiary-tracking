@@ -205,6 +205,40 @@
       text-align: center;
     }
 
+    .bestiary-container {
+      .gm-view-label-container {
+        position: absolute;
+        left: 0px;
+        top: 34px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .gm-view-text-container {
+          position: relative;
+
+          span {
+            border-width: 1px;
+            border-style: solid;
+            font-size: 10px;
+            padding: 0 4px;
+          }
+
+          .exclamation-container {
+            position: absolute;
+            font-size: 15px;
+            border: none;
+            right: -12px;
+
+            &.left {
+              left: -12px;
+            }
+          }
+        }
+      }
+    }
+
     .bestiary-header {
       display: flex;
       align-items: center;

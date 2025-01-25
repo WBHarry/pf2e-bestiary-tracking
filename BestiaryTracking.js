@@ -14569,10 +14569,15 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       bookmarkActive: false,
     };
 
+    this.gmView = game.user.isGM;
+
     this._dragDrop = this._createDragDropHandlers();
 
-    Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
-    Hooks.on("deleteCombat", this.onDeleteCombat);
+    document.addEventListener("keydown", this.switchPlayerMode);
+    document.addEventListener("keyup", this.resetPlayerMode);
+
+    Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate.bind(this));
+    Hooks.on("deleteCombat", this.onDeleteCombat.bind(this));
   }
 
   get title() {
@@ -15008,7 +15013,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       },
     };
 
-    if (game.user.isGM) {
+    if (this.gmView) {
       tabs.gm = {
         active: false,
         cssClass: "",
@@ -15191,7 +15196,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       this.selected.category === "pf2e-bestiary-tracking.creature"
         ? getExpandedCreatureTypes()
         : this.selected.category === "pf2e-bestiary-tracking.npc"
-          ? getNPCCategories().filter((x) => game.user.isGM || !x.hidden)
+          ? getNPCCategories().filter((x) => this.gmView || !x.hidden)
           : getHazardCategories();
 
     const creatureReduce = (acc, creature) => {
@@ -15200,7 +15205,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       const types = getCreaturesTypes(creature.system.traits);
 
       var usedTypes = types.map((x) => x.key);
-      if (game.user.isGM) {
+      if (this.gmView) {
         usedTypes = types.filter((x) => !x.fake).map((x) => x.key);
       } else {
         usedTypes = types.filter((x) => x.revealed).map((x) => x.key);
@@ -15231,7 +15236,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           (category) => category.value === x.value,
         );
         return (
-          game.user.isGM || (!x.hidden && npcCategory && !npcCategory.hidden)
+          this.gmView || (!x.hidden && npcCategory && !npcCategory.hidden)
         );
       });
       var usedCategories =
@@ -15260,7 +15265,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       const types = getHazardTypes(hazard.system.traits);
 
       var usedTypes = types.map((x) => x.key);
-      if (game.user.isGM) {
+      if (this.gmView) {
         usedTypes = types.filter((x) => !x.fake).map((x) => x.key);
       } else {
         usedTypes = types.filter((x) => x.revealed).map((x) => x.key);
@@ -15344,8 +15349,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         .match(this.search.name.toLowerCase());
       if (
         !this.search.name ||
-        ((entity.system.name.revealed || game.user.isGM) && match) ||
-        (!entity.system.name.revealed && !game.user.isGM && unrevealedMatch)
+        ((entity.system.name.revealed || this.gmView) && match) ||
+        (!entity.system.name.revealed && !this.gmView && unrevealedMatch)
       ) {
         return true;
       }
@@ -15364,7 +15369,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
             : a.system.name.value > b.system.name.value
               ? 1
               : 0;
-        if (!game.user.isGM) {
+        if (!this.gmView) {
           comparison =
             a.system.name.revealed && b.system.name.revealed
               ? a.system.name.value < b.system.name.value
@@ -15384,7 +15389,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           : comparison * -1;
       } else {
         var comparison = a.system.level.value - b.system.level.value;
-        if (!game.user.isGM) {
+        if (!this.gmView) {
           comparison =
             a.system.level.revealed && b.system.level.revealed
               ? a.system.level.value - b.system.level.value
@@ -15407,7 +15412,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           .filter((entity) => {
             if (
               (!game.combat && entity.type !== this.selected.category) ||
-              (!game.user.isGM && entity.system.hidden)
+              (!this.gmView && entity.system.hidden)
             )
               return false;
 
@@ -15455,6 +15460,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   sharedPreparation = async (context) => {
+    context.gmView = this.gmView;
     context.layout = game.settings.get(
       "pf2e-bestiary-tracking",
       "bestiary-layout",
@@ -15517,7 +15523,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     );
     context.actorSheetApp = this.actorSheetApp;
 
-    context.vagueDescriptions.settings.playerBased = game.user.isGM
+    context.vagueDescriptions.settings.playerBased = this.gmView
       ? false
       : context.vagueDescriptions.settings.playerBased;
     context.user = game.user;
@@ -16716,7 +16722,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     new ImagePopout(this.selected.monster.system.displayImage, {
       title: title,
       uuid: this.selected.monster.system.uuid,
-      showTitle: !game.user.isGM
+      showTitle: !this.gmView
         ? true
         : this.selected.monster.system.name.revealed
           ? true
@@ -17011,7 +17017,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       navigator.clipboard.writeText(bestiaryLink).then(() => {
         ui.notifications.info(
           game.i18n.format("PF2EBestiary.Bestiary.Info.BestiaryEntryLink", {
-            entity: game.user.isGM
+            entity: this.gmView
               ? this.selected.monster.system.name.value
               : this.selected.monster.system.displayedName,
           }),
@@ -17802,9 +17808,29 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     });
   }
 
+  switchPlayerMode = e => {
+    if(!game.user.isGM) return;
+
+    if (e.key == 'Control') {
+      this.gmView = false;
+      this.render();
+    }
+  };
+
+  resetPlayerMode = e => {
+    if(!game.user.isGM) return;
+
+    if (e.key == 'Control') {
+      this.gmView = true;
+      this.render();
+    }
+  };
+
   close = async (options) => {
     Hooks.off(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
     Hooks.off("deleteCombat", this.onDeleteCombat);
+    document.removeEventListener("keydown", this.switchPlayerMode);
+    document.removeEventListener("keyup", this.resetPlayerMode);
     await this.removeActorSheet();
 
     return super.close(options);
@@ -17837,11 +17863,11 @@ class RegisterHandlebarsHelpers {
       : 0;
   }
 
-  static monsterValue(prop, flag, ignoreLabel, context) {
+  static monsterValue(gmView, prop, flag, ignoreLabel, context) {
     return (
       game.i18n.localize(prop.custom) ??
       (flag &&
-      (!game.user.isGM ||
+      (!gmView ||
         !game.settings.get("pf2e-bestiary-tracking", "vague-descriptions")
           .settings.gmNumeric) &&
       prop.category
@@ -17856,12 +17882,12 @@ class RegisterHandlebarsHelpers {
     return value.slice(0, length);
   }
 
-  static toggleContainer(user, property) {
+  static toggleContainer(gmView, property) {
     var containerClass = " data-container";
 
-    if (property.revealed || !user.isGM)
+    if (property.revealed || !gmView)
       containerClass = containerClass.concat(" revealed ");
-    if (user.isGM) {
+    if (gmView) {
       containerClass = containerClass.concat(" toggle-container");
       if (property.custom || property.fake)
         containerClass = containerClass.concat(" misinformation");
@@ -17870,8 +17896,8 @@ class RegisterHandlebarsHelpers {
     return containerClass;
   }
 
-  static toggleContainerOverride(contrastRevealedState, property) {
-    if (!game.user.isGM || !contrastRevealedState.enabled) return "";
+  static toggleContainerOverride(gmView, contrastRevealedState, property) {
+    if (!gmView || !contrastRevealedState.enabled) return "";
 
     if (property.revealed)
       return `background: ${contrastRevealedState.revealed}`;
@@ -17942,7 +17968,7 @@ class RegisterHandlebarsHelpers {
     return ret;
   }
 
-  static imageState(user, state) {
+  static imageState(state) {
     switch (state) {
       case 1:
         return "outline";
