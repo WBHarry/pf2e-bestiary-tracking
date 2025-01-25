@@ -9140,6 +9140,36 @@ const extendedBestiaryThemeChoices = () => {
   };
 };
 
+const dispositionIconModes = {
+  TextOnly: {
+    value: 0,
+    label: "PF2EBestiary.Menus.BestiaryDisplay.DispositionIcons.TextOnly",
+  },
+  TextAndIcon: {
+    value: 1,
+    label: "PF2EBestiary.Menus.BestiaryDisplay.DispositionIcons.TextAndIcons",
+  },
+  IconOnly: {
+    value: 2,
+    label: "PF2EBestiary.Menus.BestiaryDisplay.DispositionIcons.IconsOnly",
+  },
+};
+
+const dispositionIconSize = {
+  normal: {
+    value: "normal",
+    label: "PF2EBestiary.Menus.BestiaryDisplay.DispositionIcons.SizeNormal",
+  },
+  large: {
+    value: "large",
+    label: "PF2EBestiary.Menus.BestiaryDisplay.DispositionIcons.SizeLarge",
+  },
+  huge: {
+    value: "huge",
+    label: "PF2EBestiary.Menus.BestiaryDisplay.DispositionIcons.SizeHuge",
+  },
+};
+
 const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$7, ApplicationV2: ApplicationV2$7 } = foundry.applications.api;
 
 class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
@@ -9182,6 +9212,10 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
         "pf2e-bestiary-tracking",
         "sheet-settings",
       ),
+      dispositionIcons: game.settings.get(
+        "pf2e-bestiary-tracking", 
+        "disposition-icons"
+      ),
     };
   }
 
@@ -9196,10 +9230,12 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
     position: { width: 680, height: "auto" },
     actions: {
       resetJournalSettings: this.resetJournalSettings,
+      resetDispositionIcons: this.resetDispositionIcons,
       toggleOptionalFields: this.toggleOptionalFields,
       toggleDetailedInformation: this.toggleDetailedInformation,
       toggleUsedSection: this.toggleUsedSection,
       filePicker: this.filePicker,
+      dispositionPicker: this.dispositionPicker,
       save: this.save,
     },
     form: { handler: this.updateData, submitOnChange: true },
@@ -9215,6 +9251,24 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
 
   _attachPartListeners(partId, htmlElement, options) {
     super._attachPartListeners(partId, htmlElement, options);
+
+    $(htmlElement).find(".disposition-mode-select").on("change", async (event) => {
+      this.settings.dispositionIcons.mode = Number.parseInt(event.currentTarget.value);
+      this.render();
+    });
+
+    $(htmlElement).find(".disposition-icon-size-select").on("change", async (event) => {
+      this.settings.dispositionIcons.iconSize = event.currentTarget.value;
+      this.render();
+    });
+
+    $(htmlElement).find(".disposition-image-input").on("change", async (event) => {
+      this.settings.dispositionIcons.icons[event.currentTarget.dataset.key] = {
+        isIcon: true,
+        image: event.currentTarget.value,
+      };
+      this.render();
+    });
 
     const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
     const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits).filter(
@@ -9272,6 +9326,10 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
       },
     ];
 
+    context.dispositionIconModes = dispositionIconModes;
+    context.dispositionIconSize = dispositionIconSize;
+    context.dispositionAttitudes = CONFIG.PF2E.attitude;
+
     return context;
   }
 
@@ -9291,6 +9349,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
         image: this.settings.journalSettings.image,
       },
       sheetSettings: data.sheetSettings,
+      dispositionIcons: this.settings.dispositionIcons,
     };
     this.render();
   }
@@ -9307,6 +9366,20 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
       active: true,
       name: "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle",
       image: "icons/sundries/books/book-embossed-bound-brown.webp",
+    };
+    this.render();
+  }
+
+  static async resetDispositionIcons() {
+    this.settings.dispositionIcons = {
+      useIcons: false,
+      icons: {
+        helpful: { isIcon: true, image: 'fa-regular fa-face-smile-beam' },
+        friendly: { isIcon: true, image: 'fa-regular fa-face-smile'  },
+        indifferent: { isIcon: true, image: 'fa-regular fa-face-meh' },
+        unfriendly: { isIcon: true, image: 'fa-regular fa-face-frown-open' },
+        hostile: { isIcon: true, image: 'fa-regular fa-face-angry' }
+      }
     };
     this.render();
   }
@@ -9355,6 +9428,20 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
       title: "Image Select",
       callback: async (path) => {
         foundry.utils.setProperty(this.settings, button.dataset.path, path);
+        this.render();
+      },
+    }).render(true);
+  }
+
+  static async dispositionPicker(_, button) {
+    new FilePicker({
+      type: "image",
+      title: "Image Select",
+      callback: async (path) => {
+        this.settings.dispositionIcons.icons[button.dataset.key] = {
+          isIcon: false,
+          image: path,
+        };
         this.render();
       },
     }).render(true);
@@ -9413,6 +9500,11 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
       "pf2e-bestiary-tracking",
       "sheet-settings",
       this.settings.sheetSettings,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "disposition-icons",
+      this.settings.dispositionIcons,
     );
     this.close();
   }
@@ -10072,9 +10164,9 @@ const registerKeyBindings = () => {
     uneditable: [],
     editable: [
       {
-          key: "ControlLeft",
-          modifiers: [],
-      }
+        key: "ControlLeft",
+        modifiers: [],
+      },
     ],
     restricted: true,
     reservedModifiers: [],
@@ -10465,6 +10557,25 @@ const bestiaryDisplay = () => {
     type: Object,
     default: {
       toBestiaryButton: toBestiaryOptions.no.value,
+    },
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "disposition-icons", {
+    name: game.i18n.localize("PF2EBestiary.Settings.DispositionIcons.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.DispositionIcons.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      mode: dispositionIconModes.TextOnly.value,
+      iconSize: dispositionIconSize.normal.value,
+      icons: {
+        helpful: { isIcon: true, image: 'fa-regular fa-face-smile-beam' },
+        friendly: { isIcon: true, image: 'fa-regular fa-face-smile'  },
+        indifferent: { isIcon: true, image: 'fa-regular fa-face-meh' },
+        unfriendly: { isIcon: true, image: 'fa-regular fa-face-frown-open' },
+        hostile: { isIcon: true, image: 'fa-regular fa-face-angry' }
+      }
     },
   });
 };
@@ -15474,6 +15585,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   sharedPreparation = async (context) => {
     context.gmView = this.gmView;
+    context.dispositionIcons = game.settings.get("pf2e-bestiary-tracking", "disposition-icons");
     context.layout = game.settings.get(
       "pf2e-bestiary-tracking",
       "bestiary-layout",
@@ -17824,7 +17936,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   switchPlayerMode = (e) => {
     if (!game.user.isGM) return;
 
-    if (game.keybindings.get('pf2e-bestiary-tracking', 'view-as-player').some(binding => binding.key === e.code)) {
+    if (
+      game.keybindings
+        .get("pf2e-bestiary-tracking", "view-as-player")
+        .some((binding) => binding.key === e.code)
+    ) {
       this.gmView = false;
       this.render();
     }
@@ -17833,7 +17949,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   resetPlayerMode = (e) => {
     if (!game.user.isGM) return;
 
-    if (game.keybindings.get('pf2e-bestiary-tracking', 'view-as-player').some(binding => binding.key === e.code)) {
+    if (
+      game.keybindings
+        .get("pf2e-bestiary-tracking", "view-as-player")
+        .some((binding) => binding.key === e.code)
+    ) {
       this.gmView = true;
       this.render();
     }
@@ -17865,7 +17985,13 @@ class RegisterHandlebarsHelpers {
       PF2EBTCaptialize: this.capitalize,
       PF2EBTSub: this.sub,
       PF2EBTEven: this.even,
+      PF2EBTTest: this.test,
     });
+  }
+
+  static test(a) {
+    console.log(a);
+    return 'a';
   }
 
   static nrKeys(obj, prop, context) {

@@ -1,5 +1,9 @@
 import Tagify from "@yaireo/tagify";
 import { toBestiaryOptions } from "../data/constants";
+import {
+  dispositionIconModes,
+  dispositionIconSize,
+} from "../data/bestiaryContents";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -43,6 +47,10 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
         "pf2e-bestiary-tracking",
         "sheet-settings",
       ),
+      dispositionIcons: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "disposition-icons",
+      ),
     };
   }
 
@@ -57,10 +65,12 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
     position: { width: 680, height: "auto" },
     actions: {
       resetJournalSettings: this.resetJournalSettings,
+      resetDispositionIcons: this.resetDispositionIcons,
       toggleOptionalFields: this.toggleOptionalFields,
       toggleDetailedInformation: this.toggleDetailedInformation,
       toggleUsedSection: this.toggleUsedSection,
       filePicker: this.filePicker,
+      dispositionPicker: this.dispositionPicker,
       save: this.save,
     },
     form: { handler: this.updateData, submitOnChange: true },
@@ -76,6 +86,33 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
 
   _attachPartListeners(partId, htmlElement, options) {
     super._attachPartListeners(partId, htmlElement, options);
+
+    $(htmlElement)
+      .find(".disposition-mode-select")
+      .on("change", async (event) => {
+        this.settings.dispositionIcons.mode = Number.parseInt(
+          event.currentTarget.value,
+        );
+        this.render();
+      });
+
+    $(htmlElement)
+      .find(".disposition-icon-size-select")
+      .on("change", async (event) => {
+        this.settings.dispositionIcons.iconSize = event.currentTarget.value;
+        this.render();
+      });
+
+    $(htmlElement)
+      .find(".disposition-image-input")
+      .on("change", async (event) => {
+        this.settings.dispositionIcons.icons[event.currentTarget.dataset.key] =
+          {
+            isIcon: true,
+            image: event.currentTarget.value,
+          };
+        this.render();
+      });
 
     const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
     const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits).filter(
@@ -133,6 +170,10 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
       },
     ];
 
+    context.dispositionIconModes = dispositionIconModes;
+    context.dispositionIconSize = dispositionIconSize;
+    context.dispositionAttitudes = CONFIG.PF2E.attitude;
+
     return context;
   }
 
@@ -152,6 +193,7 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
         image: this.settings.journalSettings.image,
       },
       sheetSettings: data.sheetSettings,
+      dispositionIcons: this.settings.dispositionIcons,
     };
     this.render();
   }
@@ -168,6 +210,20 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
       active: true,
       name: "PF2EBestiary.Bestiary.Welcome.GMsSection.RecallKnowledgeRulesTitle",
       image: "icons/sundries/books/book-embossed-bound-brown.webp",
+    };
+    this.render();
+  }
+
+  static async resetDispositionIcons() {
+    this.settings.dispositionIcons = {
+      useIcons: false,
+      icons: {
+        helpful: { isIcon: true, image: "fa-regular fa-face-smile-beam" },
+        friendly: { isIcon: true, image: "fa-regular fa-face-smile" },
+        indifferent: { isIcon: true, image: "fa-regular fa-face-meh" },
+        unfriendly: { isIcon: true, image: "fa-regular fa-face-frown-open" },
+        hostile: { isIcon: true, image: "fa-regular fa-face-angry" },
+      },
     };
     this.render();
   }
@@ -216,6 +272,20 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
       title: "Image Select",
       callback: async (path) => {
         foundry.utils.setProperty(this.settings, button.dataset.path, path);
+        this.render();
+      },
+    }).render(true);
+  }
+
+  static async dispositionPicker(_, button) {
+    new FilePicker({
+      type: "image",
+      title: "Image Select",
+      callback: async (path) => {
+        this.settings.dispositionIcons.icons[button.dataset.key] = {
+          isIcon: false,
+          image: path,
+        };
         this.render();
       },
     }).render(true);
@@ -274,6 +344,11 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "sheet-settings",
       this.settings.sheetSettings,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "disposition-icons",
+      this.settings.dispositionIcons,
     );
     this.close();
   }

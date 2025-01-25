@@ -991,6 +991,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
   sharedPreparation = async (context) => {
     context.gmView = this.gmView;
+    context.dispositionIcons = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "disposition-icons",
+    );
     context.layout = game.settings.get(
       "pf2e-bestiary-tracking",
       "bestiary-layout",

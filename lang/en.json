@@ -462,6 +462,18 @@
         "SheetSettings": {
           "AddButton": "Bestiary Button In Actor Sheet"
         },
+        "DispositionIcons": {
+          "Title": "Disposition Icons",
+          "Use": "Use Disposition Icons",
+          "IconSize": "Icon Size",
+          "TextOnly": "Text Only",
+          "TextAndIcons": "Text And Icons",
+          "IconsOnly": "Icons Only",
+          "IconInput": "{attitude} Icon",
+          "SizeNormal": "Normal",
+          "SizeLarge": "Large",
+          "SizeHuge": "Huge"
+        },
         "HideAbilityDescriptions": "Hide Ability Descriptions",
         "HideTips": "Hide Bestiary Welcome Tips",
         "HideWelcome": "Hide Welcome Message"

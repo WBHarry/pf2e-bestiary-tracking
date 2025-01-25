@@ -13,7 +13,13 @@ export default class RegisterHandlebarsHelpers {
       PF2EBTCaptialize: this.capitalize,
       PF2EBTSub: this.sub,
       PF2EBTEven: this.even,
+      PF2EBTTest: this.test,
     });
+  }
+
+  static test(a) {
+    console.log(a);
+    return "a";
   }
 
   static nrKeys(obj, prop, context) {

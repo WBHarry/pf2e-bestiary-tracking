@@ -27,7 +27,18 @@
                                     {{selectOptions ../dispositions selected=this.value valueAttr="value" labelAttr="name" localize=true}}
                                 </select>
                             {{else}}
-                                <div>{{localize this.label}}</div>
+                                <div class="disposition-label-container">
+                                    {{#if (not (eq ../dispositionIcons.mode 2))}}<div>{{localize this.label}}</div>{{/if}}
+                                    {{#if (gt ../dispositionIcons.mode 0)}}
+                                        {{#with (lookup ../dispositionIcons.icons this.value)}}
+                                            {{#if this.isIcon}}
+                                                <i class="disposition-icon {{../../dispositionIcons.iconSize}} {{this.image}}"></i>
+                                            {{else}}
+                                                <img class="disposition-image {{../../dispositionIcons.iconSize}}" src="{{this.image}}" />
+                                            {{/if}}
+                                        {{/with}}
+                                    {{/if}}
+                                </div>
                             {{/if}}
                         </div>
                     {{/each}}

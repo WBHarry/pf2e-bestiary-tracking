@@ -836,6 +836,35 @@
   margin-bottom: 4px;
   text-align: center;
 }
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .disposition-container .disposition-inner-container .disposition-label-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .disposition-container .disposition-inner-container .disposition-label-container .disposition-icon {
+  font-size: 16px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .disposition-container .disposition-inner-container .disposition-label-container .disposition-icon.large {
+  font-size: 28px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .disposition-container .disposition-inner-container .disposition-label-container .disposition-icon.huge {
+  font-size: 40px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .disposition-container .disposition-inner-container .disposition-label-container .disposition-image {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .disposition-container .disposition-inner-container .disposition-label-container .disposition-image.large {
+  height: 28px;
+  width: 28px;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .disposition-container .disposition-inner-container .disposition-label-container .disposition-image.huge {
+  height: 40px;
+  width: 40px;
+}
 .pf2e-bestiary-tracking.bestiary .monster-container .left-monster-container .premise-editor {
   height: 100%;
 }

@@ -23,6 +23,10 @@ import {
 } from "../styles/themes/themes.js";
 import BestiaryDisplayMenu from "../module/bestiaryDisplayMenu.js";
 import BestiaryThemesMenu from "../module/bestiaryThemesMenu.js";
+import {
+  dispositionIconModes,
+  dispositionIconSize,
+} from "../data/bestiaryContents.js";
 
 export const currentVersion = "1.1.29";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
@@ -509,6 +513,25 @@ const bestiaryDisplay = () => {
     type: Object,
     default: {
       toBestiaryButton: toBestiaryOptions.no.value,
+    },
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "disposition-icons", {
+    name: game.i18n.localize("PF2EBestiary.Settings.DispositionIcons.Name"),
+    hint: game.i18n.localize("PF2EBestiary.Settings.DispositionIcons.Hint"),
+    scope: "world",
+    config: false,
+    type: Object,
+    default: {
+      mode: dispositionIconModes.TextOnly.value,
+      iconSize: dispositionIconSize.normal.value,
+      icons: {
+        helpful: { isIcon: true, image: "fa-regular fa-face-smile-beam" },
+        friendly: { isIcon: true, image: "fa-regular fa-face-smile" },
+        indifferent: { isIcon: true, image: "fa-regular fa-face-meh" },
+        unfriendly: { isIcon: true, image: "fa-regular fa-face-frown-open" },
+        hostile: { isIcon: true, image: "fa-regular fa-face-angry" },
+      },
     },
   });
 };
