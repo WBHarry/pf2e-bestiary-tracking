@@ -148,6 +148,7 @@ const getNPCCategories = () => {
       acc.push({
         value: category.value,
         name: category.name,
+        description: category.description,
         hidden: category.hidden,
         position: category.position,
         values: [],
@@ -9979,7 +9980,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   };
 }
 
-const currentVersion = "1.1.28";
+const currentVersion = "1.1.29";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -13041,6 +13042,27 @@ const handleBestiaryMigration = async (bestiary, isSave) => {
 
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.9");
   }
+  if (
+    versionCompare(
+      bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"),
+      "1.1.28",
+    )
+  ) {
+    const newCategories = bestiaryJournal.getFlag(
+      "pf2e-bestiary-tracking",
+      "npcCategories",
+    );
+    await bestiaryJournal.setFlag(
+      "pf2e-bestiary-tracking",
+      "npcCategories",
+      newCategories
+        ? newCategories
+            .map((x, index) => ({ ...x, description: null }))
+        : [],
+    );
+
+    await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "1.1.29");
+  }
 
   await migrateBestiaryPages(bestiaryJournal);
 };
@@ -14536,6 +14558,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       npcView: page?.type === "pf2e-bestiary-tracking.npc" ? true : false,
       newCategory: {
         text: null,
+        description: null,
       },
     };
 
@@ -15407,6 +15430,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       (x) => x.value === this.selected.type,
     );
     context.bookmarkEntities = this.selected.type ? activeBookmark.values : [];
+    context.bookmarkDescription = activeBookmark?.description;
     context.returnLabel = !this.selected.monster
       ? game.i18n.localize(
           "PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome",
@@ -16726,6 +16750,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         {
           value: categoryKey,
           name: this.npcData.newCategory.text,
+          description: this.npcData.newCategory.description,
           position: categories.length,
           hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
             .npcCategories,
@@ -16755,6 +16780,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         newCategories,
       );
       this.npcData.newCategory.text = null;
+      this.npcData.newCategory.description = null;
 
       await game.socket.emit(`module.pf2e-bestiary-tracking`, {
         action: socketEvent.UpdateBestiary,
@@ -17834,8 +17860,8 @@ class RegisterHandlebarsHelpers {
       containerClass = containerClass.concat(" revealed ");
     if (user.isGM) {
       containerClass = containerClass.concat(" toggle-container");
-    if (property.custom || property.fake)
-      containerClass = containerClass.concat(" misinformation");
+      if (property.custom || property.fake)
+        containerClass = containerClass.concat(" misinformation");
     }
 
     return containerClass;

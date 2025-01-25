@@ -214,7 +214,9 @@
       },
       "NPC": {
         "NPCCategoryDescription": "NPCs are sorted into categories created by the GM. Remove categories by rightclicking their bookmarks.",
-        "NewCategory": "New NPC Category",
+        "NewCategoryTitle": "Add Category",
+        "NewCategory": "Category Name",
+        "NewCategoryDescription": "Optional Description",
         "NPCViewText": "NPC View Toggle",
         "EditModeText": "Edit Mode Toggle",
         "NPCSimpleText": "Simple NPC Toggle",
@@ -258,7 +260,8 @@
         "GMTextZoneTip": "Drag and drop a journal onto the text area to import text from it.",
         "SortAlphabetical": "Sort Alphabetically",
         "CategoryHandlingTitle": "NPC Category Handling",
-        "CategorySorting": "Category Sorting",
+        "CategorySortingTitle": "Category Sorting",
+        "CategorySorting": "Sorting Type",
         "CategorySortOptions": {
           "Manual": "Manual Order",
           "AscAlpha": "Alphabetical (Ascending)",

@@ -165,6 +165,7 @@ export const getNPCCategories = () => {
       acc.push({
         value: category.value,
         name: category.name,
+        description: category.description,
         hidden: category.hidden,
         position: category.position,
         values: [],

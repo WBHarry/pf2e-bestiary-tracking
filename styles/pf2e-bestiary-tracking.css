@@ -321,11 +321,17 @@
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container .npc-category-handling {
   margin-top: 8px;
+  display: flex;
+  flex-direction: column;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container .npc-category-handling legend {
   margin: 0 auto;
   font-size: 20px;
   font-weight: bold;
+  margin-bottom: 4px;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container .npc-category-handling legend.main-legend {
+  text-decoration: underline;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container .npc-category-handling .npc-category-handling-inner {
   display: flex;
@@ -334,6 +340,7 @@
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-container .npc-category-handling .npc-category-handling-inner .helper-text {
   text-align: center;
+  margin-bottom: -4px;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .main-page-category-container {
   display: flex;
@@ -413,6 +420,9 @@
   align-items: center;
   gap: 8px;
   margin-top: 8px;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-main-page .category-container.separate {
+  border-top: 2px solid black;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page .category-container .category-section {
   flex: 1;
@@ -524,6 +534,19 @@
   padding: 4px 8px 4px 4px;
   border-width: 1px;
   border-style: solid;
+}
+.pf2e-bestiary-tracking.bestiary .bookmark-description-container {
+  display: flex;
+  justify-content: center;
+}
+.pf2e-bestiary-tracking.bestiary .bookmark-description-container .bookmark-description {
+  width: 50%;
+  font-size: 20px;
+  font-style: italic;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 .pf2e-bestiary-tracking.bestiary .type-overview-container {
   display: flex;
@@ -651,7 +674,7 @@
   text-decoration-thickness: 1px;
   text-decoration-style: wavy;
   text-decoration-color: var(--pf2e-bestiary-tracking-primary-color);
-  font-family: 'Font Awesome 5 Pro';
+  font-family: "Font Awesome 5 Pro";
   font-style: italic;
   font-variant-caps: all-small-caps;
   text-shadow: 0 0 2px var(--pf2e-bestiary-tracking-primary-color);
@@ -1784,14 +1807,20 @@ form.pf2e-bestiary-tracking.application > header .header-control {
 .pf2e-bestiary-tracking .main-border-container {
   border-color: var(--pf2e-bestiary-tracking-primary);
 }
-.pf2e-bestiary-tracking .primary-hover-container {
+.pf2e-bestiary-tracking .primary-hover-container:not(.disabled) {
   cursor: pointer;
 }
-.pf2e-bestiary-tracking .primary-hover-container:hover {
+.pf2e-bestiary-tracking .primary-hover-container:not(.disabled):hover {
   filter: drop-shadow(0 0 3px var(--pf2e-bestiary-tracking-main-hover));
 }
-.pf2e-bestiary-tracking .primary-hover-container.border {
+.pf2e-bestiary-tracking .primary-hover-container:not(.disabled).border {
   border-color: var(--pf2e-bestiary-tracking-primary);
+}
+.pf2e-bestiary-tracking .primary-hover-container.disabled {
+  opacity: 0.5;
+}
+.pf2e-bestiary-tracking .primary-hover-container.active {
+  filter: drop-shadow(0 0 3px var(--pf2e-bestiary-tracking-main-hover));
 }
 .pf2e-bestiary-tracking .primary-tab:hover {
   text-shadow: 0 0 5px var(--pf2e-bestiary-tracking-main-hover);

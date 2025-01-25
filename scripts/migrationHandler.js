@@ -1493,6 +1493,30 @@ export const handleBestiaryMigration = async (bestiary, isSave) => {
 
     await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "0.9.9");
   }
+  if (
+    versionCompare(
+      bestiaryJournal.getFlag("pf2e-bestiary-tracking", "version"),
+      "1.1.28",
+    )
+  ) {
+    const newCategories = bestiaryJournal.getFlag(
+      "pf2e-bestiary-tracking",
+      "npcCategories",
+    );
+    await bestiaryJournal.setFlag(
+      "pf2e-bestiary-tracking",
+      "npcCategories",
+      newCategories
+        ? newCategories.map((x, index) => ({ ...x, description: null }))
+        : [],
+    );
+
+    await bestiaryJournal.setFlag(
+      "pf2e-bestiary-tracking",
+      "version",
+      "1.1.29",
+    );
+  }
 
   await migrateBestiaryPages(bestiaryJournal);
 };

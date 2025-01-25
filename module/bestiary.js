@@ -93,6 +93,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       npcView: page?.type === "pf2e-bestiary-tracking.npc" ? true : false,
       newCategory: {
         text: null,
+        description: null,
       },
     };
 
@@ -964,6 +965,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       (x) => x.value === this.selected.type,
     );
     context.bookmarkEntities = this.selected.type ? activeBookmark.values : [];
+    context.bookmarkDescription = activeBookmark?.description;
     context.returnLabel = !this.selected.monster
       ? game.i18n.localize(
           "PF2EBestiary.Bestiary.ReturnMessages.ReturnToWelcome",
@@ -2283,6 +2285,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         {
           value: categoryKey,
           name: this.npcData.newCategory.text,
+          description: this.npcData.newCategory.description,
           position: categories.length,
           hidden: game.settings.get("pf2e-bestiary-tracking", "hidden-settings")
             .npcCategories,
@@ -2312,6 +2315,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         newCategories,
       );
       this.npcData.newCategory.text = null;
+      this.npcData.newCategory.description = null;
 
       await game.socket.emit(`module.pf2e-bestiary-tracking`, {
         action: socketEvent.UpdateBestiary,

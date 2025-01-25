@@ -120,14 +120,22 @@ form {
 
   // Hover Containers
   .primary-hover-container {
-    cursor: pointer;
+    &:not(.disabled) {
+      cursor: pointer;
 
-    &:hover {
-      filter: drop-shadow(0 0 3px var(--pf2e-bestiary-tracking-main-hover));
+      &:hover {
+        filter: drop-shadow(0 0 3px var(--pf2e-bestiary-tracking-main-hover));
+      }
+
+      &.border {
+        border-color: var(--pf2e-bestiary-tracking-primary);
+      }
     }
-
-    &.border {
-      border-color: var(--pf2e-bestiary-tracking-primary);
+    &.disabled {
+      opacity: 0.5;
+    }
+    &.active {
+      filter: drop-shadow(0 0 3px var(--pf2e-bestiary-tracking-main-hover));
     }
   }
 

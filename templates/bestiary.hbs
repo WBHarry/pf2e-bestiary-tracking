@@ -68,32 +68,46 @@
                         </div>
                     {{/if}}
                     {{#if (and this.user.isGM (eq this.selected.category 'pf2e-bestiary-tracking.npc'))}}
-                        <fieldset class="npc-category-handling">
-                            <legend>{{localize "PF2EBestiary.Bestiary.NPC.CategoryHandlingTitle"}}</legend>
+                        <div class="npc-category-handling">
+                            <legend class="main-legend">{{localize "PF2EBestiary.Bestiary.NPC.CategoryHandlingTitle"}}</legend>
 
                             <div class="npc-category-handling-inner">
                                 <div class="helper-text">{{localize "PF2EBestiary.Bestiary.NPC.NPCCategoryDescription"}}</div>
-                                <div class="category-container">
-                                    <div class="category-section flexrow">
-                                        <div class="category-label flex0">{{localize "PF2EBestiary.Bestiary.NPC.NewCategory"}}</div>
+                                <fieldset>
+                                    <legend>{{localize "PF2EBestiary.Bestiary.NPC.NewCategoryTitle"}} <i class="fa-solid fa-plus primary-hover-container {{#if (not this.npcState.newCategory.text)}}disabled{{else}}active{{/if}}" data-action="addNpcCategory"></i></legend>
+                                    <div class="category-container">
+                                        <div class="category-section flexrow">
+                                            <div class="category-label flex0">{{localize "PF2EBestiary.Bestiary.NPC.NewCategory"}}</div>
+                                        </div>
+                                        <div class="category-body flexrow">
+                                            <input class="data-container primary-container" type="text" name="npcData.newCategory.text" value="{{this.npcState.newCategory.text}}" />
+                                            {{!-- <button class="secondary-container" {{#if (not this.npcState.newCategory.text)}}disabled{{else}}class="primary-container"{{/if}}><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.Miscellaneous.Add"}}</button> --}}
+                                        </div>
                                     </div>
-                                    <div class="category-body flexrow">
-                                        <input class="data-container primary-container" type="text" name="npcData.newCategory.text" value="{{this.npcState.newCategory.text}}" />
-                                        <button class="secondary-container" data-action="addNpcCategory" {{#if (not this.npcState.newCategory.text)}}disabled{{else}}class="primary-container"{{/if}}><i class="fa-solid fa-plus"></i>{{localize "PF2EBestiary.Miscellaneous.Add"}}</button>
+                                    <div class="category-container">
+                                        <div class="category-section flexrow">
+                                            <div class="category-label flex0">{{localize "PF2EBestiary.Bestiary.NPC.NewCategoryDescription"}}</div>
+                                        </div>
+                                        <div class="category-body flexrow">
+                                            <textarea class="data-input primary-container" name="npcData.newCategory.description">{{this.npcState.newCategory.description}}</textarea>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="category-container">
-                                    <div class="category-section flexrow">
-                                        <div class="category-label flex0">{{localize "PF2EBestiary.Bestiary.NPC.CategorySorting"}}</div>
+                                </fieldset>
+                                <fieldset>
+                                    <legend>{{localize "PF2EBestiary.Bestiary.NPC.CategorySortingTitle"}}</legend>
+                                    <div class="category-container">
+                                        <div class="category-section flexrow">
+                                            <div class="category-label flex0">{{localize "PF2EBestiary.Bestiary.NPC.CategorySorting"}}</div>
+                                        </div>
+                                        <div class="category-body flexrow">
+                                            <select class="npcCategorySortSelect primary-container" data-dtype="Number">
+                                                {{selectOptions this.npcCategorySortOptions selected=this.settings.npc.categorySort valueAttr="value" labelAttr="name" localize=true}}
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div class="category-body flexrow">
-                                        <select class="npcCategorySortSelect primary-container" data-dtype="Number">
-                                            {{selectOptions this.npcCategorySortOptions selected=this.settings.npc.categorySort valueAttr="value" labelAttr="name" localize=true}}
-                                        </select>
-                                    </div>
-                                </div>
+                                </fieldset>
                             </div>
-                        </fieldset>
+                        </div>
                     {{/if}}
                 </div>
                 {{#if (not this.selected.category)}}
@@ -195,6 +209,9 @@
                     </div>
                 </div>
             {{else}}
+                <div class="bookmark-description-container">
+                   <div class="bookmark-description">{{this.bookmarkDescription}}</div> 
+                </div>
                 <div class="type-overview-container">
                     {{#if (eq this.bookmarkEntities.length 0)}}
                         {{#if (eq this.selected.type 'unknown')}}
