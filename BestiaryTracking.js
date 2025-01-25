@@ -13056,12 +13056,15 @@ const handleBestiaryMigration = async (bestiary, isSave) => {
       "pf2e-bestiary-tracking",
       "npcCategories",
       newCategories
-        ? newCategories
-            .map((x, index) => ({ ...x, description: null }))
+        ? newCategories.map((x, index) => ({ ...x, description: null }))
         : [],
     );
 
-    await bestiaryJournal.setFlag("pf2e-bestiary-tracking", "version", "1.1.29");
+    await bestiaryJournal.setFlag(
+      "pf2e-bestiary-tracking",
+      "version",
+      "1.1.29",
+    );
   }
 
   await migrateBestiaryPages(bestiaryJournal);

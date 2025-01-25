@@ -684,7 +684,7 @@
                                                     <div class="attack-trait-label" title="{{localize this.description}}">
                                                         {{#if (eq this.index 0)}}({{/if}}{{localize this.label}}
                                                     </div>
-                                                    {{{this.suffix}}}
+                                                    {{#if (not this.last)}}{{{this.suffix}}}{{else}}){{/if}}
                                                 {{/PF2EBTFilter}}    
                                             </div>
                                         {{/if}}
