@@ -136,6 +136,7 @@
       "Title": "Bestiary",
       "PreviewTitle": "Preview Bestiary",
       "ToggleActorSheet": "Toggle Actor Sheet",
+      "UsingPlayerView": "Using Player View",
       "WindowControls": {
         "RefreshBestiary": "Refresh Bestiary",
         "BestiarySelection": "Bestiary Management",
