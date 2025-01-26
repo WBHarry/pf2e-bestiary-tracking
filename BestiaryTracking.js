@@ -227,9 +227,9 @@ const getEntityType = (data) => {
 const getSpellLevel = (spell, creatureLevel) => {
   return spell.system.traits.value.includes("cantrip")
     ? "Cantrips"
-    : (spell.system.location.heightenedLevel ?? spell.system.cast.focusPoints)
+    : spell.system.cast.focusPoints
       ? Math.ceil(creatureLevel / 2)
-      : spell.system.level.value;
+      : (spell.system.location.heightenedLevel ?? spell.system.level.value);
 };
 
 const chunkArray = (arr, size) => {
@@ -354,11 +354,12 @@ const valueFromRollOption = (rollOptions, option) => {
 };
 
 const getBestiarySpellLevel = (spells, maxLevel, id) => {
-  if (spells.levels[maxLevel].spells[id]) return maxLevel;
+  if (spells.levels[maxLevel] && spells.levels[maxLevel].spells[id])
+    return maxLevel;
 
   let level = Number.parseInt(maxLevel);
   while (level) {
-    if (spells.levels[level].spells[id]) {
+    if (spells.levels[level] && spells.levels[level].spells[id]) {
       break;
     }
     var nextLevel = Number.isNaN(level) ? null : level - 1;
@@ -9213,8 +9214,8 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
         "sheet-settings",
       ),
       dispositionIcons: game.settings.get(
-        "pf2e-bestiary-tracking", 
-        "disposition-icons"
+        "pf2e-bestiary-tracking",
+        "disposition-icons",
       ),
     };
   }
@@ -9252,23 +9253,32 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
   _attachPartListeners(partId, htmlElement, options) {
     super._attachPartListeners(partId, htmlElement, options);
 
-    $(htmlElement).find(".disposition-mode-select").on("change", async (event) => {
-      this.settings.dispositionIcons.mode = Number.parseInt(event.currentTarget.value);
-      this.render();
-    });
+    $(htmlElement)
+      .find(".disposition-mode-select")
+      .on("change", async (event) => {
+        this.settings.dispositionIcons.mode = Number.parseInt(
+          event.currentTarget.value,
+        );
+        this.render();
+      });
 
-    $(htmlElement).find(".disposition-icon-size-select").on("change", async (event) => {
-      this.settings.dispositionIcons.iconSize = event.currentTarget.value;
-      this.render();
-    });
+    $(htmlElement)
+      .find(".disposition-icon-size-select")
+      .on("change", async (event) => {
+        this.settings.dispositionIcons.iconSize = event.currentTarget.value;
+        this.render();
+      });
 
-    $(htmlElement).find(".disposition-image-input").on("change", async (event) => {
-      this.settings.dispositionIcons.icons[event.currentTarget.dataset.key] = {
-        isIcon: true,
-        image: event.currentTarget.value,
-      };
-      this.render();
-    });
+    $(htmlElement)
+      .find(".disposition-image-input")
+      .on("change", async (event) => {
+        this.settings.dispositionIcons.icons[event.currentTarget.dataset.key] =
+          {
+            isIcon: true,
+            image: event.currentTarget.value,
+          };
+        this.render();
+      });
 
     const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
     const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits).filter(
@@ -9374,12 +9384,12 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
     this.settings.dispositionIcons = {
       useIcons: false,
       icons: {
-        helpful: { isIcon: true, image: 'fa-regular fa-face-smile-beam' },
-        friendly: { isIcon: true, image: 'fa-regular fa-face-smile'  },
-        indifferent: { isIcon: true, image: 'fa-regular fa-face-meh' },
-        unfriendly: { isIcon: true, image: 'fa-regular fa-face-frown-open' },
-        hostile: { isIcon: true, image: 'fa-regular fa-face-angry' }
-      }
+        helpful: { isIcon: true, image: "fa-regular fa-face-smile-beam" },
+        friendly: { isIcon: true, image: "fa-regular fa-face-smile" },
+        indifferent: { isIcon: true, image: "fa-regular fa-face-meh" },
+        unfriendly: { isIcon: true, image: "fa-regular fa-face-frown-open" },
+        hostile: { isIcon: true, image: "fa-regular fa-face-angry" },
+      },
     };
     this.render();
   }
@@ -10570,12 +10580,12 @@ const bestiaryDisplay = () => {
       mode: dispositionIconModes.TextOnly.value,
       iconSize: dispositionIconSize.normal.value,
       icons: {
-        helpful: { isIcon: true, image: 'fa-regular fa-face-smile-beam' },
-        friendly: { isIcon: true, image: 'fa-regular fa-face-smile'  },
-        indifferent: { isIcon: true, image: 'fa-regular fa-face-meh' },
-        unfriendly: { isIcon: true, image: 'fa-regular fa-face-frown-open' },
-        hostile: { isIcon: true, image: 'fa-regular fa-face-angry' }
-      }
+        helpful: { isIcon: true, image: "fa-regular fa-face-smile-beam" },
+        friendly: { isIcon: true, image: "fa-regular fa-face-smile" },
+        indifferent: { isIcon: true, image: "fa-regular fa-face-meh" },
+        unfriendly: { isIcon: true, image: "fa-regular fa-face-frown-open" },
+        hostile: { isIcon: true, image: "fa-regular fa-face-angry" },
+      },
     },
   });
 };
@@ -15585,7 +15595,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   sharedPreparation = async (context) => {
     context.gmView = this.gmView;
-    context.dispositionIcons = game.settings.get("pf2e-bestiary-tracking", "disposition-icons");
+    context.dispositionIcons = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "disposition-icons",
+    );
     context.layout = game.settings.get(
       "pf2e-bestiary-tracking",
       "bestiary-layout",
@@ -17991,7 +18004,7 @@ class RegisterHandlebarsHelpers {
 
   static test(a) {
     console.log(a);
-    return 'a';
+    return "a";
   }
 
   static nrKeys(obj, prop, context) {

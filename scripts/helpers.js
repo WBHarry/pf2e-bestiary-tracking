@@ -244,9 +244,9 @@ export const getEntityType = (data) => {
 export const getSpellLevel = (spell, creatureLevel) => {
   return spell.system.traits.value.includes("cantrip")
     ? "Cantrips"
-    : (spell.system.location.heightenedLevel ?? spell.system.cast.focusPoints)
+    : spell.system.cast.focusPoints
       ? Math.ceil(creatureLevel / 2)
-      : spell.system.level.value;
+      : (spell.system.location.heightenedLevel ?? spell.system.level.value);
 };
 
 export const chunkArray = (arr, size) => {
@@ -371,11 +371,12 @@ export const valueFromRollOption = (rollOptions, option) => {
 };
 
 export const getBestiarySpellLevel = (spells, maxLevel, id) => {
-  if (spells.levels[maxLevel].spells[id]) return maxLevel;
+  if (spells.levels[maxLevel] && spells.levels[maxLevel].spells[id])
+    return maxLevel;
 
   let level = Number.parseInt(maxLevel);
   while (level) {
-    if (spells.levels[level].spells[id]) {
+    if (spells.levels[level] && spells.levels[level].spells[id]) {
       break;
     }
     var nextLevel = Number.isNaN(level) ? null : level - 1;
