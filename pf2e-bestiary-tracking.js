@@ -603,7 +603,7 @@ Hooks.on("renderDependencyResolution", (dependencyResolution, html) => {
   if (dependencyResolution.object.id === "pf2e-bestiary-tracking") {
     const lastText = $(html).find("form p").last();
     lastText.after(`
-                <h2 style="margin-bottom: 4px; border-bottom: 0;">${game.i18n.format("PF2EBestiary.Macros.DeactivateModule.DependencyResolutionWarning", { name: `<strong>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Name")}</strong>` })}</h2>  
+                <h2 style="margin-bottom: 4px; border-bottom: 0;">${game.i18n.format("PF2EBestiary.Macros.DeactivateModule.DependencyResolutionWarning", { name: `<strong>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Name")}</strong>` })}</h2>
         `);
   }
 });

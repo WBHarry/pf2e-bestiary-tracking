@@ -10082,7 +10082,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   };
 }
 
-const currentVersion = "1.1.29";
+const currentVersion = "1.1.30";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -14712,8 +14712,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     document.addEventListener("keydown", this.switchPlayerMode);
     document.addEventListener("keyup", this.resetPlayerMode);
 
-    Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate.bind(this));
-    Hooks.on("deleteCombat", this.onDeleteCombat.bind(this));
+    this.onUpdateBestiaryId = Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate.bind(this));
+    this.onDeleteCombatId =  Hooks.on("deleteCombat", this.onDeleteCombat.bind(this));
   }
 
   get title() {
@@ -17973,8 +17973,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   };
 
   close = async (options) => {
-    Hooks.off(socketEvent.UpdateBestiary, this.onBestiaryUpdate);
-    Hooks.off("deleteCombat", this.onDeleteCombat);
+    Hooks.off(socketEvent.UpdateBestiary, this.onUpdateBestiaryId);
+    Hooks.off("deleteCombat", this.onDeleteCombatId);
     document.removeEventListener("keydown", this.switchPlayerMode);
     document.removeEventListener("keyup", this.resetPlayerMode);
     await this.removeActorSheet();
@@ -18850,7 +18850,7 @@ Hooks.on("renderDependencyResolution", (dependencyResolution, html) => {
   if (dependencyResolution.object.id === "pf2e-bestiary-tracking") {
     const lastText = $(html).find("form p").last();
     lastText.after(`
-                <h2 style="margin-bottom: 4px; border-bottom: 0;">${game.i18n.format("PF2EBestiary.Macros.DeactivateModule.DependencyResolutionWarning", { name: `<strong>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Name")}</strong>` })}</h2>  
+                <h2 style="margin-bottom: 4px; border-bottom: 0;">${game.i18n.format("PF2EBestiary.Macros.DeactivateModule.DependencyResolutionWarning", { name: `<strong>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Name")}</strong>` })}</h2>
         `);
   }
 });
