@@ -14712,8 +14712,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     document.addEventListener("keydown", this.switchPlayerMode);
     document.addEventListener("keyup", this.resetPlayerMode);
 
-    this.onUpdateBestiaryId = Hooks.on(socketEvent.UpdateBestiary, this.onBestiaryUpdate.bind(this));
-    this.onDeleteCombatId =  Hooks.on("deleteCombat", this.onDeleteCombat.bind(this));
+    this.onUpdateBestiaryId = Hooks.on(
+      socketEvent.UpdateBestiary,
+      this.onBestiaryUpdate.bind(this),
+    );
+    this.onDeleteCombatId = Hooks.on(
+      "deleteCombat",
+      this.onDeleteCombat.bind(this),
+    );
   }
 
   get title() {
@@ -15434,7 +15440,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
             );
 
           return (
-            token?.baseActor?.uuid === entity.system.uuid ||
+            (token?.baseActor && entity.system.actorBelongs(token.baseActor)) ||
             x.actorId === entity.system.id
           );
         });

@@ -836,7 +836,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
             );
 
           return (
-            token?.baseActor?.uuid === entity.system.uuid ||
+            (token?.baseActor && entity.system.actorBelongs(token.baseActor)) ||
             x.actorId === entity.system.id
           );
         });
