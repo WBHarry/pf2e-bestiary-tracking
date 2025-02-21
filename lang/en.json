@@ -130,7 +130,10 @@
       "DCLabel": "DC",
       "BrowseFiles": "Browse Files",
       "ClearFile": "Clear File",
-      "Randomise": "Randomise"
+      "Randomise": "Randomise",
+      "Higher": "Higher",
+      "Similar": "Similar",
+      "Lower": "Lower"
     },
     "Bestiary": {
       "Title": "Bestiary",
@@ -377,7 +380,8 @@
             "PlayerBased": "Base Descriptions On Player Level",
             "MisinformationOptions": "Vague Misinformation Categories",
             "GMNumeric": "GM Sees Exact Values",
-            "SimpleSaves": "Comparative Save Descriptions"
+            "SimpleSaves": "Comparative Save Descriptions",
+            "Level": "Level"
           },
           "Sections": {
             "Properties": {

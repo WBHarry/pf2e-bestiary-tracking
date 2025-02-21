@@ -1597,6 +1597,18 @@ export class Creature extends foundry.abstract.TypeDataModel {
         : (playerLevel ?? this.level.value)
       : this.level.value;
 
+    const levelUsedForLevel =
+      gmLevel && !Number.isNaN(gmLevel) && game.user.isGM
+        ? gmLevel
+        : (playerLevel ?? this.level.value);
+
+    this.level.category =
+      this.level.value < levelUsedForLevel
+        ? "PF2EBestiary.Miscellaneous.Lower"
+        : this.level.value === levelUsedForLevel
+          ? "PF2EBestiary.Miscellaneous.Similar"
+          : "PF2EBestiary.Miscellaneous.Higher";
+
     this.ac.category = getCategoryLabel(acTable, contextLevel, this.ac.value);
     this.hp.category = getCategoryFromIntervals(
       hpTable,

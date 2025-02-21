@@ -331,6 +331,7 @@ const vagueDescriptions = () => {
         damage: false,
         spells: false,
         initiative: false,
+        level: false,
       },
       settings: {
         playerBased: false,

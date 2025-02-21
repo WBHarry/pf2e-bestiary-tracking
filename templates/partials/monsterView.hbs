@@ -11,7 +11,7 @@
                     <i class="fa-solid fa-dragon"></i>    
                     <div class="pf2e-bestiary-bold">{{localize "PF2EBestiary.Miscellaneous.Level"}}</div>
                 </div>
-                <div class="flex-value">{{#if (or this.system.level.revealed this.gmView)}}{{PF2EBTMonsterValue this.gmView this.system.level}}{{else}}?{{/if}}</div>
+                <div class="flex-value">{{#if (or this.system.level.revealed this.gmView)}}{{PF2EBTMonsterValue this.gmView this.system.level this.vagueDescriptions.properties.level}}{{else}}?{{/if}}</div>
             </div>
         {{/if}}
 
