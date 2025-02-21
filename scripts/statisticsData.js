@@ -700,19 +700,19 @@ export const attributeTable = {
   range: ["extreme", "high", "moderate", "low"],
   values: {
     "-2": {
-      extreme: null,
+      extreme: 4,
       high: 3,
       moderate: 2,
       low: 0,
     },
     "-1": {
-      extreme: null,
+      extreme: 4,
       high: 3,
       moderate: 2,
       low: 0,
     },
     0: {
-      extreme: null,
+      extreme: 4,
       high: 3,
       moderate: 2,
       low: 0,
