@@ -1265,7 +1265,7 @@
   line-height: normal;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .actions-container .action-description.expanded {
-  max-height: 500px;
+  max-height: 100%;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .attack-traits-container {
   display: flex;
