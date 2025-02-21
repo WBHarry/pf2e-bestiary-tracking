@@ -621,23 +621,6 @@ Hooks.on("renderImagePopout", (app, html) => {
     const hideState = existingPage.system.imageState.hideState;
     const image = $(html).find("figure img");
     image.addClass(RegisterHandlebarsHelpers.imageState(game.user, hideState));
-
-    if (existingPage.system.imageState.hideState === 2) {
-      const imageSettings = game.settings.get(
-        "pf2e-bestiary-tracking",
-        "image-settings",
-      );
-
-      const hideImage =
-        existingPage.type === "pf2e-bestiary-tracking.creature"
-          ? imageSettings.creature.hideImage
-          : existingPage.type === "pf2e-bestiary-tracking.npc"
-            ? imageSettings.npc.hideImage
-            : existingPage.type === "pf2e-bestiary-tracking.hazard"
-              ? imageSettings.hazard.hideImage
-              : image.currentSrc;
-      image[0].currentSrc = `${image[0].baseURI.split("game")[0]}${hideImage}`;
-    }
   }
 });
 
