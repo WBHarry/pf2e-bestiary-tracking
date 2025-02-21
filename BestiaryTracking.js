@@ -17957,7 +17957,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   switchPlayerMode = (e) => {
-    if (!game.user.isGM) return;
+    if (!game.user.isGM || this.npcData.editMode) return;
 
     if (
       game.keybindings
@@ -17970,7 +17970,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   };
 
   resetPlayerMode = (e) => {
-    if (!game.user.isGM) return;
+    if (!game.user.isGM || this.npcData.editMode) return;
 
     if (
       game.keybindings
