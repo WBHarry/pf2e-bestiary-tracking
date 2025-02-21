@@ -2489,6 +2489,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   async importFromJSONData(data) {
+    if (data.system.npcData) {
+      data.system.npcData.categories = [];
+    }
+
     await this.bestiary.createEmbeddedDocuments("JournalEntryPage", [data]);
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
