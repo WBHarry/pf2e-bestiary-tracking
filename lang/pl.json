@@ -130,7 +130,10 @@
       "DCLabel": "ST",
       "BrowseFiles": "Przeglądaj pliki",
       "ClearFile": "Wyczyść plik",
-      "Randomise": "Losowo"
+      "Randomise": "Losowo",
+      "Higher": "Wyższy",
+      "Similar": "Podobny",
+      "Lower": "Niższy"
     },
     "Bestiary": {
       "Title": "Bestiariusz",
@@ -377,7 +380,8 @@
             "PlayerBased": "Podstawowe opisy na poziomie gracza",
             "MisinformationOptions": "Niejasne i błędne kategorie informacji",
             "GMNumeric": "MG widzi dokładne wartości",
-            "SimpleSaves": "Porównawczy opis rzutu obronnego"
+            "SimpleSaves": "Porównawczy opis rzutu obronnego",
+            "Level": "Poziom"
           },
           "Sections": {
             "Properties": {
