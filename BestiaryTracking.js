@@ -10106,7 +10106,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   };
 }
 
-const currentVersion = "1.1.30";
+const currentVersion = "1.1.32";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -18406,7 +18406,8 @@ Hooks.once("setup", () => {
       "pf2e-bestiary-tracking",
       "Token.prototype._onClickLeft2",
       function (wrapped, ...args) {
-        const baseActor = args[0].currentTarget.document.baseActor;
+        const baseActor = args[0].entity ? game.actors.get(args[0].entity.document.actorId) : args[0].currentTarget.document.baseActor;
+        const actor = args[0].entity ? game.actors.get(args[0].entity.document.actorId) : args[0].currentTarget.actor;
         if (!isValidEntityType(baseActor.type)) {
           return wrapped(...args);
         }
@@ -18420,7 +18421,7 @@ Hooks.once("setup", () => {
           return wrapped(...args);
         }
 
-        if (args[0].currentTarget.actor.isDead && !args[0].altKey) {
+        if (actor.isDead && !args[0].altKey) {
           return wrapped(...args);
         }
 
@@ -18434,8 +18435,8 @@ Hooks.once("setup", () => {
 
         var actorIsItemPile =
           game.modules.get("item-piles")?.active &&
-          args[0].currentTarget.actor.flags["item-piles"] &&
-          args[0].currentTarget.actor.flags["item-piles"].data?.enabled;
+          actor.flags["item-piles"] &&
+          actor.flags["item-piles"].data?.enabled;
         if (actorIsItemPile && !args[0].altKey) {
           return wrapped(...args);
         }
