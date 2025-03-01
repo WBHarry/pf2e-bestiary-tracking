@@ -13791,8 +13791,20 @@ class BestiarySelection extends HandlebarsApplicationMixin$4(
   }
 }
 
-const openBestiary = async () => {
-  new PF2EBestiary().render(true);
+/**
+ * options: {  
+ *    category = npcCategory,
+ *    type = 'Creature' || 'NPC' || 'Hazard'
+ * }
+ * page: CreatureUUID to open in the Bestiary
+ */
+const openBestiary = async (options, page) => {
+  const bestiary = game.journal.get(
+    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+  );
+
+  const bestiaryPage = page ? bestiary.pages.find(x => x.system.uuid === page) : null;
+  new PF2EBestiary(options, bestiaryPage).render(true);
 };
 
 const swapBestiary = async () => {
@@ -13809,7 +13821,7 @@ const openBestiaryCombat = async () => {
     return;
   }
 
-  new PF2EBestiary(null, {
+  new PF2EBestiary({
     category: "pf2e-bestiary-tracking.creature",
     type: "combat",
   }).render(true);
@@ -13862,7 +13874,7 @@ const showMonster = () => {
     return;
   }
 
-  new PF2EBestiary(page).render(true);
+  new PF2EBestiary(null, page).render(true);
 };
 
 const addMonster = async () => {
@@ -14680,7 +14692,7 @@ const defaultSelectedAbilities = () => ({
 class PF2EBestiary extends HandlebarsApplicationMixin(
   ApplicationV2,
 ) {
-  constructor(page, options) {
+  constructor(options, page) {
     super({});
 
     this.bestiary = game.journal.get(
@@ -14719,7 +14731,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     this.npcData = {
       editMode: false,
-      npcView: page?.type === "pf2e-bestiary-tracking.npc" ? true : false,
+      npcView: (page?.type === "pf2e-bestiary-tracking.npc" || options?.category === "pf2e-bestiary-tracking.npc") ? true : false,
       newCategory: {
         text: null,
         description: null,
@@ -14793,6 +14805,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       importEntity: this.importEntity,
       transformNPC: this.transformNPC,
       transformCreature: this.transformCreature,
+      getOpenMacro: this.getOpenMacro,
       openDocument: this.openDocument,
       removeRecallKnowledgeJournal: this.removeRecallKnowledgeJournal,
       imageMenu: this.imageMenu,
@@ -14849,6 +14862,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           icon: "fa-solid fa-toggle-on",
           label: "PF2EBestiary.Bestiary.WindowControls.TransformCreature",
           action: "transformCreature",
+        },
+        {
+          icon: "fa-solid fa-barcode",
+          label: "PF2EBestiary.Bestiary.WindowControls.GetOpenMacro",
+          action: "getOpenMacro"
         },
       ],
     },
@@ -17139,6 +17157,22 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     await this.toggleIsNPC();
   }
 
+  static async getOpenMacro() {
+    const macroData = this.selected.monster ? null : {
+      category: this.selected.category,
+      type: this.selected.type,
+    };
+    const pageData = this.selected.monster?.system?.uuid ?? null;
+
+    const macro = `game.modules.get('pf2e-bestiary-tracking').macros.openBestiary(${JSON.stringify(macroData)}, ${JSON.stringify(pageData)});`;
+
+    navigator.clipboard.writeText(macro).then(() => {
+      ui.notifications.info(
+        game.i18n.localize("PF2EBestiary.Bestiary.Info.BestiaryOpenMacro")
+      );
+    });
+  }
+
   static async openDocument(_, button) {
     const document = await fromUuid(button.dataset.uuid);
     await document.sheet.render(true);
@@ -17634,7 +17668,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
 
     if (openAfter) {
-      new PF2EBestiary(pages[0]).render(true);
+      new PF2EBestiary(null, pages[0]).render(true);
     }
 
     return pages[0];
@@ -18406,8 +18440,12 @@ Hooks.once("setup", () => {
       "pf2e-bestiary-tracking",
       "Token.prototype._onClickLeft2",
       function (wrapped, ...args) {
-        const baseActor = args[0].entity ? game.actors.get(args[0].entity.document.actorId) : args[0].currentTarget.document.baseActor;
-        const actor = args[0].entity ? game.actors.get(args[0].entity.document.actorId) : args[0].currentTarget.actor;
+        const baseActor = args[0].entity
+          ? game.actors.get(args[0].entity.document.actorId)
+          : args[0].currentTarget.document.baseActor;
+        const actor = args[0].entity
+          ? game.actors.get(args[0].entity.document.actorId)
+          : args[0].currentTarget.actor;
         if (!isValidEntityType(baseActor.type)) {
           return wrapped(...args);
         }
@@ -18457,7 +18495,7 @@ Hooks.once("setup", () => {
           return;
         }
 
-        new PF2EBestiary(page).render(true);
+        new PF2EBestiary(null, page).render(true);
       },
     );
   }
@@ -18915,7 +18953,7 @@ Hooks.on("renderApplication", (_, htmlElements) => {
         game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
       );
       const page = bestiary.pages.get(button.dataset.page);
-      button.onclick = () => new PF2EBestiary(page).render(true);
+      button.onclick = () => new PF2EBestiary(null, page).render(true);
     }
   }
 });
@@ -18960,7 +18998,7 @@ Hooks.on("renderChatMessage", (message, htmlElements) => {
         game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
       );
       const page = bestiary.pages.get(button.dataset.page);
-      button.onclick = () => new PF2EBestiary(page).render(true);
+      button.onclick = () => new PF2EBestiary(null, page).render(true);
     }
 
     if (isDamageRoll && automaticReveal.iwr) {
@@ -19097,7 +19135,7 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
             x.system.actorBelongs(item),
           );
           if (page) {
-            new PF2EBestiary(page).render(true);
+            new PF2EBestiary(null, page).render(true);
           } else {
             const dialog = new foundry.applications.api.DialogV2({
               buttons: [

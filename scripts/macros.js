@@ -4,8 +4,15 @@ import { isValidEntityType } from "./helpers.js";
 import { bestiaryFolder, currentVersion } from "./setup.js";
 import { socketEvent } from "./socket.js";
 
-export const openBestiary = async () => {
-  new PF2EBestiary().render(true);
+export const openBestiary = async (options, page) => {
+  const bestiary = game.journal.get(
+    game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+  );
+
+  const bestiaryPage = page
+    ? bestiary.pages.find((x) => x.system.uuid === page)
+    : null;
+  new PF2EBestiary(options, bestiaryPage).render(true);
 };
 
 export const swapBestiary = async () => {
@@ -22,7 +29,7 @@ export const openBestiaryCombat = async () => {
     return;
   }
 
-  new PF2EBestiary(null, {
+  new PF2EBestiary({
     category: "pf2e-bestiary-tracking.creature",
     type: "combat",
   }).render(true);
@@ -75,7 +82,7 @@ export const showMonster = () => {
     return;
   }
 
-  new PF2EBestiary(page).render(true);
+  new PF2EBestiary(null, page).render(true);
 };
 
 export const addMonster = async () => {

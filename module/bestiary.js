@@ -37,7 +37,6 @@ import {
   hpTable,
   savingThrowPerceptionTable,
   skillTable,
-  weaknessTable,
 } from "../scripts/statisticsData.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -51,7 +50,7 @@ const defaultSelectedAbilities = () => ({
 export default class PF2EBestiary extends HandlebarsApplicationMixin(
   ApplicationV2,
 ) {
-  constructor(page, options) {
+  constructor(options, page) {
     super({});
 
     this.bestiary = game.journal.get(
@@ -90,7 +89,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
     this.npcData = {
       editMode: false,
-      npcView: page?.type === "pf2e-bestiary-tracking.npc" ? true : false,
+      npcView:
+        page?.type === "pf2e-bestiary-tracking.npc" ||
+        options?.category === "pf2e-bestiary-tracking.npc"
+          ? true
+          : false,
       newCategory: {
         text: null,
         description: null,
@@ -164,6 +167,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       importEntity: this.importEntity,
       transformNPC: this.transformNPC,
       transformCreature: this.transformCreature,
+      getOpenMacro: this.getOpenMacro,
       openDocument: this.openDocument,
       removeRecallKnowledgeJournal: this.removeRecallKnowledgeJournal,
       imageMenu: this.imageMenu,
@@ -220,6 +224,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           icon: "fa-solid fa-toggle-on",
           label: "PF2EBestiary.Bestiary.WindowControls.TransformCreature",
           action: "transformCreature",
+        },
+        {
+          icon: "fa-solid fa-barcode",
+          label: "PF2EBestiary.Bestiary.WindowControls.GetOpenMacro",
+          action: "getOpenMacro",
         },
       ],
     },
@@ -2510,6 +2519,24 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     await this.toggleIsNPC();
   }
 
+  static async getOpenMacro() {
+    const macroData = this.selected.monster
+      ? null
+      : {
+          category: this.selected.category,
+          type: this.selected.type,
+        };
+    const pageData = this.selected.monster?.system?.uuid ?? null;
+
+    const macro = `game.modules.get('pf2e-bestiary-tracking').macros.openBestiary(${JSON.stringify(macroData)}, ${JSON.stringify(pageData)});`;
+
+    navigator.clipboard.writeText(macro).then(() => {
+      ui.notifications.info(
+        game.i18n.localize("PF2EBestiary.Bestiary.Info.BestiaryOpenMacro"),
+      );
+    });
+  }
+
   static async openDocument(_, button) {
     const document = await fromUuid(button.dataset.uuid);
     await document.sheet.render(true);
@@ -3005,7 +3032,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
 
     if (openAfter) {
-      new PF2EBestiary(pages[0]).render(true);
+      new PF2EBestiary(null, pages[0]).render(true);
     }
 
     return pages[0];

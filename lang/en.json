@@ -151,7 +151,8 @@
         "ImportEntity": "Import Entity",
         "ExportBestiary": "Export Bestiary",
         "TransformCreature": "Transform To NPC",
-        "TransformNPC": "Transform To Creature"
+        "TransformNPC": "Transform To Creature",
+        "GetOpenMacro": "Get Open Macro"
       },
       "Category": {
         "Creatures": "Creatures",
@@ -330,6 +331,7 @@
         "AlreadyExistsInBestiary": "[{creatures}] already exists in the Bestiary.",
         "BestiaryEntryLinkTip": "Copy link (+Alt to send to chat)",
         "BestiaryEntryLink": "Bestiary Entry {entity} copied to clipboard.",
+        "BestiaryOpenMacro": "Bestiary Open Macro copied to clipboard.",
         "RefreshStarted": "Bestiary refresh started",
         "RefreshFinished": "Bestiary refresh finished",
         "RefreshFinishedPartial": "Bestiary refresh finished. Some entities did not have linked actors and were not refreshed [{entities}]"
