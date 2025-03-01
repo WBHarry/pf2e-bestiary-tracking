@@ -422,7 +422,9 @@ const updateBestiaryData = async (message) => {
   const options = base.rollOptions ?? base.options;
   var update = null;
   let id = null;
-  if (message.flags.pf2e.origin?.uuid) {
+  if (message.flags.pf2e.context?.type === "saving-throw") {
+    id = message.flags.pf2e.modifierName ?? null;
+  } else if (message.flags.pf2e.origin?.uuid) {
     const uuidSplit = message.flags.pf2e.origin.uuid.split(".");
     id = uuidSplit[uuidSplit.length - 1];
   } else if (message.flags.pf2e?.context?.identifier) {

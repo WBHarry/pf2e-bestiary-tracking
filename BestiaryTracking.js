@@ -10106,7 +10106,7 @@ class BestiaryThemesMenu extends HandlebarsApplicationMixin$5(
   };
 }
 
-const currentVersion = "1.1.32";
+const currentVersion = "1.2.0";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -13791,13 +13791,6 @@ class BestiarySelection extends HandlebarsApplicationMixin$4(
   }
 }
 
-/**
- * options: {  
- *    category = npcCategory,
- *    type = 'Creature' || 'NPC' || 'Hazard'
- * }
- * page: CreatureUUID to open in the Bestiary
- */
 const openBestiary = async (options, page) => {
   const bestiary = game.journal.get(
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
@@ -14731,7 +14724,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     this.npcData = {
       editMode: false,
-      npcView: (page?.type === "pf2e-bestiary-tracking.npc" || options?.category === "pf2e-bestiary-tracking.npc") ? true : false,
+      npcView:
+        page?.type === "pf2e-bestiary-tracking.npc" ||
+        options?.category === "pf2e-bestiary-tracking.npc"
+          ? true
+          : false,
       newCategory: {
         text: null,
         description: null,
@@ -14866,7 +14863,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         {
           icon: "fa-solid fa-barcode",
           label: "PF2EBestiary.Bestiary.WindowControls.GetOpenMacro",
-          action: "getOpenMacro"
+          action: "getOpenMacro",
         },
       ],
     },
@@ -17158,17 +17155,19 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   static async getOpenMacro() {
-    const macroData = this.selected.monster ? null : {
-      category: this.selected.category,
-      type: this.selected.type,
-    };
+    const macroData = this.selected.monster
+      ? null
+      : {
+          category: this.selected.category,
+          type: this.selected.type,
+        };
     const pageData = this.selected.monster?.system?.uuid ?? null;
 
     const macro = `game.modules.get('pf2e-bestiary-tracking').macros.openBestiary(${JSON.stringify(macroData)}, ${JSON.stringify(pageData)});`;
 
     navigator.clipboard.writeText(macro).then(() => {
       ui.notifications.info(
-        game.i18n.localize("PF2EBestiary.Bestiary.Info.BestiaryOpenMacro")
+        game.i18n.localize("PF2EBestiary.Bestiary.Info.BestiaryOpenMacro"),
       );
     });
   }
@@ -18738,7 +18737,9 @@ const updateBestiaryData = async (message) => {
   const options = base.rollOptions ?? base.options;
   var update = null;
   let id = null;
-  if (message.flags.pf2e.origin?.uuid) {
+  if(message.flags.pf2e.context?.type === 'saving-throw'){
+    id = message.flags.pf2e.modifierName ?? null;
+  } else if (message.flags.pf2e.origin?.uuid) {
     const uuidSplit = message.flags.pf2e.origin.uuid.split(".");
     id = uuidSplit[uuidSplit.length - 1];
   } else if (message.flags.pf2e?.context?.identifier) {
