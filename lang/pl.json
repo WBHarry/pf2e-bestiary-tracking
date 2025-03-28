@@ -151,7 +151,8 @@
         "ImportEntity": "Importuj podmiot",
         "ExportBestiary": "Eksportuj bestiariusz",
         "TransformCreature": "Przekształcenie w BN",
-        "TransformNPC": "Przekształcenie w stworzenie"
+        "TransformNPC": "Przekształcenie w stworzenie",
+        "GetOpenMacro": "Uzyskaj otwarte makro"
       },
       "Category": {
         "Creatures": "Stworzenia",
@@ -330,6 +331,7 @@
         "AlreadyExistsInBestiary": "[{creatures}] już istnieje w Bestiariuszu.",
         "BestiaryEntryLinkTip": "Kopiuj link (+Alt, aby wysłać do czatu)",
         "BestiaryEntryLink": "Wpis z bestiariusza {entity} został skopiowany do schowka.",
+        "BestiaryOpenMacro": "Otwarcie makra Bestiariusza skopiowane do schowka.",
         "RefreshStarted": "Rozpoczęto odświeżanie bestiariusza",
         "RefreshFinished": "Odświeżanie bestiariusza zakończone",
         "RefreshFinishedPartial": "Zakończono odświeżanie bestiariusza. Niektóre jednostki nie miały powiązanych aktorów i nie zostały odświeżone [{entities}]."
