@@ -12,7 +12,8 @@ export const openBestiary = async (options, page) => {
   const bestiaryPage = page
     ? bestiary.pages.find((x) => x.system.uuid === page)
     : null;
-  new PF2EBestiary(options, bestiaryPage).render(true);
+
+  return await new PF2EBestiary(options, bestiaryPage).render(true);
 };
 
 export const swapBestiary = async () => {

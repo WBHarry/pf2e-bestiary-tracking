@@ -142,14 +142,14 @@
   flex-direction: column;
 }
 .pf2e-bestiary-tracking.bestiary .window-header {
-  background-image: var(--pf2e-bestiary-tracking-application-header-image);
-  background-size: var(--pf2e-bestiary-tracking-application-header-image-size);
-  background-repeat: var(--pf2e-bestiary-tracking-application-header-image-repeat);
-  background-position: var(--pf2e-bestiary-tracking-application-header-image-position);
-  border-color: var(--pf2e-bestiary-tracking-application-border);
+  background-image: var(--pf2e-subsystem-theming-application-header-image);
+  background-size: var(--pf2e-subsystem-theming-application-header-image-size);
+  background-repeat: var(--pf2e-subsystem-theming-application-header-image-repeat);
+  background-position: var(--pf2e-subsystem-theming-application-header-image-position);
+  border-color: var(--pf2e-subsystem-theming-application-border);
 }
 .pf2e-bestiary-tracking.bestiary .window-header h1 {
-  text-shadow: 1px 1px 4px var(--pf2e-bestiary-tracking-text-shadow);
+  text-shadow: 1px 1px 4px var(--pf2e-subsystem-theming-text-shadow);
 }
 .pf2e-bestiary-tracking.bestiary .monster-image.outline {
   filter: brightness(0) drop-shadow(0 0 1px white);
@@ -309,8 +309,8 @@
   white-space: nowrap;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-header .header-button:hover {
-  background-color: var(--pf2e-bestiary-tracking-secondary);
-  border-color: var(--pf2e-bestiary-tracking-border);
+  background-color: var(--pf2e-subsystem-theming-secondary);
+  border-color: var(--pf2e-subsystem-theming-border);
   box-shadow: none;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-header .link-menu-button {
@@ -700,11 +700,11 @@
   text-decoration-line: underline;
   text-decoration-thickness: 1px;
   text-decoration-style: wavy;
-  text-decoration-color: var(--pf2e-bestiary-tracking-primary-color);
+  text-decoration-color: var(--pf2e-subsystem-theming-primary-color);
   font-family: "Font Awesome 5 Pro";
   font-style: italic;
   font-variant-caps: all-small-caps;
-  text-shadow: 0 0 2px var(--pf2e-bestiary-tracking-primary-color);
+  text-shadow: 0 0 2px var(--pf2e-subsystem-theming-primary-color);
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .monster-data-list {
   display: flex;
@@ -1769,156 +1769,156 @@
   border-radius: 0;
 }
 form.pf2e-bestiary-tracking.application {
-  background-color: var(--pf2e-bestiary-tracking-application);
-  background-image: var(--pf2e-bestiary-tracking-application-image);
-  background-size: var(--pf2e-bestiary-tracking-application-image-size);
-  background-repeat: var(--pf2e-bestiary-tracking-application-image-repeat);
-  background-position: var(--pf2e-bestiary-tracking-application-image-position);
+  background-color: var(--pf2e-subsystem-theming-application);
+  background-image: var(--pf2e-subsystem-theming-application-image);
+  background-size: var(--pf2e-subsystem-theming-application-image-size);
+  background-repeat: var(--pf2e-subsystem-theming-application-image-repeat);
+  background-position: var(--pf2e-subsystem-theming-application-image-position);
 }
 form.pf2e-bestiary-tracking.application > header {
-  background: var(--pf2e-bestiary-tracking-application-header);
+  background: var(--pf2e-subsystem-theming-application-header);
 }
 form.pf2e-bestiary-tracking.application > header .header-control {
   background: var(--button-background-color);
 }
 .application-border-container {
-  border-color: var(--pf2e-bestiary-tracking-application-border);
+  border-color: var(--pf2e-subsystem-theming-application-border);
 }
 .pf2e-bestiary-tracking .primary-container,
 .pf2e-bestiary-tracking input.primary-container {
-  background-color: var(--pf2e-bestiary-tracking-primary);
-  border-color: var(--pf2e-bestiary-tracking-border);
-  color: var(--pf2e-bestiary-tracking-primary-color);
+  background-color: var(--pf2e-subsystem-theming-primary);
+  border-color: var(--pf2e-subsystem-theming-border);
+  color: var(--pf2e-subsystem-theming-primary-color);
 }
 .pf2e-bestiary-tracking .primary-container.active,
 .pf2e-bestiary-tracking input.primary-container.active,
 .pf2e-bestiary-tracking .primary-container.active.empty,
 .pf2e-bestiary-tracking input.primary-container.active.empty {
-  background-color: var(--pf2e-bestiary-tracking-primary-accent);
+  background-color: var(--pf2e-subsystem-theming-primary-accent);
 }
 .pf2e-bestiary-tracking .primary-container.empty,
 .pf2e-bestiary-tracking input.primary-container.empty {
-  background-color: var(--pf2e-bestiary-tracking-primary);
+  background-color: var(--pf2e-subsystem-theming-primary);
 }
 .pf2e-bestiary-tracking .primary-container .data-icon,
 .pf2e-bestiary-tracking input.primary-container .data-icon {
-  filter: var(--pf2e-bestiary-tracking-icon-filter);
+  filter: var(--pf2e-subsystem-theming-icon-filter);
 }
 .pf2e-bestiary-tracking .primary-container option,
 .pf2e-bestiary-tracking input.primary-container option {
-  background-color: var(--pf2e-bestiary-tracking-primary);
-  border-color: var(--pf2e-bestiary-tracking-border);
-  color: var(--pf2e-bestiary-tracking-primary-color);
+  background-color: var(--pf2e-subsystem-theming-primary);
+  border-color: var(--pf2e-subsystem-theming-border);
+  color: var(--pf2e-subsystem-theming-primary-color);
 }
 .pf2e-bestiary-tracking .primary-container-faded {
-  background-color: var(--pf2e-bestiary-tracking-primary-faded);
-  border-color: var(--pf2e-bestiary-tracking-border);
-  color: var(--pf2e-bestiary-tracking-primary-color);
+  background-color: var(--pf2e-subsystem-theming-primary-faded);
+  border-color: var(--pf2e-subsystem-theming-border);
+  color: var(--pf2e-subsystem-theming-primary-color);
 }
 .pf2e-bestiary-tracking .secondary-container,
 .pf2e-bestiary-tracking input.secondary-container {
-  background-color: var(--pf2e-bestiary-tracking-secondary);
-  border-color: var(--pf2e-bestiary-tracking-border);
-  color: var(--pf2e-bestiary-tracking-primary-color);
-  background-image: var(--pf2e-bestiary-tracking-application-secondary-image);
+  background-color: var(--pf2e-subsystem-theming-secondary);
+  border-color: var(--pf2e-subsystem-theming-border);
+  color: var(--pf2e-subsystem-theming-primary-color);
+  background-image: var(--pf2e-subsystem-theming-application-secondary-image);
 }
 .pf2e-bestiary-tracking .secondary-container option,
 .pf2e-bestiary-tracking input.secondary-container option {
-  background-color: var(--pf2e-bestiary-tracking-secondary);
-  border-color: var(--pf2e-bestiary-tracking-border);
-  color: var(--pf2e-bestiary-tracking-primary-color);
+  background-color: var(--pf2e-subsystem-theming-secondary);
+  border-color: var(--pf2e-subsystem-theming-border);
+  color: var(--pf2e-subsystem-theming-primary-color);
 }
 .pf2e-bestiary-tracking .secondary-container .data-icon,
 .pf2e-bestiary-tracking input.secondary-container .data-icon {
-  filter: var(--pf2e-bestiary-tracking-icon-filter);
+  filter: var(--pf2e-subsystem-theming-icon-filter);
 }
 .pf2e-bestiary-tracking .tertiary-container {
-  background-color: var(--pf2e-bestiary-tracking-tertiary);
-  border-color: var(--pf2e-bestiary-tracking-border);
-  color: var(--pf2e-bestiary-tracking-primary-color);
+  background-color: var(--pf2e-subsystem-theming-tertiary);
+  border-color: var(--pf2e-subsystem-theming-border);
+  color: var(--pf2e-subsystem-theming-primary-color);
 }
 .pf2e-bestiary-tracking .tertiary-container.active {
-  background-color: var(--pf2e-bestiary-tracking-tertiary-accent);
+  background-color: var(--pf2e-subsystem-theming-tertiary-accent);
 }
 .pf2e-bestiary-tracking .tertiary-container .data-icon {
   filter: invert(100%) sepia(100%) saturate(0%) hue-rotate(288deg) brightness(102%) contrast(102%);
 }
 .pf2e-bestiary-tracking .tertiary-container option {
-  background-color: var(--pf2e-bestiary-tracking-tertiary);
-  border-color: var(--pf2e-bestiary-tracking-border);
-  color: var(--pf2e-bestiary-tracking-primary-color);
+  background-color: var(--pf2e-subsystem-theming-tertiary);
+  border-color: var(--pf2e-subsystem-theming-border);
+  color: var(--pf2e-subsystem-theming-primary-color);
 }
 .pf2e-bestiary-tracking .spell-container.even {
   background: rgba(0, 0, 0, 0.1);
 }
 .pf2e-bestiary-tracking .primary-outline {
-  filter: var(--pf2e-bestiary-tracking-primary-outline);
+  filter: var(--pf2e-subsystem-theming-primary-outline);
 }
 .pf2e-bestiary-tracking .primary-border-container {
-  border-color: var(--pf2e-bestiary-tracking-border);
+  border-color: var(--pf2e-subsystem-theming-border);
 }
 .pf2e-bestiary-tracking .secondary-border-container {
-  border-color: var(--pf2e-bestiary-tracking-secondary-border);
+  border-color: var(--pf2e-subsystem-theming-secondary-border);
 }
 .pf2e-bestiary-tracking .main-border-container {
-  border-color: var(--pf2e-bestiary-tracking-primary);
+  border-color: var(--pf2e-subsystem-theming-primary);
 }
 .pf2e-bestiary-tracking .primary-hover-container:not(.disabled) {
   cursor: pointer;
 }
 .pf2e-bestiary-tracking .primary-hover-container:not(.disabled):hover {
-  filter: drop-shadow(0 0 3px var(--pf2e-bestiary-tracking-main-hover));
+  filter: drop-shadow(0 0 3px var(--pf2e-subsystem-theming-main-hover));
 }
 .pf2e-bestiary-tracking .primary-hover-container:not(.disabled).border {
-  border-color: var(--pf2e-bestiary-tracking-primary);
+  border-color: var(--pf2e-subsystem-theming-primary);
 }
 .pf2e-bestiary-tracking .primary-hover-container.disabled {
   opacity: 0.5;
 }
 .pf2e-bestiary-tracking .primary-hover-container.active {
-  filter: drop-shadow(0 0 3px var(--pf2e-bestiary-tracking-main-hover));
+  filter: drop-shadow(0 0 3px var(--pf2e-subsystem-theming-main-hover));
 }
 .pf2e-bestiary-tracking .primary-tab:hover {
-  text-shadow: 0 0 5px var(--pf2e-bestiary-tracking-main-hover);
+  text-shadow: 0 0 5px var(--pf2e-subsystem-theming-main-hover);
 }
 .pf2e-bestiary-tracking .primary-tab.active {
-  text-shadow: 0 0 5px var(--pf2e-bestiary-tracking-main-hover);
+  text-shadow: 0 0 5px var(--pf2e-subsystem-theming-main-hover);
 }
 .pf2e-bestiary-tracking .primary-icon {
-  color: var(--pf2e-bestiary-tracking-icon);
+  color: var(--pf2e-subsystem-theming-icon);
 }
 .pf2e-bestiary-tracking .secondary-icon {
-  color: var(--pf2e-bestiary-tracking-secondary-icon);
+  color: var(--pf2e-subsystem-theming-secondary-icon);
 }
 .pf2e-bestiary-tracking .primary-text-container {
-  color: var(--pf2e-bestiary-tracking-primary-color);
+  color: var(--pf2e-subsystem-theming-primary-color);
 }
 .pf2e-bestiary-tracking .text-shadow-container {
-  text-shadow: 1px 1px 4px var(--pf2e-bestiary-tracking-text-shadow);
+  text-shadow: 1px 1px 4px var(--pf2e-subsystem-theming-text-shadow);
 }
 .pf2e-bestiary-tracking .primary-editor button.icon.toggle {
-  background-color: var(--pf2e-bestiary-tracking-secondary);
-  color: var(--pf2e-bestiary-tracking-primary-color);
-  border-color: var(--pf2e-bestiary-tracking-border);
+  background-color: var(--pf2e-subsystem-theming-secondary);
+  color: var(--pf2e-subsystem-theming-primary-color);
+  border-color: var(--pf2e-subsystem-theming-border);
 }
 .pf2e-bestiary-tracking .primary-editor menu {
-  background-color: var(--pf2e-bestiary-tracking-secondary);
-  border-color: var(--pf2e-bestiary-tracking-border);
+  background-color: var(--pf2e-subsystem-theming-secondary);
+  border-color: var(--pf2e-subsystem-theming-border);
   border: 1px solid;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
 .pf2e-bestiary-tracking .primary-editor menu li button {
-  color: var(--pf2e-bestiary-tracking-primary-color);
+  color: var(--pf2e-subsystem-theming-primary-color);
 }
 .pf2e-bestiary-tracking .primary-editor menu li button.pm-dropdown {
-  background: var(--pf2e-bestiary-tracking-tertiary);
+  background: var(--pf2e-subsystem-theming-tertiary);
 }
 .pf2e-bestiary-tracking .primary-editor menu li button.pm-dropdown i.fa-chevron-down {
-  color: var(--pf2e-bestiary-tracking-primary-color);
+  color: var(--pf2e-subsystem-theming-primary-color);
 }
 .pf2e-bestiary-tracking .primary-editor .editor-content {
-  border-color: var(--pf2e-bestiary-tracking-border);
+  border-color: var(--pf2e-subsystem-theming-border);
   border: 1px solid;
   border-radius: 6px;
 }
@@ -1928,7 +1928,7 @@ form.pf2e-bestiary-tracking.application > header .header-control {
   border-top-left-radius: 0;
 }
 .pf2e-bestiary-tracking .bookmark:hover {
-  background-color: var(--pf2e-bestiary-tracking-primary-accent);
+  background-color: var(--pf2e-subsystem-theming-primary-accent);
 }
 .avatar-menu .form-fields button {
   height: 32px;
@@ -2004,8 +2004,8 @@ form.pf2e-bestiary-tracking.application > header .header-control {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  background: var(--pf2e-bestiary-tracking-primary);
-  color: var(--pf2e-bestiary-tracking-primary-color);
+  background: var(--pf2e-subsystem-theming-primary);
+  color: var(--pf2e-subsystem-theming-primary-color);
   font-weight: bold;
   border-style: solid;
   border-color: black;
@@ -2024,7 +2024,7 @@ form.pf2e-bestiary-tracking.application > header .header-control {
   position: absolute;
   top: 3px;
   font-size: 12px;
-  color: var(--pf2e-bestiary-tracking-secondary-border);
+  color: var(--pf2e-subsystem-theming-secondary-border);
   height: auto;
   border: 0;
 }
@@ -2170,5 +2170,5 @@ form.pf2e-bestiary-tracking.application > header .header-control {
   gap: 4px;
 }
 :root {
-  --pf2e-bestiary-tracking-test: #ffffff;
+  --pf2e-subsystem-theming-test: #ffffff;
 }

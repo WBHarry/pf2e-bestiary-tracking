@@ -36,29 +36,29 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application"}} value="{{this.props.--pf2e-bestiary-tracking-application}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-application"}} value="{{this.props.--pf2e-subsystem-theming-application}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
                     <div class="form-group full">
                         <label>{{localize "PF2EBestiary.Menus.BestiaryDisplay.JournalSettings.Image"}}</label>
                         <div class="form-fields">
-                            <input type="text" value="{{localize this.props.--pf2e-bestiary-tracking-application-image}}" disabled />
-                            <button data-action="filePicker" data-path="{{concat ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-image"}}" title="{{localize "PF2EBestiary.Miscellaneous.BrowseFiles"}}"><i class="fas fa-file-import fa-fw"></i></button>
-                            <button data-action="clearBackgroundImage" title="{{localize "PF2EBestiary.Miscellaneous.ClearFile"}}" data-theme="--pf2e-bestiary-tracking-application-image"><i class="fa-solid fa-circle-xmark"></i></button>
+                            <input type="text" value="{{localize this.props.--pf2e-subsystem-theming-application-image}}" disabled />
+                            <button data-action="filePicker" data-path="{{concat ../this.selectedTheme ".props.--pf2e-subsystem-theming-application-image"}}" title="{{localize "PF2EBestiary.Miscellaneous.BrowseFiles"}}"><i class="fas fa-file-import fa-fw"></i></button>
+                            <button data-action="clearBackgroundImage" title="{{localize "PF2EBestiary.Miscellaneous.ClearFile"}}" data-theme="--pf2e-subsystem-theming-application-image"><i class="fa-solid fa-circle-xmark"></i></button>
                         </div>
                     </div>
                 </div>
-                {{#if (and this.props.--pf2e-bestiary-tracking-application-image (not (eq this.props.--pf2e-bestiary-tracking-application-image 'ignore')))}}
+                {{#if (and this.props.--pf2e-subsystem-theming-application-image (not (eq this.props.--pf2e-subsystem-theming-application-image 'ignore')))}}
                     <div class="flexrow">
                         <div class="form-group">
                             <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundSize"}}</label>
                             <div class="form-fields">
-                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-image-size"}}" value="{{this.props.--pf2e-bestiary-tracking-application-image-size}}" />
+                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-application-image-size"}}" value="{{this.props.--pf2e-subsystem-theming-application-image-size}}" />
                             </div>
                         </div>
                         <div class="menu-input-select">
-                            <select class="background-size-select" data-theme="--pf2e-bestiary-tracking-application-image-size">
+                            <select class="background-size-select" data-theme="--pf2e-subsystem-theming-application-image-size">
                                 {{selectOptions ../backgroundSizeOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
                             </select>
                         </div>
@@ -67,11 +67,11 @@
                         <div class="form-group">
                             <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundRepeat"}}</label>
                             <div class="form-fields">
-                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-image-repeat"}}" value="{{this.props.--pf2e-bestiary-tracking-application-image-repeat}}" />
+                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-application-image-repeat"}}" value="{{this.props.--pf2e-subsystem-theming-application-image-repeat}}" />
                             </div>
                         </div>
                         <div class="menu-input-select">
-                            <select class="background-repeat-select" data-theme="--pf2e-bestiary-tracking-application-image-repeat">
+                            <select class="background-repeat-select" data-theme="--pf2e-subsystem-theming-application-image-repeat">
                                 {{selectOptions ../backgroundRepeatOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
                             </select>
                         </div>
@@ -80,11 +80,11 @@
                         <div class="form-group">
                             <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundPosition"}}</label>
                             <div class="form-fields">
-                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-image-position"}}" value="{{this.props.--pf2e-bestiary-tracking-application-image-position}}" />
+                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-application-image-position"}}" value="{{this.props.--pf2e-subsystem-theming-application-image-position}}" />
                             </div>
                         </div>
                         <div class="menu-input-select">
-                            <select class="background-position-select" data-theme="--pf2e-bestiary-tracking-application-image-position">
+                            <select class="background-position-select" data-theme="--pf2e-subsystem-theming-application-image-position">
                                 {{selectOptions ../backgroundPositionOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
                             </select>
                         </div>
@@ -98,29 +98,29 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-header"}} value="{{this.props.--pf2e-bestiary-tracking-application-header}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-application-header"}} value="{{this.props.--pf2e-subsystem-theming-application-header}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
                     <div class="form-group full">
                         <label>{{localize "PF2EBestiary.Menus.BestiaryDisplay.JournalSettings.Image"}}</label>
                         <div class="form-fields">
-                            <input type="text" value="{{localize this.props.--pf2e-bestiary-tracking-application-header-image}}" disabled />
-                            <button data-action="filePicker" data-path="{{concat ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-header-image"}}" title="{{localize "PF2EBestiary.Miscellaneous.BrowseFiles"}}"><i class="fas fa-file-import fa-fw"></i></button>
-                            <button data-action="clearBackgroundImage" title="{{localize "PF2EBestiary.Miscellaneous.ClearFile"}}" data-theme="--pf2e-bestiary-tracking-application-header-image"><i class="fa-solid fa-circle-xmark"></i></button>
+                            <input type="text" value="{{localize this.props.--pf2e-subsystem-theming-application-header-image}}" disabled />
+                            <button data-action="filePicker" data-path="{{concat ../this.selectedTheme ".props.--pf2e-subsystem-theming-application-header-image"}}" title="{{localize "PF2EBestiary.Miscellaneous.BrowseFiles"}}"><i class="fas fa-file-import fa-fw"></i></button>
+                            <button data-action="clearBackgroundImage" title="{{localize "PF2EBestiary.Miscellaneous.ClearFile"}}" data-theme="--pf2e-subsystem-theming-application-header-image"><i class="fa-solid fa-circle-xmark"></i></button>
                         </div>
                     </div>
                 </div>
-                {{#if (and this.props.--pf2e-bestiary-tracking-application-header-image (not (eq this.props.--pf2e-bestiary-tracking-application-header-image 'ignore')))}}
+                {{#if (and this.props.--pf2e-subsystem-theming-application-header-image (not (eq this.props.--pf2e-subsystem-theming-application-header-image 'ignore')))}}
                     <div class="flexrow">
                         <div class="form-group">
                             <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundSize"}}</label>
                             <div class="form-fields">
-                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-header-image-size"}}" value="{{this.props.--pf2e-bestiary-tracking-application-header-image-size}}" />
+                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-application-header-image-size"}}" value="{{this.props.--pf2e-subsystem-theming-application-header-image-size}}" />
                             </div>
                         </div>
                         <div class="menu-input-select">
-                            <select class="background-size-select" data-theme="--pf2e-bestiary-tracking-application-header-image-size">
+                            <select class="background-size-select" data-theme="--pf2e-subsystem-theming-application-header-image-size">
                                 {{selectOptions ../backgroundSizeOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
                             </select>
                         </div>
@@ -129,11 +129,11 @@
                         <div class="form-group">
                             <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundRepeat"}}</label>
                             <div class="form-fields">
-                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-header-image-repeat"}}" value="{{this.props.--pf2e-bestiary-tracking-application-header-image-repeat}}" />
+                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-application-header-image-repeat"}}" value="{{this.props.--pf2e-subsystem-theming-application-header-image-repeat}}" />
                             </div>
                         </div>
                         <div class="menu-input-select">
-                            <select class="background-repeat-select" data-theme="--pf2e-bestiary-tracking-application-header-image-repeat">
+                            <select class="background-repeat-select" data-theme="--pf2e-subsystem-theming-application-header-image-repeat">
                                 {{selectOptions ../backgroundRepeatOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
                             </select>
                         </div>
@@ -142,11 +142,11 @@
                         <div class="form-group">
                             <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.BackgroundPosition"}}</label>
                             <div class="form-fields">
-                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-header-image-position"}}" value="{{this.props.--pf2e-bestiary-tracking-application-header-image-position}}" />
+                                <input type="text" name="{{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-application-header-image-position"}}" value="{{this.props.--pf2e-subsystem-theming-application-header-image-position}}" />
                             </div>
                         </div>
                         <div class="menu-input-select">
-                            <select class="background-position-select" data-theme="--pf2e-bestiary-tracking-application-header-image-position">
+                            <select class="background-position-select" data-theme="--pf2e-subsystem-theming-application-header-image-position">
                                 {{selectOptions ../backgroundPositionOptions valueAttr="value" labelAttr="name" localize=true blank=""}}
                             </select>
                         </div>
@@ -160,7 +160,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-primary"}} value="{{this.props.--pf2e-bestiary-tracking-primary}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-primary"}} value="{{this.props.--pf2e-subsystem-theming-primary}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
@@ -168,7 +168,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Secondary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-secondary"}} value="{{this.props.--pf2e-bestiary-tracking-secondary}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-secondary"}} value="{{this.props.--pf2e-subsystem-theming-secondary}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
@@ -176,7 +176,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Tertiary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-tertiary"}} value="{{this.props.--pf2e-bestiary-tracking-tertiary}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-tertiary"}} value="{{this.props.--pf2e-subsystem-theming-tertiary}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
@@ -189,7 +189,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-primary-accent"}} value="{{this.props.--pf2e-bestiary-tracking-primary-accent}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-primary-accent"}} value="{{this.props.--pf2e-subsystem-theming-primary-accent}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
@@ -197,7 +197,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Faded"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-primary-faded"}} value="{{this.props.--pf2e-bestiary-tracking-primary-faded}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-primary-faded"}} value="{{this.props.--pf2e-subsystem-theming-primary-faded}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
@@ -205,7 +205,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Tertiary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-tertiary-accent"}} value="{{this.props.--pf2e-bestiary-tracking-tertiary-accent}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-tertiary-accent"}} value="{{this.props.--pf2e-subsystem-theming-tertiary-accent}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
@@ -218,7 +218,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-primary-color"}} value="{{this.props.--pf2e-bestiary-tracking-primary-color}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-primary-color"}} value="{{this.props.--pf2e-subsystem-theming-primary-color}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
@@ -226,7 +226,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Shadow"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-text-shadow"}} value="{{this.props.--pf2e-bestiary-tracking-text-shadow}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-text-shadow"}} value="{{this.props.--pf2e-subsystem-theming-text-shadow}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
@@ -240,7 +240,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-icon"}} value="{{this.props.--pf2e-bestiary-tracking-icon}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-icon"}} value="{{this.props.--pf2e-subsystem-theming-icon}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
@@ -248,7 +248,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Secondary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-secondary-icon"}} value="{{this.props.--pf2e-bestiary-tracking-secondary-icon}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-secondary-icon"}} value="{{this.props.--pf2e-subsystem-theming-secondary-icon}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
@@ -261,7 +261,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-main-hover"}} value="{{this.props.--pf2e-bestiary-tracking-main-hover}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-main-hover"}} value="{{this.props.--pf2e-subsystem-theming-main-hover}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
@@ -274,7 +274,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Primary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-border"}} value="{{this.props.--pf2e-bestiary-tracking-border}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-border"}} value="{{this.props.--pf2e-subsystem-theming-border}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
@@ -282,7 +282,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Secondary"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-secondary-border"}} value="{{this.props.--pf2e-bestiary-tracking-secondary-border}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-secondary-border"}} value="{{this.props.--pf2e-subsystem-theming-secondary-border}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>
@@ -290,7 +290,7 @@
                         <label>{{localize "PF2EBestiary.Menus.BestiaryThemes.CustomThemes.Application"}}</label>
                         <div class="form-fields">
                             <div class="form-fields">
-                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-bestiary-tracking-application-border"}} value="{{this.props.--pf2e-bestiary-tracking-application-border}}" placeholder="#ffffff"></color-picker>
+                                <color-picker name={{concat "customThemes." ../this.selectedTheme ".props.--pf2e-subsystem-theming-application-border"}} value="{{this.props.--pf2e-subsystem-theming-application-border}}" placeholder="#ffffff"></color-picker>
                             </div>
                         </div>
                     </div>

@@ -5,7 +5,6 @@ import {
   dataTypeSetup,
   registerGameSettings,
   registerKeyBindings,
-  setupTheme,
 } from "./scripts/setup.js";
 import { handleSocketEvent, socketEvent } from "./scripts/socket.js";
 import * as macros from "./scripts/macros.js";
@@ -18,7 +17,6 @@ import {
   valueFromRollOption,
 } from "./scripts/helpers.js";
 import { libWrapper } from "./libwrapperShim.js";
-import { extendedBestiaryThemes } from "./styles/themes/themes.js";
 
 async function bestiaryEnricher(match, _options) {
   const linkElement = document.createElement("span");
@@ -101,24 +99,6 @@ Hooks.once("ready", async () => {
 });
 
 Hooks.once("setup", () => {
-  const userTheme = game.user.getFlag(
-    "pf2e-bestiary-tracking",
-    "bestiary-theme",
-  );
-  if (userTheme) {
-    game.settings.set("pf2e-bestiary-tracking", "bestiary-theme", userTheme);
-  }
-
-  const selectedTheme = game.settings.get(
-    "pf2e-bestiary-tracking",
-    "bestiary-theme",
-  );
-  const theme =
-    selectedTheme === "default"
-      ? game.settings.get("pf2e-bestiary-tracking", "bestiary-default-theme")
-      : selectedTheme;
-  setupTheme(extendedBestiaryThemes()[theme].props);
-
   if (typeof libWrapper === "function") {
     libWrapper.register(
       "pf2e-bestiary-tracking",
@@ -897,19 +877,4 @@ Hooks.on("renderActorSheet", (sheet) => {
     $(actorSheetContainer).addClass("expanded");
     $(bestiaryApp.element).find(".monster-container").addClass("closed");
   }
-});
-
-Hooks.on(socketEvent.ResetBestiaryTheme, () => {
-  const selectedTheme = game.settings.get(
-    "pf2e-bestiary-tracking",
-    "bestiary-theme",
-  );
-  const theme =
-    selectedTheme === "default"
-      ? game.settings.get("pf2e-bestiary-tracking", "bestiary-default-theme")
-      : selectedTheme;
-  const resetTheme = extendedBestiaryThemes()[theme];
-  setupTheme(
-    resetTheme ? resetTheme.props : extendedBestiaryThemes()["coreLight"].props,
-  );
 });

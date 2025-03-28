@@ -17,18 +17,13 @@ import {
   npcCategorySortOptions,
   toBestiaryOptions,
 } from "../data/constants.js";
-import {
-  defaultThemeChoices,
-  extendedBestiaryThemeChoices,
-} from "../styles/themes/themes.js";
 import BestiaryDisplayMenu from "../module/bestiaryDisplayMenu.js";
-import BestiaryThemesMenu from "../module/bestiaryThemesMenu.js";
 import {
   dispositionIconModes,
   dispositionIconSize,
 } from "../data/bestiaryContents.js";
 
-export const currentVersion = "1.2.0";
+export const currentVersion = "1.2.1";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
@@ -38,23 +33,6 @@ export const dataTypeSetup = () => {
     "pf2e-bestiary-tracking.npc": NPC,
     "pf2e-bestiary-tracking.hazard": Hazard,
   };
-};
-
-export const setupTheme = (theme) => {
-  const root = document.querySelector(":root");
-  for (var property of Object.keys(theme)) {
-    if (
-      [
-        "--pf2e-bestiary-tracking-application-image",
-        "--pf2e-bestiary-tracking-application-header-image",
-      ].includes(property) &&
-      theme[property] !== "ignore"
-    ) {
-      root.style.setProperty(property, `url("${theme[property]}")`);
-    } else {
-      root.style.setProperty(property, theme[property]);
-    }
-  }
 };
 
 export const registerKeyBindings = () => {
@@ -210,11 +188,8 @@ const configSettings = () => {
     name: game.i18n.localize("PF2EBestiary.Settings.BestiaryDefaultTheme.Name"),
     hint: game.i18n.localize("PF2EBestiary.Settings.BestiaryDefaultTheme.Hint"),
     scope: "world",
-    config: true,
-    type: new foundry.data.fields.StringField({
-      choices: defaultThemeChoices,
-      required: true,
-    }),
+    config: false,
+    type: String,
     requiresReload: true,
     default: "coreLight",
   });
@@ -223,11 +198,8 @@ const configSettings = () => {
     name: game.i18n.localize("PF2EBestiary.Settings.BestiaryTheme.Name"),
     hint: game.i18n.localize("PF2EBestiary.Settings.BestiaryTheme.Hint"),
     scope: "client",
-    config: true,
-    type: new foundry.data.fields.StringField({
-      choices: extendedBestiaryThemeChoices,
-      required: true,
-    }),
+    config: false,
+    type: String,
     requiresReload: true,
     onChange: async (value) => {
       if (!value) return;
@@ -789,15 +761,6 @@ const bestiaryIntegration = () => {
 };
 
 const bestiaryThemesMenu = () => {
-  game.settings.registerMenu("pf2e-bestiary-tracking", "bestiary-themes", {
-    name: game.i18n.localize("PF2EBestiary.Menus.BestiaryThemes.Menu.Name"),
-    label: game.i18n.localize("PF2EBestiary.Menus.BestiaryThemes.Menu.Label"),
-    hint: game.i18n.localize("PF2EBestiary.Menus.BestiaryThemes.Menu.Hint"),
-    icon: "fa-solid fa-brush",
-    type: BestiaryThemesMenu,
-    restricted: true,
-  });
-
   game.settings.register("pf2e-bestiary-tracking", "custom-themes", {
     name: game.i18n.localize("PF2EBestiary.Settings.DefaultRevealed.Name"),
     hint: game.i18n.localize("PF2EBestiary.Settings.DefaultReaveled.Hint"),
