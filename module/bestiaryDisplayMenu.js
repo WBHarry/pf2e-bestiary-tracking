@@ -1,6 +1,7 @@
 import Tagify from "@yaireo/tagify";
 import { toBestiaryOptions } from "../data/constants";
 import {
+  defeatedModes,
   dispositionIconModes,
   dispositionIconSize,
 } from "../data/bestiaryContents";
@@ -50,6 +51,10 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
       dispositionIcons: game.settings.get(
         "pf2e-bestiary-tracking",
         "disposition-icons",
+      ),
+      defeatedSetting: game.settings.get(
+        "pf2e-bestiary-tracking",
+        "defeated-setting",
       ),
     };
   }
@@ -173,6 +178,7 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
     context.dispositionIconModes = dispositionIconModes;
     context.dispositionIconSize = dispositionIconSize;
     context.dispositionAttitudes = CONFIG.PF2E.attitude;
+    context.defeatedModes = defeatedModes;
 
     return context;
   }
@@ -194,6 +200,7 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
       },
       sheetSettings: data.sheetSettings,
       dispositionIcons: this.settings.dispositionIcons,
+      defeatedSetting: data.defeatedSetting,
     };
     this.render();
   }
@@ -349,6 +356,11 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "disposition-icons",
       this.settings.dispositionIcons,
+    );
+    await game.settings.set(
+      "pf2e-bestiary-tracking",
+      "defeated-setting",
+      this.settings.defeatedSetting,
     );
     this.close();
   }

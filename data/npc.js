@@ -18,6 +18,7 @@ export class NPC extends Creature {
       }),
       npcData: new fields.SchemaField({
         simple: new fields.BooleanField({ initial: false }),
+        defeated: new fields.BooleanField({ initial: false }),
         categories: new fields.ArrayField(
           new fields.SchemaField({
             hidden: new fields.BooleanField({}),

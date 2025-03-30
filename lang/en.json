@@ -2,6 +2,12 @@
   "PF2EBestiary": {
     "Name": "Bestiary Tracker",
     "BestiaryName": "Bestiary",
+    "Dependencies": {
+      "Errors": {
+        "PF2ESubsystemThemingTitle": "PF2E Bestiary Tracking - Missing Dependency",
+        "PF2ESubsystemThemingText": "PF2E Bestiary Tracking now requires the module PF2e Subsystem Theming for it's visual themes. You will have to enable it!"
+      }
+    },
     "KeyBindings": {
       "OpenBestiary": {
         "Name": "Open Bestiary",
@@ -481,9 +487,15 @@
           "SizeLarge": "Large",
           "SizeHuge": "Huge"
         },
+        "DefeatedModes": {
+          "None": "None",
+          "StrikeThrough": "Strike Through",
+          "CrossedOut": "Crossed Out"
+        },
         "HideAbilityDescriptions": "Hide Ability Descriptions",
         "HideTips": "Hide Bestiary Welcome Tips",
-        "HideWelcome": "Hide Welcome Message"
+        "HideWelcome": "Hide Welcome Message",
+        "DefeatedSetting": "NPC Defeated Marking"
       },
       "BestiaryAppearance": {
         "Name": "Bestiary Appearance",

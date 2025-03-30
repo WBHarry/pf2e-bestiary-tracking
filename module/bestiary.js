@@ -139,6 +139,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       selectBookmark: this.selectBookmark,
       selectMonster: this.selectMonster,
       removeMonster: this.removeMonster,
+      toggleNPCDefeated: this.toggleNPCDefeated,
       toggleHideMonster: this.toggleHideMonster,
       toggleStatistics: this.toggleStatistics,
       returnButton: this.returnButton,
@@ -721,10 +722,17 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         for (var key of Object.keys(
           selected.monster.system.npcData.influence.discovery,
         )) {
-          selected.monster.system.npcData.influence.discovery[key].label =
-            await TextEditor.enrichHTML(
-              selected.monster.system.npcData.influence.discovery[key].label,
+          const discovery =
+            selected.monster.system.npcData.influence.discovery[key];
+          discovery.label = await TextEditor.enrichHTML(
+            selected.monster.system.npcData.influence.discovery[key].label,
+          );
+          if (game.user.isGM) {
+            discovery.label = discovery.label.replace(
+              'title="Post prompt to chat"',
+              "",
             );
+          }
         }
 
         for (var key of Object.keys(
@@ -733,6 +741,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           const influence =
             selected.monster.system.npcData.influence.influenceSkills[key];
           influence.label = await TextEditor.enrichHTML(influence.label);
+          if (game.user.isGM) {
+            influence.label = influence.label.replace(
+              'title="Post prompt to chat"',
+              "",
+            );
+          }
         }
       }
     }
@@ -796,6 +810,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
             id: npc.id,
             name: npc.system.name,
             hidden: npc.system.hidden,
+            defeated: npc.system.npcData.defeated,
             hideState: npc.system.imageState.hideState,
             img: npc.system.displayImage,
           });
@@ -1139,6 +1154,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   npcPreparation = async (context) => {
     context.tabs = this.getMonsterTabs(true);
     context.npcTabs = this.getNPCTabs();
+    context.npcDefeatedSetting = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "defeated-setting",
+    );
     context.dispositions = Object.keys(dispositions).map(
       (x) => dispositions[x],
     );
@@ -1266,6 +1285,20 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     if (!confirmed) return;
 
     await this.bestiary.pages.get(button.dataset.monster).delete();
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+
+    this.render();
+  }
+
+  static async toggleNPCDefeated(_, button) {
+    const entity = this.bestiary.pages.get(button.dataset.monster);
+    await entity.update({
+      "system.npcData.defeated": !entity.system.npcData.defeated,
+    });
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,

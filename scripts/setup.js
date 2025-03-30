@@ -19,6 +19,7 @@ import {
 } from "../data/constants.js";
 import BestiaryDisplayMenu from "../module/bestiaryDisplayMenu.js";
 import {
+  defeatedModes,
   dispositionIconModes,
   dispositionIconSize,
 } from "../data/bestiaryContents.js";
@@ -443,6 +444,15 @@ const bestiaryDisplay = () => {
       default: false,
     },
   );
+
+  game.settings.register("pf2e-bestiary-tracking", "defeated-setting", {
+    name: "",
+    hint: "",
+    scope: "world",
+    config: false,
+    type: Number,
+    default: defeatedModes.none.value,
+  });
 
   game.settings.register("pf2e-bestiary-tracking", "optional-fields", {
     name: game.i18n.localize("PF2EBestiary.Settings.OptionalFields.Name"),

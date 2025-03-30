@@ -21,6 +21,7 @@ export const handleDataMigration = async () => {
 
   await handleDeactivatedPages();
   await handleJournalPermissions();
+  await handleDepdencies();
 
   var version = game.settings.get("pf2e-bestiary-tracking", "version");
   if (!version) {
@@ -1761,4 +1762,21 @@ const handleJournalPermissions = () => {
       ),
     )
     .forEach((journal) => journal.update({ ownership: { default: 3 } }));
+};
+
+const handleDepdencies = () => {
+  const pf2eSubsystemTheming = game.modules.get("pf2e-subsystem-theming");
+
+  if (!pf2eSubsystemTheming?.active) {
+    foundry.applications.api.DialogV2.prompt({
+      id: "subsystem-theming-missing-dialog",
+      modal: true,
+      rejectClose: false,
+      window: {
+        title: "PF2EBestiary.Dependencies.Errors.PF2ESubsystemThemingTitle",
+      },
+      position: { width: 400 },
+      content: `<p>${game.i18n.localize("PF2EBestiary.Dependencies.Errors.PF2ESubsystemThemingText")}</p>`,
+    });
+  }
 };

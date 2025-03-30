@@ -27,3 +27,18 @@ export const dispositionIconSize = {
     label: "PF2EBestiary.Menus.BestiaryDisplay.DispositionIcons.SizeHuge",
   },
 };
+
+export const defeatedModes = {
+  none: {
+    value: 0,
+    label: "PF2EBestiary.Menus.BestiaryDisplay.DefeatedModes.None",
+  },
+  strikeThrough: {
+    value: 1,
+    label: "PF2EBestiary.Menus.BestiaryDisplay.DefeatedModes.StrikeThrough",
+  },
+  crossedOut: {
+    value: 2,
+    label: "PF2EBestiary.Menus.BestiaryDisplay.DefeatedModes.CrossedOut",
+  },
+};

@@ -238,7 +238,13 @@
                     {{else}}
                         {{#each this.bookmarkEntities}}
                             <div class="type-container primary-container {{#if (eq ../layout.categories.layout 1)}}trio{{/if}}{{#if (eq ../layout.categories.layout 2)}}quarter{{/if}}" data-action="selectMonster" data-monster="{{this.id}}">
-                                <img class="monster-image {{PF2EBTImageState this.hideState}}" src="{{this.img}}" />
+                                <div style="position: relative;">
+                                    <img class="monster-image {{PF2EBTImageState this.hideState}}" src="{{this.img}}" />
+                                    {{#if (and this.defeated (gt ../npcDefeatedSetting 0))}}
+                                        <div class="defeated"></div>
+                                        {{#if (eq ../npcDefeatedSetting 2)}}<div class="defeated reverse"></div>{{/if}}
+                                    {{/if}}
+                                </div>
                                 <div class="type-text-container">
                                     {{#if ../gmView}}
                                         {{this.name.value}}
@@ -254,6 +260,7 @@
                                 {{#if ../gmView}}
                                     <i class="{{#if this.hidden}}fa-solid fa-eye-slash{{else}}fa-solid fa-eye{{/if}} toggle-hide-button primary-hover-container" data-action="toggleHideMonster" data-id="{{this.id}}"></i>
                                     <i class="fa-solid fa-delete-left delete-button primary-hover-container" data-action="removeMonster" data-monster="{{this.id}}"></i>
+                                    {{#if (gt ../npcDefeatedSetting 0)}}<i class="fa-solid fa-skull-crossbones defeated-button primary-hover-container" data-action="toggleNPCDefeated" data-monster="{{this.id}}"></i>{{/if}}
                                 {{/if}}
                             </div>
                         {{/each}}

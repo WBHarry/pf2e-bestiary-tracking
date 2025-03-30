@@ -651,6 +651,47 @@
         border-radius: 6px;
         cursor: pointer;
 
+        .defeated {
+          position: absolute;
+          top: 0;
+          height: 100%;
+          width: 100%;
+          background-image: linear-gradient(
+            133deg,
+            transparent 0%,
+            transparent 48%,
+            var(--pf2e-subsystem-theming-border),
+            transparent 52%,
+            transparent 100%
+          );
+
+          &.reverse {
+            background-image: linear-gradient(
+              -133deg,
+              transparent 0%,
+              transparent 48%,
+              var(--pf2e-subsystem-theming-border) 50%,
+              transparent 52%,
+              transparent 100%
+            );
+          }
+
+          content: "";
+        }
+
+        &.defeated {
+          &::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: black;
+            transform: rotate(-7deg);
+          }
+        }
+
         &.trio {
           width: calc(33% - 3px);
           font-size: 24px;
@@ -660,8 +701,13 @@
           }
 
           .delete-button,
+          .defeated-button,
           .toggle-hide-button {
             font-size: 32px;
+          }
+
+          .defeated-button {
+            top: 36px;
           }
         }
 
@@ -674,8 +720,13 @@
           }
 
           .delete-button,
+          .defeated-button,
           .toggle-hide-button {
             font-size: 24px;
+          }
+
+          .defeated-button {
+            top: 28px;
           }
         }
 
@@ -699,12 +750,18 @@
           font-size: 48px;
         }
 
+        .defeated-button {
+          position: absolute;
+          top: 56px;
+          right: 8px;
+          font-size: 48px;
+        }
+
         .toggle-hide-button {
           position: absolute;
           top: 4px;
           left: 8px;
           font-size: 48px;
-          width: 60px;
           text-align: center;
         }
       }

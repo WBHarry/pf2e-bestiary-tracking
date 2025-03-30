@@ -594,6 +594,27 @@
   border-radius: 6px;
   cursor: pointer;
 }
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container .defeated {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-image: linear-gradient(133deg, transparent 0%, transparent 48%, var(--pf2e-subsystem-theming-border), transparent 52%, transparent 100%);
+  content: "";
+}
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container .defeated.reverse {
+  background-image: linear-gradient(-133deg, transparent 0%, transparent 48%, var(--pf2e-subsystem-theming-border) 50%, transparent 52%, transparent 100%);
+}
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.defeated::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: black;
+  transform: rotate(-7deg);
+}
 .pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.trio {
   width: calc(33% - 3px);
   font-size: 24px;
@@ -602,8 +623,12 @@
   height: 125px;
 }
 .pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.trio .delete-button,
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.trio .defeated-button,
 .pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.trio .toggle-hide-button {
   font-size: 32px;
+}
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.trio .defeated-button {
+  top: 36px;
 }
 .pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.quarter {
   width: calc(25% - 6px);
@@ -613,8 +638,12 @@
   height: 100px;
 }
 .pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.quarter .delete-button,
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.quarter .defeated-button,
 .pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.quarter .toggle-hide-button {
   font-size: 24px;
+}
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container.quarter .defeated-button {
+  top: 28px;
 }
 .pf2e-bestiary-tracking.bestiary .type-overview-container .type-container img {
   height: 150px;
@@ -633,12 +662,17 @@
   right: 8px;
   font-size: 48px;
 }
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-container .defeated-button {
+  position: absolute;
+  top: 56px;
+  right: 8px;
+  font-size: 48px;
+}
 .pf2e-bestiary-tracking.bestiary .type-overview-container .type-container .toggle-hide-button {
   position: absolute;
   top: 4px;
   left: 8px;
   font-size: 48px;
-  width: 60px;
   text-align: center;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container {
