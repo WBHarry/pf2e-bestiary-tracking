@@ -9048,7 +9048,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$6(
       ),
       defeatedSetting: game.settings.get(
         "pf2e-bestiary-tracking",
-        "defeated-setting"
+        "defeated-setting",
       ),
     };
   }
@@ -9781,16 +9781,14 @@ const bestiaryDisplay = () => {
     },
   );
 
-  game.settings.register(
-    "pf2e-bestiary-tracking", "defeated-setting", {
-      name: "",
-      hint: "",
-      scope: "world",
-      config: false,
-      type: Number,
-      default: defeatedModes.none.value,
-    },
-  );
+  game.settings.register("pf2e-bestiary-tracking", "defeated-setting", {
+    name: "",
+    hint: "",
+    scope: "world",
+    config: false,
+    type: Number,
+    default: defeatedModes.none.value,
+  });
 
   game.settings.register("pf2e-bestiary-tracking", "optional-fields", {
     name: game.i18n.localize("PF2EBestiary.Settings.OptionalFields.Name"),
@@ -12708,14 +12706,16 @@ const handleJournalPermissions = () => {
 };
 
 const handleDepdencies = () => {
-  const pf2eSubsystemTheming = game.modules.get('pf2e-subsystem-theming');
+  const pf2eSubsystemTheming = game.modules.get("pf2e-subsystem-theming");
 
-  if(!pf2eSubsystemTheming?.active) {
+  if (!pf2eSubsystemTheming?.active) {
     foundry.applications.api.DialogV2.prompt({
       id: "subsystem-theming-missing-dialog",
       modal: true,
       rejectClose: false,
-      window: { title: "PF2EBestiary.Dependencies.Errors.PF2ESubsystemThemingTitle" },
+      window: {
+        title: "PF2EBestiary.Dependencies.Errors.PF2ESubsystemThemingTitle",
+      },
       position: { width: 400 },
       content: `<p>${game.i18n.localize("PF2EBestiary.Dependencies.Errors.PF2ESubsystemThemingText")}</p>`,
     });
@@ -14738,13 +14738,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         for (var key of Object.keys(
           selected.monster.system.npcData.influence.discovery,
         )) {
-          const discovery = selected.monster.system.npcData.influence.discovery[key];
-          discovery.label =
-            await TextEditor.enrichHTML(
-              selected.monster.system.npcData.influence.discovery[key].label,
+          const discovery =
+            selected.monster.system.npcData.influence.discovery[key];
+          discovery.label = await TextEditor.enrichHTML(
+            selected.monster.system.npcData.influence.discovery[key].label,
+          );
+          if (game.user.isGM) {
+            discovery.label = discovery.label.replace(
+              'title="Post prompt to chat"',
+              "",
             );
-          if(game.user.isGM) {
-            discovery.label = discovery.label.replace('title="Post prompt to chat"', '');
           }
         }
 
@@ -14754,8 +14757,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           const influence =
             selected.monster.system.npcData.influence.influenceSkills[key];
           influence.label = await TextEditor.enrichHTML(influence.label);
-          if(game.user.isGM) {
-            influence.label = influence.label.replace('title="Post prompt to chat"', '');
+          if (game.user.isGM) {
+            influence.label = influence.label.replace(
+              'title="Post prompt to chat"',
+              "",
+            );
           }
         }
       }
@@ -15164,7 +15170,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   npcPreparation = async (context) => {
     context.tabs = this.getMonsterTabs(true);
     context.npcTabs = this.getNPCTabs();
-    context.npcDefeatedSetting = game.settings.get('pf2e-bestiary-tracking', 'defeated-setting');
+    context.npcDefeatedSetting = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "defeated-setting",
+    );
     context.dispositions = Object.keys(dispositions).map(
       (x) => dispositions[x],
     );
@@ -15303,7 +15312,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async toggleNPCDefeated(_, button) {
     const entity = this.bestiary.pages.get(button.dataset.monster);
-    await entity.update({ "system.npcData.defeated": !entity.system.npcData.defeated });
+    await entity.update({
+      "system.npcData.defeated": !entity.system.npcData.defeated,
+    });
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
       action: socketEvent.UpdateBestiary,
