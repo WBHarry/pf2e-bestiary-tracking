@@ -2,6 +2,12 @@
   "PF2EBestiary": {
     "Name": "Bestiarium",
     "BestiaryName": "Bestiariusz",
+    "Dependencies": {
+      "Errors": {
+        "PF2ESubsystemThemingTitle": "PF2E Bestiary Tracking - Brakujące zależności",
+        "PF2ESubsystemThemingText": "PF2E Bestiary Tracking wymaga teraz modułu PF2e Subsystem Theming dla swoich motywów wizualnych. Będziesz musiał go włączyć!"
+      }
+    },
     "KeyBindings": {
       "OpenBestiary": {
         "Name": "Otwórz Bestiariusz",
@@ -481,9 +487,15 @@
           "SizeLarge": "Duży",
           "SizeHuge": "Ogromny"
         },
+        "DefeatedModes": {
+          "None": "Brak",
+          "StrikeThrough": "Atak przez",
+          "CrossedOut": "Przekreślony"
+        },
         "HideAbilityDescriptions": "Ukryj opisy zdolności",
         "HideTips": "Ukryj wskazówki powitalne Bestiariusza",
-        "HideWelcome": "Ukryj wiadomość powitalną"
+        "HideWelcome": "Ukryj wiadomość powitalną",
+        "DefeatedSetting": "Oznaczenie pokonanego BN'a"
       },
       "BestiaryAppearance": {
         "Name": "Wygląd bestiariusza",
