@@ -651,6 +651,28 @@ export const handleDataMigration = async () => {
     );
   }
 
+  if (versionCompare(version, "1.2.2")) {
+    version = "1.2.2";
+    const defaultRevealed = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "default-revealed",
+    );
+    const newNPCSettings = Object.keys(defaultRevealed.npc).reduce(
+      (acc, curr) => {
+        if (curr !== "premise") acc[curr] = defaultRevealed.npc[curr];
+        return acc;
+      },
+      {},
+    );
+
+    await game.settings.set("pf2e-bestiary-tracking", "default-revealed", {
+      ...defaultRevealed,
+      npc: newNPCSettings,
+    });
+
+    await game.settings.set("pf2e-bestiary-tracking", "version", version);
+  }
+
   await handleBestiaryMigration(
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );
@@ -1871,6 +1893,7 @@ const handleInfluenceMigration = async () => {
               const influence = event.system.npcData.influence.influence[key];
               acc[key] = {
                 id: key,
+                name: `Influence ${influence.points}`,
                 hidden: !influence.revealed,
                 points: influence.points,
                 description: influence.description
@@ -1881,10 +1904,11 @@ const handleInfluenceMigration = async () => {
             }, {}),
             weaknesses: Object.keys(
               event.system.npcData.influence.weaknesses,
-            ).reduce((acc, key) => {
+            ).reduce((acc, key, index) => {
               const weakness = event.system.npcData.influence.weaknesses[key];
               acc[key] = {
                 id: key,
+                name: `Weakness ${index + 1}`,
                 hidden: !weakness.revealed,
                 description: weakness.description,
                 modifier: {
@@ -1896,11 +1920,12 @@ const handleInfluenceMigration = async () => {
             }, {}),
             resistances: Object.keys(
               event.system.npcData.influence.resistances,
-            ).reduce((acc, key) => {
+            ).reduce((acc, key, index) => {
               const resistance =
                 event.system.npcData.influence.resistances[key];
               acc[key] = {
                 id: key,
+                name: `Resistance ${index + 1}`,
                 hidden: !resistance.revealed,
                 description: resistance.description,
                 modifier: {
@@ -1912,10 +1937,11 @@ const handleInfluenceMigration = async () => {
             }, {}),
             penalties: Object.keys(
               event.system.npcData.influence.penalties,
-            ).reduce((acc, key) => {
+            ).reduce((acc, key, index) => {
               const penalties = event.system.npcData.influence.penalties[key];
               acc[key] = {
                 id: key,
+                name: `Penalty ${index + 1}`,
                 hidden: !penalties.revealed,
                 description: penalties.description,
                 modifier: {

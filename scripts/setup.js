@@ -754,8 +754,6 @@ const bestiaryIntegration = () => {
         background: false,
         height: false,
         weight: false,
-        // birthplace: false,
-        premise: false,
       },
       hazard: {
         attacks: false,

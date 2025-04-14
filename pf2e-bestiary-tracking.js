@@ -114,6 +114,17 @@ Hooks.once("setup", () => {
           return wrapped(...args);
         }
 
+        if (baseActor.type === "character") {
+          if (
+            game.actors
+              .filter((x) => x.type === "party")
+              .flatMap((x) => x.members)
+              .find((x) => x.id === baseActor.id)
+          ) {
+            return wrapped(...args);
+          }
+        }
+
         if (
           !game.user.isGM &&
           (baseActor.ownership.default > 1 ||
