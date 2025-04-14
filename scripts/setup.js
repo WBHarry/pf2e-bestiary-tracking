@@ -24,7 +24,7 @@ import {
   dispositionIconSize,
 } from "../data/bestiaryContents.js";
 
-export const currentVersion = "1.2.1";
+export const currentVersion = "1.2.2";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
@@ -267,6 +267,15 @@ const generalNonConfigSettings = () => {
         categorySort: npcCategorySortOptions.manual.value,
       },
     },
+  });
+
+  game.settings.register("pf2e-bestiary-tracking", "influence-migration-done", {
+    name: "",
+    hint: "",
+    scope: "world",
+    config: false,
+    type: Object,
+    default: { remind: true, done: false },
   });
 };
 

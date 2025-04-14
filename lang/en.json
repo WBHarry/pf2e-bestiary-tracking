@@ -44,6 +44,11 @@
       "Failure": "Failure",
       "CriticalFailure": "Critical Failure"
     },
+    "Migration": {
+      "MigrateInfluenceTitle": "NPC Influence Events Migration",
+      "MigrateInfluenceText": "Influence events are now handled by the module PF2e Subsystems. Enable this module to automatically migrate your existing influence events.",
+      "MigrateInfluenceDontRemind": "Don't Remind Me"
+    },
     "ImportDialog": {
       "JournalTitle": "Bestiary Import",
       "EntryTitle": "Bestiary Entry Import",
@@ -281,7 +286,12 @@
           "Manual": "Manual Order",
           "AscAlpha": "Alphabetical (Ascending)",
           "DescAlpha": "Alphabetical (Descending)"
-        }
+        },
+        "InfluenceEvents": "Influence Events",
+        "InfluenceEvent": "Influence Event",
+        "CreateInfluenceEvent": "New Event",
+        "AddExistingInfluenceEvent": "Link Existing Event",
+        "UnlinkInfluenceEvent": "Unlink Influence Event"
       },
       "Hazards": {
         "Simple": "Simple",

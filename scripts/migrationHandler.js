@@ -21,7 +21,8 @@ export const handleDataMigration = async () => {
 
   await handleDeactivatedPages();
   await handleJournalPermissions();
-  await handleDepdencies();
+  await handleDependencies();
+  await handleInfluenceMigration();
 
   var version = game.settings.get("pf2e-bestiary-tracking", "version");
   if (!version) {
@@ -1764,7 +1765,7 @@ const handleJournalPermissions = () => {
     .forEach((journal) => journal.update({ ownership: { default: 3 } }));
 };
 
-const handleDepdencies = () => {
+const handleDependencies = () => {
   const pf2eSubsystemTheming = game.modules.get("pf2e-subsystem-theming");
 
   if (!pf2eSubsystemTheming?.active) {
@@ -1778,5 +1779,213 @@ const handleDepdencies = () => {
       position: { width: 400 },
       content: `<p>${game.i18n.localize("PF2EBestiary.Dependencies.Errors.PF2ESubsystemThemingText")}</p>`,
     });
+  }
+};
+
+const handleInfluenceMigration = async () => {
+  const influenceMigration = game.settings.get(
+    "pf2e-bestiary-tracking",
+    "influence-migration-done",
+  );
+  if (influenceMigration.done) return;
+
+  const bestiaries = game.journal.filter((x) =>
+    x.pages.some((x) => x.type === "pf2e-bestiary-tracking.npc"),
+  );
+
+  if (bestiaries.length === 0) {
+    game.settings.set(
+      "pf2e-bestiary-tracking",
+      "influence-migration-done",
+      mergeObject(influenceMigration, { done: true }),
+    );
+  } else {
+    const influenceEvents = bestiaries.flatMap((bestiary) =>
+      bestiary.pages.filter((page) => {
+        if (page.type !== "pf2e-bestiary-tracking.npc") return false;
+        const influenceData = page.system.npcData.influence;
+
+        return (
+          influenceData.premise.value ||
+          Object.keys(influenceData.discovery).length > 0 ||
+          Object.keys(influenceData.influenceSkills).length > 0 ||
+          Object.keys(influenceData.influence).length > 0 ||
+          Object.keys(influenceData.weaknesses).length > 0 ||
+          Object.keys(influenceData.resistances).length > 0 ||
+          Object.keys(influenceData.penalties).length > 0
+        );
+      }),
+    );
+
+    if (influenceEvents.length === 0) {
+      game.settings.set(
+        "pf2e-bestiary-tracking",
+        "influence-migration-done",
+        mergeObject(influenceMigration, { done: true }),
+      );
+    } else {
+      if (game.modules.get("pf2e-subsystems")?.active) {
+        const importInfluenceEvents = {};
+        for (var event of influenceEvents) {
+          const influenceId = foundry.utils.randomID();
+          importInfluenceEvents[influenceId] = {
+            id: influenceId,
+            name: event.system.name.value,
+            version: "0.7.0",
+            background: event.system.img,
+            premise: event.system.npcData.influence.premise.value,
+            hidden: event.system.tabStates.influence.hidden,
+            perception: event.system.senses.perception.value,
+            will: event.system.saves.will.value,
+            influencePoints: event.system.npcData.influence.influencePoints,
+            discoveries: Object.keys(
+              event.system.npcData.influence.discovery,
+            ).reduce((acc, key) => {
+              const discovery = event.system.npcData.influence.discovery[key];
+              acc[key] = {
+                id: key,
+                hidden: !discovery.revealed,
+                skill: discovery.type,
+                dc: discovery.dc,
+                lore: discovery.lore,
+              };
+              return acc;
+            }, {}),
+            influenceSkills: Object.keys(
+              event.system.npcData.influence.influenceSkills,
+            ).reduce((acc, key) => {
+              const skill = event.system.npcData.influence.influenceSkills[key];
+              acc[key] = {
+                id: key,
+                hidden: !skill.revealed,
+                skill: skill.type,
+                dc: skill.dc,
+                lore: skill.lore,
+                label: skill.description.value ? skill.description.value : null,
+              };
+              return acc;
+            }, {}),
+            influence: Object.keys(
+              event.system.npcData.influence.influence,
+            ).reduce((acc, key) => {
+              const influence = event.system.npcData.influence.influence[key];
+              acc[key] = {
+                id: key,
+                hidden: !influence.revealed,
+                points: influence.points,
+                description: influence.description
+                  ? `<p>${influence.description}</p>`
+                  : "",
+              };
+              return acc;
+            }, {}),
+            weaknesses: Object.keys(
+              event.system.npcData.influence.weaknesses,
+            ).reduce((acc, key) => {
+              const weakness = event.system.npcData.influence.weaknesses[key];
+              acc[key] = {
+                id: key,
+                hidden: !weakness.revealed,
+                description: weakness.description,
+                modifier: {
+                  used: weakness.modifier.revealed,
+                  value: weakness.modifier.value ?? 1,
+                },
+              };
+              return acc;
+            }, {}),
+            resistances: Object.keys(
+              event.system.npcData.influence.resistances,
+            ).reduce((acc, key) => {
+              const resistance =
+                event.system.npcData.influence.resistances[key];
+              acc[key] = {
+                id: key,
+                hidden: !resistance.revealed,
+                description: resistance.description,
+                modifier: {
+                  used: resistance.modifier.revealed,
+                  value: resistance.modifier.value ?? 1,
+                },
+              };
+              return acc;
+            }, {}),
+            penalties: Object.keys(
+              event.system.npcData.influence.penalties,
+            ).reduce((acc, key) => {
+              const penalties = event.system.npcData.influence.penalties[key];
+              acc[key] = {
+                id: key,
+                hidden: !penalties.revealed,
+                description: penalties.description,
+                modifier: {
+                  used: penalties.modifier.revealed,
+                  value: penalties.modifier.value ?? null,
+                },
+              };
+              return acc;
+            }, {}),
+          };
+
+          await event.update({
+            "system.npcData.influenceEventIds": [
+              ...event.system.npcData.influenceEventIds,
+              influenceId,
+            ],
+          });
+        }
+
+        game.settings.set(
+          "pf2e-subsystems",
+          "influence",
+          mergeObject(
+            game.settings.get("pf2e-subsystems", "influence").toObject(),
+            { events: importInfluenceEvents },
+          ),
+        );
+
+        game.settings.set(
+          "pf2e-bestiary-tracking",
+          "influence-migration-done",
+          mergeObject(influenceMigration, { done: true }),
+        );
+      } else if (influenceMigration.remind) {
+        new foundry.applications.api.DialogV2({
+          buttons: [
+            {
+              action: "ok",
+              label: game.i18n.localize("PF2EBestiary.Miscellaneous.Confirm"),
+              icon: "fas fa-check",
+              default: true,
+            },
+            {
+              action: "remind",
+              label: game.i18n.localize(
+                "PF2EBestiary.Migration.MigrateInfluenceDontRemind",
+              ),
+              icon: "fa-solid fa-bell-slash",
+              default: true,
+              callback: () => {
+                game.settings.set(
+                  "pf2e-bestiary-tracking",
+                  "influence-migration-done",
+                  mergeObject(influenceMigration, { remind: false }),
+                );
+              },
+            },
+          ],
+          content: game.i18n.localize(
+            "PF2EBestiary.Migration.MigrateInfluenceText",
+          ),
+          rejectClose: false,
+          modal: false,
+          window: {
+            title: game.i18n.localize(
+              "PF2EBestiary.Migration.MigrateInfluenceTitle",
+            ),
+          },
+        }).render(true);
+      }
+    }
   }
 };

@@ -2,7 +2,6 @@ import {
   bestiaryCategorySettings,
   revealedState,
 } from "../data/bestiaryAppearance.js";
-import Tagify from "@yaireo/tagify";
 import { imageHideStates, imageSettings } from "../data/constants.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;

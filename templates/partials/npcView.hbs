@@ -3,7 +3,7 @@
         {{#if this.gmView}}<i class="monster-image-menu fa-solid fa-gears primary-hover-container" data-action="imageMenu"></i>{{/if}}
         <img class="monster-image primary-outline {{#if this.useTokenArt}}token{{/if}} {{PF2EBTImageState this.creatureData.system.imageState.hideState}}" src="{{this.creatureData.system.displayImage}}" data-action="imagePopout" />
     </div>
-    <div class="tab minor {{this.tabs.general.cssClass}}" data-group="npc" data-tab="general">
+    <div class="tab minor {{this.tabs.generalSidebar.cssClass}}" data-group="npc" data-tab="generalSidebar">
         <div class="flexcol">
             {{#if this.optionalFields.height}}
                 {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-up-down" title="PF2EBestiary.Bestiary.NPC.Height" editMode=this.npcState.editMode path="system.npcData.general.height" data=this.general.height }}
@@ -105,31 +105,6 @@
             </div>
         </div>
     </div>
-    <div class="tab minor {{this.tabs.influence.cssClass}}" data-group="npc" data-tab="influence"> {{!-- <img class="data-icon" src="icons/svg/eye.svg" /> --}}
-        <div class="flexcol">
-            {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-eye" title="PF2EBestiary.Miscellaneous.Perception" editMode=this.npcState.editMode path="system.senses.perception" data=this.creatureData.system.senses.perception noEdit="true" number="true" }}
-            {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleInputSection.hbs" icon="fa-solid fa-fw fa-heart-pulse" title="PF2EBestiary.Miscellaneous.Saves.Will.Short" editMode=this.npcState.editMode path="system.saves.will" data=this.creatureData.system.saves.will noEdit="true" number="true" }}
-            <div class="flexcol flex1 data-section primary-container active">
-                <div class="data-header primary-container">
-                    <div class="data-header-label {{#if this.gmView}}{{PF2EBTToggleContainer this.gmView this.influence.premise}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.gmView this.contrastRevealedState this.influence.premise}}" data-action="toggleRevealed" data-path="system.npcData.influence.premise">
-                        <i class="fa-solid fa-chart-column secondary-icon"></i>
-                        <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.PremiseLabel"}}</div>
-                    </div>
-                </div>
-                <div class="data-body primary-border-container flex1">
-                    {{#if this.npcState.editMode}}
-                        <textarea class="premise-editor data-input secondary-container" name="system.npcData.influence.premise.value">{{this.influence.premise.value}}</textarea>
-                    {{else}}
-                        {{#if (or this.gmView this.influence.premise.revealed)}}
-                            {{{this.influence.premise.value}}}
-                        {{else}}
-                            ?
-                        {{/if}}
-                    {{/if}}
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 <div class="right-monster-container">
     <div class="flexcol">
@@ -174,7 +149,7 @@
                 </div>
                 <nav class="bestiary-tabs tabs">
                     {{#each this.tabs as |tab|}}
-                        {{#if (or ../gmView (not tab.hidden))}}
+                        {{#if (and (not tab.sidebar) (or ../gmView (not tab.hidden)))}}
                             <a 
                                 class="bestiary-tab {{#if tab.hideable}}hideable{{/if}} secondary-container primary-tab {{tab.cssClass}}" 
                                 data-action="tab" 
@@ -231,288 +206,32 @@
     </div>
     <div class="tab {{this.tabs.influence.cssClass}}" data-group="npc" data-tab="influence">
         <div class="right-npc-container-data flexcol">
-            <div class="flexcol data-section primary-container active">
-                <div class="data-header primary-container">
-                    <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.npcData.influence.discovery">
-                        <i class="header-icon fa-solid fa-brain primary-icon"></i>
-                        <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Discovery"}}</div>
-                    </div>
-                    {{#if this.npcState.editMode}}<i class="fa-solid fa-plus primary-hover-container" data-action="addInfluence" data-type="discovery"></i>{{/if}}
-                </div>
-                <div class="data-body primary-border-container flex1">
-                    {{#if this.npcState.editMode}} 
-                        {{#each this.influence.discovery as |data key|}}
-                            <div class="form-group">
-                                <div class="form-fields">
-                                    <label class="option-field-label">{{localize "PF2EBestiary.Bestiary.NPC.SkillLabel"}}</label>
-                                    {{#if data.lore}}
-                                        <input class="secondary-container" type="text" name={{concat "system.npcData.influence.discovery." key ".type"}} value="{{data.type}}" />
-                                    {{else}}
-                                        <select class="data-input secondary-container" name="{{concat "system.npcData.influence.discovery." key ".type"}}">
-                                            {{selectOptions ../skillTypes selected=data.type valueAttr="value" labelAttr="name" localize=true}}
-                                        </select>
-                                    {{/if}}
-                                    <label class="option-field-label">{{localize "PF2EBestiary.Bestiary.NPC.DCLabel"}}</label>
-                                    <input class="secondary-container" type="text" name={{concat "system.npcData.influence.discovery." key ".dc"}} value="{{data.dc}}" />
-                                    <label class="option-field-label">{{localize "PF2EBestiary.Bestiary.NPC.LoreLabel"}}</label>
-                                    <input type="checkbox" name="{{concat "system.npcData.influence.discovery." key ".lore"}}" {{checked data.lore}} />
-                                    <i class="fa-solid fa-trash primary-hover-container option-field-icon" data-action="removeProperty" data-path="{{concat "system.npcData.influence.discovery.-=" key}}"></i>
-                                </div>
-                            </div>
-                        {{/each}}
-                    {{else}}
-                        <div class="option-field-check-container {{#if this.gmView}}gm{{/if}}">
-                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.discovery (not this.gmView)}}
-                                <div class="secondary-container {{PF2EBTToggleContainer ../gmView this}}" style="{{PF2EBTToggleContainerOverride ../gmView ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.discovery." this.key}}">
-                                    {{{this.label}}}
-                                </div>
-                            {{/PF2EBTFilter}}
-                        </div>
-                    {{/if}}
-                </div>
-            </div>
-            <div class="flexcol data-section primary-container active">
-                <div class="data-header primary-container">
-                    <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.npcData.influence.influenceSkills">
-                        <i class="header-icon fa-solid fa-book primary-icon"></i>
-                        <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.InfluenceSkills"}}</div>
-                    </div>
-                    {{#if this.npcState.editMode}}<i class="fa-solid fa-plus primary-hover-container" data-action="addInfluence" data-type="influenceSkills"></i>{{/if}}
-                </div>
-                <div class="data-body primary-border-container flex1">
-                    {{#if this.npcState.editMode}} 
-                        {{#each this.influence.influenceSkills as |data key|}}
-                            <div class="option-field-inner-container">
-                                <div class="form-group">
-                                    <div class="form-fields">
-                                        <label class="option-field-label">{{localize "PF2EBestiary.Bestiary.NPC.SkillLabel"}}</label>
-                                        {{#if data.lore}}
-                                            <input class="secondary-container" type="text" name={{concat "system.npcData.influence.influenceSkills." key ".type"}} value="{{data.type}}" />
-                                        {{else}}
-                                            <select class="data-input secondary-container" name="{{concat "system.npcData.influence.influenceSkills." key ".type"}}">
-                                                {{selectOptions ../skillTypes selected=data.type valueAttr="value" labelAttr="name" localize=true}}
-                                            </select>
-                                        {{/if}}
-                                        <label class="option-field-label">{{localize "PF2EBestiary.Bestiary.NPC.DCLabel"}}</label>
-                                        <input class="secondary-container" type="text" name={{concat "system.npcData.influence.influenceSkills." key ".dc"}} value="{{data.dc}}" />
-                                        <div class="flexcol">
-                                            <i class="fa-solid fa-caret-up primary-hover-container" data-action=""></i>
-                                            <i class="fa-solid fa-caret-down primary-hover-container" data-action="decreaseInfluence"></i>
-                                        </div>
-                                        <label class="option-field-label">{{localize "PF2EBestiary.Bestiary.NPC.LoreLabel"}}</label>
-                                        <input type="checkbox" name="{{concat "system.npcData.influence.influenceSkills." key ".lore"}}" {{checked data.lore}} />
-                                        <i class="fa-solid fa-trash primary-hover-container option-field-icon" data-action="removeProperty" data-path="{{concat "system.npcData.influence.influenceSkills.-=" key}}"></i>
-                                    </div>
-                                </div>
-                                <textarea class="option-field-description secondary-container" name="{{concat "system.npcData.influence.influenceSkills." key ".description.value"}}">{{data.description.value}}</textarea>
-                            </div>
-                        {{/each}}
-                    {{else}}
-                        <div class="option-field-check-container {{#if this.gmView}}gm{{/if}}">
-                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.influenceSkills (not this.gmView)}}
-                                <div class="secondary-container {{PF2EBTToggleContainer ../gmView this}}" style="{{PF2EBTToggleContainerOverride ../gmView ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.influenceSkills." this.key}}">
-                                    {{{this.label}}}
-                                    {{#if this.description.value}}
-                                        {{#if ../gmView}}
-                                            <span 
-                                                class="toggle-container inner detailed {{#if this.description.revealed}}revealed{{/if}} primary-hover-container" 
-                                                data-action="toggleRevealed"
-                                                data-path="{{concat "system.npcData.influence.influenceSkills." this.key ".description"}}"
-                                            >
-                                                ({{localize this.description.value}})
-                                            </span>
-                                        {{else}}
-                                            {{#if this.description.revealed}}
-                                                ({{localize this.description.value}})
-                                            {{/if}}
-                                        {{/if}}
-                                    {{/if}}
-                                </div>
-                            {{/PF2EBTFilter}}
-                        </div>
-                    {{/if}}
-                </div>
-            </div>
-            <div class="flexcol data-section primary-container active">
+            <div class="flexcol data-section primary-container influence-event-container active">
                 <div class="data-header primary-container">
                     <div class="data-header-label">
-                        <div class="data-header-label">
-                            <i class="header-icon fa-solid fa-hand-holding-heart primary-icon"></i>
-                            <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Influence"}}</div>
+                        <i class="fa-solid fa-comments"></i>
+                        <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.InfluenceEvents"}}</div>
+                    </div>
+                    {{#if this.npcState.editMode}}
+                        <div class="influence-header-toolbar">
+                            <button class="secondary-container" data-action="addInfluenceEvent">{{localize "PF2EBestiary.Bestiary.NPC.CreateInfluenceEvent"}}</button>
+                            <button class="secondary-container" data-action="linkExistingInfluenceEvent">{{localize "PF2EBestiary.Bestiary.NPC.AddExistingInfluenceEvent"}}</button>
                         </div>
-                        <div class="influence-points-container">
-                            <div class="value">{{this.influence.influencePoints}}</div>
-                            {{#if this.gmView}}
-                                <div class="flexcol">
-                                    <i class="fa-solid fa-caret-up primary-hover-container" data-action="increaseInfluence"></i>
-                                    <i class="fa-solid fa-caret-down primary-hover-container" data-action="decreaseInfluence"></i>
+                    {{/if}}
+                </div>
+                <div class="data-body primary-border-container flex1">
+                    <div class="influence-cards">
+                        {{#each this.influenceEvents}}
+                            {{#if (or ../gmView (not this.hidden))}}
+                                <div class="influence-card secondary-container primary-border-container primary-hover-container" data-action="openInfluenceEvent" data-event="{{this.id}}">
+                                    <div class="influence-card-title">{{this.name}}</div>
+                                    <img src="{{this.img}}" />
+                                    <button class="influence-card-reveal-button secondary-container primary-hover-container" data-action="influenceToggleHidden" data-event="{{this.id}}"><i class="fa-solid {{#if this.hidden}}fa-eye-slash{{else}}fa-eye{{/if}}"></i></button>
+                                    {{#if ../npcState.editMode}}<button class="influence-card-delete-button secondary-container primary-hover-container" data-action="removeInfluenceEvent" data-event="{{this.id}}" title="{{localize "PF2EBestiary.Bestiary.NPC.UnlinkInfluenceEvent"}}"><i class="fa-solid fa-link-slash"></i></button>{{/if}}
                                 </div>
                             {{/if}}
-                        </div>
-                    </div>
-                    {{#if this.npcState.editMode}}<i class="fa-solid fa-plus primary-hover-container" data-action="addInfluence" data-type="influence"></i>{{/if}}
-                </div>
-                <div class="data-body primary-border-container flex1">
-                    {{#if this.npcState.editMode}} 
-                        {{#each this.influence.influence as |data key|}}
-                            <div class="option-field-inner-container">
-                                <label class="option-field-label">{{localize "PF2EBestiary.Bestiary.NPC.InfluencePointsLabel"}}</label>
-                                <div class="form-group">
-                                    <div class="form-fields">
-                                        <input class="secondary-container" type="text" data-dtype="number" name={{concat "system.npcData.influence.influence." key ".points"}} value="{{data.points}}" />
-                                        <i class="fa-solid fa-trash primary-hover-container option-field-icon" data-action="removeProperty" data-path="{{concat "system.npcData.influence.influence.-=" key}}"></i>
-                                    </div>
-                                </div>
-                                <textarea class="option-field-description secondary-container" name="{{concat "system.npcData.influence.influence." key ".description"}}">{{data.description}}</textarea>
-                            </div>
                         {{/each}}
-                    {{else}}
-                        <div class="option-field-check-container vertical">
-                            {{#if (and (not this.gmView) (eq (PF2EBTNrKeys this.influence.influence 'revealed') 0))}}
-                                ?
-                            {{else}}
-                                {{#each this.influence.influence}}
-                                    {{#if (or ../gmView this.revealed)}}
-                                        <div class="data-container secondary-container {{#if (not this.revealed)}}automatic-lock{{/if}} {{PF2EBTToggleContainer ../gmView this}}" style="{{PF2EBTToggleContainerOverride ../gmView ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.influence." @key}}">
-                                            {{#if this.points}}<strong>{{this.points}}:&nbsp;</strong>{{/if}}{{{this.description}}}
-                                        </div>
-                                    {{/if}}
-                                {{/each}}
-                            {{/if}}
-                        </div>
-                    {{/if}}
-                </div>
-            </div>
-            <div class="flexcol data-section primary-container active">
-                <div class="data-header primary-container">
-                    <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.npcData.influence.weaknesses">
-                        <i class="header-icon fa-solid fa-fw fa-heart-broken primary-icon"></i>
-                        <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Weaknesses"}}</div>
                     </div>
-                    {{#if this.npcState.editMode}}<i class="fa-solid fa-plus primary-hover-container" data-action="addInfluence" data-type="weakness"></i>{{/if}}
-                </div>
-                <div class="data-body primary-border-container flex1">
-                    {{#if this.npcState.editMode}} 
-                        {{#each this.influence.weaknesses as |data key|}}
-                            <div class="option-field-check-container">
-                                <label class="option-field-label">{{localize "PF2EBestiary.Bestiary.NPC.IWRModifierLabel"}}</label>
-                                <div class="form-group">
-                                    <div class="form-fields">
-                                        <input class="secondary-container" type="text" data-dtype="number" name={{concat "system.npcData.influence.weaknesses." key ".modifier.value"}} value="{{data.modifier.value}}" />
-                                        <i class="fa-solid fa-trash primary-hover-container option-field-icon" data-action="removeProperty" data-path="{{concat "system.npcData.influence.weaknesses.-=" key}}"></i>
-                                    </div>
-                                </div>
-                                <textarea class="option-field-description secondary-container" name="{{concat "system.npcData.influence.weaknesses." key ".description"}}">{{data.description}}</textarea>
-                            </div>
-                        {{/each}}
-                    {{else}}
-                        <div class="option-field-check-container vertical">
-                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.weaknesses (not this.gmView)}}
-                                <div class="influence-modifier-container">
-                                    <div class="influence-modifier-text secondary-container {{PF2EBTToggleContainer ../gmView this}}" style="{{PF2EBTToggleContainerOverride ../gmView ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.weaknesses." this.key}}">
-                                        {{{this.description}}}
-                                        </div>
-                                        {{#if (and ../gmView this.modifier.value)}}
-                                        <fieldset class="influence-modifier-inner-container {{#if this.modifier.revealed}}active{{/if}} secondary-container primary-hover-container" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.weaknesses." this.key ".modifier"}}" title="{{localize "PF2EBestiary.Bestiary.NPC.ToggleModifier"}}">
-                                            <legend>
-                                                {{#if (not this.modifier.revealed)}}<i class="fa-solid fa-slash hidden-icon"></i>{{/if}}
-                                                <i class="fa-solid fa-bolt-lightning"></i>
-                                            </legend>
-                                            <div>{{this.modifier.value}}</div>
-                                        </fieldset>
-                                        {{/if}}
-                                </div>
-                            {{/PF2EBTFilter}}
-                        </div>
-                    {{/if}}
-                </div>
-            </div>
-            <div class="flexcol data-section primary-container active">
-                <div class="data-header primary-container">
-                    <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.npcData.influence.resistances">
-                        <i class="fa-solid fa-fw fa-shield-virus primary-icon"></i>
-                        <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Resistances"}}</div>
-                    </div>
-                    {{#if this.npcState.editMode}}<i class="fa-solid fa-plus primary-hover-container" data-action="addInfluence" data-type="resistance"></i>{{/if}}
-                </div>
-                <div class="data-body primary-border-container flex1">
-                    {{#if this.npcState.editMode}} 
-                        {{#each this.influence.resistances as |data key|}}
-                            <div class="option-field-check-container">
-                                <label class="option-field-label">{{localize "PF2EBestiary.Bestiary.NPC.IWRModifierLabel"}}</label>
-                                <div class="form-group">
-                                    <div class="form-fields">
-                                        <input class="secondary-container" type="text" data-dtype="number" name={{concat "system.npcData.influence.resistances." key ".modifier.value"}} value="{{data.modifier.value}}" />
-                                        <i class="fa-solid fa-trash primary-hover-container option-field-icon" data-action="removeProperty" data-path="{{concat "system.npcData.influence.resistances.-=" key}}"></i>
-                                    </div>
-                                </div>
-                                <textarea class="option-field-description secondary-container" name="{{concat "system.npcData.influence.resistances." key ".description"}}">{{data.description}}</textarea>
-                            </div>
-                        {{/each}}
-                    {{else}}
-                        <div class="option-field-check-container vertical">
-                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.resistances (not this.gmView)}}
-                                <div class="influence-modifier-container">
-                                    <div class="influence-modifier-text secondary-container {{PF2EBTToggleContainer ../gmView this}}" style="{{PF2EBTToggleContainerOverride ../gmView ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.resistances." this.key}}">
-                                        {{{this.description}}}
-                                    </div>
-                                    {{#if (and ../gmView this.modifier.value)}}
-                                        <fieldset class="influence-modifier-inner-container {{#if this.modifier.revealed}}active{{/if}} secondary-container primary-hover-container" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.resistances." this.key ".modifier"}}" title="{{localize "PF2EBestiary.Bestiary.NPC.ToggleModifier"}}">
-                                            <legend>
-                                                {{#if (not this.modifier.revealed)}}<i class="fa-solid fa-slash hidden-icon"></i>{{/if}}
-                                                <i class="fa-solid fa-bolt-lightning"></i>
-                                            </legend>
-                                            <div>{{this.modifier.value}}</div>
-                                        </fieldset>
-                                    {{/if}}
-                                </div>
-                            {{/PF2EBTFilter}}
-                        </div>
-                    {{/if}}
-                </div>
-            </div>
-            <div class="flexcol data-section primary-container active">
-                <div class="data-header primary-container">
-                    <div class="data-header-label primary-hover-container" data-action="toggleAllRevealed" data-path="system.npcData.influence.penalties">
-                        <i class="fa-solid fa-handcuffs primary-icon"></i>
-                        <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Penalties"}}</div>
-                    </div>
-                    {{#if this.npcState.editMode}}<i class="fa-solid fa-plus primary-hover-container" data-action="addInfluence" data-type="penalty"></i>{{/if}}
-                </div>
-                <div class="data-body primary-border-container flex1">
-                    {{#if this.npcState.editMode}} 
-                        {{#each this.influence.penalties as |data key|}}
-                            <div class="option-field-check-container">
-                                <label class="option-field-label">{{localize "PF2EBestiary.Bestiary.NPC.IWRModifierLabel"}}</label>
-                                <div class="form-group">
-                                    <div class="form-fields">
-                                        <input class="secondary-container" type="text" data-dtype="number" name={{concat "system.npcData.influence.penalties." key ".modifier.value"}} value="{{data.modifier.value}}" />
-                                        <i class="fa-solid fa-trash primary-hover-container option-field-icon" data-action="removeProperty" data-path="{{concat "system.npcData.influence.penalties.-=" key}}"></i>
-                                    </div>
-                                </div>
-                                <textarea class="option-field-description secondary-container" name="{{concat "system.npcData.influence.penalties." key ".description"}}">{{data.description}}</textarea>
-                            </div>
-                        {{/each}}
-                    {{else}}
-                        <div class="option-field-check-container vertical">
-                            {{#PF2EBTFilter 'revealed' '?' 0 this.influence.penalties (not this.gmView)}}
-                                <div class="influence-modifier-container">
-                                    <div class="influence-modifier-text secondary-container {{PF2EBTToggleContainer ../gmView this}}" style="{{PF2EBTToggleContainerOverride ../gmView ../contrastRevealedState this}}" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.penalties." this.key}}">
-                                        {{{this.description}}}
-                                    </div>
-                                    {{#if (and ../gmView this.modifier.value)}}
-                                        <fieldset class="influence-modifier-inner-container {{#if this.modifier.revealed}}active{{/if}} secondary-container primary-hover-container" data-action="toggleRevealed" data-path="{{concat "system.npcData.influence.penalties." this.key ".modifier"}}" title="{{localize "PF2EBestiary.Bestiary.NPC.ToggleModifier"}}">
-                                            <legend>
-                                                {{#if (not this.modifier.revealed)}}<i class="fa-solid fa-slash hidden-icon"></i>{{/if}}
-                                                <i class="fa-solid fa-bolt-lightning"></i>
-                                            </legend>
-                                            <div>{{this.modifier.value}}</div>
-                                        </fieldset>
-                                    {{/if}}
-                                </div>
-                            {{/PF2EBTFilter}}
-                        </div>
-                    {{/if}}
                 </div>
             </div>
         </div>

@@ -1482,6 +1482,67 @@
 .pf2e-bestiary-tracking.bestiary .bookmark.icons {
   justify-content: space-between;
 }
+.pf2e-bestiary-tracking.bestiary .influence-event-container {
+  flex: 1;
+}
+.pf2e-bestiary-tracking.bestiary .influence-event-container .influence-header-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.pf2e-bestiary-tracking.bestiary .influence-event-container .influence-header-toolbar button {
+  white-space: nowrap;
+  height: 17px;
+}
+.pf2e-bestiary-tracking.bestiary .influence-event-container .influence-cards {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pf2e-bestiary-tracking.bestiary .influence-event-container .influence-cards .influence-card {
+  width: calc(33% - 4px);
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 6px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.pf2e-bestiary-tracking.bestiary .influence-event-container .influence-cards .influence-card .influence-card-title {
+  position: absolute;
+  top: 0;
+  filter: drop-shadow(0 0 3px var(--pf2e-subsystem-theming-text-shadow));
+}
+.pf2e-bestiary-tracking.bestiary .influence-event-container .influence-cards .influence-card .influence-card-reveal-button {
+  position: absolute;
+  height: 24px;
+  width: 24px;
+  bottom: 0;
+  right: 0;
+  border-radius: 0 0 6px 0;
+  border-width: 2px 0 0 2px;
+  margin: 0;
+}
+.pf2e-bestiary-tracking.bestiary .influence-event-container .influence-cards .influence-card .influence-card-reveal-button i {
+  margin: 0;
+}
+.pf2e-bestiary-tracking.bestiary .influence-event-container .influence-cards .influence-card .influence-card-delete-button {
+  position: absolute;
+  height: 24px;
+  width: 24px;
+  bottom: 0;
+  left: 0;
+  border-radius: 0 0 0 6px;
+  border-width: 2px 2px 0 0;
+  margin: 0;
+}
+.pf2e-bestiary-tracking.bestiary .influence-event-container .influence-cards .influence-card .influence-card-delete-button i {
+  margin: 0;
+}
+.pf2e-bestiary-tracking.bestiary .influence-event-container .influence-cards .influence-card img {
+  border-radius: 6px;
+}
 .theme-dark:not([data-dorako-ui-scope]) .bestiary-settings-menu .tagify {
   border-color: inherit;
   background: inherit;

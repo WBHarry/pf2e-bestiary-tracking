@@ -139,6 +139,9 @@ export class NPC extends Creature {
             }),
           ),
         }),
+        influenceEventIds: new fields.ArrayField(
+          new fields.StringField({ required: true }),
+        ),
         influence: new fields.SchemaField({
           premise: new fields.SchemaField({
             revealed: new fields.BooleanField({

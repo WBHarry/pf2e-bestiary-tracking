@@ -176,6 +176,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       toggleRecallAttempt: this.toggleRecallAttempt,
       resetRecallAttempts: this.resetRecallAttempts,
       displayRecallKnowledgePopup: this.displayRecallKnowledgePopup,
+      openInfluenceEvent: this.openInfluenceEvent,
+      addInfluenceEvent: this.addInfluenceEvent,
+      removeInfluenceEvent: this.removeInfluenceEvent,
+      linkExistingInfluenceEvent: this.linkExistingInfluenceEvent,
+      influenceToggleHidden: this.influenceToggleHidden,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -397,6 +402,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
     const generalSidebarActive =
       group === "creature" && ["statistics", "spells", "lore"].includes(tab);
+    const npcGeneralSidebarActive =
+      group === "npc" && ["general", "influence"].includes(tab);
 
     for (const t of this.element.querySelectorAll(
       `.tabs > [data-group="${group}"]`,
@@ -410,7 +417,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       section.classList.toggle(
         "active",
         section.dataset.tab === tab ||
-          (generalSidebarActive && section.dataset.tab === "generalSidebar"),
+          (generalSidebarActive && section.dataset.tab === "generalSidebar") ||
+          (npcGeneralSidebarActive && section.dataset.tab === "generalSidebar"),
       );
     }
     this.tabGroups[group] = tab;
@@ -541,7 +549,18 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         icon: null,
         label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.General"),
       },
-      influence: {
+      generalSidebar: {
+        active: true,
+        sidebar: true,
+        cssClass: "",
+        group: "npc",
+        id: "generalSidebar",
+        icon: null,
+      },
+    };
+
+    if (game.modules.get("pf2e-subsystems")?.active) {
+      tabs.influence = {
         active: false,
         cssClass: "",
         group: "npc",
@@ -550,15 +569,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         label: game.i18n.localize("PF2EBestiary.Bestiary.NPCTabs.Influence"),
         hideable: true,
         hidden: tabStates?.influence?.hidden,
-      },
-      notes: {
-        active: false,
-        cssClass: "",
-        group: "npc",
-        id: "notes",
-        icon: null,
-        label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes"),
-      },
+      };
+    }
+
+    tabs.notes = {
+      active: false,
+      cssClass: "",
+      group: "npc",
+      id: "notes",
+      icon: null,
+      label: game.i18n.localize("PF2EBestiary.Bestiary.Tabs.Notes"),
     };
 
     if (this.gmView) {
@@ -573,10 +593,17 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     }
 
     for (const v of Object.values(tabs)) {
-      v.active = this.tabGroups[v.group]
-        ? this.tabGroups[v.group] === v.id
-        : v.active;
-      v.cssClass = v.active ? "active" : "";
+      if (v.id === "generalSidebar") {
+        v.active = this.tabGroups[v.group]
+          ? ["general", "influence"].includes(this.tabGroups[v.group])
+          : v.active;
+        v.cssClass = v.active ? "active" : "";
+      } else {
+        v.active = this.tabGroups[v.group]
+          ? this.tabGroups[v.group] === v.id
+          : v.active;
+        v.cssClass = v.active ? "active" : "";
+      }
     }
 
     return tabs;
@@ -1154,6 +1181,25 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   npcPreparation = async (context) => {
     context.tabs = this.getMonsterTabs(true);
     context.npcTabs = this.getNPCTabs();
+    context.influenceEvents =
+      this.selected.monster && game.modules.get("pf2e-subsystems")?.active
+        ? Object.values(
+            game.settings.get("pf2e-subsystems", "influence").events,
+          ).reduce((acc, curr) => {
+            if (
+              this.selected.monster.system.npcData.influenceEventIds.includes(
+                curr.id,
+              )
+            )
+              acc[curr.id] = {
+                id: curr.id,
+                hidden: curr.hidden,
+                name: curr.name,
+                img: curr.background,
+              };
+            return acc;
+          }, {})
+        : {};
     context.npcDefeatedSetting = game.settings.get(
       "pf2e-bestiary-tracking",
       "defeated-setting",
@@ -2688,6 +2734,124 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   static async displayRecallKnowledgePopup() {}
+
+  static async openInfluenceEvent(_, button) {
+    await game.modules
+      .get("pf2e-subsystems")
+      .macros.openSubsystemView("influence", button.dataset.event, {
+        position: { top: this.position.top + 50 },
+      });
+    this.minimize();
+  }
+
+  static async addInfluenceEvent() {
+    new Promise((resolve) =>
+      game.modules.get("pf2e-subsystems").macros.addEvent("influence", resolve),
+    ).then(async (eventId) => {
+      await this.selected.monster.update({
+        [`system.npcData.influenceEventIds`]: [
+          ...this.selected.monster.system.npcData.influenceEventIds,
+          eventId,
+        ],
+      });
+      await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+        action: socketEvent.UpdateBestiary,
+        data: {},
+      });
+      Hooks.callAll(socketEvent.UpdateBestiary, {});
+    });
+  }
+
+  static async removeInfluenceEvent(_, button) {
+    await this.selected.monster.update({
+      [`system.npcData.influenceEventIds`]:
+        this.selected.monster.system.npcData.influenceEventIds.filter(
+          (x) => x !== button.dataset.event,
+        ),
+    });
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  static async linkExistingInfluenceEvent() {
+    const influenceEvents = Object.values(
+      game.settings.get("pf2e-subsystems", "influence").events,
+    )
+      .filter(
+        (x) =>
+          !this.selected.monster.system.npcData.influenceEventIds.includes(
+            x.id,
+          ),
+      )
+      .map((x) => ({ value: x.id, label: x.name }));
+    new foundry.applications.api.DialogV2({
+      buttons: [
+        {
+          action: "ok",
+          label: "Confirm",
+          default: true,
+          callback: async (_, button) => {
+            const influenceEvent =
+              influenceEvents[button.form.elements.influenceEvent.value];
+            await this.selected.monster.update({
+              [`system.npcData.influenceEventIds`]: [
+                ...this.selected.monster.system.npcData.influenceEventIds,
+                influenceEvent.value,
+              ],
+            });
+
+            await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+              action: socketEvent.UpdateBestiary,
+              data: {},
+            });
+            Hooks.callAll(socketEvent.UpdateBestiary, {});
+          },
+        },
+        {
+          action: "cancel",
+          label: "Cancel",
+          default: false,
+        },
+      ],
+      content: new foundry.data.fields.StringField({
+        label: game.i18n.localize("PF2EBestiary.Bestiary.NPC.InfluenceEvent"),
+        choices: influenceEvents,
+        required: true,
+      }).toFormGroup(
+        {},
+        {
+          name: "influenceEvent",
+          localize: true,
+          nameAttr: "value",
+          labelAttr: "label",
+        },
+      ).outerHTML,
+      window: {
+        title: game.i18n.localize(
+          "PF2EBestiary.Bestiary.NPC.AddExistingInfluenceEvent",
+        ),
+      },
+      position: { width: 400 },
+    }).render(true);
+  }
+
+  static async influenceToggleHidden(_, button) {
+    var influence = game.settings.get("pf2e-subsystems", "influence");
+    await influence.updateSource({
+      [`events.${button.dataset.event}.hidden`]:
+        !influence.events[button.dataset.event].hidden,
+    });
+    await game.settings.set("pf2e-subsystems", "influence", influence);
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
 
   async hideTab(event) {
     event.stopPropagation();

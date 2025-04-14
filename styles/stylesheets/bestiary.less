@@ -1721,5 +1721,79 @@
         justify-content: space-between;
       }
     }
+
+    .influence-event-container {
+      flex: 1;
+
+      .influence-header-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        button {
+          white-space: nowrap;
+          height: 17px;
+        }
+      }
+
+      .influence-cards {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+
+        .influence-card {
+          width: calc(33% - 4px);
+          border-width: 2px;
+          border-style: solid;
+          border-radius: 6px;
+          position: relative;
+          display: flex;
+          justify-content: center;
+
+          .influence-card-title {
+            position: absolute;
+            top: 0;
+            filter: drop-shadow(
+              0 0 3px var(--pf2e-subsystem-theming-text-shadow)
+            );
+          }
+
+          .influence-card-reveal-button {
+            position: absolute;
+            height: 24px;
+            width: 24px;
+            bottom: 0;
+            right: 0;
+            border-radius: 0 0 6px 0;
+            border-width: 2px 0 0 2px;
+            margin: 0;
+
+            i {
+              margin: 0;
+            }
+          }
+
+          .influence-card-delete-button {
+            position: absolute;
+            height: 24px;
+            width: 24px;
+            bottom: 0;
+            left: 0;
+            border-radius: 0 0 0 6px;
+            border-width: 2px 2px 0 0;
+            margin: 0;
+
+            i {
+              margin: 0;
+            }
+          }
+
+          img {
+            border-radius: 6px;
+          }
+        }
+      }
+    }
   }
 }
