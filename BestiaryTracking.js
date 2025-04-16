@@ -11602,17 +11602,23 @@ const handleDataMigration = async () => {
     );
   }
 
-  if(versionCompare(version, "1.2.2")) {
-    version = '1.2.2';
-    const defaultRevealed = game.settings.get("pf2e-bestiary-tracking", "default-revealed");
-    const newNPCSettings = Object.keys(defaultRevealed.npc).reduce((acc, curr) => {
-      if(curr !== 'premise') acc[curr] = defaultRevealed.npc[curr];
-      return acc;
-    }, {});
+  if (versionCompare(version, "1.2.2")) {
+    version = "1.2.2";
+    const defaultRevealed = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "default-revealed",
+    );
+    const newNPCSettings = Object.keys(defaultRevealed.npc).reduce(
+      (acc, curr) => {
+        if (curr !== "premise") acc[curr] = defaultRevealed.npc[curr];
+        return acc;
+      },
+      {},
+    );
 
     await game.settings.set("pf2e-bestiary-tracking", "default-revealed", {
       ...defaultRevealed,
-      npc: newNPCSettings
+      npc: newNPCSettings,
     });
 
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
@@ -12853,7 +12859,7 @@ const handleInfluenceMigration = async () => {
               const weakness = event.system.npcData.influence.weaknesses[key];
               acc[key] = {
                 id: key,
-                name: `Weakness ${index+1}`,
+                name: `Weakness ${index + 1}`,
                 hidden: !weakness.revealed,
                 description: weakness.description,
                 modifier: {
@@ -12870,7 +12876,7 @@ const handleInfluenceMigration = async () => {
                 event.system.npcData.influence.resistances[key];
               acc[key] = {
                 id: key,
-                name: `Resistance ${index+1}`,
+                name: `Resistance ${index + 1}`,
                 hidden: !resistance.revealed,
                 description: resistance.description,
                 modifier: {
@@ -12886,7 +12892,7 @@ const handleInfluenceMigration = async () => {
               const penalties = event.system.npcData.influence.penalties[key];
               acc[key] = {
                 id: key,
-                name: `Penalty ${index+1}`,
+                name: `Penalty ${index + 1}`,
                 hidden: !penalties.revealed,
                 description: penalties.description,
                 modifier: {
@@ -16993,7 +16999,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   static async openInfluenceEvent(_, button) {
     await game.modules
       .get("pf2e-subsystems")
-      .macros.openSubsystemView("influence", button.dataset.event, {
+      .lib.openSubsystemView("influence", button.dataset.event, {
         position: { top: this.position.top + 50 },
       });
     this.minimize();
@@ -17001,7 +17007,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async addInfluenceEvent() {
     new Promise((resolve) =>
-      game.modules.get("pf2e-subsystems").macros.addEvent("influence", resolve),
+      game.modules.get("pf2e-subsystems").lib.addEvent("influence", resolve),
     ).then(async (eventId) => {
       await this.selected.monster.update({
         [`system.npcData.influenceEventIds`]: [
@@ -18248,8 +18254,13 @@ Hooks.once("setup", () => {
           return wrapped(...args);
         }
 
-        if(baseActor.type === 'character'){
-          if(game.actors.filter(x => x.type === 'party').flatMap(x => x.members).find(x => x.id === baseActor.id)){
+        if (baseActor.type === "character") {
+          if (
+            game.actors
+              .filter((x) => x.type === "party")
+              .flatMap((x) => x.members)
+              .find((x) => x.id === baseActor.id)
+          ) {
             return wrapped(...args);
           }
         }

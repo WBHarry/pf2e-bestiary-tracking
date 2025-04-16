@@ -2738,7 +2738,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   static async openInfluenceEvent(_, button) {
     await game.modules
       .get("pf2e-subsystems")
-      .macros.openSubsystemView("influence", button.dataset.event, {
+      .lib.openSubsystemView("influence", button.dataset.event, {
         position: { top: this.position.top + 50 },
       });
     this.minimize();
@@ -2746,7 +2746,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async addInfluenceEvent() {
     new Promise((resolve) =>
-      game.modules.get("pf2e-subsystems").macros.addEvent("influence", resolve),
+      game.modules.get("pf2e-subsystems").lib.addEvent("influence", resolve),
     ).then(async (eventId) => {
       await this.selected.monster.update({
         [`system.npcData.influenceEventIds`]: [
