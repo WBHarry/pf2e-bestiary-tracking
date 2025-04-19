@@ -2,7 +2,8 @@
   "dependencies": {
     "@yaireo/tagify": "^4.17.9",
     "gulp": "^5.0.0",
-    "gulp-less": "^5.0.0"
+    "gulp-less": "^5.0.0",
+    "rollup": "^4.40.0"
   },
   "devDependencies": {
     "@foundryvtt/foundryvtt-cli": "^1.0.3",

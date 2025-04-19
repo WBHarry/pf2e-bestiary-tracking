@@ -3230,7 +3230,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
 
     if (openAfter) {
-      new PF2EBestiary(null, pages[0]).render(true);
+      new PF2EBestiary({}, pages[0]).render(true);
     }
 
     return pages[0];

@@ -170,7 +170,7 @@ Hooks.once("setup", () => {
           return;
         }
 
-        new PF2EBestiary(null, page).render(true);
+        new PF2EBestiary({}, page).render(true);
       },
     );
   }
@@ -630,7 +630,7 @@ Hooks.on("renderApplication", (_, htmlElements) => {
         game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
       );
       const page = bestiary.pages.get(button.dataset.page);
-      button.onclick = () => new PF2EBestiary(null, page).render(true);
+      button.onclick = () => new PF2EBestiary({}, page).render(true);
     }
   }
 });
@@ -675,7 +675,7 @@ Hooks.on("renderChatMessage", (message, htmlElements) => {
         game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
       );
       const page = bestiary.pages.get(button.dataset.page);
-      button.onclick = () => new PF2EBestiary(null, page).render(true);
+      button.onclick = () => new PF2EBestiary({}, page).render(true);
     }
 
     if (isDamageRoll && automaticReveal.iwr) {
@@ -812,7 +812,7 @@ Hooks.on("getActorSheetHeaderButtons", (options, buttons) => {
             x.system.actorBelongs(item),
           );
           if (page) {
-            new PF2EBestiary(null, page).render(true);
+            new PF2EBestiary({}, page).render(true);
           } else {
             const dialog = new foundry.applications.api.DialogV2({
               buttons: [

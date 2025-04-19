@@ -83,7 +83,7 @@ export const showMonster = () => {
     return;
   }
 
-  new PF2EBestiary(null, page).render(true);
+  new PF2EBestiary({}, page).render(true);
 };
 
 export const addMonster = async () => {
