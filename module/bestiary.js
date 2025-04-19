@@ -50,8 +50,9 @@ const defaultSelectedAbilities = () => ({
 export default class PF2EBestiary extends HandlebarsApplicationMixin(
   ApplicationV2,
 ) {
-  constructor(options, page) {
-    super({});
+  constructor(options = {}, page) {
+    const { category, type, ...baseOptions } = options;
+    super(baseOptions);
 
     this.bestiary = game.journal.get(
       game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
@@ -75,8 +76,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         : getUsedBestiaryTypes()[0];
 
     this.selected = {
-      category: options?.category ?? page?.type ?? defaultCategory,
-      type: options?.type ?? monsterCreatureType,
+      category: category ?? page?.type ?? defaultCategory,
+      type: type ?? monsterCreatureType,
       monster: page,
       abilities: defaultSelectedAbilities(),
     };
@@ -91,7 +92,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       editMode: false,
       npcView:
         page?.type === "pf2e-bestiary-tracking.npc" ||
-        options?.category === "pf2e-bestiary-tracking.npc"
+        category === "pf2e-bestiary-tracking.npc"
           ? true
           : false,
       newCategory: {
