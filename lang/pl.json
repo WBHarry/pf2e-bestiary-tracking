@@ -44,6 +44,11 @@
       "Failure": "Porażka",
       "CriticalFailure": "Krytyczna Porażka"
     },
+    "Migration": {
+      "MigrateInfluenceTitle": "Migracja wydarzeń wpływu BN'a",
+      "MigrateInfluenceText": "Zdarzenia wpływu są teraz obsługiwane przez moduł PF2e Subsystems. Włącz ten moduł, aby automatycznie przenieść istniejące zdarzenia wpływu.",
+      "MigrateInfluenceDontRemind": "Nie przypominaj mi"
+    },
     "ImportDialog": {
       "JournalTitle": "Import Bestiariusza",
       "EntryTitle": "Import wpisu do bestiariusza",
@@ -281,7 +286,12 @@
           "Manual": "Ręczna kolejność",
           "AscAlpha": "Alfabetycznie (rosnąco)",
           "DescAlpha": "Alfabetycznie (malejąco)"
-        }
+        },
+        "InfluenceEvents": "Wydarzenia wpływu",
+        "InfluenceEvent": "Wydarzenie wpływu",
+        "CreateInfluenceEvent": "Nowe wydarzenie",
+        "AddExistingInfluenceEvent": "Połącz istniejące wydarzenie",
+        "UnlinkInfluenceEvent": "Odłącz istniejący wpływ"
       },
       "Hazards": {
         "Simple": "Proste",
