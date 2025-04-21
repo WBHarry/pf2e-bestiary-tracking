@@ -9363,7 +9363,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$6(
   }
 }
 
-const currentVersion = "1.2.5";
+const currentVersion = "1.2.6";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -9980,23 +9980,15 @@ const bestiaryIntegration = () => {
     onChange: async (value) => {
       if (!value || !game.user.isGM) return;
 
-      const bestiary = await newMigrateBestiary(
-        async (_, monster) => {
-          const origin = await fromUuid(monster.uuid);
+      const bestiary = game.journal.get(game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"));
+      for(var entity of bestiary.pages.filter(x => ['pf2e-bestiary-tracking.creature', 'pf2e-bestiary-tracking.npc', 'pf2e-bestiary-tracking.hazard'].includes(x.type))){
+        const origin = await fromUuid(entity.system.uuid);
 
-          await origin?.update({
-            "ownership.default":
-              origin.ownership.default > 1 ? origin.ownership.default : 1,
-          });
-        },
-        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
-      );
-
-      await game.settings.set(
-        "pf2e-bestiary-tracking",
-        "bestiary-tracking",
-        bestiary,
-      );
+        await origin?.update({
+          "ownership.default":
+            origin.ownership.default > 1 ? origin.ownership.default : 1,
+        });
+      }
     },
   });
 
@@ -11623,6 +11615,25 @@ const handleDataMigration = async () => {
 
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
+
+  if (versionCompare(version, "1.2.6")) {
+    version = "1.2.6";
+    if(game.settings.get("pf2e-bestiary-tracking", "doubleClickOpen")){   
+      for(var bestiary of  game.journal.filter(x => x.pages.some(page => ['pf2e-bestiary-tracking.creature', 'pf2e-bestiary-tracking.npc', 'pf2e-bestiary-tracking.hazard'].includes(page.type)))) {
+        for(var entity of bestiary.pages.filter(x => ['pf2e-bestiary-tracking.creature', 'pf2e-bestiary-tracking.npc', 'pf2e-bestiary-tracking.hazard'].includes(x.type))){
+          const origin = await fromUuid(entity.system.uuid);
+
+          await origin?.update({
+            "ownership.default":
+              origin.ownership.default > 1 ? origin.ownership.default : 1,
+          });
+        }
+      } 
+    }
+
+    await game.settings.set("pf2e-bestiary-tracking", "version", version);
+  }
+
 
   await handleBestiaryMigration(
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),

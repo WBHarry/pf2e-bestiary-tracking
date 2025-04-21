@@ -11,7 +11,6 @@ import BestiaryAppearanceMenu from "../module/bestiaryAppearanceMenu.js";
 import BestiaryIntegrationMenu from "../module/bestiaryIntegrationMenu.js";
 import BestiaryLabelsMenu from "../module/bestiaryLabelsMenu.js";
 import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
-import { newMigrateBestiary } from "./migrationHandler.js";
 import {
   imageSettings,
   npcCategorySortOptions,
@@ -24,7 +23,7 @@ import {
   dispositionIconSize,
 } from "../data/bestiaryContents.js";
 
-export const currentVersion = "1.2.5";
+export const currentVersion = "1.2.6";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
@@ -641,23 +640,23 @@ const bestiaryIntegration = () => {
     onChange: async (value) => {
       if (!value || !game.user.isGM) return;
 
-      const bestiary = await newMigrateBestiary(
-        async (_, monster) => {
-          const origin = await fromUuid(monster.uuid);
-
-          await origin?.update({
-            "ownership.default":
-              origin.ownership.default > 1 ? origin.ownership.default : 1,
-          });
-        },
+      const bestiary = game.journal.get(
         game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
       );
+      for (var entity of bestiary.pages.filter((x) =>
+        [
+          "pf2e-bestiary-tracking.creature",
+          "pf2e-bestiary-tracking.npc",
+          "pf2e-bestiary-tracking.hazard",
+        ].includes(x.type),
+      )) {
+        const origin = await fromUuid(entity.system.uuid);
 
-      await game.settings.set(
-        "pf2e-bestiary-tracking",
-        "bestiary-tracking",
-        bestiary,
-      );
+        await origin?.update({
+          "ownership.default":
+            origin.ownership.default > 1 ? origin.ownership.default : 1,
+        });
+      }
     },
   });
 
