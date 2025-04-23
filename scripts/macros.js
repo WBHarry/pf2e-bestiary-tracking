@@ -4,7 +4,7 @@ import { isValidEntityType } from "./helpers.js";
 import { bestiaryFolder, currentVersion } from "./setup.js";
 import { socketEvent } from "./socket.js";
 
-export const openBestiary = async (options, page) => {
+export const openBestiary = async (options = {}, page) => {
   const bestiary = game.journal.get(
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );
@@ -158,11 +158,9 @@ export const resetBestiary = async () => {
     return;
   }
 
-  const confirmed = await Dialog.confirm({
+  const confirmed = await foundry.applications.api.DialogV2.confirm({
     title: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Title"),
     content: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Text"),
-    yes: () => true,
-    no: () => false,
   });
 
   if (!confirmed) return;
@@ -237,9 +235,10 @@ export const deactivateModule = async () => {
     return;
   }
 
-  const link = await TextEditor.enrichHTML(
-    game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.Link"),
-  );
+  const link =
+    await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+      game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.Link"),
+    );
   const content = `
         <div>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Text.FirstPart")}</div>
         <hr />
@@ -247,11 +246,9 @@ export const deactivateModule = async () => {
         <div style="margin-bottom: 8px;">(${link})</div>
     `;
 
-  const confirmed = await Dialog.confirm({
+  const confirmed = await foundry.applications.api.DialogV2.confirm({
     title: game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Title"),
     content: content,
-    yes: () => true,
-    no: () => false,
   });
 
   if (!confirmed) return;

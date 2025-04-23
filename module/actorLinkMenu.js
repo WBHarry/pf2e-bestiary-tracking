@@ -173,9 +173,9 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
 
   static toggleDuplicateList(_, button) {
     this.duplicateListOpen = !this.duplicateListOpen;
-    $(button).toggleClass("fa-chevron-down");
-    $(button).toggleClass("fa-chevron-up");
-    $(this.element).find(".duplicate-list").toggleClass("expanded");
+    button.classList.toggle("fa-chevron-down");
+    button.classList.toggle("fa-chevron-up");
+    this.element.querySelector(".duplicate-list").classList.toggle("expanded");
   }
 
   static removeDuplicate(_, button) {
@@ -254,8 +254,8 @@ export default class AvatarLinkMenu extends HandlebarsApplicationMixin(
 
   async _onDrop(event) {
     if (!game.user.isGM) return;
-
-    const data = TextEditor.getDragEventData(event);
+    const data =
+      foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
     const baseItem = await fromUuid(data.uuid);
 
     const itemEntityType = getEntityType(baseItem);

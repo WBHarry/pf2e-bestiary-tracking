@@ -45,20 +45,21 @@ async function bestiaryEnricher(match, _options) {
     }
   }
   if (page) {
-    linkElement.innerHTML = await renderTemplate(
-      "modules/pf2e-bestiary-tracking/templates/bestiaryLink.hbs",
-      {
-        name: page.system.name.value,
-        displayName: page.system.displayedName,
-        isGM: game.user.isGM,
-        page: page.id,
-      },
-    );
+    linkElement.innerHTML =
+      await foundry.applications.handlebars.renderTemplate(
+        "modules/pf2e-bestiary-tracking/templates/bestiaryLink.hbs",
+        {
+          name: page.system.name.value,
+          displayName: page.system.displayedName,
+          isGM: game.user.isGM,
+          page: page.id,
+        },
+      );
 
     return linkElement;
   }
 
-  linkElement.innerHTML = await renderTemplate(
+  linkElement.innerHTML = await foundry.applications.handlebars.renderTemplate(
     "modules/pf2e-bestiary-tracking/templates/bestiaryLink.hbs",
     {
       invalid: true,
@@ -80,7 +81,7 @@ Hooks.once("init", () => {
     enricher: bestiaryEnricher,
   });
 
-  loadTemplates([
+  foundry.applications.handlebars.loadTemplates([
     "modules/pf2e-bestiary-tracking/templates/partials/monsterView.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/npcView.hbs",
     "modules/pf2e-bestiary-tracking/templates/partials/hazardView.hbs",
@@ -182,10 +183,21 @@ Hooks.on("renderApplication", (_, html) => {
     "pf2e-bestiary-tracking.npc",
     "pf2e-bestiary-tracking.hazard",
   ];
-  const options = $(html).find("option");
-  for (var option of options) {
-    if (moduleSubTypes.includes(option.value)) {
-      $(option).remove();
+  for (var element of html) {
+    const options = element.querySelectorAll("option");
+    for (var option of options) {
+      if (moduleSubTypes.includes(option.value)) {
+        option.remove();
+      }
+    }
+
+    const buttons = element.querySelectorAll(".pf2e-bestiary-link-button");
+    for (var button of buttons) {
+      const bestiary = game.journal.get(
+        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+      );
+      const page = bestiary.pages.get(button.dataset.page);
+      button.onclick = () => new PF2EBestiary({}, page).render(true);
     }
   }
 });
@@ -326,30 +338,38 @@ Hooks.on("preCreateToken", async (token) => {
   }
 });
 
-Hooks.on("renderActorDirectory", async (tab, html) => {
+Hooks.on("renderActorDirectory", (tab, html, _, options) => {
   if (tab.id === "actors") {
     if (!game.user.isGM) {
       // Hazards currently not sorted out of Actors tab when they have limited view. Remove this if the system starts to handle it.
-      const actorElements = html.find(".document.actor");
+      const actorElements = html.querySelectorAll(".document.actor");
       for (var element of actorElements) {
-        var actor = game.actors.get(element.dataset.documentId);
+        var actor = game.actors.get(element.dataset.entryId);
         if (
           actor.type === "hazard" &&
           (actor.ownership.default === 1 || actor.ownership[game.user.id] === 1)
         ) {
-          $(element).remove();
+          element.remove();
         }
       }
     }
 
-    const buttons = $(tab.element).find(".directory-footer.action-buttons");
-    buttons.prepend(`
+    if (options.parts && !options.parts.includes("footer")) return;
+
+    const buttons = html.querySelector(".directory-footer.action-buttons");
+    const existingButton = buttons.querySelector("#pf2e-bestiary-tracker");
+    if (existingButton) return;
+
+    buttons.insertAdjacentHTML(
+      "afterbegin",
+      `
             <button id="pf2e-bestiary-tracker">
                 <i class="fa-solid fa-spaghetti-monster-flying" />
-                <span style="font-size: var(--font-size-14); font-family: var(--font-primary); font-weight: 400;">${game.i18n.localize("PF2EBestiary.Name")}</span>
-            </button>`);
+                <span style="font-weight: 400; font-family: var(--font-sans);">${game.i18n.localize("PF2EBestiary.Name")}</span>
+            </button>`,
+    );
 
-    $(buttons).find("#pf2e-bestiary-tracker")[0].onclick = () => {
+    buttons.querySelector("#pf2e-bestiary-tracker").onclick = () => {
       new PF2EBestiary().render(true);
     };
   }
@@ -586,11 +606,11 @@ Hooks.on("getActorDirectoryFolderContext", (folder, buttons) => {
 });
 
 Hooks.on("renderJournalDirectory", (_, html) => {
-  const folder = game.journal.directory.folders.find(
-    (folder) => folder.name === bestiaryFolder,
-  );
+  const folder = game.folders.find((folder) => folder.name === bestiaryFolder);
   if (folder) {
-    const element = html.find(`.folder[data-folder-id="${folder.id}"]`);
+    const element = html.querySelector(
+      `.folder[data-folder-id="${folder.id}"]`,
+    );
     if (element) {
       element.remove();
     }
@@ -599,10 +619,13 @@ Hooks.on("renderJournalDirectory", (_, html) => {
 
 Hooks.on("renderDependencyResolution", (dependencyResolution, html) => {
   if (dependencyResolution.object.id === "pf2e-bestiary-tracking") {
-    const lastText = $(html).find("form p").last();
-    lastText.after(`
-                <h2 style="margin-bottom: 4px; border-bottom: 0;">${game.i18n.format("PF2EBestiary.Macros.DeactivateModule.DependencyResolutionWarning", { name: `<strong>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Name")}</strong>` })}</h2>
-        `);
+    const lastText = [...html.querySelectorAll("form p")].at(-1);
+    lastText.insertAdjacentHTML(
+      "beforeend",
+      `
+      <h2 style="margin-bottom: 4px; border-bottom: 0;">${game.i18n.format("PF2EBestiary.Macros.DeactivateModule.DependencyResolutionWarning", { name: `<strong>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Name")}</strong>` })}</h2>
+    `,
+    );
   }
 });
 
@@ -617,20 +640,10 @@ Hooks.on("renderImagePopout", (app, html) => {
   );
   if (existingPage) {
     const hideState = existingPage.system.imageState.hideState;
-    const image = $(html).find("figure img");
-    image.addClass(RegisterHandlebarsHelpers.imageState(game.user, hideState));
-  }
-});
-
-Hooks.on("renderApplication", (_, htmlElements) => {
-  for (var element of htmlElements) {
-    const buttons = $(element).find(".pf2e-bestiary-link-button");
-    for (var button of buttons) {
-      const bestiary = game.journal.get(
-        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
-      );
-      const page = bestiary.pages.get(button.dataset.page);
-      button.onclick = () => new PF2EBestiary({}, page).render(true);
+    const image = html.querySelector("figure img");
+    const imageClass = RegisterHandlebarsHelpers.imageState(hideState);
+    if (imageClass) {
+      image?.classList?.add(imageClass);
     }
   }
 });
@@ -662,60 +675,60 @@ Hooks.on("updateChatMessage", async (message, { flags }) => {
   }
 });
 
-Hooks.on("renderChatMessage", (message, htmlElements) => {
+Hooks.on("renderChatMessageHTML", (message, element) => {
   const { automaticReveal } = game.settings.get(
     "pf2e-bestiary-tracking",
     "chat-message-handling",
   );
   const isDamageRoll = message.flags.pf2e?.context?.type === "damage-roll";
-  for (var element of htmlElements) {
-    const buttons = $(element).find(".pf2e-bestiary-link-button");
-    for (var button of buttons) {
-      const bestiary = game.journal.get(
-        game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
-      );
-      const page = bestiary.pages.get(button.dataset.page);
-      button.onclick = () => new PF2EBestiary({}, page).render(true);
-    }
 
-    if (isDamageRoll && automaticReveal.iwr) {
-      const updateIWRFunc = async () => {
-        const targets = canvas.tokens.controlled;
-        if (targets.length === 0) return;
+  const button = element.querySelector(".pf2e-bestiary-link-button");
+  if (button) {
+    const bestiary = game.journal.get(
+      game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
+    );
+    const page = bestiary.pages.get(button.dataset.page);
+    button.onclick = () => new PF2EBestiary({}, page).render(true);
+  }
 
-        let damageTypes =
-          message.rolls && message.rolls.length > 0
-            ? Array.from(
-                new Set(
-                  message.rolls.flatMap((roll) =>
-                    roll.instances.map((x) => x.type),
-                  ),
+  if (isDamageRoll && automaticReveal.iwr) {
+    const updateIWRFunc = async () => {
+      const targets = canvas.tokens.controlled;
+      if (targets.length === 0) return;
+
+      let damageTypes =
+        message.rolls && message.rolls.length > 0
+          ? Array.from(
+              new Set(
+                message.rolls.flatMap((roll) =>
+                  roll.instances.map((x) => x.type),
                 ),
-              )
-            : [];
+              ),
+            )
+          : [];
 
-        for (var target of targets) {
-          await updateIWR(target, damageTypes);
-        }
-      };
+      for (var target of targets) {
+        await updateIWR(target, damageTypes);
+      }
+    };
 
-      const damageApplicationButtons = $(element).find(".damage-application");
-      const damageButton = $(damageApplicationButtons).find(
-        '[data-action="apply-damage"]',
-      );
-      if (damageButton && damageButton[0])
-        damageButton[0].onclick = updateIWRFunc;
-      const halfDamageButton = $(damageApplicationButtons).find(
-        '[data-action="half-damage"]',
-      );
-      if (halfDamageButton && halfDamageButton[0])
-        halfDamageButton[0].onclick = updateIWRFunc;
-      const criticalDamageButton = $(damageApplicationButtons).find(
-        '[data-action="double-damage"]',
-      );
-      if (criticalDamageButton && criticalDamageButton[0])
-        criticalDamageButton[0].onclick = updateIWRFunc;
-    }
+    const damageApplicationButtons = element.querySelector(
+      ".damage-application",
+    );
+    const damageButton = damageApplicationButtons.querySelector(
+      '[data-action="apply-damage"]',
+    );
+    if (damageButton) damageButton.onclick = updateIWRFunc;
+
+    const halfDamageButton = damageApplicationButtons.querySelector(
+      '[data-action="half-damage"]',
+    );
+    if (halfDamageButton) halfDamageButton.onclick = updateIWRFunc;
+
+    const criticalDamageButton = damageApplicationButtons.querySelector(
+      '[data-action="double-damage"]',
+    );
+    if (criticalDamageButton) criticalDamageButton.onclick = updateIWRFunc;
   }
 });
 
@@ -784,11 +797,10 @@ Hooks.on("renderDialog", (dialog, html) => {
       type: game.i18n.localize("DOCUMENT.JournalEntry"),
     })
   ) {
-    const options = $(html).find("option");
-    options.each((index) => {
-      const option = options[index];
-      if (option.innerText === "BestiaryTracking Bestiares") $(option).remove();
-    });
+    const options = html.querySelectorAll("option");
+    for (const option of options) {
+      if (option.innerText === "BestiaryTracking Bestiares") option.remove();
+    }
   }
 });
 
@@ -866,26 +878,31 @@ Hooks.on("renderActorSheet", (sheet) => {
     "pf2e-bestiary-tracking-bestiary",
   );
   if (bestiaryApp && bestiaryApp.actorSheetApp?.appId === sheet.appId) {
-    const actorSheetContainer = $(bestiaryApp.element).find(
+    const actorSheetContainer = bestiaryApp.element.querySelector(
       ".bestiary-actor-sheet",
     );
-    $(sheet.element[0])
-      .children()
-      .each((_, child) => {
-        if (child.classList.contains("window-content")) {
-          const tagify = child.querySelector("tagify-tags");
-          if (tagify) {
-            const input = $(tagify).find("> input");
-            input.__tagify?.destroy();
-            $(input).remove();
-            $(tagify).remove();
+    for (const child of sheet.element[0].children) {
+      if (child.classList.contains("window-content")) {
+        const tagify = child.querySelector("tagify-tags");
+        if (tagify) {
+          const input = tagify.querySelector("input");
+          if (input) {
+            input.remove();
+            tagify.remove();
           }
-        } else if (!child.classList.contains("window-header")) {
-          $(child).remove();
         }
-      });
-    $(actorSheetContainer).append(sheet.element[0]);
-    $(actorSheetContainer).addClass("expanded");
-    $(bestiaryApp.element).find(".monster-container").addClass("closed");
+      } else if (!child.classList.contains("window-header")) {
+        child.remove();
+      }
+    }
+
+    if (actorSheetContainer) {
+      actorSheetContainer.append(sheet.element[0]);
+      actorSheetContainer.classList.add("expanded");
+    }
+
+    bestiaryApp.element
+      .querySelector(".monster-container")
+      ?.classList?.add("closed");
   }
 });

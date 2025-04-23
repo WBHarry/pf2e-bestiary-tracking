@@ -46,16 +46,16 @@ export default class ImportDialog extends HandlebarsApplicationMixin(
 
   _attachPartListeners(partId, htmlElement, options) {
     super._attachPartListeners(partId, htmlElement, options);
-    $(htmlElement)
-      .find(".file-path")
-      .on("change", async (event) => {
-        const nameElement = $(this.element).find(".name-field")[0];
-        const importButton = $(this.element).find(
+    htmlElement
+      .querySelector(".file-path")
+      .addEventListener("change", async (event) => {
+        const nameElement = this.element.querySelector(".name-field");
+        const importButton = this.element.querySelector(
           'button[data-action="importFile"]',
-        )[0];
+        );
         if (!event.currentTarget.value) {
-          $(importButton).prop("disabled", true);
-          $(nameElement).prop("disabled", true);
+          importButton.disabled = true;
+          nameElement.disabled = true;
           nameElement.value = "";
         } else {
           const text = await readTextFromFile(event.currentTarget.files[0]);
@@ -71,8 +71,8 @@ export default class ImportDialog extends HandlebarsApplicationMixin(
             return;
           }
 
-          $(importButton).prop("disabled", false);
-          $(nameElement).prop("disabled", false);
+          importButton.disabled = false;
+          nameElement.disabled = false;
           nameElement.value = jsonObject.system?.name?.value ?? jsonObject.name;
         }
       });
@@ -84,8 +84,8 @@ export default class ImportDialog extends HandlebarsApplicationMixin(
   }
 
   static async importFile() {
-    const files = $(this.element).find(".file-path")[0].files;
-    const name = $(this.element).find(".name-field")[0].value;
+    const files = this.element.querySelector(".file-path").files;
+    const name = this.element.querySelector(".name-field").value;
 
     if (!name) {
       ui.notifications.error(

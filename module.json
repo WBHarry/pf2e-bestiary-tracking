@@ -2,7 +2,7 @@
   "id": "pf2e-bestiary-tracking",
   "title": "PF2E Bestiary Tracking",
   "description": "A module to track known information about enemies for players in a bestiary.",
-  "version": "1.2.7",
+  "version": "1.3.0",
   "authors": [
     {
       "name": "HarryBoy",
@@ -10,9 +10,9 @@
     }
   ],
   "compatibility": {
-    "minimum": "12",
+    "minimum": "13",
     "verified": "12.331",
-    "maximum": "12"
+    "maximum": "13"
   },
   "relationships": {
     "systems": [
@@ -91,6 +91,6 @@
     }
   ],
   "url": "https://github.com/WBHarry/pf2e-bestiary-tracking",
-  "manifest": "https://github.com/WBHarry/pf2e-bestiary-tracking/releases/download/1.2.7/module.json",
-  "download": "https://github.com/WBHarry/pf2e-bestiary-tracking/releases/download/1.2.7/module.zip"
+  "manifest": "https://github.com/WBHarry/pf2e-bestiary-tracking/releases/latest/download/module.json",
+  "download": "https://github.com/WBHarry/pf2e-bestiary-tracking/releases/latest/download/module.zip"
 }

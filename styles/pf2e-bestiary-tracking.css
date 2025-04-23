@@ -136,6 +136,20 @@
   overflow-y: visible;
   overflow-x: visible;
 }
+.pf2e-bestiary-tracking h4 {
+  font-family: inherit;
+}
+.pf2e-bestiary-tracking nav.tabs {
+  line-height: inherit;
+}
+.pf2e-bestiary-tracking .prosemirror,
+.pf2e-bestiary-tracking prose-mirror {
+  gap: 0;
+}
+.pf2e-bestiary-tracking .prosemirror .editor-content,
+.pf2e-bestiary-tracking prose-mirror .editor-content {
+  padding: 0 8px;
+}
 .pf2e-bestiary-tracking.bestiary [data-application-part="application"] {
   height: 100%;
   display: flex;
@@ -516,6 +530,7 @@
   border-style: solid;
   border-width: 2px;
   border-color: inherit;
+  border-radius: 0px;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-toolbar-container {
   height: 100%;
@@ -1231,7 +1246,7 @@
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .monster-traits-row .monster-traits-row-inner {
   flex: 1;
   display: flex;
-  align-items: start;
+  align-items: center;
   gap: 8px;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .monster-traits-row .monster-size {
@@ -1605,7 +1620,7 @@
   font-size: 12px;
 }
 .bestiary-settings-menu .form-group.inner {
-  flex: 0;
+  flex: none;
 }
 .bestiary-settings-menu .form-group.inner label {
   padding: 0;
@@ -2035,6 +2050,10 @@ form.pf2e-bestiary-tracking.application > header .header-control {
 }
 .avatar-menu .form-fields button i {
   margin: 0;
+}
+.avatar-menu .avatar-image-container {
+  display: flex;
+  gap: 4px;
 }
 .menu-button-range {
   display: flex;

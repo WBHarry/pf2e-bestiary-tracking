@@ -1,9 +1,7 @@
 import { slugify } from "../scripts/helpers";
-import { attackTable } from "../scripts/statisticsData";
-import { getCategoryLabel } from "../scripts/statisticsHelper";
 import { dispositions } from "./constants";
 import { Creature } from "./creature";
-import { getNPCData, MappingField } from "./modelHelpers";
+import { getNPCData } from "./modelHelpers";
 
 export class NPC extends Creature {
   static defineSchema() {
@@ -63,7 +61,7 @@ export class NPC extends Creature {
                   }),
                   value: new fields.StringField({}),
                 }),
-                edicts: new MappingField(
+                edicts: new fields.TypedObjectField(
                   new fields.SchemaField({
                     revealed: new fields.BooleanField({
                       required: true,
@@ -74,7 +72,7 @@ export class NPC extends Creature {
                   }),
                   { initial: [] },
                 ),
-                anathema: new MappingField(
+                anathema: new fields.TypedObjectField(
                   new fields.SchemaField({
                     revealed: new fields.BooleanField({
                       required: true,
@@ -131,7 +129,7 @@ export class NPC extends Creature {
             }),
             value: new fields.StringField({}),
           }),
-          disposition: new MappingField(
+          disposition: new fields.TypedObjectField(
             new fields.StringField({
               required: true,
               choices: dispositions,
@@ -155,7 +153,7 @@ export class NPC extends Creature {
             integer: true,
             initial: 0,
           }),
-          discovery: new MappingField(
+          discovery: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -166,7 +164,7 @@ export class NPC extends Creature {
               dc: new fields.NumberField({ required: true, integer: true }),
             }),
           ),
-          influenceSkills: new MappingField(
+          influenceSkills: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -184,7 +182,7 @@ export class NPC extends Creature {
               }),
             }),
           ),
-          influence: new MappingField(
+          influence: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -194,7 +192,7 @@ export class NPC extends Creature {
               description: new fields.StringField({ required: true }),
             }),
           ),
-          resistances: new MappingField(
+          resistances: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -211,7 +209,7 @@ export class NPC extends Creature {
               }),
             }),
           ),
-          weaknesses: new MappingField(
+          weaknesses: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -228,7 +226,7 @@ export class NPC extends Creature {
               }),
             }),
           ),
-          penalties: new MappingField(
+          penalties: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -534,11 +532,9 @@ export class NPC extends Creature {
   }
 
   async transformToCreature() {
-    const confirmed = await Dialog.confirm({
+    const confirmed = await foundry.applications.api.DialogV2.confirm({
       title: game.i18n.localize("PF2EBestiary.Bestiary.NPC.TransformNPCTitle"),
       content: game.i18n.localize("PF2EBestiary.Bestiary.NPC.TransformNPCText"),
-      yes: () => true,
-      no: () => false,
     });
 
     if (!confirmed) return null;

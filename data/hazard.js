@@ -20,7 +20,6 @@ import {
 import { recallKnowledgeOutcomes } from "./constants";
 import {
   getHazardData,
-  MappingField,
   toggleNumberField,
   toggleStringField,
 } from "./modelHelpers";
@@ -51,9 +50,9 @@ export class Hazard extends foundry.abstract.TypeDataModel {
         ),
       }),
       active: new fields.BooleanField({ required: true, initial: true }),
-      recallKnowledge: new MappingField(
+      recallKnowledge: new fields.TypedObjectField(
         new fields.SchemaField({
-          attempts: new MappingField(new fields.StringField({})),
+          attempts: new fields.TypedObjectField(new fields.StringField({})),
         }),
       ),
       name: toggleStringField(),
@@ -156,7 +155,7 @@ export class Hazard extends foundry.abstract.TypeDataModel {
         reflex: toggleNumberField(),
         will: toggleNumberField(),
       }),
-      attacks: new MappingField(
+      attacks: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           fake: new fields.BooleanField({}),
@@ -169,13 +168,13 @@ export class Hazard extends foundry.abstract.TypeDataModel {
           actions: new fields.StringField({ required: true }),
           totalModifier: new fields.NumberField({ required: true }),
           isMelee: new fields.BooleanField({ required: true }),
-          additionalEffects: new MappingField(
+          additionalEffects: new fields.TypedObjectField(
             new fields.SchemaField({
               label: new fields.StringField({ required: true }),
               tag: new fields.StringField({ required: true }),
             }),
           ),
-          traits: new MappingField(
+          traits: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -185,12 +184,12 @@ export class Hazard extends foundry.abstract.TypeDataModel {
               description: new fields.StringField({ required: true }),
             }),
           ),
-          variants: new MappingField(
+          variants: new fields.TypedObjectField(
             new fields.SchemaField({
               label: new fields.StringField({}),
             }),
           ),
-          damageInstances: new MappingField(
+          damageInstances: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({}),
               category: new fields.StringField({ nullable: true }),
@@ -209,7 +208,7 @@ export class Hazard extends foundry.abstract.TypeDataModel {
           rules: new fields.ObjectField({}),
         }),
       ),
-      actions: new MappingField(
+      actions: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           fake: new fields.BooleanField({}),
@@ -218,7 +217,7 @@ export class Hazard extends foundry.abstract.TypeDataModel {
           category: new fields.StringField({}),
           deathNote: new fields.BooleanField({}),
           actions: new fields.StringField({ required: true }),
-          traits: new MappingField(
+          traits: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -230,13 +229,13 @@ export class Hazard extends foundry.abstract.TypeDataModel {
           description: new fields.HTMLField({ required: true, initial: "" }),
         }),
       ),
-      immunities: new MappingField(
+      immunities: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           fake: new fields.BooleanField({}),
           empty: new fields.BooleanField({ initial: false }),
           type: new fields.StringField({ required: true }),
-          exceptions: new MappingField(
+          exceptions: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -247,14 +246,14 @@ export class Hazard extends foundry.abstract.TypeDataModel {
           ),
         }),
       ),
-      weaknesses: new MappingField(
+      weaknesses: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           fake: new fields.BooleanField({}),
           empty: new fields.BooleanField({ initial: false }),
           type: new fields.StringField({ required: true }),
           value: new fields.NumberField({ required: true, integer: true }),
-          exceptions: new MappingField(
+          exceptions: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -265,14 +264,14 @@ export class Hazard extends foundry.abstract.TypeDataModel {
           ),
         }),
       ),
-      resistances: new MappingField(
+      resistances: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           fake: new fields.BooleanField({}),
           empty: new fields.BooleanField({ initial: false }),
           type: new fields.StringField({ required: true }),
           value: new fields.NumberField({ required: true, integer: true }),
-          exceptions: new MappingField(
+          exceptions: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -281,7 +280,7 @@ export class Hazard extends foundry.abstract.TypeDataModel {
               type: new fields.StringField({ required: true }),
             }),
           ),
-          doubleVs: new MappingField(
+          doubleVs: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -296,7 +295,7 @@ export class Hazard extends foundry.abstract.TypeDataModel {
         revealed: new fields.BooleanField({ required: true, initial: false }),
         value: new fields.StringField({ required: true }),
       }),
-      traits: new MappingField(
+      traits: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           fake: new fields.BooleanField({ intitial: false }),

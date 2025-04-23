@@ -25,7 +25,6 @@ import {
 import { recallKnowledgeOutcomes } from "./constants";
 import {
   getCreatureData,
-  MappingField,
   toggleNumberField,
   toggleStringField,
 } from "./modelHelpers";
@@ -79,9 +78,9 @@ export class Creature extends foundry.abstract.TypeDataModel {
         },
         { nullable: true, initial: null },
       ),
-      recallKnowledge: new MappingField(
+      recallKnowledge: new fields.TypedObjectField(
         new fields.SchemaField({
-          attempts: new MappingField(new fields.StringField({})),
+          attempts: new fields.TypedObjectField(new fields.StringField({})),
         }),
       ),
       name: toggleStringField(),
@@ -120,7 +119,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
       }),
       level: toggleNumberField(),
       size: new fields.StringField({ required: true }),
-      skills: new MappingField(
+      skills: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           empty: new fields.BooleanField({ initial: false }),
@@ -143,7 +142,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           }),
         }),
       ),
-      abilities: new MappingField(
+      abilities: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           custom: new fields.StringField({ nullable: true }),
@@ -167,7 +166,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           },
           { required: false },
         ),
-        values: new MappingField(
+        values: new fields.TypedObjectField(
           new fields.SchemaField({
             revealed: new fields.BooleanField({
               required: true,
@@ -178,7 +177,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           }),
         ),
       }),
-      immunities: new MappingField(
+      immunities: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           fake: new fields.BooleanField({}),
@@ -186,7 +185,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           type: new fields.StringField({ required: true }),
           source: new fields.StringField({}),
           customLabel: new fields.StringField({}),
-          exceptions: new MappingField(
+          exceptions: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -197,7 +196,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           ),
         }),
       ),
-      weaknesses: new MappingField(
+      weaknesses: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           fake: new fields.BooleanField({}),
@@ -207,7 +206,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           customLabel: new fields.StringField({}),
           value: new fields.NumberField({ required: true, integer: true }),
           valueRevealed: new fields.BooleanField({ initial: false }),
-          exceptions: new MappingField(
+          exceptions: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -218,7 +217,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           ),
         }),
       ),
-      resistances: new MappingField(
+      resistances: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           fake: new fields.BooleanField({}),
@@ -228,7 +227,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           customLabel: new fields.StringField({}),
           value: new fields.NumberField({ required: true, integer: true }),
           valueRevealed: new fields.BooleanField({ initial: false }),
-          exceptions: new MappingField(
+          exceptions: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -237,7 +236,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
               type: new fields.StringField({ required: true }),
             }),
           ),
-          doubleVs: new MappingField(
+          doubleVs: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -252,14 +251,14 @@ export class Creature extends foundry.abstract.TypeDataModel {
         revealed: new fields.BooleanField({ required: true, initial: false }),
         value: new fields.StringField({ required: true }),
       }),
-      traits: new MappingField(
+      traits: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           fake: new fields.BooleanField({ intitial: false }),
           value: new fields.StringField({ required: true }),
         }),
       ),
-      attacks: new MappingField(
+      attacks: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           fake: new fields.BooleanField({}),
@@ -272,13 +271,13 @@ export class Creature extends foundry.abstract.TypeDataModel {
           actions: new fields.StringField({ required: true }),
           totalModifier: new fields.NumberField({ required: true }),
           isMelee: new fields.BooleanField({ required: true }),
-          additionalEffects: new MappingField(
+          additionalEffects: new fields.TypedObjectField(
             new fields.SchemaField({
               label: new fields.StringField({ required: true }),
               tag: new fields.StringField({ required: true }),
             }),
           ),
-          traits: new MappingField(
+          traits: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -288,12 +287,12 @@ export class Creature extends foundry.abstract.TypeDataModel {
               description: new fields.StringField({ required: true }),
             }),
           ),
-          variants: new MappingField(
+          variants: new fields.TypedObjectField(
             new fields.SchemaField({
               label: new fields.StringField({}),
             }),
           ),
-          damageInstances: new MappingField(
+          damageInstances: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({}),
               category: new fields.StringField({ nullable: true }),
@@ -319,7 +318,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           rules: new fields.ObjectField({}),
         }),
       ),
-      actions: new MappingField(
+      actions: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           fake: new fields.BooleanField({}),
@@ -328,7 +327,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           category: new fields.StringField({}),
           deathNote: new fields.BooleanField({}),
           actions: new fields.StringField({ required: true }),
-          traits: new MappingField(
+          traits: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -340,7 +339,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           description: new fields.HTMLField({ required: true, initial: "" }),
         }),
       ),
-      passives: new MappingField(
+      passives: new fields.TypedObjectField(
         new fields.SchemaField({
           revealed: new fields.BooleanField({ required: true, initial: false }),
           fake: new fields.BooleanField({}),
@@ -348,7 +347,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           label: new fields.StringField({ required: true }),
           category: new fields.StringField({}),
           deathNote: new fields.BooleanField({}),
-          traits: new MappingField(
+          traits: new fields.TypedObjectField(
             new fields.SchemaField({
               revealed: new fields.BooleanField({
                 required: true,
@@ -370,7 +369,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           },
           { nullable: true, initial: null },
         ),
-        entries: new MappingField(
+        entries: new fields.TypedObjectField(
           new fields.SchemaField({
             revealed: new fields.BooleanField({
               required: true,
@@ -395,10 +394,10 @@ export class Creature extends foundry.abstract.TypeDataModel {
             mod: new fields.SchemaField({
               value: new fields.NumberField({ required: true, integer: true }),
             }),
-            levels: new MappingField(
+            levels: new fields.TypedObjectField(
               new fields.SchemaField({
                 value: new fields.StringField({ required: true }),
-                spells: new MappingField(
+                spells: new fields.TypedObjectField(
                   new fields.SchemaField({
                     revealed: new fields.BooleanField({
                       required: true,
@@ -420,7 +419,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
                       traditions: new fields.ArrayField(
                         new fields.StringField({}),
                       ),
-                      values: new MappingField(
+                      values: new fields.TypedObjectField(
                         new fields.SchemaField({
                           value: new fields.StringField({ required: true }),
                         }),
@@ -447,7 +446,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           revealed: new fields.BooleanField({ required: true, initial: false }),
           value: new fields.StringField({ required: true }),
         }),
-        senses: new MappingField(
+        senses: new fields.TypedObjectField(
           new fields.SchemaField({
             revealed: new fields.BooleanField({
               required: true,
@@ -465,7 +464,7 @@ export class Creature extends foundry.abstract.TypeDataModel {
           revealed: new fields.BooleanField({ required: true, initial: false }),
           value: new fields.StringField({ required: true }),
         }),
-        values: new MappingField(
+        values: new fields.TypedObjectField(
           new fields.SchemaField({
             revealed: new fields.BooleanField({
               required: true,
@@ -1972,5 +1971,9 @@ export class Creature extends foundry.abstract.TypeDataModel {
       );
       this.pcData.classDC.dc.category = this.pcData.classDC.mod.category;
     }
+  }
+
+  async preUpdate(changes, options, user) {
+    await super.preUpdate(changes, options, user);
   }
 }

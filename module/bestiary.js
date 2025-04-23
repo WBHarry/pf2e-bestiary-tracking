@@ -39,6 +39,7 @@ import {
   skillTable,
 } from "../scripts/statisticsData.js";
 
+const { implementation: TextEditor } = foundry.applications.ux.TextEditor;
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
 const defaultSelectedAbilities = () => ({
@@ -262,25 +263,35 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
   _attachPartListeners(partId, htmlElement, options) {
     super._attachPartListeners(partId, htmlElement, options);
-    $(htmlElement)
-      .find(".toggle-container:not(.misinformation)")
-      .on("contextmenu", this.obscureData.bind(this));
-    $(htmlElement)
-      .find(".misinformation")
-      .on("contextmenu", this.unObscureData.bind(this));
-    $(htmlElement)
-      .find(".bookmark.npc")
-      .on("contextmenu", this.removeBookmark.bind(this));
-    $(htmlElement)
-      .find(".bestiary-tab.hideable")
-      .on("contextmenu", this.hideTab.bind(this));
-    $(htmlElement)
-      .find(".npcCategorySortSelect")
-      .on("change", this.updateNPCCategorySort.bind(this));
+    htmlElement
+      .querySelectorAll(".toggle-container:not(.misinformation)")
+      .forEach((event) =>
+        event.addEventListener("contextmenu", this.obscureData.bind(this)),
+      );
+    htmlElement
+      .querySelectorAll(".misinformation")
+      .forEach((event) =>
+        event.addEventListener("contextmenu", this.unObscureData.bind(this)),
+      );
+    htmlElement
+      .querySelectorAll(".bookmark.npc")
+      .forEach((event) =>
+        event.addEventListener("contextmenu", this.removeBookmark.bind(this)),
+      );
+    htmlElement
+      .querySelectorAll(".bestiary-tab.hideable")
+      .forEach((event) =>
+        event.addEventListener("contextmenu", this.hideTab.bind(this)),
+      );
+    htmlElement
+      .querySelectorAll(".npcCategorySortSelect")
+      .forEach((event) =>
+        event.addEventListener("change", this.updateNPCCategorySort.bind(this)),
+      );
 
     this._dragDrop.forEach((d) => d.bind(htmlElement));
 
-    const npcCategoryInput = $(htmlElement).find(".npc-category-input")[0];
+    const npcCategoryInput = htmlElement.querySelector(".npc-category-input");
     if (npcCategoryInput) {
       const tagFunc = (tagData) => {
         const hidden = this.selected.monster.system.npcData.categories.find(
@@ -1256,36 +1267,34 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
   async removeBookmark(event) {
     if (
-      event.currentTarget.dataset.bookmark === "unaffiliated" ||
-      event.currentTarget.dataset.bookmark === "combat"
+      event.target.dataset.bookmark === "unaffiliated" ||
+      event.target.dataset.bookmark === "combat"
     )
       return;
 
-    const confirmed = await Dialog.confirm({
+    const confirmed = await foundry.applications.api.DialogV2.confirm({
       title: game.i18n.localize("PF2EBestiary.Bestiary.RemoveBookmarkTitle"),
       content: game.i18n.format("PF2EBestiary.Bestiary.RemoveBookmarkText", {
-        category: event.currentTarget.dataset.bookmarkName,
+        category: event.target.dataset.bookmarkName,
       }),
-      yes: () => true,
-      no: () => false,
     });
 
     if (!confirmed) return null;
 
     for (var npc of this.bestiary.pages.filter((page) => {
       return page.system.npcData?.categories.some(
-        (x) => x.value === event.currentTarget.dataset.bookmark,
+        (x) => x.value === event.target.dataset.bookmark,
       );
     })) {
       await npc.update({
         "system.npcData.categories": npc.system.npcData.categories.filter(
-          (x) => x.value !== event.currentTarget.dataset.bookmark,
+          (x) => x.value !== event.target.dataset.bookmark,
         ),
       });
     }
 
     this.selected.type =
-      this.selected.type === event.currentTarget.dataset.bookmark
+      this.selected.type === event.target.dataset.bookmark
         ? null
         : this.selected.type;
 
@@ -1294,7 +1303,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       "npcCategories",
       this.bestiary
         .getFlag("pf2e-bestiary-tracking", "npcCategories")
-        .filter((x) => x.value !== event.currentTarget.dataset.bookmark)
+        .filter((x) => x.value !== event.target.dataset.bookmark)
         .map((x, index) => ({ ...x, position: index })),
     );
 
@@ -1321,12 +1330,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   static async removeMonster(_, button) {
-    const confirmed = await Dialog.confirm({
+    const confirmed = await foundry.applications.api.DialogV2.confirm({
       title: "Delete Monster",
       content:
         "Are you sure you want to remove the creature from the Bestiary?",
-      yes: () => true,
-      no: () => false,
     });
 
     if (!confirmed) return;
@@ -1758,10 +1765,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   removeActorSheet = async () => {
     if (!this.actorSheetApp) return;
 
-    const monsterContainer = $(this.element).find(".monster-container");
-    monsterContainer.removeClass("closed");
-    const actorContainer = $(this.element).find(".bestiary-actor-sheet");
-    actorContainer.removeClass("expanded");
+    this.element
+      .querySelector(".monster-container")
+      ?.classList?.remove("closed");
+    this.element
+      .querySelector(".bestiary-actor-sheet")
+      ?.classList?.remove("expanded");
 
     delete ui.windows[this.actorSheetApp.appId];
     await this.actorSheetApp.close({ force: true });
@@ -2252,7 +2261,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     if (!game.user.isGM) return;
 
     const addValue = async ({ value, errors }) => {
-      if (errors.length > 0)
+      if (errors.length > 0) {
         ui.notifications.error(
           game.i18n.format(
             "PF2EBestiary.Bestiary.Misinformation.Dialog.Errors.RequiredFields",
@@ -2263,6 +2272,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
             },
           ),
         );
+
+        return;
+      }
 
       const newValues = foundry.utils.getProperty(
         this.selected.monster,
@@ -2320,16 +2332,24 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
     await dialog.render(true);
 
-    for (var func of functions) {
-      const functionElement = dialog.element.getElementsByClassName(
-        func.selector,
-      )[0];
-      functionElement.onclick = func.onClick;
+    if (functions) {
+      for (var func of functions) {
+        const functionElement = dialog.element.getElementsByClassName(
+          func.selector,
+        )[0];
+        functionElement.onclick = func.onClick;
+      }
     }
 
-    for (var tag of tagify) {
-      const element = $(dialog.element).find(`input[name="${tag.element}"]`);
-      var ta = new Tagify(element[0], tag.options);
+    if (tagify) {
+      for (var tag of tagify) {
+        const element = dialog.element.querySelector(
+          `input[name="${tag.element}"]`,
+        );
+        if (element) {
+          new Tagify(element, tag.options);
+        }
+      }
     }
   }
 
@@ -2348,8 +2368,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
               "PF2EBestiary.Bestiary.Miscellaneous.UnknownHazard",
             );
 
-    new ImagePopout(this.selected.monster.system.displayImage, {
-      title: title,
+    new foundry.applications.apps.ImagePopout({
+      src: this.selected.monster.system.displayImage,
+      window: {
+        title: title,
+      },
       uuid: this.selected.monster.system.uuid,
       showTitle: !this.gmView
         ? true
@@ -2448,9 +2471,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       data: {},
     });
 
-    $(button).toggleClass("fa-eye-slash");
-    $(button).toggleClass("fa-eye");
-    // Hooks.callAll(socketEvent.UpdateBestiary, {});
+    button.classList.toggle("fa-eye-slash");
+    button.classList.toggle("fa-eye");
   }
 
   static async addInfluence(_, button) {
@@ -2601,7 +2623,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async getOpenMacro() {
     const macroData = this.selected.monster
-      ? null
+      ? {}
       : {
           category: this.selected.category,
           type: this.selected.type,
@@ -2703,7 +2725,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async resetRecallAttempts(event, button) {
     if (!event.altKey) {
-      const confirmed = await Dialog.confirm({
+      const confirmed = await foundry.applications.api.DialogV2.confirm({
         title: game.i18n.localize(
           "PF2EBestiary.Bestiary.ResetRecallAttemptsTitle",
         ),
@@ -2711,8 +2733,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           "PF2EBestiary.Bestiary.ResetRecallAttemptsText",
           { character: game.actors.get(button.dataset.character).name },
         ),
-        yes: () => true,
-        no: () => false,
       });
 
       if (!confirmed) return;
@@ -2860,7 +2880,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
     if (!game.user.isGM) return;
 
-    const tab = event.currentTarget.dataset.tab;
+    const tab = event.target.dataset.tab;
     await this.selected.monster.update({
       [`system.tabStates.${tab}.hidden`]:
         !this.selected.monster.system.tabStates[tab].hidden,
@@ -2874,7 +2894,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   async updateNPCCategorySort(event) {
-    const value = Number.parseInt(event.currentTarget.value);
+    const value = Number.parseInt(event.target.value);
     const currentCategories = this.bestiary.getFlag(
       "pf2e-bestiary-tracking",
       "npcCategories",
@@ -2949,16 +2969,16 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   async obscureData(event) {
-    if (!game.user.isGM || !event.currentTarget.dataset.name) return;
+    if (!game.user.isGM || !event.target.dataset.name) return;
 
     const setValue = async (value) => {
       if (value) {
         await this.selected.monster.update({
-          [`${event.currentTarget.dataset.path}.custom`]: value,
+          [`${event.target.dataset.path}.custom`]: value,
         });
 
         if (
-          event.currentTarget.dataset.path === "system.name" &&
+          event.target.dataset.path === "system.name" &&
           this.selected.monster.system.name.revealed
         ) {
           await PF2EBestiary.handleTokenNames(this.selected.monster);
@@ -2977,7 +2997,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       "pf2e-bestiary-tracking",
       "vague-descriptions",
     );
-    const vagueProperty = event.currentTarget.dataset.vagueProperty;
+    const vagueProperty = event.target.dataset.vagueProperty;
 
     if (event.altKey && vagueDescriptions.properties[vagueProperty]) {
       const { vagueDescriptions } = game.settings.get(
@@ -2987,7 +3007,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
       const currentValue = foundry.utils.getProperty(
         this.selected.monster,
-        event.currentTarget.dataset.path,
+        event.target.dataset.path,
       ).category;
       const getRandomValue = (table, short) => {
         const choices = table.range.reduce((acc, x) => {
@@ -3033,7 +3053,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         const content = new foundry.data.fields.StringField({
           label: game.i18n.format(
             "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
-            { property: event.currentTarget.dataset.name },
+            { property: event.target.dataset.name },
           ),
           choices: choices,
           required: true,
@@ -3064,7 +3084,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         const content = new foundry.data.fields.StringField({
           label: game.i18n.format(
             "PF2EBestiary.Bestiary.Misinformation.Dialog.SelectLabel",
-            { property: event.currentTarget.dataset.name },
+            { property: event.target.dataset.name },
           ),
           required: true,
         }).toFormGroup({}, { name: "misinformation" }).outerHTML;
@@ -3119,11 +3139,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       }
     } else {
       await this.selected.monster.update({
-        [`${event.currentTarget.dataset.path}.custom`]: null,
+        [`${event.target.dataset.path}.custom`]: null,
       });
 
       if (
-        event.currentTarget.dataset.path === "system.name" &&
+        event.target.dataset.path === "system.name" &&
         this.selected.monster.system.name.revealed
       ) {
         await PF2EBestiary.handleTokenNames(this.selected.monster);
@@ -3238,7 +3258,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
   async _onDragStart(event) {
     const target = event.currentTarget;
-    const bookmark = $(target).find(".bookmark")[0];
+    const bookmark = target.querySelector(".bookmark");
     if (!bookmark) return;
 
     event.dataTransfer.setData("text/plain", JSON.stringify(bookmark.dataset));
@@ -3250,27 +3270,28 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   async _onDragOver(event) {
     if (!this.dragData.bookmarkActive) return;
 
-    let self = $(event.target)[0];
+    let self = event.target;
     let dropTarget = self.matches(".bookmark-container.draggable")
-      ? $(self).find(".bookmark")[0]
+      ? self.querySelector(".bookmark")
       : self.closest(".bookmark");
 
     if (!dropTarget || dropTarget.classList.contains("drop-hover")) {
       return;
     }
 
-    $(dropTarget).addClass("drop-hover");
+    dropTarget.classList.add("drop-hover");
     return false;
   }
 
   async _onDragLeave(event) {
     if (!this.dragData.bookmarkActive) return;
 
-    let self = $(event.target)[0];
-    let dropTarget = self.matches(".bookmark-container.draggable")
-      ? $(self).find(".bookmark")[0]
-      : self.closest(".bookmark");
-    $(dropTarget).removeClass("drop-hover");
+    let self = event.target.matches(".bookmark-container.draggable")
+      ? event.target
+      : event.target.parentElement;
+    let dropTarget = self.querySelector(".bookmark");
+
+    dropTarget?.classList?.remove("drop-hover");
   }
 
   async _onDrop(event) {
@@ -3292,12 +3313,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           "pf2e-bestiary-tracking",
           "npcCategories",
         );
-        let self = $(event.target)[0];
+        let self = event.target;
         let dropTarget = self.matches(".bookmark-container")
           ? self
           : self.closest(".bookmark-container");
-        let bookmarkTarget = $(dropTarget).find(".bookmark")[0];
-        $(bookmarkTarget).removeClass("drop-hover");
+        let bookmarkTarget = dropTarget.querySelector(".bookmark");
+        bookmarkTarget.classList.remove("drop-hover");
 
         if (
           !bookmarkTarget ||
@@ -3305,7 +3326,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         )
           return;
 
-        bookmarkTarget = $(dropTarget).find(".bookmark")[0];
+        bookmarkTarget = dropTarget.querySelector(".bookmark");
         const bookmark = categories.find(
           (x) => x.value === bookmarkTarget.dataset.bookmark,
         );
@@ -3544,7 +3565,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       this.selected.type = initialActiveType;
     }
 
-    const saveButton = $(this.element).find(
+    const saveButton = this.element.querySelectorAll(
       '.prosemirror[collaborate="true"] *[data-action="save"]',
     );
     if (saveButton.length === 0 && !this.minimized) {

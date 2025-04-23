@@ -1,4 +1,5 @@
-export class ExpandedDragDrop extends DragDrop {
+export class ExpandedDragDrop extends foundry.applications.ux.DragDrop
+  .implementation {
   bind(html) {
     // Identify and activate draggable targets
     if (this.can("dragstart", this.dragSelector)) {

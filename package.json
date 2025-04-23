@@ -15,7 +15,7 @@
     "rollup-plugin-postcss": "^4.0.2"
   },
   "scripts": {
-    "start": "concurrently \"rollup -c --watch\" \"node C:/FoundryDevOld/resources/app/main.js --dataPath=C:/FoundryDevFiles --noupnp\" \"gulp\"",
+    "start": "concurrently \"rollup -c --watch\" \"node C:/FoundryDev/resources/app/main.js --dataPath=C:/FoundryDevFiles --noupnp\" \"gulp\"",
     "pushLDBtoYML": "node ./tools/pushLDBtoYML.mjs",
     "pullYMLtoLDB": "node ./tools/pullYMLtoLDB.mjs",
     "prepare": "husky"

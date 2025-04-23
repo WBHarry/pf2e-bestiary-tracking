@@ -92,58 +92,62 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
   _attachPartListeners(partId, htmlElement, options) {
     super._attachPartListeners(partId, htmlElement, options);
 
-    $(htmlElement)
-      .find(".disposition-mode-select")
-      .on("change", async (event) => {
+    htmlElement.querySelectorAll(".disposition-mode-select").forEach((event) =>
+      event.addEventListener("change", async (event) => {
         this.settings.dispositionIcons.mode = Number.parseInt(
           event.currentTarget.value,
         );
         this.render();
-      });
+      }),
+    );
 
-    $(htmlElement)
-      .find(".disposition-icon-size-select")
-      .on("change", async (event) => {
-        this.settings.dispositionIcons.iconSize = event.currentTarget.value;
-        this.render();
-      });
+    htmlElement
+      .querySelectorAll(".disposition-icon-size-select")
+      .forEach((event) =>
+        event.addEventListener("change", async (event) => {
+          this.settings.dispositionIcons.iconSize = event.currentTarget.value;
+          this.render();
+        }),
+      );
 
-    $(htmlElement)
-      .find(".disposition-image-input")
-      .on("change", async (event) => {
+    htmlElement.querySelectorAll(".disposition-image-input").forEach((event) =>
+      event.addEventListener("change", async (event) => {
         this.settings.dispositionIcons.icons[event.currentTarget.dataset.key] =
           {
             isIcon: true,
             image: event.currentTarget.value,
           };
         this.render();
-      });
+      }),
+    );
 
     const creatureTypes = Object.keys(CONFIG.PF2E.creatureTypes);
     const creatureTraits = Object.keys(CONFIG.PF2E.creatureTraits).filter(
       (x) => !creatureTypes.includes(x),
     );
 
-    const traitsInput = $(htmlElement).find(".traits-input")[0];
-    const traitsTagify = new Tagify(traitsInput, {
-      tagTextProp: "name",
-      enforceWhitelist: true,
-      whitelist: creatureTraits.map((key) => {
-        const label = CONFIG.PF2E.creatureTraits[key];
-        return { value: key, name: game.i18n.localize(label) };
-      }),
-      callbacks: { invalid: this.onAddTag },
-      dropdown: {
-        mapValueTo: "name",
-        searchKeys: ["name"],
-        enabled: 0,
-        maxItems: 20,
-        closeOnSelect: true,
-        highlightFirst: false,
-      },
-    });
+    const traitsInput = htmlElement.querySelector(".traits-input");
+    if (traitsInput) {
+      const traitsTagify = new Tagify(traitsInput, {
+        tagTextProp: "name",
+        enforceWhitelist: true,
+        whitelist: creatureTraits.map((key) => {
+          const label = CONFIG.PF2E.creatureTraits[key];
+          return { value: key, name: game.i18n.localize(label) };
+        }),
+        callbacks: { invalid: this.onAddTag },
+        dropdown: {
+          mapValueTo: "name",
+          searchKeys: ["name"],
+          enabled: 0,
+          maxItems: 20,
+          closeOnSelect: true,
+          highlightFirst: false,
+        },
+      });
 
-    traitsTagify.on("change", this.creatureTraitSelect.bind(this));
+      traitsTagify.on("change", this.creatureTraitSelect.bind(this));
+    }
   }
 
   async _prepareContext(_options) {
