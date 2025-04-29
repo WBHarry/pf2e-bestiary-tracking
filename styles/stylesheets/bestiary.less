@@ -91,6 +91,17 @@
   overflow-y: visible;
   overflow-x: visible;
 
+  [data-visibility="gm"]:not(.dice-result > *) {
+    background-color: var(--pf2e-subsystem-theming-primary-faded) !important;
+    color: var(--pf2e-subsystem-theming-primary-color);
+  }
+
+  .inline-check.with-repost {
+    [data-visibility="gm"]:not(.dice-result > *) {
+      color: inherit;
+    }
+  }
+
   h4 {
     font-family: inherit;
   }

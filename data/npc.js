@@ -533,7 +533,11 @@ export class NPC extends Creature {
 
   async transformToCreature() {
     const confirmed = await foundry.applications.api.DialogV2.confirm({
-      title: game.i18n.localize("PF2EBestiary.Bestiary.NPC.TransformNPCTitle"),
+      window: {
+        title: game.i18n.localize(
+          "PF2EBestiary.Bestiary.NPC.TransformNPCTitle",
+        ),
+      },
       content: game.i18n.localize("PF2EBestiary.Bestiary.NPC.TransformNPCText"),
     });
 

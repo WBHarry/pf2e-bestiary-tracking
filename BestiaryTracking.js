@@ -409,6 +409,34 @@ const getFolderChildren = (folder) => {
   return children;
 };
 
+async function copyToClipboard(textToCopy) {
+  if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(textToCopy);
+  } else {
+      return new Promise(async function (resolve, reject){
+          // Use the 'out of viewport hidden text area' trick
+          const textArea = document.createElement("textarea");
+          textArea.value = textToCopy;
+              
+          // Move textarea out of the viewport so it's not visible
+          textArea.style.position = "absolute";
+          textArea.style.left = "-999999px";
+              
+          document.body.prepend(textArea);
+          textArea.select();
+          try {
+              document.execCommand('copy');
+          } catch (error) {
+              reject();
+          } finally {
+              textArea.remove();
+              resolve();
+          }
+      });
+
+  }
+}
+
 const getVagueDescriptionLabels = () => ({
   full: {
     extreme: game.i18n.localize(
@@ -6848,7 +6876,11 @@ class NPC extends Creature {
 
   async transformToCreature() {
     const confirmed = await foundry.applications.api.DialogV2.confirm({
-      title: game.i18n.localize("PF2EBestiary.Bestiary.NPC.TransformNPCTitle"),
+      window: {
+        title: game.i18n.localize(
+          "PF2EBestiary.Bestiary.NPC.TransformNPCTitle",
+        ),
+      },
       content: game.i18n.localize("PF2EBestiary.Bestiary.NPC.TransformNPCText"),
     });
 
@@ -8140,10 +8172,10 @@ class Hazard extends foundry.abstract.TypeDataModel {
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$a, ApplicationV2: ApplicationV2$a } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$b, ApplicationV2: ApplicationV2$b } = foundry.applications.api;
 
-class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$a(
-  ApplicationV2$a,
+class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$b(
+  ApplicationV2$b,
 ) {
   constructor() {
     super({});
@@ -8288,10 +8320,10 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$a(
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$9, ApplicationV2: ApplicationV2$9 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$a, ApplicationV2: ApplicationV2$a } = foundry.applications.api;
 
-class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$9(
-  ApplicationV2$9,
+class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$a(
+  ApplicationV2$a,
 ) {
   constructor() {
     super({});
@@ -8623,10 +8655,10 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$9(
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$8, ApplicationV2: ApplicationV2$8 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$9, ApplicationV2: ApplicationV2$9 } = foundry.applications.api;
 
-class BestiaryLabelsMenu extends HandlebarsApplicationMixin$8(
-  ApplicationV2$8,
+class BestiaryLabelsMenu extends HandlebarsApplicationMixin$9(
+  ApplicationV2$9,
 ) {
   constructor() {
     super({});
@@ -8692,10 +8724,10 @@ class BestiaryLabelsMenu extends HandlebarsApplicationMixin$8(
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$7, ApplicationV2: ApplicationV2$7 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$8, ApplicationV2: ApplicationV2$8 } = foundry.applications.api;
 
-class VagueDescriptionsMenu extends HandlebarsApplicationMixin$7(
-  ApplicationV2$7,
+class VagueDescriptionsMenu extends HandlebarsApplicationMixin$8(
+  ApplicationV2$8,
 ) {
   constructor() {
     super({});
@@ -8886,10 +8918,10 @@ const defeatedModes = {
   },
 };
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$6, ApplicationV2: ApplicationV2$6 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$7, ApplicationV2: ApplicationV2$7 } = foundry.applications.api;
 
-class BestiaryDisplayMenu extends HandlebarsApplicationMixin$6(
-  ApplicationV2$6,
+class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
+  ApplicationV2$7,
 ) {
   constructor() {
     super({});
@@ -12689,7 +12721,7 @@ const handleInfluenceMigration = async () => {
     game.settings.set(
       "pf2e-bestiary-tracking",
       "influence-migration-done",
-      mergeObject(influenceMigration, { done: true }),
+      foundry.utils.mergeObject(influenceMigration, { done: true }),
     );
   } else {
     const influenceEvents = bestiaries.flatMap((bestiary) =>
@@ -12713,7 +12745,7 @@ const handleInfluenceMigration = async () => {
       game.settings.set(
         "pf2e-bestiary-tracking",
         "influence-migration-done",
-        mergeObject(influenceMigration, { done: true }),
+        foundry.utils.mergeObject(influenceMigration, { done: true }),
       );
     } else {
       if (game.modules.get("pf2e-subsystems")?.active) {
@@ -12834,7 +12866,7 @@ const handleInfluenceMigration = async () => {
         game.settings.set(
           "pf2e-subsystems",
           "influence",
-          mergeObject(
+          foundry.utils.mergeObject(
             game.settings.get("pf2e-subsystems", "influence").toObject(),
             { events: importInfluenceEvents },
           ),
@@ -12843,7 +12875,7 @@ const handleInfluenceMigration = async () => {
         game.settings.set(
           "pf2e-bestiary-tracking",
           "influence-migration-done",
-          mergeObject(influenceMigration, { done: true }),
+          foundry.utils.mergeObject(influenceMigration, { done: true }),
         );
       } else if (influenceMigration.remind) {
         new foundry.applications.api.DialogV2({
@@ -12865,7 +12897,7 @@ const handleInfluenceMigration = async () => {
                 game.settings.set(
                   "pf2e-bestiary-tracking",
                   "influence-migration-done",
-                  mergeObject(influenceMigration, { remind: false }),
+                  foundry.utils.mergeObject(influenceMigration, { remind: false }),
                 );
               },
             },
@@ -12900,10 +12932,10 @@ const socketEvent = {
   UpdateBestiary: "UpdateBestiary",
 };
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$5, ApplicationV2: ApplicationV2$5 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$6, ApplicationV2: ApplicationV2$6 } = foundry.applications.api;
 
-class ImportDialog extends HandlebarsApplicationMixin$5(
-  ApplicationV2$5,
+class ImportDialog extends HandlebarsApplicationMixin$6(
+  ApplicationV2$6,
 ) {
   constructor(title, validation, resolve, reject) {
     super({});
@@ -13015,10 +13047,10 @@ class ImportDialog extends HandlebarsApplicationMixin$5(
   //   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$4, ApplicationV2: ApplicationV2$4 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$5, ApplicationV2: ApplicationV2$5 } = foundry.applications.api;
 
-class BestiarySelection extends HandlebarsApplicationMixin$4(
-  ApplicationV2$4,
+class BestiarySelection extends HandlebarsApplicationMixin$5(
+  ApplicationV2$5,
 ) {
   constructor() {
     super({});
@@ -13211,9 +13243,11 @@ class BestiarySelection extends HandlebarsApplicationMixin$4(
       return;
 
     const confirmed = await foundry.applications.api.DialogV2.confirm({
-      title: game.i18n.localize(
-        "PF2EBestiary.BestiarySelection.DeleteBestiaryTitle",
-      ),
+      window: {
+        title: game.i18n.localize(
+          "PF2EBestiary.BestiarySelection.DeleteBestiaryTitle",
+        ),
+      },
       content: game.i18n.localize(
         "PF2EBestiary.BestiarySelection.DeleteBestiaryText",
       ),
@@ -13486,7 +13520,9 @@ const resetBestiary = async () => {
   }
 
   const confirmed = await foundry.applications.api.DialogV2.confirm({
-    title: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Title"),
+    window: {
+      title: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Title"),
+    },
     content: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Text"),
   });
 
@@ -13574,7 +13610,9 @@ const deactivateModule = async () => {
     `;
 
   const confirmed = await foundry.applications.api.DialogV2.confirm({
-    title: game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Title"),
+    window: {
+      title: game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Title"),
+    },
     content: content,
   });
 
@@ -13668,10 +13706,10 @@ class ExpandedDragDrop extends foundry.applications.ux.DragDrop
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$3, ApplicationV2: ApplicationV2$3 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$4, ApplicationV2: ApplicationV2$4 } = foundry.applications.api;
 
-class AvatarMenu extends HandlebarsApplicationMixin$3(
-  ApplicationV2$3,
+class AvatarMenu extends HandlebarsApplicationMixin$4(
+  ApplicationV2$4,
 ) {
   constructor(entity, resolve, reject) {
     super({});
@@ -13762,10 +13800,10 @@ class AvatarMenu extends HandlebarsApplicationMixin$3(
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$2, ApplicationV2: ApplicationV2$2 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$3, ApplicationV2: ApplicationV2$3 } = foundry.applications.api;
 
-class ActorLinkSettingsMenu extends HandlebarsApplicationMixin$2(
-  ApplicationV2$2,
+class ActorLinkSettingsMenu extends HandlebarsApplicationMixin$3(
+  ApplicationV2$3,
 ) {
   constructor(resolve, reject) {
     super({});
@@ -13840,10 +13878,10 @@ class ActorLinkSettingsMenu extends HandlebarsApplicationMixin$2(
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$2, ApplicationV2: ApplicationV2$2 } = foundry.applications.api;
 
-class AvatarLinkMenu extends HandlebarsApplicationMixin$1(
-  ApplicationV2$1,
+class AvatarLinkMenu extends HandlebarsApplicationMixin$2(
+  ApplicationV2$2,
 ) {
   constructor(entity, resolve, reject) {
     super({});
@@ -14213,6 +14251,42 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$1(
       }
     }
   }
+}
+
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
+
+class ClipboardDialog extends HandlebarsApplicationMixin$1(ApplicationV2$1) {
+    constructor(text) {
+        super({});
+
+        this.text = text;
+    }
+
+    get title() {
+        return game.i18n.localize("PF2EBestiary.ClipboardDialog.Title");
+    }
+
+    static DEFAULT_OPTIONS = {
+        tag: "form",
+        id: "pf2e-subsystems-value-dialog",
+        classes: ["pf2e-bestiary-tracking", "pf2e-clipboard"],
+        position: { width: 500, height: "auto" },
+        actions: {},
+    };
+
+    static PARTS = {
+        main: {
+            id: "main",
+            template: "modules/pf2e-bestiary-tracking/templates/clipboard-dialog.hbs",
+        },
+    }
+
+    async _prepareContext(_options) {
+        const context = await super._prepareContext(_options);
+        context.text = this.text;
+
+        return context;
+    }
 }
 
 const { implementation: TextEditor } = foundry.applications.ux.TextEditor;
@@ -15449,7 +15523,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       return;
 
     const confirmed = await foundry.applications.api.DialogV2.confirm({
-      title: game.i18n.localize("PF2EBestiary.Bestiary.RemoveBookmarkTitle"),
+      window: {
+        title: game.i18n.localize("PF2EBestiary.Bestiary.RemoveBookmarkTitle"),
+      },
       content: game.i18n.format("PF2EBestiary.Bestiary.RemoveBookmarkText", {
         category: event.target.dataset.bookmarkName,
       }),
@@ -15507,9 +15583,10 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async removeMonster(_, button) {
     const confirmed = await foundry.applications.api.DialogV2.confirm({
-      title: "Delete Monster",
-      content:
-        "Are you sure you want to remove the creature from the Bestiary?",
+      window: {
+        title: game.i18n.localize("PF2EBestiary.Bestiary.DeleteMonsterTitle"),
+      },
+      content: game.i18n.localize("PF2EBestiary.Bestiary.DeleteMonsterText"),
     });
 
     if (!confirmed) return;
@@ -16804,14 +16881,16 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           category: this.selected.category,
           type: this.selected.type,
         };
-    const pageData = this.selected.monster?.system?.uuid ?? null;
 
+    const pageData = this.selected.monster?.system?.uuid ?? null;
     const macro = `game.modules.get('pf2e-bestiary-tracking').macros.openBestiary(${JSON.stringify(macroData)}, ${JSON.stringify(pageData)});`;
 
-    navigator.clipboard.writeText(macro).then(() => {
+    copyToClipboard(macro).then(() => {
       ui.notifications.info(
         game.i18n.localize("PF2EBestiary.Bestiary.Info.BestiaryOpenMacro"),
       );
+    }).catch(() => {
+      new ClipboardDialog(macro).render(true);
     });
   }
 
@@ -16863,7 +16942,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
       cls.create(msg.toObject());
     } else {
-      navigator.clipboard.writeText(bestiaryLink).then(() => {
+      copyToClipboard(bestiaryLink).then(() => {
         ui.notifications.info(
           game.i18n.format("PF2EBestiary.Bestiary.Info.BestiaryEntryLink", {
             entity: this.gmView
@@ -16871,6 +16950,8 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
               : this.selected.monster.system.displayedName,
           }),
         );
+      }).catch(() => {
+        new ClipboardDialog(bestiaryLink).render(true);
       });
     }
   }
@@ -16902,9 +16983,11 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   static async resetRecallAttempts(event, button) {
     if (!event.altKey) {
       const confirmed = await foundry.applications.api.DialogV2.confirm({
-        title: game.i18n.localize(
-          "PF2EBestiary.Bestiary.ResetRecallAttemptsTitle",
-        ),
+        window: {
+          title: game.i18n.localize(
+            "PF2EBestiary.Bestiary.ResetRecallAttemptsTitle",
+          ),
+        },
         content: game.i18n.format(
           "PF2EBestiary.Bestiary.ResetRecallAttemptsText",
           { character: game.actors.get(button.dataset.character).name },
@@ -18180,7 +18263,7 @@ Hooks.once("setup", () => {
   if (typeof libWrapper === "function") {
     libWrapper.register(
       "pf2e-bestiary-tracking",
-      "Token.prototype._onClickLeft2",
+      "foundry.canvas.placeables.Token.prototype._onClickLeft2",
       function (wrapped, ...args) {
         const baseActor = args[0].entity
           ? game.actors.get(args[0].entity.document.actorId)

@@ -159,7 +159,9 @@ export const resetBestiary = async () => {
   }
 
   const confirmed = await foundry.applications.api.DialogV2.confirm({
-    title: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Title"),
+    window: {
+      title: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Title"),
+    },
     content: game.i18n.localize("PF2EBestiary.Macros.ResetBestiary.Text"),
   });
 
@@ -247,7 +249,9 @@ export const deactivateModule = async () => {
     `;
 
   const confirmed = await foundry.applications.api.DialogV2.confirm({
-    title: game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Title"),
+    window: {
+      title: game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Title"),
+    },
     content: content,
   });
 

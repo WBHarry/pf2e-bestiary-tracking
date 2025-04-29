@@ -1851,7 +1851,7 @@ const handleInfluenceMigration = async () => {
     game.settings.set(
       "pf2e-bestiary-tracking",
       "influence-migration-done",
-      mergeObject(influenceMigration, { done: true }),
+      foundry.utils.mergeObject(influenceMigration, { done: true }),
     );
   } else {
     const influenceEvents = bestiaries.flatMap((bestiary) =>
@@ -1875,7 +1875,7 @@ const handleInfluenceMigration = async () => {
       game.settings.set(
         "pf2e-bestiary-tracking",
         "influence-migration-done",
-        mergeObject(influenceMigration, { done: true }),
+        foundry.utils.mergeObject(influenceMigration, { done: true }),
       );
     } else {
       if (game.modules.get("pf2e-subsystems")?.active) {
@@ -1996,7 +1996,7 @@ const handleInfluenceMigration = async () => {
         game.settings.set(
           "pf2e-subsystems",
           "influence",
-          mergeObject(
+          foundry.utils.mergeObject(
             game.settings.get("pf2e-subsystems", "influence").toObject(),
             { events: importInfluenceEvents },
           ),
@@ -2005,7 +2005,7 @@ const handleInfluenceMigration = async () => {
         game.settings.set(
           "pf2e-bestiary-tracking",
           "influence-migration-done",
-          mergeObject(influenceMigration, { done: true }),
+          foundry.utils.mergeObject(influenceMigration, { done: true }),
         );
       } else if (influenceMigration.remind) {
         new foundry.applications.api.DialogV2({
@@ -2027,7 +2027,9 @@ const handleInfluenceMigration = async () => {
                 game.settings.set(
                   "pf2e-bestiary-tracking",
                   "influence-migration-done",
-                  mergeObject(influenceMigration, { remind: false }),
+                  foundry.utils.mergeObject(influenceMigration, {
+                    remind: false,
+                  }),
                 );
               },
             },

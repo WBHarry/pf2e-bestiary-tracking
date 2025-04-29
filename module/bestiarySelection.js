@@ -200,9 +200,11 @@ export default class BestiarySelection extends HandlebarsApplicationMixin(
       return;
 
     const confirmed = await foundry.applications.api.DialogV2.confirm({
-      title: game.i18n.localize(
-        "PF2EBestiary.BestiarySelection.DeleteBestiaryTitle",
-      ),
+      window: {
+        title: game.i18n.localize(
+          "PF2EBestiary.BestiarySelection.DeleteBestiaryTitle",
+        ),
+      },
       content: game.i18n.localize(
         "PF2EBestiary.BestiarySelection.DeleteBestiaryText",
       ),

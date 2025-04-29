@@ -136,6 +136,13 @@
   overflow-y: visible;
   overflow-x: visible;
 }
+.pf2e-bestiary-tracking [data-visibility="gm"]:not(.dice-result > *) {
+  background-color: var(--pf2e-subsystem-theming-primary-faded) !important;
+  color: var(--pf2e-subsystem-theming-primary-color);
+}
+.pf2e-bestiary-tracking .inline-check.with-repost [data-visibility="gm"]:not(.dice-result > *) {
+  color: inherit;
+}
 .pf2e-bestiary-tracking h4 {
   font-family: inherit;
 }

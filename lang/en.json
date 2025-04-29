@@ -56,6 +56,9 @@
       "UnusedBestiaryType": "You are not using this type of Bestiary Entry. Check your module settings.",
       "MissingName": "You must provide a name for the imported Bestiary Entry!"
     },
+    "ClipboardDialog": {
+      "Title": "Bestiary Macro Copy Dialog"
+    },
     "BestiarySelection": {
       "Name": "Bestiary Management",
       "AddBestiary": "Add New Bestiary",
@@ -151,6 +154,8 @@
       "PreviewTitle": "Preview Bestiary",
       "ToggleActorSheet": "Toggle Actor Sheet",
       "UsingPlayerView": "Using Player View",
+      "DeleteMonsterTitle": "Delete Monster",
+      "DeleteMonsterText": "Are you sure you want to remove the creature from the Bestiary?",
       "WindowControls": {
         "RefreshBestiary": "Refresh Bestiary",
         "BestiarySelection": "Bestiary Management",

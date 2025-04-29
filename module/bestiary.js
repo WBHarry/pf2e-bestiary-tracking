@@ -11,6 +11,7 @@ import {
   saveDataToFile,
   getAllFolderEntries,
   alphaSort,
+  copyToClipboard,
 } from "../scripts/helpers.js";
 import { resetBestiary } from "../scripts/macros.js";
 import { socketEvent } from "../scripts/socket.js";
@@ -38,6 +39,7 @@ import {
   savingThrowPerceptionTable,
   skillTable,
 } from "../scripts/statisticsData.js";
+import ClipboardDialog from "./clipboardDialog.js";
 
 const { implementation: TextEditor } = foundry.applications.ux.TextEditor;
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -1273,7 +1275,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       return;
 
     const confirmed = await foundry.applications.api.DialogV2.confirm({
-      title: game.i18n.localize("PF2EBestiary.Bestiary.RemoveBookmarkTitle"),
+      window: {
+        title: game.i18n.localize("PF2EBestiary.Bestiary.RemoveBookmarkTitle"),
+      },
       content: game.i18n.format("PF2EBestiary.Bestiary.RemoveBookmarkText", {
         category: event.target.dataset.bookmarkName,
       }),
@@ -1331,9 +1335,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async removeMonster(_, button) {
     const confirmed = await foundry.applications.api.DialogV2.confirm({
-      title: "Delete Monster",
-      content:
-        "Are you sure you want to remove the creature from the Bestiary?",
+      window: {
+        title: game.i18n.localize("PF2EBestiary.Bestiary.DeleteMonsterTitle"),
+      },
+      content: game.i18n.localize("PF2EBestiary.Bestiary.DeleteMonsterText"),
     });
 
     if (!confirmed) return;
@@ -2628,15 +2633,19 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           category: this.selected.category,
           type: this.selected.type,
         };
-    const pageData = this.selected.monster?.system?.uuid ?? null;
 
+    const pageData = this.selected.monster?.system?.uuid ?? null;
     const macro = `game.modules.get('pf2e-bestiary-tracking').macros.openBestiary(${JSON.stringify(macroData)}, ${JSON.stringify(pageData)});`;
 
-    navigator.clipboard.writeText(macro).then(() => {
-      ui.notifications.info(
-        game.i18n.localize("PF2EBestiary.Bestiary.Info.BestiaryOpenMacro"),
-      );
-    });
+    copyToClipboard(macro)
+      .then(() => {
+        ui.notifications.info(
+          game.i18n.localize("PF2EBestiary.Bestiary.Info.BestiaryOpenMacro"),
+        );
+      })
+      .catch(() => {
+        new ClipboardDialog(macro).render(true);
+      });
   }
 
   static async openDocument(_, button) {
@@ -2687,15 +2696,19 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
       cls.create(msg.toObject());
     } else {
-      navigator.clipboard.writeText(bestiaryLink).then(() => {
-        ui.notifications.info(
-          game.i18n.format("PF2EBestiary.Bestiary.Info.BestiaryEntryLink", {
-            entity: this.gmView
-              ? this.selected.monster.system.name.value
-              : this.selected.monster.system.displayedName,
-          }),
-        );
-      });
+      copyToClipboard(bestiaryLink)
+        .then(() => {
+          ui.notifications.info(
+            game.i18n.format("PF2EBestiary.Bestiary.Info.BestiaryEntryLink", {
+              entity: this.gmView
+                ? this.selected.monster.system.name.value
+                : this.selected.monster.system.displayedName,
+            }),
+          );
+        })
+        .catch(() => {
+          new ClipboardDialog(bestiaryLink).render(true);
+        });
     }
   }
 
@@ -2726,9 +2739,11 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   static async resetRecallAttempts(event, button) {
     if (!event.altKey) {
       const confirmed = await foundry.applications.api.DialogV2.confirm({
-        title: game.i18n.localize(
-          "PF2EBestiary.Bestiary.ResetRecallAttemptsTitle",
-        ),
+        window: {
+          title: game.i18n.localize(
+            "PF2EBestiary.Bestiary.ResetRecallAttemptsTitle",
+          ),
+        },
         content: game.i18n.format(
           "PF2EBestiary.Bestiary.ResetRecallAttemptsText",
           { character: game.actors.get(button.dataset.character).name },

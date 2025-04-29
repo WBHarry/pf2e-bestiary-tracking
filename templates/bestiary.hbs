@@ -285,7 +285,7 @@
                     {{#if this.endIcon}}<i class="{{this.endIcon}}"></i>{{/if}}
                 </div>
                 {{#if (and ../gmView (and (and (not (eq this.value 'unaffiliated')) (not (eq this.value 'combat'))) (eq ../selected.category 'pf2e-bestiary-tracking.npc')))}}
-                    <i class="hide-icon {{#if this.hidden}}fa-solid fa-eye-slash visible{{else}}fa-solid fa-eye{{/if}} primary-hover-container" data-action="toggleHideNPCCategory" data-category="{{this.value}}"></i>
+                    <i class="hide-icon {{#if this.hidden}}fa-solid fa-eye-slash visible{{else}}fa-solid fa-eye{{/if}} text-shadow-container" data-action="toggleHideNPCCategory" data-category="{{this.value}}"></i>
                 {{/if}}
             </div>
         {{/each}}

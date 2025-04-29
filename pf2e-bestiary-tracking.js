@@ -103,7 +103,7 @@ Hooks.once("setup", () => {
   if (typeof libWrapper === "function") {
     libWrapper.register(
       "pf2e-bestiary-tracking",
-      "Token.prototype._onClickLeft2",
+      "foundry.canvas.placeables.Token.prototype._onClickLeft2",
       function (wrapped, ...args) {
         const baseActor = args[0].entity
           ? game.actors.get(args[0].entity.document.actorId)
