@@ -456,10 +456,6 @@
           "Hazard": "Zagrożenia",
           "Position": "Sekcje Pozycja"
         },
-        "AdditionalCreatureTypes": {
-          "Name": "Dodatkowe typy stworzeń",
-          "SubText": "Możesz dodać więcej dostępnych cech stworzeń do wyboru w ustawieniach systemu PF2E dla Zasad Domowych."
-        },
         "OptionalFields": {
           "Name": "Pola opcjonalne",
           "Level": "Poziom stworzenia",

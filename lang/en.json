@@ -461,9 +461,11 @@
           "Hazard": "Hazards",
           "Position": "Sections Position"
         },
-        "AdditionalCreatureTypes": {
-          "Name": "Additional Creature Types",
-          "SubText": "You can add more available creature traits to choose from in the PF2E System Settings for Homebrew."
+        "UsedCreatureTypes": {
+          "Name": "Bestiary Creature Types",
+          "SubText": "You can add more available creature traits to choose from in the PF2E System Settings for Homebrew.",
+          "ResetTitle": "Reset Bestiary Creature Types",
+          "ResetText": "Are you sure you want to reset the used Bestiary Creature Types to default?"
         },
         "OptionalFields": {
           "Name": "Optional Fields",

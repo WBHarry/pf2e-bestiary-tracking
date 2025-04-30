@@ -1,3 +1,10 @@
+export const standardCreatureTypes = () =>
+  Object.keys(CONFIG.PF2E.creatureTypes).map((type) => ({
+    value: type,
+    name: CONFIG.PF2E.creatureTypes[type],
+    values: [],
+  }));
+
 export const dispositions = {
   helpful: {
     value: "helpful",

@@ -14,6 +14,7 @@ import VagueDescriptionsMenu from "../module/vagueDescriptionsMenu.js";
 import {
   imageSettings,
   npcCategorySortOptions,
+  standardCreatureTypes,
   toBestiaryOptions,
 } from "../data/constants.js";
 import BestiaryDisplayMenu from "../module/bestiaryDisplayMenu.js";
@@ -375,18 +376,21 @@ const bestiaryDisplay = () => {
     "pf2e-bestiary-tracking",
     "additional-creature-types",
     {
-      name: game.i18n.localize(
-        "PF2EBestiary.Settings.AdditionalCreatureTypes.Name",
-      ),
-      hint: game.i18n.localize(
-        "PF2EBestiary.Settings.AdditionalCreatureTypes.Hint",
-      ),
       scope: "world",
       config: false,
       type: Object,
       default: [],
     },
   );
+
+  game.settings.register("pf2e-bestiary-tracking", "used-creature-types", {
+    name: "",
+    hint: "",
+    scope: "world",
+    config: false,
+    type: Object,
+    default: standardCreatureTypes(),
+  });
 
   game.settings.register(
     "pf2e-bestiary-tracking",

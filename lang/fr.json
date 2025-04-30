@@ -335,10 +335,6 @@
         }
       },
       "BestiaryDisplay": {
-        "AdditionalCreatureTypes": {
-          "Name": "Types de créature supplémentaires",
-          "SubText": "Vous pouvez ajouter d'autres traits de créature disponibles dans les Paramètres du système PF2E pour les créations maison."
-        },
         "OptionalFields": {
           "Name": "Champs facultatifs",
           "Level": "Afficher le Niveau du Monstre",

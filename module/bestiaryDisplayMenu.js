@@ -1,5 +1,5 @@
 import Tagify from "@yaireo/tagify";
-import { toBestiaryOptions } from "../data/constants";
+import { standardCreatureTypes, toBestiaryOptions } from "../data/constants";
 import {
   defeatedModes,
   dispositionIconModes,
@@ -25,8 +25,8 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
         "pf2e-bestiary-tracking",
         "hide-ability-descriptions",
       ),
-      additionalCreatureTypes: game.settings
-        .get("pf2e-bestiary-tracking", "additional-creature-types")
+      usedCreatureTypes: game.settings
+        .get("pf2e-bestiary-tracking", "used-creature-types")
         .map((x) => ({ value: x.value, name: game.i18n.localize(x.name) })),
       optionalFields: game.settings.get(
         "pf2e-bestiary-tracking",
@@ -69,6 +69,7 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
     classes: ["bestiary-settings-menu"],
     position: { width: 680, height: "auto" },
     actions: {
+      resetCreatureTypes: this.resetCreatureTypes,
       resetJournalSettings: this.resetJournalSettings,
       resetDispositionIcons: this.resetDispositionIcons,
       toggleOptionalFields: this.toggleOptionalFields,
@@ -131,9 +132,20 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
       const traitsTagify = new Tagify(traitsInput, {
         tagTextProp: "name",
         enforceWhitelist: true,
-        whitelist: creatureTraits.map((key) => {
-          const label = CONFIG.PF2E.creatureTraits[key];
-          return { value: key, name: game.i18n.localize(label) };
+        whitelist: [
+          ...standardCreatureTypes().map((x) => ({
+            value: x.value,
+            name: game.i18n.localize(x.name),
+            values: x.values,
+          })),
+          ...creatureTraits.map((key) => {
+            const label = CONFIG.PF2E.creatureTraits[key];
+            return { value: key, name: game.i18n.localize(label) };
+          }),
+        ].sort((a, b) => {
+          if (a.name < b.name) return -1;
+          else if (a.name > b.name) return 1;
+          else return 0;
         }),
         callbacks: { invalid: this.onAddTag },
         dropdown: {
@@ -154,8 +166,8 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
     const context = await super._prepareContext(_options);
     context.settings = {
       ...this.settings,
-      additionalCreatureTypes: this.settings.additionalCreatureTypes?.length
-        ? this.settings.additionalCreatureTypes.map((x) => x.name)
+      usedCreatureTypes: this.settings.usedCreatureTypes?.length
+        ? this.settings.usedCreatureTypes.map((x) => x.name)
         : [],
     };
 
@@ -190,7 +202,7 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
   static async updateData(event, element, formData) {
     const data = foundry.utils.expandObject(formData.object);
     this.settings = {
-      additionalCreatureTypes: this.settings.additionalCreatureTypes,
+      usedCreatureTypes: this.settings.usedCreatureTypes,
       hideWelcome: data.hideWelcome,
       hideTips: data.hideTips,
       sectionsPosition: data.sectionsPosition,
@@ -210,9 +222,27 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
   }
 
   async creatureTraitSelect(event) {
-    this.settings.additionalCreatureTypes = event.detail?.value
+    this.settings.usedCreatureTypes = event.detail?.value
       ? JSON.parse(event.detail.value)
       : [];
+    this.render();
+  }
+
+  static async resetCreatureTypes() {
+    const confirmed = await foundry.applications.api.DialogV2.confirm({
+      window: {
+        title: game.i18n.localize(
+          "PF2EBestiary.Menus.BestiaryDisplay.UsedCreatureTypes.ResetTitle",
+        ),
+      },
+      content: game.i18n.localize(
+        "PF2EBestiary.Menus.BestiaryDisplay.UsedCreatureTypes.ResetText",
+      ),
+    });
+
+    if (!confirmed) return;
+
+    this.settings.usedCreatureTypes = standardCreatureTypes();
     this.render();
   }
 
@@ -320,8 +350,8 @@ export default class BestiaryDisplayMenu extends HandlebarsApplicationMixin(
     );
     await game.settings.set(
       "pf2e-bestiary-tracking",
-      "additional-creature-types",
-      this.settings.additionalCreatureTypes.map((x) => ({
+      "used-creature-types",
+      this.settings.usedCreatureTypes.map((x) => ({
         value: x.value,
         name: CONFIG.PF2E.creatureTraits[x.value],
       })),

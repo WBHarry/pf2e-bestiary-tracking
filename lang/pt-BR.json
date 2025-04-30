@@ -426,10 +426,6 @@
           "Hazard": "Perigos",
           "Position": "Posicionamento das Seções"
         },
-        "AdditionalCreatureTypes": {
-          "Name": "Tipos Adicionais de Criaturas",
-          "SubText": "Você pode adicionar mais traços de criaturas entre os diponíveis nas Configurações Para Regras Caseiras do Sistema PF2E."
-        },
         "OptionalFields": {
           "Name": "Campos Opcionais",
           "Level": "Nível da Criatura",

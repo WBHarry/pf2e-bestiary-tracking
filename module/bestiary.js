@@ -1905,22 +1905,29 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
           },
         };
       case "Trait":
-        const allTypes = [
-          ...Object.keys(CONFIG.PF2E.creatureTraits).map((type) => ({
-            value: type,
-            label: CONFIG.PF2E.creatureTraits[type],
-          })),
-          ...game.settings
-            .get("pf2e-bestiary-tracking", "additional-creature-types")
-            .map((type) => ({
-              value: type.value,
-              label: type.name,
-            })),
-        ].sort((a, b) => {
-          if (a.label < b.label) return -1;
-          else if (a.label > b.label) return 1;
-          else return 0;
+        const allTypesMap = new Map();
+        Object.keys(CONFIG.PF2E.creatureTraits).forEach((type) => {
+          allTypesMap.set(type, CONFIG.PF2E.creatureTraits[type]);
         });
+        Object.values(
+          game.settings.get("pf2e-bestiary-tracking", "used-creature-types"),
+        ).forEach((type) => {
+          allTypesMap.set(type.value, type.name);
+        });
+
+        const allTypes = Array.from(allTypesMap, ([key, name]) => ({
+          value: key,
+          name,
+        }))
+          .map((type) => ({
+            value: type.value,
+            label: game.i18n.localize(type.name),
+          }))
+          .sort((a, b) => {
+            if (a.label < b.label) return -1;
+            else if (a.label > b.label) return 1;
+            else return 0;
+          });
         return {
           width: 400,
           content: `<div class="flexrow">

@@ -88,13 +88,8 @@ export const getHazardTypes = (traits, onlyActive) => {
 
 export const getExpandedCreatureTypes = () => {
   const allTypes = [
-    ...Object.keys(CONFIG.PF2E.creatureTypes).map((type) => ({
-      value: type,
-      name: game.i18n.localize(CONFIG.PF2E.creatureTypes[type]),
-      values: [],
-    })),
     ...game.settings
-      .get("pf2e-bestiary-tracking", "additional-creature-types")
+      .get("pf2e-bestiary-tracking", "used-creature-types")
       .map((type) => ({
         value: type.value,
         name: game.i18n.localize(type.name),

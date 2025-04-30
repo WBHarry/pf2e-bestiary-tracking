@@ -31,13 +31,14 @@
     </fieldset>
 
     <fieldset class="menu-category">
-        <legend>
-            <h4>{{localize "PF2EBestiary.Menus.BestiaryDisplay.AdditionalCreatureTypes.Name"}}</h4>
+        <legend class="flexed">
+            <h4>{{localize "PF2EBestiary.Menus.BestiaryDisplay.UsedCreatureTypes.Name"}}</h4>
+            <i class="fa-solid fa-arrow-rotate-left pf2e-bestiary-clickable-icon" data-action="resetCreatureTypes" title="{{localize "PF2EBestiary.Menus.BestiaryDisplay.UsedCreatureTypes.ResetTitle"}}"></i>
         </legend>
 
         <div class="flexcol">
-            <input class="traits-input" value="{{settings.additionalCreatureTypes}}" />
-            <div>{{localize "PF2EBestiary.Menus.BestiaryDisplay.AdditionalCreatureTypes.SubText"}}</div>
+            <input class="traits-input" value="{{settings.usedCreatureTypes}}" />
+            <div>{{localize "PF2EBestiary.Menus.BestiaryDisplay.UsedCreatureTypes.SubText"}}</div>
         </div>
     </fieldset>
    

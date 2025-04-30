@@ -705,6 +705,26 @@ export const handleDataMigration = async () => {
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
 
+  if (versionCompare(version, "1.3.0")) {
+    version = "1.3.0";
+    const additionalCreatures = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "additional-creature-types",
+    );
+    if (Object.keys(additionalCreatures) === 0) return;
+
+    const usedCreatures = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "used-creature-types",
+    );
+    await game.settings.set("pf2e-bestiary-tracking", "used-creature-types", [
+      ...usedCreatures,
+      ...additionalCreatures.map((creature) => ({ ...creature, values: [] })),
+    ]);
+
+    await game.settings.set("pf2e-bestiary-tracking", "version", version);
+  }
+
   await handleBestiaryMigration(
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );

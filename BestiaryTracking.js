@@ -71,13 +71,8 @@ const getHazardTypes = (traits, onlyActive) => {
 
 const getExpandedCreatureTypes = () => {
   const allTypes = [
-    ...Object.keys(CONFIG.PF2E.creatureTypes).map((type) => ({
-      value: type,
-      name: game.i18n.localize(CONFIG.PF2E.creatureTypes[type]),
-      values: [],
-    })),
     ...game.settings
-      .get("pf2e-bestiary-tracking", "additional-creature-types")
+      .get("pf2e-bestiary-tracking", "used-creature-types")
       .map((type) => ({
         value: type.value,
         name: game.i18n.localize(type.name),
@@ -411,29 +406,28 @@ const getFolderChildren = (folder) => {
 
 async function copyToClipboard(textToCopy) {
   if (navigator.clipboard && window.isSecureContext) {
-      return navigator.clipboard.writeText(textToCopy);
+    return navigator.clipboard.writeText(textToCopy);
   } else {
-      return new Promise(async function (resolve, reject){
-          // Use the 'out of viewport hidden text area' trick
-          const textArea = document.createElement("textarea");
-          textArea.value = textToCopy;
-              
-          // Move textarea out of the viewport so it's not visible
-          textArea.style.position = "absolute";
-          textArea.style.left = "-999999px";
-              
-          document.body.prepend(textArea);
-          textArea.select();
-          try {
-              document.execCommand('copy');
-          } catch (error) {
-              reject();
-          } finally {
-              textArea.remove();
-              resolve();
-          }
-      });
+    return new Promise(async function (resolve, reject) {
+      // Use the 'out of viewport hidden text area' trick
+      const textArea = document.createElement("textarea");
+      textArea.value = textToCopy;
 
+      // Move textarea out of the viewport so it's not visible
+      textArea.style.position = "absolute";
+      textArea.style.left = "-999999px";
+
+      document.body.prepend(textArea);
+      textArea.select();
+      try {
+        document.execCommand("copy");
+      } catch (error) {
+        reject();
+      } finally {
+        textArea.remove();
+        resolve();
+      }
+    });
   }
 }
 
@@ -2791,6 +2785,13 @@ const getDiceAverage = (faces, number) => {
       return pairs * (faces / 2 + (faces / 2 + 1)) + (oddDice ? faces / 2 : 0);
   }
 };
+
+const standardCreatureTypes = () =>
+  Object.keys(CONFIG.PF2E.creatureTypes).map((type) => ({
+    value: type,
+    name: CONFIG.PF2E.creatureTypes[type],
+    values: [],
+  }));
 
 const dispositions = {
   helpful: {
@@ -8937,8 +8938,8 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
         "pf2e-bestiary-tracking",
         "hide-ability-descriptions",
       ),
-      additionalCreatureTypes: game.settings
-        .get("pf2e-bestiary-tracking", "additional-creature-types")
+      usedCreatureTypes: game.settings
+        .get("pf2e-bestiary-tracking", "used-creature-types")
         .map((x) => ({ value: x.value, name: game.i18n.localize(x.name) })),
       optionalFields: game.settings.get(
         "pf2e-bestiary-tracking",
@@ -8981,6 +8982,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
     classes: ["bestiary-settings-menu"],
     position: { width: 680, height: "auto" },
     actions: {
+      resetCreatureTypes: this.resetCreatureTypes,
       resetJournalSettings: this.resetJournalSettings,
       resetDispositionIcons: this.resetDispositionIcons,
       toggleOptionalFields: this.toggleOptionalFields,
@@ -9043,9 +9045,16 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
       const traitsTagify = new Y(traitsInput, {
         tagTextProp: "name",
         enforceWhitelist: true,
-        whitelist: creatureTraits.map((key) => {
-          const label = CONFIG.PF2E.creatureTraits[key];
-          return { value: key, name: game.i18n.localize(label) };
+        whitelist: [
+          ...standardCreatureTypes().map(x => ({ value: x.value, name: game.i18n.localize(x.name), values: x.values,  })),
+          ...creatureTraits.map((key) => {
+            const label = CONFIG.PF2E.creatureTraits[key];
+            return { value: key, name: game.i18n.localize(label) };
+          })
+        ].sort((a, b) => {
+          if (a.name < b.name) return -1;
+          else if (a.name > b.name) return 1;
+          else return 0;
         }),
         callbacks: { invalid: this.onAddTag },
         dropdown: {
@@ -9066,8 +9075,8 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
     const context = await super._prepareContext(_options);
     context.settings = {
       ...this.settings,
-      additionalCreatureTypes: this.settings.additionalCreatureTypes?.length
-        ? this.settings.additionalCreatureTypes.map((x) => x.name)
+      usedCreatureTypes: this.settings.usedCreatureTypes?.length
+        ? this.settings.usedCreatureTypes.map((x) => x.name)
         : [],
     };
 
@@ -9102,7 +9111,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
   static async updateData(event, element, formData) {
     const data = foundry.utils.expandObject(formData.object);
     this.settings = {
-      additionalCreatureTypes: this.settings.additionalCreatureTypes,
+      usedCreatureTypes: this.settings.usedCreatureTypes,
       hideWelcome: data.hideWelcome,
       hideTips: data.hideTips,
       sectionsPosition: data.sectionsPosition,
@@ -9122,9 +9131,23 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
   }
 
   async creatureTraitSelect(event) {
-    this.settings.additionalCreatureTypes = event.detail?.value
+    this.settings.usedCreatureTypes = event.detail?.value
       ? JSON.parse(event.detail.value)
       : [];
+    this.render();
+  }
+
+  static async resetCreatureTypes() {
+    const confirmed = await foundry.applications.api.DialogV2.confirm({
+      window: {
+        title: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.UsedCreatureTypes.ResetTitle"),
+      },
+      content: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.UsedCreatureTypes.ResetText"),
+    });
+    
+    if(!confirmed) return;
+
+    this.settings.usedCreatureTypes = standardCreatureTypes();
     this.render();
   }
 
@@ -9232,8 +9255,8 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
     );
     await game.settings.set(
       "pf2e-bestiary-tracking",
-      "additional-creature-types",
-      this.settings.additionalCreatureTypes.map((x) => ({
+      "used-creature-types",
+      this.settings.usedCreatureTypes.map((x) => ({
         value: x.value,
         name: CONFIG.PF2E.creatureTraits[x.value],
       })),
@@ -9634,16 +9657,23 @@ const bestiaryDisplay = () => {
     "pf2e-bestiary-tracking",
     "additional-creature-types",
     {
-      name: game.i18n.localize(
-        "PF2EBestiary.Settings.AdditionalCreatureTypes.Name",
-      ),
-      hint: game.i18n.localize(
-        "PF2EBestiary.Settings.AdditionalCreatureTypes.Hint",
-      ),
       scope: "world",
       config: false,
       type: Object,
       default: [],
+    },
+  );
+
+  game.settings.register(
+    "pf2e-bestiary-tracking",
+    "used-creature-types",
+    {
+      name: "",
+      hint: "",
+      scope: "world",
+      config: false,
+      type: Object,
+      default: standardCreatureTypes(),
     },
   );
 
@@ -11575,6 +11605,20 @@ const handleDataMigration = async () => {
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
 
+  if (versionCompare(version, "1.3.0")) {
+    version = "1.3.0";
+    const additionalCreatures = game.settings.get("pf2e-bestiary-tracking", "additional-creature-types");
+    if(Object.keys(additionalCreatures) === 0) return;
+
+    const usedCreatures = game.settings.get("pf2e-bestiary-tracking", "used-creature-types");
+    await game.settings.set("pf2e-bestiary-tracking", "used-creature-types", [
+      ...usedCreatures,
+      ...additionalCreatures.map(creature => ({ ...creature, values: [] }))
+    ]);
+
+    await game.settings.set("pf2e-bestiary-tracking", "version", version);
+  }
+
   await handleBestiaryMigration(
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );
@@ -12897,7 +12941,9 @@ const handleInfluenceMigration = async () => {
                 game.settings.set(
                   "pf2e-bestiary-tracking",
                   "influence-migration-done",
-                  foundry.utils.mergeObject(influenceMigration, { remind: false }),
+                  foundry.utils.mergeObject(influenceMigration, {
+                    remind: false,
+                  }),
                 );
               },
             },
@@ -14255,38 +14301,40 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$2(
 
 const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
 
-class ClipboardDialog extends HandlebarsApplicationMixin$1(ApplicationV2$1) {
-    constructor(text) {
-        super({});
+class ClipboardDialog extends HandlebarsApplicationMixin$1(
+  ApplicationV2$1,
+) {
+  constructor(text) {
+    super({});
 
-        this.text = text;
-    }
+    this.text = text;
+  }
 
-    get title() {
-        return game.i18n.localize("PF2EBestiary.ClipboardDialog.Title");
-    }
+  get title() {
+    return game.i18n.localize("PF2EBestiary.ClipboardDialog.Title");
+  }
 
-    static DEFAULT_OPTIONS = {
-        tag: "form",
-        id: "pf2e-subsystems-value-dialog",
-        classes: ["pf2e-bestiary-tracking", "pf2e-clipboard"],
-        position: { width: 500, height: "auto" },
-        actions: {},
-    };
+  static DEFAULT_OPTIONS = {
+    tag: "form",
+    id: "pf2e-subsystems-value-dialog",
+    classes: ["pf2e-bestiary-tracking", "pf2e-clipboard"],
+    position: { width: 500, height: "auto" },
+    actions: {},
+  };
 
-    static PARTS = {
-        main: {
-            id: "main",
-            template: "modules/pf2e-bestiary-tracking/templates/clipboard-dialog.hbs",
-        },
-    }
+  static PARTS = {
+    main: {
+      id: "main",
+      template: "modules/pf2e-bestiary-tracking/templates/clipboard-dialog.hbs",
+    },
+  };
 
-    async _prepareContext(_options) {
-        const context = await super._prepareContext(_options);
-        context.text = this.text;
+  async _prepareContext(_options) {
+    const context = await super._prepareContext(_options);
+    context.text = this.text;
 
-        return context;
-    }
+    return context;
+  }
 }
 
 const { implementation: TextEditor } = foundry.applications.ux.TextEditor;
@@ -16153,18 +16201,20 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           },
         };
       case "Trait":
-        const allTypes = [
-          ...Object.keys(CONFIG.PF2E.creatureTraits).map((type) => ({
-            value: type,
-            label: CONFIG.PF2E.creatureTraits[type],
-          })),
-          ...game.settings
-            .get("pf2e-bestiary-tracking", "additional-creature-types")
-            .map((type) => ({
-              value: type.value,
-              label: type.name,
-            })),
-        ].sort((a, b) => {
+        const allTypesMap = new Map();
+        Object.keys(CONFIG.PF2E.creatureTraits).forEach(type => {
+          allTypesMap.set(type, CONFIG.PF2E.creatureTraits[type]);
+        });
+        Object.values(game.settings.get("pf2e-bestiary-tracking", "used-creature-types"))
+        .forEach(type => {
+          allTypesMap.set(type.value, type.name);
+        });
+
+        const allTypes =
+          Array.from(allTypesMap, ([key, name]) => ({ value: key, name })).map((type) => ({
+            value: type.value,
+            label: game.i18n.localize(type.name),
+          })).sort((a, b) => {
           if (a.label < b.label) return -1;
           else if (a.label > b.label) return 1;
           else return 0;
@@ -16885,13 +16935,15 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const pageData = this.selected.monster?.system?.uuid ?? null;
     const macro = `game.modules.get('pf2e-bestiary-tracking').macros.openBestiary(${JSON.stringify(macroData)}, ${JSON.stringify(pageData)});`;
 
-    copyToClipboard(macro).then(() => {
-      ui.notifications.info(
-        game.i18n.localize("PF2EBestiary.Bestiary.Info.BestiaryOpenMacro"),
-      );
-    }).catch(() => {
-      new ClipboardDialog(macro).render(true);
-    });
+    copyToClipboard(macro)
+      .then(() => {
+        ui.notifications.info(
+          game.i18n.localize("PF2EBestiary.Bestiary.Info.BestiaryOpenMacro"),
+        );
+      })
+      .catch(() => {
+        new ClipboardDialog(macro).render(true);
+      });
   }
 
   static async openDocument(_, button) {
@@ -16942,17 +16994,19 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
       cls.create(msg.toObject());
     } else {
-      copyToClipboard(bestiaryLink).then(() => {
-        ui.notifications.info(
-          game.i18n.format("PF2EBestiary.Bestiary.Info.BestiaryEntryLink", {
-            entity: this.gmView
-              ? this.selected.monster.system.name.value
-              : this.selected.monster.system.displayedName,
-          }),
-        );
-      }).catch(() => {
-        new ClipboardDialog(bestiaryLink).render(true);
-      });
+      copyToClipboard(bestiaryLink)
+        .then(() => {
+          ui.notifications.info(
+            game.i18n.format("PF2EBestiary.Bestiary.Info.BestiaryEntryLink", {
+              entity: this.gmView
+                ? this.selected.monster.system.name.value
+                : this.selected.monster.system.displayedName,
+            }),
+          );
+        })
+        .catch(() => {
+          new ClipboardDialog(bestiaryLink).render(true);
+        });
     }
   }
 
