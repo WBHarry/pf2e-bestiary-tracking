@@ -56,6 +56,9 @@
       "UnusedBestiaryType": "Nie używasz tego typu wpisu do Bestiariusza. Sprawdź ustawienia modułu.",
       "MissingName": "Musisz podać nazwę dla importowanego wpisu do Bestiariusza!"
     },
+    "ClipboardDialog": {
+      "Title": "Okno dialogowe kopiowania makr bestiariusza"
+    },
     "BestiarySelection": {
       "Name": "Zarządzanie bestiariuszem",
       "AddBestiary": "Dodaj nowy bestiariusz",
@@ -151,6 +154,8 @@
       "PreviewTitle": "Podgląd Bestiariusza",
       "ToggleActorSheet": "Przełącz kartę aktora",
       "UsingPlayerView": "Używanie widoku gracza",
+      "DeleteMonsterTitle": "Usuń potwora",
+      "DeleteMonsterText": "Czy na pewno chcesz usunąć stworzenie z Bestiariusza?",
       "WindowControls": {
         "RefreshBestiary": "Odśwież Bestiariusz",
         "BestiarySelection": "Zarządzanie bestiariuszem",
