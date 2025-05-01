@@ -461,6 +461,12 @@
           "Hazard": "Zagrożenia",
           "Position": "Sekcje Pozycja"
         },
+        "UsedCreatureTypes": {
+          "Name": "Rodzaje stworzeń z bestiariusza",
+          "SubText": "W ustawieniach systemu PF2E Zasad Domowych możesz dodać więcej dostępnych cech stworzeń do wyboru.",
+          "ResetTitle": "Zresetuj rodzaje stworzeń z bestiariusza",
+          "ResetText": "Czy na pewno chcesz zresetować używane rodzaje stworzeń z bestiariusza do wartości domyślnych?"
+        },
         "OptionalFields": {
           "Name": "Pola opcjonalne",
           "Level": "Poziom stworzenia",
