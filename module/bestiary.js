@@ -41,7 +41,6 @@ import {
 } from "../scripts/statisticsData.js";
 import ClipboardDialog from "./clipboardDialog.js";
 
-const { implementation: TextEditor } = foundry.applications.ux.TextEditor;
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
 const defaultSelectedAbilities = () => ({
@@ -660,16 +659,18 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   async enrichTexts(selected) {
     if (!selected.monster) return;
 
-    selected.monster.system.notes.player.enriched = await TextEditor.enrichHTML(
-      selected.monster.system.notes.player.value,
-    );
+    selected.monster.system.notes.player.enriched =
+      await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+        selected.monster.system.notes.player.value,
+      );
 
     if (!this.npcData.npcView) {
       for (var actionKey of Object.keys(selected.monster.system.actions)) {
         if (this.selected.abilities.actions.has(actionKey)) {
-          const description = await TextEditor.enrichHTML(
-            selected.monster.system.actions[actionKey].description,
-          );
+          const description =
+            await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+              selected.monster.system.actions[actionKey].description,
+            );
 
           selected.monster.system.actions[actionKey].enrichedDescription =
             description;
@@ -680,19 +681,20 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
       if (selected.monster.type !== "pf2e-bestiary-tracking.hazard") {
         selected.monster.system.notes.public.value =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.notes.public.value,
           );
         selected.monster.system.notes.private.value =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.notes.private.value,
           );
 
         for (var passiveKey of Object.keys(selected.monster.system.passives)) {
           if (this.selected.abilities.passives.has(passiveKey)) {
-            const description = await TextEditor.enrichHTML(
-              selected.monster.system.passives[passiveKey].description,
-            );
+            const description =
+              await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+                selected.monster.system.passives[passiveKey].description,
+              );
 
             selected.monster.system.passives[passiveKey].enrichedDescription =
               description;
@@ -707,9 +709,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
             for (var spellKey in entry.levels[levelKey].spells) {
               const spell = entry.levels[levelKey].spells[spellKey];
               if (this.selected.abilities.spells.has(spellKey)) {
-                spell.enrichedDescription = await TextEditor.enrichHTML(
-                  spell.description.value,
-                );
+                spell.enrichedDescription =
+                  await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+                    spell.description.value,
+                  );
               } else spell.enrichedDescription = spell.description.value;
             }
           }
@@ -718,56 +721,61 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
       if (selected.monster.type === "pf2e-bestiary-tracking.hazard") {
         selected.monster.system.notes.description.value =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.notes.description.value,
           );
 
         selected.monster.system.stealth.details.value =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.stealth.details.value,
           );
 
-        selected.monster.system.disable.value = await TextEditor.enrichHTML(
-          selected.monster.system.disable.value,
-        );
+        selected.monster.system.disable.value =
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+            selected.monster.system.disable.value,
+          );
 
-        selected.monster.system.reset.value = await TextEditor.enrichHTML(
-          selected.monster.system.reset.value,
-        );
+        selected.monster.system.reset.value =
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+            selected.monster.system.reset.value,
+          );
 
-        selected.monster.system.routine.value = await TextEditor.enrichHTML(
-          selected.monster.system.routine.value,
-        );
+        selected.monster.system.routine.value =
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+            selected.monster.system.routine.value,
+          );
       }
     } else {
       if (selected.monster.type === "pf2e-bestiary-tracking.npc") {
         selected.monster.system.npcData.general.appearance.enrichedValue =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.npcData.general.appearance.value,
           );
 
         selected.monster.system.npcData.general.personality.enrichedValue =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.npcData.general.personality.value,
           );
 
         selected.monster.system.npcData.general.background.enrichedValue =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.npcData.general.background.value,
           );
 
-        selected.monster.system.notes.gm.enriched = await TextEditor.enrichHTML(
-          selected.monster.system.notes.gm.value,
-        );
+        selected.monster.system.notes.gm.enriched =
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+            selected.monster.system.notes.gm.value,
+          );
 
         for (var key of Object.keys(
           selected.monster.system.npcData.influence.discovery,
         )) {
           const discovery =
             selected.monster.system.npcData.influence.discovery[key];
-          discovery.label = await TextEditor.enrichHTML(
-            selected.monster.system.npcData.influence.discovery[key].label,
-          );
+          discovery.label =
+            await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+              selected.monster.system.npcData.influence.discovery[key].label,
+            );
           if (game.user.isGM) {
             discovery.label = discovery.label.replace(
               'title="Post prompt to chat"',
@@ -781,7 +789,10 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         )) {
           const influence =
             selected.monster.system.npcData.influence.influenceSkills[key];
-          influence.label = await TextEditor.enrichHTML(influence.label);
+          influence.label =
+            await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+              influence.label,
+            );
           if (game.user.isGM) {
             influence.label = influence.label.replace(
               'title="Post prompt to chat"',
@@ -3319,7 +3330,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   async _onDrop(event) {
     if (!game.user.isGM) return;
 
-    const data = TextEditor.getDragEventData(event);
+    const data =
+      foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
     const dataItem = await fromUuid(data.uuid);
 
     const items = !dataItem

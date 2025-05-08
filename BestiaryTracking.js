@@ -9046,11 +9046,15 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
         tagTextProp: "name",
         enforceWhitelist: true,
         whitelist: [
-          ...standardCreatureTypes().map(x => ({ value: x.value, name: game.i18n.localize(x.name), values: x.values,  })),
+          ...standardCreatureTypes().map((x) => ({
+            value: x.value,
+            name: game.i18n.localize(x.name),
+            values: x.values,
+          })),
           ...creatureTraits.map((key) => {
             const label = CONFIG.PF2E.creatureTraits[key];
             return { value: key, name: game.i18n.localize(label) };
-          })
+          }),
         ].sort((a, b) => {
           if (a.name < b.name) return -1;
           else if (a.name > b.name) return 1;
@@ -9140,12 +9144,16 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
   static async resetCreatureTypes() {
     const confirmed = await foundry.applications.api.DialogV2.confirm({
       window: {
-        title: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.UsedCreatureTypes.ResetTitle"),
+        title: game.i18n.localize(
+          "PF2EBestiary.Menus.BestiaryDisplay.UsedCreatureTypes.ResetTitle",
+        ),
       },
-      content: game.i18n.localize("PF2EBestiary.Menus.BestiaryDisplay.UsedCreatureTypes.ResetText"),
+      content: game.i18n.localize(
+        "PF2EBestiary.Menus.BestiaryDisplay.UsedCreatureTypes.ResetText",
+      ),
     });
-    
-    if(!confirmed) return;
+
+    if (!confirmed) return;
 
     this.settings.usedCreatureTypes = standardCreatureTypes();
     this.render();
@@ -9305,7 +9313,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
   }
 }
 
-const currentVersion = "1.3.0";
+const currentVersion = "1.3.1";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -9664,18 +9672,14 @@ const bestiaryDisplay = () => {
     },
   );
 
-  game.settings.register(
-    "pf2e-bestiary-tracking",
-    "used-creature-types",
-    {
-      name: "",
-      hint: "",
-      scope: "world",
-      config: false,
-      type: Object,
-      default: standardCreatureTypes(),
-    },
-  );
+  game.settings.register("pf2e-bestiary-tracking", "used-creature-types", {
+    name: "",
+    hint: "",
+    scope: "world",
+    config: false,
+    type: Object,
+    default: standardCreatureTypes(),
+  });
 
   game.settings.register(
     "pf2e-bestiary-tracking",
@@ -11607,13 +11611,19 @@ const handleDataMigration = async () => {
 
   if (versionCompare(version, "1.3.0")) {
     version = "1.3.0";
-    const additionalCreatures = game.settings.get("pf2e-bestiary-tracking", "additional-creature-types");
-    if(Object.keys(additionalCreatures) === 0) return;
+    const additionalCreatures = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "additional-creature-types",
+    );
+    if (Object.keys(additionalCreatures) === 0) return;
 
-    const usedCreatures = game.settings.get("pf2e-bestiary-tracking", "used-creature-types");
+    const usedCreatures = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "used-creature-types",
+    );
     await game.settings.set("pf2e-bestiary-tracking", "used-creature-types", [
       ...usedCreatures,
-      ...additionalCreatures.map(creature => ({ ...creature, values: [] }))
+      ...additionalCreatures.map((creature) => ({ ...creature, values: [] })),
     ]);
 
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
@@ -14337,7 +14347,6 @@ class ClipboardDialog extends HandlebarsApplicationMixin$1(
   }
 }
 
-const { implementation: TextEditor } = foundry.applications.ux.TextEditor;
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
 const defaultSelectedAbilities = () => ({
@@ -14956,14 +14965,14 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   async enrichTexts(selected) {
     if (!selected.monster) return;
 
-    selected.monster.system.notes.player.enriched = await TextEditor.enrichHTML(
+    selected.monster.system.notes.player.enriched = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
       selected.monster.system.notes.player.value,
     );
 
     if (!this.npcData.npcView) {
       for (var actionKey of Object.keys(selected.monster.system.actions)) {
         if (this.selected.abilities.actions.has(actionKey)) {
-          const description = await TextEditor.enrichHTML(
+          const description = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.actions[actionKey].description,
           );
 
@@ -14976,17 +14985,17 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
       if (selected.monster.type !== "pf2e-bestiary-tracking.hazard") {
         selected.monster.system.notes.public.value =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.notes.public.value,
           );
         selected.monster.system.notes.private.value =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.notes.private.value,
           );
 
         for (var passiveKey of Object.keys(selected.monster.system.passives)) {
           if (this.selected.abilities.passives.has(passiveKey)) {
-            const description = await TextEditor.enrichHTML(
+            const description = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
               selected.monster.system.passives[passiveKey].description,
             );
 
@@ -15003,7 +15012,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
             for (var spellKey in entry.levels[levelKey].spells) {
               const spell = entry.levels[levelKey].spells[spellKey];
               if (this.selected.abilities.spells.has(spellKey)) {
-                spell.enrichedDescription = await TextEditor.enrichHTML(
+                spell.enrichedDescription = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
                   spell.description.value,
                 );
               } else spell.enrichedDescription = spell.description.value;
@@ -15014,45 +15023,45 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
       if (selected.monster.type === "pf2e-bestiary-tracking.hazard") {
         selected.monster.system.notes.description.value =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.notes.description.value,
           );
 
         selected.monster.system.stealth.details.value =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.stealth.details.value,
           );
 
-        selected.monster.system.disable.value = await TextEditor.enrichHTML(
+        selected.monster.system.disable.value = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
           selected.monster.system.disable.value,
         );
 
-        selected.monster.system.reset.value = await TextEditor.enrichHTML(
+        selected.monster.system.reset.value = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
           selected.monster.system.reset.value,
         );
 
-        selected.monster.system.routine.value = await TextEditor.enrichHTML(
+        selected.monster.system.routine.value = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
           selected.monster.system.routine.value,
         );
       }
     } else {
       if (selected.monster.type === "pf2e-bestiary-tracking.npc") {
         selected.monster.system.npcData.general.appearance.enrichedValue =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.npcData.general.appearance.value,
           );
 
         selected.monster.system.npcData.general.personality.enrichedValue =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.npcData.general.personality.value,
           );
 
         selected.monster.system.npcData.general.background.enrichedValue =
-          await TextEditor.enrichHTML(
+          await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.npcData.general.background.value,
           );
 
-        selected.monster.system.notes.gm.enriched = await TextEditor.enrichHTML(
+        selected.monster.system.notes.gm.enriched = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
           selected.monster.system.notes.gm.value,
         );
 
@@ -15061,7 +15070,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         )) {
           const discovery =
             selected.monster.system.npcData.influence.discovery[key];
-          discovery.label = await TextEditor.enrichHTML(
+          discovery.label = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
             selected.monster.system.npcData.influence.discovery[key].label,
           );
           if (game.user.isGM) {
@@ -15077,7 +15086,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         )) {
           const influence =
             selected.monster.system.npcData.influence.influenceSkills[key];
-          influence.label = await TextEditor.enrichHTML(influence.label);
+          influence.label = await foundry.applications.ux.TextEditor.implementation.enrichHTML(influence.label);
           if (game.user.isGM) {
             influence.label = influence.label.replace(
               'title="Post prompt to chat"',
@@ -16202,23 +16211,28 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         };
       case "Trait":
         const allTypesMap = new Map();
-        Object.keys(CONFIG.PF2E.creatureTraits).forEach(type => {
+        Object.keys(CONFIG.PF2E.creatureTraits).forEach((type) => {
           allTypesMap.set(type, CONFIG.PF2E.creatureTraits[type]);
         });
-        Object.values(game.settings.get("pf2e-bestiary-tracking", "used-creature-types"))
-        .forEach(type => {
+        Object.values(
+          game.settings.get("pf2e-bestiary-tracking", "used-creature-types"),
+        ).forEach((type) => {
           allTypesMap.set(type.value, type.name);
         });
 
-        const allTypes =
-          Array.from(allTypesMap, ([key, name]) => ({ value: key, name })).map((type) => ({
+        const allTypes = Array.from(allTypesMap, ([key, name]) => ({
+          value: key,
+          name,
+        }))
+          .map((type) => ({
             value: type.value,
             label: game.i18n.localize(type.name),
-          })).sort((a, b) => {
-          if (a.label < b.label) return -1;
-          else if (a.label > b.label) return 1;
-          else return 0;
-        });
+          }))
+          .sort((a, b) => {
+            if (a.label < b.label) return -1;
+            else if (a.label > b.label) return 1;
+            else return 0;
+          });
         return {
           width: 400,
           content: `<div class="flexrow">
@@ -17610,7 +17624,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   async _onDrop(event) {
     if (!game.user.isGM) return;
 
-    const data = TextEditor.getDragEventData(event);
+    const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
     const dataItem = await fromUuid(data.uuid);
 
     const items = !dataItem
