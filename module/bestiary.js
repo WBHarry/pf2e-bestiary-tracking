@@ -108,6 +108,12 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     };
 
     this.gmView = game.user.isGM;
+    this.globalSearch = {
+      value: "",
+      mode: 0,
+      timeout: null,
+      results: null,
+    };
 
     this._dragDrop = this._createDragDropHandlers();
 
@@ -184,6 +190,8 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       removeInfluenceEvent: this.removeInfluenceEvent,
       linkExistingInfluenceEvent: this.linkExistingInfluenceEvent,
       influenceToggleHidden: this.influenceToggleHidden,
+      globalSearchSelect: this.globalSearchSelect,
+      setGlobalSearchMode: this.setGlobalSearchMode,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -289,6 +297,19 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       .forEach((event) =>
         event.addEventListener("change", this.updateNPCCategorySort.bind(this)),
       );
+
+    const bestiarySearchBar = htmlElement.querySelector(".bestiary-search-bar");
+    bestiarySearchBar?.addEventListener(
+      "keydown",
+      this.bestiaryGlobalSearchUpdate.bind(this),
+    );
+    bestiarySearchBar?.addEventListener("keyup", (event) =>
+      event.stopPropagation(),
+    );
+    bestiarySearchBar?.addEventListener(
+      "blur",
+      this.bestiaryGlobalSearchBlur.bind(this),
+    );
 
     this._dragDrop.forEach((d) => d.bind(htmlElement));
 
@@ -1044,6 +1065,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     var context = await super._prepareContext(_options);
 
     context = await this.sharedPreparation(context);
+    context.globalSearch = this.globalSearch;
     context.bookmarks = this.getBookmarks(context.layout);
 
     const activeBookmark = context.bookmarks.find(
@@ -2907,6 +2929,177 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
+  static globalSearchSelect(_, button) {
+    new PF2EBestiary({}, this.bestiary.pages.get(button.dataset.id)).render(
+      true,
+    );
+  }
+
+  static setGlobalSearchMode(event, button) {
+    event.stopPropagation();
+    this.globalSearch.mode = Number.parseInt(button.dataset.mode);
+    button.parentElement
+      .querySelector(
+        `.bestiary-search-type-inner-container[data-mode="${this.globalSearch.mode === 0 ? 1 : 0}"]`,
+      )
+      .classList.remove("accent");
+    button.classList.add("accent");
+    const input = button.parentElement.parentElement.querySelector(
+      ".bestiary-search-bar-inner-container .bestiary-search-bar",
+    );
+    this.bestiaryGlobalSearchSet(this.globalSearch.value, input);
+  }
+
+  bestiaryGlobalSearchUpdate(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    let newValue = event.currentTarget.value;
+
+    if (event.keyCode === 65 && event.ctrlKey) {
+      event.currentTarget.selectionStart = 0;
+      event.currentTarget.selectionEnd = event.currentTarget.value.length;
+      return;
+    } else if (event.keyCode === 8 || event.keyCode === 45) {
+      if (
+        event.currentTarget.selectionStart !== event.currentTarget.selectionEnd
+      ) {
+        newValue =
+          event.currentTarget.value.substring(
+            0,
+            event.currentTarget.selectionStart,
+          ) +
+          event.currentTarget.value.substring(
+            event.currentTarget.selectionEnd,
+            event.currentTarget.value.length,
+          );
+      } else {
+        newValue = event.currentTarget.value.slice(
+          0,
+          event.currentTarget.value.length - 1,
+        );
+      }
+    } else if (event.keyCode === 32) {
+      newValue = event.currentTarget.value + " ";
+    } else if (
+      (event.keyCode >= 65 && event.keyCode <= 90) ||
+      (event.keyCode >= 49 && event.keyCode <= 57)
+    ) {
+      if (
+        event.currentTarget.selectionStart !== event.currentTarget.selectionEnd
+      ) {
+        newValue =
+          event.currentTarget.value.substring(
+            0,
+            event.currentTarget.selectionStart,
+          ) +
+          event.key +
+          event.currentTarget.value.substring(
+            event.currentTarget.selectionEnd,
+            event.currentTarget.value.length,
+          );
+      } else {
+        newValue = `${newValue}${event.key}`;
+      }
+    } else return;
+
+    this.bestiaryGlobalSearchSet(newValue, event.currentTarget);
+  }
+
+  bestiaryGlobalSearchSet(newValue, target) {
+    this.globalSearch.value = newValue;
+    target.value = newValue;
+
+    if (this.globalSearch.mode === 0) {
+      this.globalSearch.results = !this.globalSearch.value
+        ? []
+        : this.bestiary.pages
+            .filter((x) => {
+              return (
+                (game.user.isGM || !x.system.hidden) &&
+                x.system.name.value
+                  .toLowerCase()
+                  .includes(this.globalSearch.value)
+              );
+            })
+            .map((x) => ({
+              id: x.id,
+              name: x.system.name.value,
+              type: game.i18n.localize(`TYPES.JournalEntryPage.${x.type}`),
+            }))
+            .sort(
+              (a, b) =>
+                a.name.indexOf(this.globalSearch.value) -
+                b.name.indexOf(this.globalSearch.value),
+            );
+    } else {
+      const flatTraits = !this.globalSearch.value
+        ? []
+        : Array.from(this.bestiary.pages)
+            .flatMap((page) =>
+              Object.values(page.system.traits).map((x) => ({
+                id: page.id,
+                hidden: page.system.hidden,
+                name: page.system.name.value,
+                type: game.i18n.localize(CONFIG.PF2E.creatureTraits[x.value]),
+              })),
+            )
+            .filter((x) => {
+              return (
+                (game.user.isGM || !x.hidden) &&
+                x.type.toLowerCase().includes(this.globalSearch.value)
+              );
+            })
+            .sort(
+              (a, b) =>
+                a.name.indexOf(this.globalSearch.value) -
+                b.name.indexOf(this.globalSearch.value),
+            );
+
+      const unique = new Map();
+      for (var trait of flatTraits) {
+        unique.set(trait.id, trait);
+      }
+
+      this.globalSearch.results = Array.from(unique.values());
+    }
+
+    const resultsContainer = target.parentElement.parentElement.querySelector(
+      ".bestiary-search-bar-result-container",
+    );
+    resultsContainer.replaceChildren();
+
+    const resultElements = this.globalSearch.results.map(
+      (result) => `
+      <div data-action="globalSearchSelect" data-id="${result.id}" class="bestiary-search-bar-result tertiary-container primary-hover-container">
+          <div>${result.name}</div>
+          <div class="bestiary-search-bar-result-category">${result.type}</div>
+      </div>  
+    `,
+    );
+
+    for (var element of resultElements) {
+      resultsContainer.insertAdjacentHTML("beforeend", element);
+    }
+
+    if (resultElements.length > 0) {
+      resultsContainer.classList.add("open");
+    } else {
+      resultsContainer.classList.remove("open");
+    }
+  }
+
+  bestiaryGlobalSearchBlur(event) {
+    this.globalSearch.results = null;
+    this.globalSearch.value = "";
+    event.currentTarget.value = "";
+    const resultsContainer =
+      event.currentTarget.parentElement.parentElement.querySelector(
+        ".bestiary-search-bar-result-container",
+      );
+    resultsContainer.replaceChildren();
+    resultsContainer.classList.remove("open");
+  }
+
   async hideTab(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -3633,12 +3826,19 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   switchPlayerMode = (e) => {
+    e.preventDefault();
     if (!game.user.isGM || this.npcData.editMode) return;
 
     if (
       game.keybindings
         .get("pf2e-bestiary-tracking", "view-as-player")
-        .some((binding) => binding.key === e.code)
+        .some(
+          (binding) =>
+            binding.key === e.code &&
+            (binding.modifiers.length === 0 ||
+              (binding.modifiers.includes("Control") && e.ctrlKey) ||
+              (binding.modifiers.includes("Shift") && e.shiftKey)),
+        )
     ) {
       this.gmView = false;
       this.render();
@@ -3646,12 +3846,21 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   };
 
   resetPlayerMode = (e) => {
+    e.preventDefault();
     if (!game.user.isGM || this.npcData.editMode) return;
 
     if (
       game.keybindings
         .get("pf2e-bestiary-tracking", "view-as-player")
-        .some((binding) => binding.key === e.code)
+        .some(
+          (binding) =>
+            binding.key === e.code ||
+            (binding.modifiers.length > 0 &&
+              ((binding.modifiers.includes("Control") &&
+                (e.code === "ControlLeft" || e.code === "ControlRight")) ||
+                (binding.modifiers.includes("Shift") &&
+                  (e.code === "ShiftLeft" || e.code === "RightShift")))),
+        )
     ) {
       this.gmView = true;
       this.render();

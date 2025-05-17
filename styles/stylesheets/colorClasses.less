@@ -39,6 +39,10 @@ form {
       background-color: var(--pf2e-subsystem-theming-primary);
     }
 
+    &::placeholder {
+      color: var(--pf2e-subsystem-theming-primary-color);
+    }
+
     .data-icon {
       filter: var(--pf2e-subsystem-theming-icon-filter);
     }
@@ -62,6 +66,11 @@ form {
     border-color: var(--pf2e-subsystem-theming-border);
     color: var(--pf2e-subsystem-theming-primary-color);
     background-image: var(--pf2e-subsystem-theming-application-secondary-image);
+
+    &.accent,
+    &.accent.empty {
+      background-color: var(--pf2e-subsystem-theming-secondary-accent);
+    }
 
     option {
       background-color: var(--pf2e-subsystem-theming-secondary);

@@ -348,6 +348,80 @@
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-title {
   text-align: center;
+  margin: 0;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-search-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 8px;
+  position: relative;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-search-bar-container .bestiary-search-bar-inner-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-search-bar-container .bestiary-search-bar-inner-container .bestiary-search-bar {
+  width: 320px;
+  border-radius: 0;
+  padding-right: 42px;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-search-bar-container .bestiary-search-bar-inner-container .bestiary-search-type-container {
+  position: absolute;
+  right: 0;
+  height: 100%;
+  border-width: 1px;
+  border-style: solid;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-search-bar-container .bestiary-search-bar-inner-container .bestiary-search-type-container .bestiary-search-type-inner-container {
+  padding: 2px;
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-search-bar-container .bestiary-search-bar-inner-container .bestiary-search-type-container .bestiary-search-type-inner-container:first-of-type {
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-search-bar-container .bestiary-search-bar-inner-container .bestiary-search-type-container .bestiary-search-type-inner-container i {
+  font-size: 10px;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-search-bar-container .bestiary-search-bar-result-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  width: 320px;
+  z-index: 2;
+  border-width: 0 1px 1px 1px;
+  top: 32px;
+  gap: 4px;
+  max-height: 0;
+  transition: max-height 0.3s;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-search-bar-container .bestiary-search-bar-result-container.open {
+  max-height: 300px;
+  border-style: solid;
+  padding: 4px 16px;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-search-bar-container .bestiary-search-bar-result-container .bestiary-search-bar-result {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 6px;
+  padding: 0 8px;
+  display: flex;
+  justify-content: space-between;
+}
+.pf2e-bestiary-tracking.bestiary .bestiary-search-bar-container .bestiary-search-bar-result-container .bestiary-search-bar-result .bestiary-search-bar-result-category {
+  font-weight: bold;
 }
 .pf2e-bestiary-tracking.bestiary .bestiary-main-page {
   display: flex;
@@ -1917,6 +1991,10 @@ form.pf2e-bestiary-tracking.application > header .header-control {
 .pf2e-bestiary-tracking input.primary-container.empty {
   background-color: var(--pf2e-subsystem-theming-primary);
 }
+.pf2e-bestiary-tracking .primary-container::placeholder,
+.pf2e-bestiary-tracking input.primary-container::placeholder {
+  color: var(--pf2e-subsystem-theming-primary-color);
+}
 .pf2e-bestiary-tracking .primary-container .data-icon,
 .pf2e-bestiary-tracking input.primary-container .data-icon {
   filter: var(--pf2e-subsystem-theming-icon-filter);
@@ -1938,6 +2016,12 @@ form.pf2e-bestiary-tracking.application > header .header-control {
   border-color: var(--pf2e-subsystem-theming-border);
   color: var(--pf2e-subsystem-theming-primary-color);
   background-image: var(--pf2e-subsystem-theming-application-secondary-image);
+}
+.pf2e-bestiary-tracking .secondary-container.accent,
+.pf2e-bestiary-tracking input.secondary-container.accent,
+.pf2e-bestiary-tracking .secondary-container.accent.empty,
+.pf2e-bestiary-tracking input.secondary-container.accent.empty {
+  background-color: var(--pf2e-subsystem-theming-secondary-accent);
 }
 .pf2e-bestiary-tracking .secondary-container option,
 .pf2e-bestiary-tracking input.secondary-container option {

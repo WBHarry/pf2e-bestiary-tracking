@@ -46,6 +46,31 @@
     <body>
         {{#if (not this.selected.type)}}
             {{#if (not this.hideWelcome)}}<h2 class="bestiary-title primary-border-container primary-text-container text-shadow-container">{{localize "PF2EBestiary.Bestiary.Welcome.Greeting"}}</h2>{{/if}}
+            <div class="bestiary-search-bar-container">
+                <div class="bestiary-search-bar-inner-container">
+                    <input type="text" class="bestiary-search-bar primary-container" value="{{this.globalSearch.value}}" placeholder="{{localize "PF2EBestiary.Bestiary.GlobalSearch.Placeholder"}}" />
+                    <div class="bestiary-search-type-container">
+                        <div data-action="setGlobalSearchMode" data-mode="0" class="bestiary-search-type-inner-container secondary-container {{#if (eq this.globalSearch.mode 0)}}accent{{/if}} primary-hover-container" title="{{localize "PF2EBestiary.Bestiary.GlobalSearch.NameMode"}}">
+                            <i class="fa-solid fa-a"></i>
+                            <i class="fa-solid fa-b"></i>
+                            <i class="fa-solid fa-c"></i>
+                        </div>
+                        <div data-action="setGlobalSearchMode" data-mode="1" class="bestiary-search-type-inner-container secondary-container {{#if (eq this.globalSearch.mode 1)}}accent{{/if}} primary-hover-container" title="{{localize "PF2EBestiary.Bestiary.GlobalSearch.TraitMode"}}">
+                            <i class="fa-solid fa-fire"></i>
+                            <i class="fa-solid fa-wind"></i>
+                            <i class="fa-solid fa-water"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bestiary-search-bar-result-container {{#if (gt this.globalSearch.results.length 0)}}open{{/if}} secondary-container">
+                    {{#each this.globalSearch.results}}
+                        <div data-action="globalSearchSelect" data-id="{{this.id}}" class="bestiary-search-bar-result tertiary-container primary-hover-container">
+                            <div>{{this.name}}</div>
+                            <div class="bestiary-search-bar-result-category">{{this.type}}</div>
+                        </div>
+                    {{/each}}
+                </div>
+            </div>
             <div class="bestiary-main-page">
                 <div class="main-page-container {{#if (eq this.sectionsPositioning 'bottom')}}bottom{{/if}}{{#if (eq this.sectionsPositioning 'top')}}top{{/if}}">
                     {{#if this.showCategories}}

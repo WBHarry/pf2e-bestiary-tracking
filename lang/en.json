@@ -156,6 +156,11 @@
       "UsingPlayerView": "Using Player View",
       "DeleteMonsterTitle": "Delete Monster",
       "DeleteMonsterText": "Are you sure you want to remove the creature from the Bestiary?",
+      "GlobalSearch": {
+        "Placeholder": "Search for something in the Bestiary",
+        "NameMode": "Search by name",
+        "TraitMode": "Search by trait"
+      },
       "WindowControls": {
         "RefreshBestiary": "Refresh Bestiary",
         "BestiarySelection": "Bestiary Management",

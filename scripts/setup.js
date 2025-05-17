@@ -99,8 +99,8 @@ export const registerKeyBindings = () => {
     uneditable: [],
     editable: [
       {
-        key: "ControlLeft",
-        modifiers: [],
+        key: "KeyP",
+        modifiers: ["CONTROL"],
       },
     ],
     restricted: true,

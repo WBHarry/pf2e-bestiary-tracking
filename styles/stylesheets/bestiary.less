@@ -362,6 +362,91 @@
 
     .bestiary-title {
       text-align: center;
+      margin: 0;
+    }
+
+    .bestiary-search-bar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 8px;
+      position: relative;
+
+      .bestiary-search-bar-inner-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        .bestiary-search-bar {
+          width: 320px;
+          border-radius: 0;
+          padding-right: 42px;
+        }
+
+        .bestiary-search-type-container {
+          position: absolute;
+          right: 0;
+          height: 100%;
+          border-width: 1px;
+          border-style: solid;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+
+          .bestiary-search-type-inner-container {
+            padding: 2px;
+            display: flex;
+            gap: 4px;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+            flex: 1;
+
+            &:first-of-type {
+              border-bottom-width: 1px;
+              border-bottom-style: solid;
+            }
+
+            i {
+              font-size: 10px;
+            }
+          }
+        }
+      }
+
+      .bestiary-search-bar-result-container {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+        width: 320px;
+        z-index: 2;
+        border-width: 0 1px 1px 1px;
+        top: 32px;
+        gap: 4px;
+        max-height: 0;
+        transition: max-height 0.3s;
+
+        &.open {
+          max-height: 300px;
+          border-style: solid;
+          padding: 4px 16px;
+        }
+
+        .bestiary-search-bar-result {
+          border-width: 1px;
+          border-style: solid;
+          border-radius: 6px;
+          padding: 0 8px;
+          display: flex;
+          justify-content: space-between;
+
+          .bestiary-search-bar-result-category {
+            font-weight: bold;
+          }
+        }
+      }
     }
 
     .bestiary-main-page {
