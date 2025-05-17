@@ -6381,14 +6381,14 @@ class NPC extends Creature {
               required: true,
               initial: false,
             }),
-            value: new fields.StringField({}),
+            value: new fields.HTMLField({}),
           }),
           personality: new fields.SchemaField({
             revealed: new fields.BooleanField({
               required: true,
               initial: false,
             }),
-            value: new fields.StringField({}),
+            value: new fields.HTMLField({}),
             data: new fields.SchemaField(
               {
                 attitude: new fields.SchemaField({
@@ -8173,10 +8173,10 @@ class Hazard extends foundry.abstract.TypeDataModel {
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$b, ApplicationV2: ApplicationV2$b } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$c, ApplicationV2: ApplicationV2$c } = foundry.applications.api;
 
-class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$b(
-  ApplicationV2$b,
+class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$c(
+  ApplicationV2$c,
 ) {
   constructor() {
     super({});
@@ -8321,10 +8321,10 @@ class BestiaryAppearanceMenu extends HandlebarsApplicationMixin$b(
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$a, ApplicationV2: ApplicationV2$a } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$b, ApplicationV2: ApplicationV2$b } = foundry.applications.api;
 
-class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$a(
-  ApplicationV2$a,
+class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$b(
+  ApplicationV2$b,
 ) {
   constructor() {
     super({});
@@ -8656,10 +8656,10 @@ class BestiaryIntegrationMenu extends HandlebarsApplicationMixin$a(
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$9, ApplicationV2: ApplicationV2$9 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$a, ApplicationV2: ApplicationV2$a } = foundry.applications.api;
 
-class BestiaryLabelsMenu extends HandlebarsApplicationMixin$9(
-  ApplicationV2$9,
+class BestiaryLabelsMenu extends HandlebarsApplicationMixin$a(
+  ApplicationV2$a,
 ) {
   constructor() {
     super({});
@@ -8725,10 +8725,10 @@ class BestiaryLabelsMenu extends HandlebarsApplicationMixin$9(
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$8, ApplicationV2: ApplicationV2$8 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$9, ApplicationV2: ApplicationV2$9 } = foundry.applications.api;
 
-class VagueDescriptionsMenu extends HandlebarsApplicationMixin$8(
-  ApplicationV2$8,
+class VagueDescriptionsMenu extends HandlebarsApplicationMixin$9(
+  ApplicationV2$9,
 ) {
   constructor() {
     super({});
@@ -8919,10 +8919,10 @@ const defeatedModes = {
   },
 };
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$7, ApplicationV2: ApplicationV2$7 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$8, ApplicationV2: ApplicationV2$8 } = foundry.applications.api;
 
-class BestiaryDisplayMenu extends HandlebarsApplicationMixin$7(
-  ApplicationV2$7,
+class BestiaryDisplayMenu extends HandlebarsApplicationMixin$8(
+  ApplicationV2$8,
 ) {
   constructor() {
     super({});
@@ -9389,7 +9389,7 @@ const registerKeyBindings = () => {
     editable: [
       {
         key: "KeyP",
-        modifiers: ['CONTROL'],
+        modifiers: ["CONTROL"],
       },
     ],
     restricted: true,
@@ -12988,10 +12988,10 @@ const socketEvent = {
   UpdateBestiary: "UpdateBestiary",
 };
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$6, ApplicationV2: ApplicationV2$6 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$7, ApplicationV2: ApplicationV2$7 } = foundry.applications.api;
 
-class ImportDialog extends HandlebarsApplicationMixin$6(
-  ApplicationV2$6,
+class ImportDialog extends HandlebarsApplicationMixin$7(
+  ApplicationV2$7,
 ) {
   constructor(title, validation, resolve, reject) {
     super({});
@@ -13103,10 +13103,10 @@ class ImportDialog extends HandlebarsApplicationMixin$6(
   //   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$5, ApplicationV2: ApplicationV2$5 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$6, ApplicationV2: ApplicationV2$6 } = foundry.applications.api;
 
-class BestiarySelection extends HandlebarsApplicationMixin$5(
-  ApplicationV2$5,
+class BestiarySelection extends HandlebarsApplicationMixin$6(
+  ApplicationV2$6,
 ) {
   constructor() {
     super({});
@@ -13762,10 +13762,10 @@ class ExpandedDragDrop extends foundry.applications.ux.DragDrop
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$4, ApplicationV2: ApplicationV2$4 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$5, ApplicationV2: ApplicationV2$5 } = foundry.applications.api;
 
-class AvatarMenu extends HandlebarsApplicationMixin$4(
-  ApplicationV2$4,
+class AvatarMenu extends HandlebarsApplicationMixin$5(
+  ApplicationV2$5,
 ) {
   constructor(entity, resolve, reject) {
     super({});
@@ -13856,10 +13856,10 @@ class AvatarMenu extends HandlebarsApplicationMixin$4(
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$3, ApplicationV2: ApplicationV2$3 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$4, ApplicationV2: ApplicationV2$4 } = foundry.applications.api;
 
-class ActorLinkSettingsMenu extends HandlebarsApplicationMixin$3(
-  ApplicationV2$3,
+class ActorLinkSettingsMenu extends HandlebarsApplicationMixin$4(
+  ApplicationV2$4,
 ) {
   constructor(resolve, reject) {
     super({});
@@ -13934,10 +13934,10 @@ class ActorLinkSettingsMenu extends HandlebarsApplicationMixin$3(
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$2, ApplicationV2: ApplicationV2$2 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$3, ApplicationV2: ApplicationV2$3 } = foundry.applications.api;
 
-class AvatarLinkMenu extends HandlebarsApplicationMixin$2(
-  ApplicationV2$2,
+class AvatarLinkMenu extends HandlebarsApplicationMixin$3(
+  ApplicationV2$3,
 ) {
   constructor(entity, resolve, reject) {
     super({});
@@ -14309,10 +14309,10 @@ class AvatarLinkMenu extends HandlebarsApplicationMixin$2(
   }
 }
 
-const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$2, ApplicationV2: ApplicationV2$2 } = foundry.applications.api;
 
-class ClipboardDialog extends HandlebarsApplicationMixin$1(
-  ApplicationV2$1,
+class ClipboardDialog extends HandlebarsApplicationMixin$2(
+  ApplicationV2$2,
 ) {
   constructor(text) {
     super({});
@@ -14345,6 +14345,66 @@ class ClipboardDialog extends HandlebarsApplicationMixin$1(
 
     return context;
   }
+}
+
+const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
+
+class TextDialog extends HandlebarsApplicationMixin$1(ApplicationV2$1) {
+    constructor(resolve, reject, initialText, label) {
+        super({});
+
+        this.resolve = resolve;
+        this.reject = reject;
+        this.initialText = initialText;
+        this.label = label;
+    }
+
+    get title() {
+        return this.label;
+    }
+
+    static DEFAULT_OPTIONS = {
+        tag: "form",
+        id: "pf2e-bestiary-text-dialog",
+        classes: ["pf2e-bestiary-tracking", "bestiary-text-dialog"],
+        position: { width: "560", height: "auto" },
+        actions: {},
+        form: { handler: this.updateData, submitOnChange: true },
+    };
+
+    static PARTS = {
+        main: {
+            id: "main",
+            template: "modules/pf2e-bestiary-tracking/templates/textDialog.hbs",
+        },
+    }
+
+    async _prepareContext(_options) {
+        const context = await super._prepareContext(_options);
+        context.text = this.initialText;
+        context.enrichedText = await foundry.applications.ux.TextEditor.implementation.enrichHTML(context.text);
+
+        return context;
+    }
+
+    _attachPartListeners(partId, htmlElement, options) {
+        super._attachPartListeners(partId, htmlElement, options);
+    }
+
+    static async updateData(event, element, formData) {
+        const data = foundry.utils.expandObject(formData.object);
+        this.resolve(data.text);
+        this.close({ updateClose: true });
+    }
+
+    async close(options={}) {
+        const { updateClose, ...baseOptions } = options;
+        if(!updateClose){
+            this.reject();
+        }
+
+        await super.close(baseOptions);
+    }
 }
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -14415,9 +14475,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     this.gmView = game.user.isGM;
     this.globalSearch = {
-      value: '',
+      value: "",
       mode: 0,
-      timeout:  null,
+      timeout: null,
       results: null,
     };
 
@@ -14498,6 +14558,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       influenceToggleHidden: this.influenceToggleHidden,
       globalSearchSelect: this.globalSearchSelect,
       setGlobalSearchMode: this.setGlobalSearchMode,
+      useEditTextDialog: this.useEditTextDialog,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -14605,9 +14666,17 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       );
 
     const bestiarySearchBar = htmlElement.querySelector(".bestiary-search-bar");
-    bestiarySearchBar?.addEventListener("keydown", this.bestiaryGlobalSearchUpdate.bind(this));
-    bestiarySearchBar?.addEventListener("keyup", event => event.stopPropagation());
-    bestiarySearchBar?.addEventListener("blur", this.bestiaryGlobalSearchBlur.bind(this));
+    bestiarySearchBar?.addEventListener(
+      "keydown",
+      this.bestiaryGlobalSearchUpdate.bind(this),
+    );
+    bestiarySearchBar?.addEventListener("keyup", (event) =>
+      event.stopPropagation(),
+    );
+    bestiarySearchBar?.addEventListener(
+      "blur",
+      this.bestiaryGlobalSearchBlur.bind(this),
+    );
 
     this._dragDrop.forEach((d) => d.bind(htmlElement));
 
@@ -17228,48 +17297,92 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   static globalSearchSelect(_, button) {
-    new PF2EBestiary({}, this.bestiary.pages.get(button.dataset.id)).render(true);
+    new PF2EBestiary({}, this.bestiary.pages.get(button.dataset.id)).render(
+      true,
+    );
   }
 
   static setGlobalSearchMode(event, button) {
     event.stopPropagation();
     this.globalSearch.mode = Number.parseInt(button.dataset.mode);
-    button.parentElement.querySelector(`.bestiary-search-type-inner-container[data-mode="${this.globalSearch.mode === 0 ? 1 : 0}"]`).classList.remove('accent');
-    button.classList.add('accent');
-    const input = button.parentElement.parentElement.querySelector('.bestiary-search-bar-inner-container .bestiary-search-bar');
+    button.parentElement
+      .querySelector(
+        `.bestiary-search-type-inner-container[data-mode="${this.globalSearch.mode === 0 ? 1 : 0}"]`,
+      )
+      .classList.remove("accent");
+    button.classList.add("accent");
+    const input = button.parentElement.parentElement.querySelector(
+      ".bestiary-search-bar-inner-container .bestiary-search-bar",
+    );
     this.bestiaryGlobalSearchSet(this.globalSearch.value, input);
   }
-  
+
+  static useEditTextDialog(_, button){
+    const initialText = foundry.utils.getProperty(this.selected.monster, button.dataset.path);
+    new Promise((resolve, reject) => {
+      new TextDialog(resolve, reject, initialText, game.i18n.format('PF2EBestiary.TextDialog.Title', { name: button.dataset.title })).render(true);
+    }).then(async html => {
+      await this.selected.monster.update({ [button.dataset.path]: html });
+      
+      await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+        action: socketEvent.UpdateBestiary,
+        data: {},
+      });
+      Hooks.callAll(socketEvent.UpdateBestiary, {});
+    });
+  }
+
   bestiaryGlobalSearchUpdate(event) {
     event.preventDefault();
     event.stopPropagation();
     let newValue = event.currentTarget.value;
 
-    if(event.keyCode === 65 && event.ctrlKey) {
+    if (event.keyCode === 65 && event.ctrlKey) {
       event.currentTarget.selectionStart = 0;
       event.currentTarget.selectionEnd = event.currentTarget.value.length;
       return;
-    }
-    else if(event.keyCode === 8 || event.keyCode === 45) {
-      if(event.currentTarget.selectionStart !== event.currentTarget.selectionEnd){
-        newValue = event.currentTarget.value.substring(0, event.currentTarget.selectionStart)+event.currentTarget.value.substring(event.currentTarget.selectionEnd, event.currentTarget.value.length);
+    } else if (event.keyCode === 8 || event.keyCode === 45) {
+      if (
+        event.currentTarget.selectionStart !== event.currentTarget.selectionEnd
+      ) {
+        newValue =
+          event.currentTarget.value.substring(
+            0,
+            event.currentTarget.selectionStart,
+          ) +
+          event.currentTarget.value.substring(
+            event.currentTarget.selectionEnd,
+            event.currentTarget.value.length,
+          );
+      } else {
+        newValue = event.currentTarget.value.slice(
+          0,
+          event.currentTarget.value.length - 1,
+        );
       }
-      else {
-        newValue = event.currentTarget.value.slice(0, event.currentTarget.value.length-1);
-      }
-    }
-    else if(event.keyCode === 32) {
-      newValue = event.currentTarget.value+' ';
-    }
-    else if((event.keyCode >= 65 && event.keyCode <= 90) || (event.keyCode >= 49 && event.keyCode <= 57)) {
-      if(event.currentTarget.selectionStart !== event.currentTarget.selectionEnd){
-        newValue = event.currentTarget.value.substring(0, event.currentTarget.selectionStart) + event.key + event.currentTarget.value.substring(event.currentTarget.selectionEnd, event.currentTarget.value.length);
-      }
-      else {
+    } else if (event.keyCode === 32) {
+      newValue = event.currentTarget.value + " ";
+    } else if (
+      (event.keyCode >= 65 && event.keyCode <= 90) ||
+      (event.keyCode >= 49 && event.keyCode <= 57)
+    ) {
+      if (
+        event.currentTarget.selectionStart !== event.currentTarget.selectionEnd
+      ) {
+        newValue =
+          event.currentTarget.value.substring(
+            0,
+            event.currentTarget.selectionStart,
+          ) +
+          event.key +
+          event.currentTarget.value.substring(
+            event.currentTarget.selectionEnd,
+            event.currentTarget.value.length,
+          );
+      } else {
         newValue = `${newValue}${event.key}`;
       }
-    }
-    else return;
+    } else return;
 
     this.bestiaryGlobalSearchSet(newValue, event.currentTarget);
   }
@@ -17278,60 +17391,98 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     this.globalSearch.value = newValue;
     target.value = newValue;
 
-    if(this.globalSearch.mode === 0) {
-      this.globalSearch.results = !this.globalSearch.value ? [] : this.bestiary.pages
-      .filter(x => {
-          return (game.user.isGM || !x.system.hidden) && x.system.name.value.toLowerCase().includes(this.globalSearch.value);
-      })
-      .map(x => ({ id: x.id, name: x.system.name.value, type: game.i18n.localize(`TYPES.JournalEntryPage.${x.type}`) }))
-      .sort((a, b) => a.name.indexOf(this.globalSearch.value) - b.name.indexOf(this.globalSearch.value));
-    }
-    else {
-      const flatTraits = !this.globalSearch.value ? [] : Array.from(this.bestiary.pages)
-      .flatMap(page => Object.values(page.system.traits).map(x => ({ id: page.id, hidden: page.system.hidden, name: page.system.name.value, type: game.i18n.localize(CONFIG.PF2E.creatureTraits[x.value]) })))
-      .filter(x => {
-          return (game.user.isGM || !x.hidden) && x.type.toLowerCase().includes(this.globalSearch.value);
-      })
-      .sort((a, b) => a.name.indexOf(this.globalSearch.value) - b.name.indexOf(this.globalSearch.value));
+    if (this.globalSearch.mode === 0) {
+      this.globalSearch.results = !this.globalSearch.value
+        ? []
+        : this.bestiary.pages
+            .filter((x) => {
+              return (
+                (game.user.isGM || !x.system.hidden) &&
+                x.system.name.value
+                  .toLowerCase()
+                  .includes(this.globalSearch.value)
+              );
+            })
+            .map((x) => ({
+              id: x.id,
+              name: x.system.name.value,
+              type: game.i18n.localize(`TYPES.JournalEntryPage.${x.type}`),
+            }))
+            .sort(
+              (a, b) =>
+                a.name.indexOf(this.globalSearch.value) -
+                b.name.indexOf(this.globalSearch.value),
+            );
+    } else {
+      const flatTraits = !this.globalSearch.value
+        ? []
+        : Array.from(this.bestiary.pages)
+            .flatMap((page) =>
+              Object.values(page.system.traits).map((x) => ({
+                id: page.id,
+                hidden: page.system.hidden,
+                name: page.system.name.value,
+                type: game.i18n.localize(CONFIG.PF2E.creatureTraits[x.value]),
+              })),
+            )
+            .filter((x) => {
+              return (
+                (game.user.isGM || !x.hidden) &&
+                x.type.toLowerCase().includes(this.globalSearch.value)
+              );
+            })
+            .sort(
+              (a, b) =>
+                a.name.indexOf(this.globalSearch.value) -
+                b.name.indexOf(this.globalSearch.value),
+            );
 
       const unique = new Map();
-      for(var trait of flatTraits) {
+      for (var trait of flatTraits) {
         unique.set(trait.id, trait);
       }
-      
+
       this.globalSearch.results = Array.from(unique.values());
     }
-    
 
-    const resultsContainer = target.parentElement.parentElement.querySelector('.bestiary-search-bar-result-container');
+    const resultsContainer = target.parentElement.parentElement.querySelector(
+      ".bestiary-search-bar-result-container",
+    );
     resultsContainer.replaceChildren();
 
-    const resultElements = this.globalSearch.results.map(result => `
+    const resultElements = this.globalSearch.results.map(
+      (result) => `
       <div data-action="globalSearchSelect" data-id="${result.id}" class="bestiary-search-bar-result tertiary-container primary-hover-container">
           <div>${result.name}</div>
           <div class="bestiary-search-bar-result-category">${result.type}</div>
       </div>  
-    `);
+    `,
+    );
 
-    for(var element of resultElements) {
-      resultsContainer.insertAdjacentHTML('beforeend', element);
+    for (var element of resultElements) {
+      resultsContainer.insertAdjacentHTML("beforeend", element);
     }
 
-    if(resultElements.length > 0) {
-      resultsContainer.classList.add('open');
-    }
-    else {
-      resultsContainer.classList.remove('open');
+    if (resultElements.length > 0) {
+      resultsContainer.classList.add("open");
+    } else {
+      resultsContainer.classList.remove("open");
     }
   }
 
   bestiaryGlobalSearchBlur(event) {
-    this.globalSearch.results = null;
-    this.globalSearch.value = '';
-    event.currentTarget.value = '';
-    const resultsContainer = event.currentTarget.parentElement.parentElement.querySelector('.bestiary-search-bar-result-container');
-    resultsContainer.replaceChildren();
-    resultsContainer.classList.remove('open');
+    const target = event.currentTarget;
+    setTimeout(() => {
+      this.globalSearch.results = null;
+      this.globalSearch.value = "";
+      target.value = "";
+      const resultsContainer =
+        target.parentElement.parentElement.querySelector(
+          ".bestiary-search-bar-result-container",
+        );
+      resultsContainer.replaceChildren();
+      resultsContainer.classList.remove("open");
+    }, 100);
   }
 
   async hideTab(event) {
@@ -18060,13 +18211,18 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   switchPlayerMode = (e) => {
-    e.preventDefault();
     if (!game.user.isGM || this.npcData.editMode) return;
 
     if (
-      game.keybindings.get("pf2e-bestiary-tracking", "view-as-player").some((binding) => binding.key === e.code && (
-        binding.modifiers.length === 0 || (binding.modifiers.includes('Control') && e.ctrlKey) || (binding.modifiers.includes('Shift') && e.shiftKey)
-      ))
+      game.keybindings
+        .get("pf2e-bestiary-tracking", "view-as-player")
+        .some(
+          (binding) =>
+            binding.key === e.code &&
+            (binding.modifiers.length === 0 ||
+              (binding.modifiers.includes("Control") && e.ctrlKey) ||
+              (binding.modifiers.includes("Shift") && e.shiftKey)),
+        )
     ) {
       this.gmView = false;
       this.render();
@@ -18074,13 +18230,20 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   };
 
   resetPlayerMode = (e) => {
-    e.preventDefault();
     if (!game.user.isGM || this.npcData.editMode) return;
 
     if (
-      game.keybindings.get("pf2e-bestiary-tracking", "view-as-player").some((binding) => binding.key === e.code || (
-        binding.modifiers.length > 0 && ((binding.modifiers.includes('Control') && (e.code === 'ControlLeft' || e.code === 'ControlRight')) || (binding.modifiers.includes('Shift') && (e.code === 'ShiftLeft' || e.code === 'RightShift')))
-      ))
+      game.keybindings
+        .get("pf2e-bestiary-tracking", "view-as-player")
+        .some(
+          (binding) =>
+            binding.key === e.code ||
+            (binding.modifiers.length > 0 &&
+              ((binding.modifiers.includes("Control") &&
+                (e.code === "ControlLeft" || e.code === "ControlRight")) ||
+                (binding.modifiers.includes("Shift") &&
+                  (e.code === "ShiftLeft" || e.code === "RightShift")))),
+        )
     ) {
       this.gmView = true;
       this.render();

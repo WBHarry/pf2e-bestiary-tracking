@@ -180,26 +180,24 @@
             {{> "modules/pf2e-bestiary-tracking/templates/partials/toggleTextSection.hbs" icon="fa-solid fa-person-rays" title="PF2EBestiary.Bestiary.NPC.Appearance" editMode=this.npcState.editMode path="system.npcData.general.appearance" data=this.general.appearance }}
             <div class="flexcol flex1 data-section primary-container active">
                 <div class="data-header primary-container">
-                    <div class="data-header-label {{#if this.gmView}}{{PF2EBTToggleContainer this.gmView this.general.background}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.gmView this.contrastRevealedState this.general.background}}" data-action="toggleRevealed" data-path="system.npcData.general.background">
-                        <i class="header-icon fa-solid fa-house-chimney primary-icon"></i>
-                        <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Background"}}</div>
-                    </div>
-
-                    {{#if (and this.optionalFields.birthplace this.general.birthplace.value)}}
-                        <div class="data-header-label {{#if this.gmView}}{{PF2EBTToggleContainer this.gmView this.general.birthplace}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.gmView this.contrastRevealedState this.general.birthplace}}" data-action="toggleRevealed" data-path="system.npcData.general.birthplace">
-                            <div class="flex-value"><strong>{{localize "Birthplace"}}:</strong></div>
-                            {{#if (or this.gmView this.general.birthplace.revealed)}}<div>{{this.general.birthplace.value}}</div>{{else}}?{{/if}}
+                    <div class="data-header-inner">
+                        <div class="data-header-label {{#if this.gmView}}{{PF2EBTToggleContainer this.gmView this.general.background}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.gmView this.contrastRevealedState this.general.background}}" data-action="toggleRevealed" data-path="system.npcData.general.background">
+                            <i class="header-icon fa-solid fa-house-chimney primary-icon"></i>
+                            <div class="flex-value">{{localize "PF2EBestiary.Bestiary.NPC.Background"}}</div>
                         </div>
+                        {{#if (and this.optionalFields.birthplace)}}
+                            <div class="data-header-label {{#if this.gmView}}{{PF2EBTToggleContainer this.gmView this.general.birthplace}}{{/if}}" style="{{PF2EBTToggleContainerOverride this.gmView this.contrastRevealedState this.general.birthplace}}" data-action="toggleRevealed" data-path="system.npcData.general.birthplace">
+                                <div class="flex-value"><strong>{{localize "Birthplace"}}:</strong></div>
+                                {{#if (or this.gmView this.general.birthplace.revealed)}}<div>{{this.general.birthplace.value}}</div>{{else}}?{{/if}}
+                            </div>
+                        {{/if}}
+                    </div>
+                    {{#if (and this.gmView this.npcState.editMode)}}
+                        <i class="fa-solid fa-pen-to-square primary-hover-container" data-action="useEditTextDialog" data-path="system.npcData.general.background.value" data-title="{{localize "PF2EBestiary.Bestiary.NPC.Background"}}"></i>
                     {{/if}}
                 </div>
                 <div class="data-body primary-border-container flex1">
-                    {{#if (and this.gmView this.npcState.editMode)}}
-                        <prose-mirror class="data-input primary-editor" name="system.npcData.general.background.value" value="{{this.general.background.value}}">
-                            {{{this.general.background.enriched}}}
-                        </prose-mirror>
-                    {{else}}
-                        {{#if (or this.gmView this.general.background.revealed)}}{{{this.general.background.enrichedValue}}}{{else}}?{{/if}}
-                    {{/if}}
+                    {{#if (or this.gmView this.general.background.revealed)}}{{{this.general.background.enrichedValue}}}{{else}}?{{/if}}
                 </div>
             </div>
         </div>

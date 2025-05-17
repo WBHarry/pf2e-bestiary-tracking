@@ -95,6 +95,9 @@
       "GM": "GM Sections",
       "Import": "Import"
     },
+    "TextDialog": {
+      "Title": "{name} - Text Editor"
+    },
     "Miscellaneous": {
       "Name": "Name",
       "Blurb": "Name Info",

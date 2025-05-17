@@ -4,12 +4,11 @@
             <i class="header-icon primary-icon {{icon}}"></i>
             <div class="flex-value">{{localize title}}</div>
         </div>
+        {{#if (and this.gmView editMode)}}
+            <i class="fa-solid fa-pen-to-square primary-hover-container" data-action="useEditTextDialog" data-path="{{concat path ".value"}}" data-title="{{localize title}}"></i>
+        {{/if}}
     </div>
     <div class="data-body primary-border-container flex1">
-        {{#if (and this.gmView editMode)}}
-            <textarea class="data-input secondary-container" name="{{concat path ".value"}}">{{data.value}}</textarea>
-        {{else}}
-            {{#if (or this.gmView data.revealed)}}{{#if data.enrichedValue}}{{{data.enrichedValue}}}{{else}}{{data.value}}{{/if}}{{else}}?{{/if}}
-        {{/if}}
+        {{#if (or this.gmView data.revealed)}}{{#if data.enrichedValue}}{{{data.enrichedValue}}}{{else}}{{data.value}}{{/if}}{{else}}?{{/if}}
     </div>
 </div>

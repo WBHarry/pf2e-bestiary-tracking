@@ -40,6 +40,7 @@ import {
   skillTable,
 } from "../scripts/statisticsData.js";
 import ClipboardDialog from "./clipboardDialog.js";
+import TextDialog from "./textDialog.js";
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 
@@ -192,6 +193,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       influenceToggleHidden: this.influenceToggleHidden,
       globalSearchSelect: this.globalSearchSelect,
       setGlobalSearchMode: this.setGlobalSearchMode,
+      useEditTextDialog: this.useEditTextDialog,
     },
     form: { handler: this.updateData, submitOnChange: true },
     window: {
@@ -2950,6 +2952,31 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     this.bestiaryGlobalSearchSet(this.globalSearch.value, input);
   }
 
+  static useEditTextDialog(_, button) {
+    const initialText = foundry.utils.getProperty(
+      this.selected.monster,
+      button.dataset.path,
+    );
+    new Promise((resolve, reject) => {
+      new TextDialog(
+        resolve,
+        reject,
+        initialText,
+        game.i18n.format("PF2EBestiary.TextDialog.Title", {
+          name: button.dataset.title,
+        }),
+      ).render(true);
+    }).then(async (html) => {
+      await this.selected.monster.update({ [button.dataset.path]: html });
+
+      await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+        action: socketEvent.UpdateBestiary,
+        data: {},
+      });
+      Hooks.callAll(socketEvent.UpdateBestiary, {});
+    });
+  }
+
   bestiaryGlobalSearchUpdate(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -3089,15 +3116,17 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   bestiaryGlobalSearchBlur(event) {
-    this.globalSearch.results = null;
-    this.globalSearch.value = "";
-    event.currentTarget.value = "";
-    const resultsContainer =
-      event.currentTarget.parentElement.parentElement.querySelector(
+    const target = event.currentTarget;
+    setTimeout(() => {
+      this.globalSearch.results = null;
+      this.globalSearch.value = "";
+      target.value = "";
+      const resultsContainer = target.parentElement.parentElement.querySelector(
         ".bestiary-search-bar-result-container",
       );
-    resultsContainer.replaceChildren();
-    resultsContainer.classList.remove("open");
+      resultsContainer.replaceChildren();
+      resultsContainer.classList.remove("open");
+    }, 100);
   }
 
   async hideTab(event) {
@@ -3826,7 +3855,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   }
 
   switchPlayerMode = (e) => {
-    e.preventDefault();
     if (!game.user.isGM || this.npcData.editMode) return;
 
     if (
@@ -3846,7 +3874,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   };
 
   resetPlayerMode = (e) => {
-    e.preventDefault();
     if (!game.user.isGM || this.npcData.editMode) return;
 
     if (

@@ -37,14 +37,14 @@ export class NPC extends Creature {
               required: true,
               initial: false,
             }),
-            value: new fields.StringField({}),
+            value: new fields.HTMLField({}),
           }),
           personality: new fields.SchemaField({
             revealed: new fields.BooleanField({
               required: true,
               initial: false,
             }),
-            value: new fields.StringField({}),
+            value: new fields.HTMLField({}),
             data: new fields.SchemaField(
               {
                 attitude: new fields.SchemaField({
