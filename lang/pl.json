@@ -95,6 +95,9 @@
       "GM": "Sekcje MG",
       "Import": "Importuj"
     },
+    "TextDialog": {
+      "Title": "{name} - Edytor tekstu"
+    },
     "Miscellaneous": {
       "Name": "Nazwa",
       "Blurb": "Informacje dodatkowe",
@@ -156,6 +159,11 @@
       "UsingPlayerView": "Używanie widoku gracza",
       "DeleteMonsterTitle": "Usuń potwora",
       "DeleteMonsterText": "Czy na pewno chcesz usunąć stworzenie z Bestiariusza?",
+      "GlobalSearch": {
+        "Placeholder": "Wyszukaj coś w Bestiariuszu",
+        "NameMode": "Wyszukiwanie według nazwy",
+        "TraitMode": "Wyszukiwanie według cech"
+      },
       "WindowControls": {
         "RefreshBestiary": "Odśwież Bestiariusz",
         "BestiarySelection": "Zarządzanie bestiariuszem",
