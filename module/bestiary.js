@@ -300,6 +300,14 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         event.addEventListener("change", this.updateNPCCategorySort.bind(this)),
       );
 
+    if (game.user.isGM) {
+      htmlElement
+        .querySelectorAll(".pf2e-bestiary-tracking-toggle-section")
+        .forEach((event) =>
+          event.addEventListener("click", this.updateToggleSection.bind(this)),
+        );
+    }
+
     const bestiarySearchBar = htmlElement.querySelector(".bestiary-search-bar");
     bestiarySearchBar?.addEventListener(
       "keydown",
@@ -2965,6 +2973,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         game.i18n.format("PF2EBestiary.TextDialog.Title", {
           name: button.dataset.title,
         }),
+        button.dataset.path,
       ).render(true);
     }).then(async (html) => {
       await this.selected.monster.update({ [button.dataset.path]: html });
@@ -3192,6 +3201,45 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       data: {},
     });
     Hooks.callAll(socketEvent.UpdateBestiary, {});
+  }
+
+  async updateToggleSection(event) {
+    const toggleSectionId = event.currentTarget.id;
+    const dataPath = event.currentTarget.dataset.path;
+    const current = foundry.utils.getProperty(this.selected.monster, dataPath);
+    const currentlyToggled = current.includes(
+      `<div id="${toggleSectionId}" class="toggle-section-revealed`,
+    );
+    if (currentlyToggled) {
+      await this.selected.monster.update({
+        [dataPath]: current.replaceAll(
+          `<div id="${toggleSectionId}" class="toggle-section-revealed `,
+          `<div id="${toggleSectionId}" class="`,
+        ),
+      });
+    } else {
+      await this.selected.monster.update({
+        [dataPath]: current.replaceAll(
+          `<div id="${toggleSectionId}" class="pf2e-bestiary-tracking-toggle-section`,
+          `<div id="${toggleSectionId}" class="toggle-section-revealed pf2e-bestiary-tracking-toggle-section`,
+        ),
+      });
+    }
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+
+    // if(event.currentTarget.classList.contains('toggle-section-revealed')){
+    //   event.currentTarget.classList.remove('toggle-section-revealed');
+    // }
+    // else {
+    //   event.currentTarget.classList.replace('pf2e-bestiary-tracking-toggle-section', 'toggle-section-revealed');
+    //   event.currentTarget.classList.add('pf2e-bestiary-tracking-toggle-section');
+    // }
   }
 
   async toggleIsNPC() {

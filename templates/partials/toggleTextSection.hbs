@@ -9,6 +9,6 @@
         {{/if}}
     </div>
     <div class="data-body primary-border-container flex1">
-        {{#if (or this.gmView data.revealed)}}{{#if data.enrichedValue}}{{{data.enrichedValue}}}{{else}}{{data.value}}{{/if}}{{else}}?{{/if}}
+        {{#if (or this.gmView (and data.revealed data.enrichedValue))}}{{{data.enrichedValue}}}{{else}}?{{/if}}
     </div>
 </div>

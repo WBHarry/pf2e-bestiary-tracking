@@ -174,6 +174,28 @@ Hooks.once("setup", () => {
         new PF2EBestiary({}, page).render(true);
       },
     );
+
+    libWrapper.register(
+      "pf2e-bestiary-tracking",
+      "foundry.applications.ux.TextEditor.implementation.enrichHTML",
+      function (wrapped, ...args) {
+        let html = args[0];
+        if (game.user.isGM) {
+          html = html.replaceAll(
+            "pf2e-bestiary-tracking-toggle-section",
+            "pf2e-bestiary-tracking-toggle-section primary-hover-container gm",
+          );
+        } else {
+          html = html.replaceAll(
+            'class="pf2e-bestiary-tracking-toggle-section"',
+            'class="pf2e-bestiary-tracking-toggle-section" data-visibility="gm"',
+          );
+        }
+
+        args[0] = html;
+        return wrapped(...args);
+      },
+    );
   }
 });
 
@@ -904,5 +926,52 @@ Hooks.on("renderActorSheet", (sheet) => {
     bestiaryApp.element
       .querySelector(".monster-container")
       ?.classList?.add("closed");
+  }
+});
+
+Hooks.on("getProseMirrorMenuDropDowns", (menu, dropdowns) => {
+  const domElement = menu.view.dom;
+  if (
+    domElement.parentElement?.classList?.contains(
+      "pf2e-bestiary-tracking-editor",
+    )
+  ) {
+    dropdowns.format.entries = [
+      ...dropdowns.format.entries,
+      {
+        action: "pf2e-bestiary-tracking",
+        children: [
+          {
+            action: "pf2e-bestiary-tracking-toggle-section",
+            attrs: {
+              _preserve: { class: "pf2e-bestiary-tracking-toggle-section" },
+            },
+            class: "pf2e-bestiary-tracking-toggle-section",
+            node: menu.schema.nodes.div,
+            cmd: () => {
+              menu._toggleBlock(
+                menu.schema.nodes.div,
+                foundry.prosemirror.commands.wrapIn,
+                {
+                  attrs: {
+                    _preserve: {
+                      id: foundry.utils.randomID(),
+                      class: "pf2e-bestiary-tracking-toggle-section",
+                      "data-path":
+                        menu.view.dom.parentElement?.parentElement?.dataset
+                          ?.path,
+                    },
+                  },
+                },
+              );
+              return true;
+            },
+            priortiy: 1,
+            title: game.i18n.localize("Toggle Section"),
+          },
+        ],
+        title: game.i18n.localize("Bestiary"),
+      },
+    ];
   }
 });

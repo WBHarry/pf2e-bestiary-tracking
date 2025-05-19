@@ -91,6 +91,19 @@
   overflow-y: visible;
   overflow-x: visible;
 
+  .pf2e-bestiary-tracking-toggle-section.gm {
+    cursor: pointer;
+    border-width: 2px;
+    border-style: dashed;
+    border-color: var(--pf2e-subsystem-theming-secondary-border);
+    border-radius: 4px;
+    padding: 0 4px;
+
+    &.toggle-section-revealed {
+      border-style: solid;
+    }
+  }
+
   [data-visibility="gm"]:not(.dice-result > *) {
     background-color: var(--pf2e-subsystem-theming-primary-faded) !important;
     color: var(--pf2e-subsystem-theming-primary-color);

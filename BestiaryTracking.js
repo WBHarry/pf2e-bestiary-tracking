@@ -14349,62 +14349,69 @@ class ClipboardDialog extends HandlebarsApplicationMixin$2(
 
 const { HandlebarsApplicationMixin: HandlebarsApplicationMixin$1, ApplicationV2: ApplicationV2$1 } = foundry.applications.api;
 
-class TextDialog extends HandlebarsApplicationMixin$1(ApplicationV2$1) {
-    constructor(resolve, reject, initialText, label) {
-        super({});
+class TextDialog extends HandlebarsApplicationMixin$1(
+  ApplicationV2$1,
+) {
+  constructor(resolve, reject, initialText, label, path) {
+    super({});
 
-        this.resolve = resolve;
-        this.reject = reject;
-        this.initialText = initialText;
-        this.label = label;
+    this.resolve = resolve;
+    this.reject = reject;
+    this.initialText = initialText;
+    this.label = label;
+    this.path = path;
+  }
+
+  get title() {
+    return this.label;
+  }
+
+  static DEFAULT_OPTIONS = {
+    tag: "form",
+    id: "pf2e-bestiary-text-dialog",
+    classes: ["pf2e-bestiary-tracking", "bestiary-text-dialog"],
+    position: { width: "560", height: "auto" },
+    actions: {},
+    form: { handler: this.updateData, submitOnChange: true },
+  };
+
+  static PARTS = {
+    main: {
+      id: "main",
+      template: "modules/pf2e-bestiary-tracking/templates/textDialog.hbs",
+    },
+  };
+
+  async _prepareContext(_options) {
+    const context = await super._prepareContext(_options);
+    context.text = this.initialText;
+    context.path = this.path;
+    context.enrichedText =
+      await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+        context.text,
+      );
+
+    return context;
+  }
+
+  _attachPartListeners(partId, htmlElement, options) {
+    super._attachPartListeners(partId, htmlElement, options);
+  }
+
+  static async updateData(event, element, formData) {
+    const data = foundry.utils.expandObject(formData.object);
+    this.resolve(data.text);
+    this.close({ updateClose: true });
+  }
+
+  async close(options = {}) {
+    const { updateClose, ...baseOptions } = options;
+    if (!updateClose) {
+      this.reject();
     }
 
-    get title() {
-        return this.label;
-    }
-
-    static DEFAULT_OPTIONS = {
-        tag: "form",
-        id: "pf2e-bestiary-text-dialog",
-        classes: ["pf2e-bestiary-tracking", "bestiary-text-dialog"],
-        position: { width: "560", height: "auto" },
-        actions: {},
-        form: { handler: this.updateData, submitOnChange: true },
-    };
-
-    static PARTS = {
-        main: {
-            id: "main",
-            template: "modules/pf2e-bestiary-tracking/templates/textDialog.hbs",
-        },
-    }
-
-    async _prepareContext(_options) {
-        const context = await super._prepareContext(_options);
-        context.text = this.initialText;
-        context.enrichedText = await foundry.applications.ux.TextEditor.implementation.enrichHTML(context.text);
-
-        return context;
-    }
-
-    _attachPartListeners(partId, htmlElement, options) {
-        super._attachPartListeners(partId, htmlElement, options);
-    }
-
-    static async updateData(event, element, formData) {
-        const data = foundry.utils.expandObject(formData.object);
-        this.resolve(data.text);
-        this.close({ updateClose: true });
-    }
-
-    async close(options={}) {
-        const { updateClose, ...baseOptions } = options;
-        if(!updateClose){
-            this.reject();
-        }
-
-        await super.close(baseOptions);
-    }
+    await super.close(baseOptions);
+  }
 }
 
 const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
@@ -14664,6 +14671,12 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       .forEach((event) =>
         event.addEventListener("change", this.updateNPCCategorySort.bind(this)),
       );
+
+    if(game.user.isGM) {
+      htmlElement
+        .querySelectorAll(".pf2e-bestiary-tracking-toggle-section")
+        .forEach(event => event.addEventListener("click", this.updateToggleSection.bind(this)));
+    }
 
     const bestiarySearchBar = htmlElement.querySelector(".bestiary-search-bar");
     bestiarySearchBar?.addEventListener(
@@ -17317,13 +17330,24 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     this.bestiaryGlobalSearchSet(this.globalSearch.value, input);
   }
 
-  static useEditTextDialog(_, button){
-    const initialText = foundry.utils.getProperty(this.selected.monster, button.dataset.path);
+  static useEditTextDialog(_, button) {
+    const initialText = foundry.utils.getProperty(
+      this.selected.monster,
+      button.dataset.path,
+    );
     new Promise((resolve, reject) => {
-      new TextDialog(resolve, reject, initialText, game.i18n.format('PF2EBestiary.TextDialog.Title', { name: button.dataset.title })).render(true);
-    }).then(async html => {
+      new TextDialog(
+        resolve,
+        reject,
+        initialText,
+        game.i18n.format("PF2EBestiary.TextDialog.Title", {
+          name: button.dataset.title,
+        }),
+        button.dataset.path,
+      ).render(true);
+    }).then(async (html) => {
       await this.selected.monster.update({ [button.dataset.path]: html });
-      
+
       await game.socket.emit(`module.pf2e-bestiary-tracking`, {
         action: socketEvent.UpdateBestiary,
         data: {},
@@ -17476,10 +17500,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       this.globalSearch.results = null;
       this.globalSearch.value = "";
       target.value = "";
-      const resultsContainer =
-        target.parentElement.parentElement.querySelector(
-          ".bestiary-search-bar-result-container",
-        );
+      const resultsContainer = target.parentElement.parentElement.querySelector(
+        ".bestiary-search-bar-result-container",
+      );
       resultsContainer.replaceChildren();
       resultsContainer.classList.remove("open");
     }, 100);
@@ -17549,6 +17572,34 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     });
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
+
+  async updateToggleSection(event) {
+    const toggleSectionId = event.currentTarget.id;
+    const dataPath = event.currentTarget.dataset.path;
+    const current = foundry.utils.getProperty(this.selected.monster, dataPath);
+    const currentlyToggled = current.includes(`<div id="${toggleSectionId}" class="toggle-section-revealed`);
+    if(currentlyToggled){
+      await this.selected.monster.update({ [dataPath]: current.replaceAll(`<div id="${toggleSectionId}" class="toggle-section-revealed `, `<div id="${toggleSectionId}" class="`) });
+    }
+    else {
+      await this.selected.monster.update({ [dataPath]: current.replaceAll(`<div id="${toggleSectionId}" class="pf2e-bestiary-tracking-toggle-section`, `<div id="${toggleSectionId}" class="toggle-section-revealed pf2e-bestiary-tracking-toggle-section`) });
+    }
+
+    await game.socket.emit(`module.pf2e-bestiary-tracking`, {
+      action: socketEvent.UpdateBestiary,
+      data: {},
+    });
+
+    Hooks.callAll(socketEvent.UpdateBestiary, {});
+
+    // if(event.currentTarget.classList.contains('toggle-section-revealed')){
+    //   event.currentTarget.classList.remove('toggle-section-revealed');
+    // }
+    // else {
+    //   event.currentTarget.classList.replace('pf2e-bestiary-tracking-toggle-section', 'toggle-section-revealed');
+    //   event.currentTarget.classList.add('pf2e-bestiary-tracking-toggle-section');
+    // }
+  };
 
   async toggleIsNPC() {
     if (!this.selected.monster) return;
@@ -18701,6 +18752,21 @@ Hooks.once("setup", () => {
         new PF2EBestiary({}, page).render(true);
       },
     );
+
+    libWrapper.register('pf2e-bestiary-tracking', 'foundry.applications.ux.TextEditor.implementation.enrichHTML', function (wrapped, ...args) {
+      
+
+      let html = args[0];
+      if (game.user.isGM) {
+        html = html.replaceAll('pf2e-bestiary-tracking-toggle-section', 'pf2e-bestiary-tracking-toggle-section primary-hover-container gm');
+      }
+      else {
+        html = html.replaceAll('class="pf2e-bestiary-tracking-toggle-section"', 'class="pf2e-bestiary-tracking-toggle-section" data-visibility="gm"');
+      }
+
+      args[0] = html;
+      return wrapped(...args);
+    });
   }
 });
 
@@ -19431,6 +19497,35 @@ Hooks.on("renderActorSheet", (sheet) => {
     bestiaryApp.element
       .querySelector(".monster-container")
       ?.classList?.add("closed");
+  }
+});
+
+Hooks.on("getProseMirrorMenuDropDowns", (menu, dropdowns) => {
+  const domElement = menu.view.dom;
+  if(domElement.parentElement?.classList?.contains('pf2e-bestiary-tracking-editor')){
+    dropdowns.format.entries = [
+      ...dropdowns.format.entries,
+      {
+        action: "pf2e-bestiary-tracking",
+        children: [
+          {
+            action: "pf2e-bestiary-tracking-toggle-section",
+            attrs: { _preserve: { class: "pf2e-bestiary-tracking-toggle-section" } },
+            class: "pf2e-bestiary-tracking-toggle-section",
+            node: menu.schema.nodes.div,
+            cmd: () => {
+              menu._toggleBlock(menu.schema.nodes.div, foundry.prosemirror.commands.wrapIn, {
+                  attrs: { _preserve: { id: foundry.utils.randomID(), class: "pf2e-bestiary-tracking-toggle-section", "data-path": menu.view.dom.parentElement?.parentElement?.dataset?.path } },
+              });
+              return true;
+            },
+            priortiy: 1,
+            title: game.i18n.localize("Toggle Section")
+          }
+        ],
+        title: game.i18n.localize("Bestiary"),
+      }
+    ];
   }
 });
 //# sourceMappingURL=BestiaryTracking.js.map

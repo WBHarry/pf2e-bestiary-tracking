@@ -136,6 +136,17 @@
   overflow-y: visible;
   overflow-x: visible;
 }
+.pf2e-bestiary-tracking .pf2e-bestiary-tracking-toggle-section.gm {
+  cursor: pointer;
+  border-width: 2px;
+  border-style: dashed;
+  border-color: var(--pf2e-subsystem-theming-secondary-border);
+  border-radius: 4px;
+  padding: 0 4px;
+}
+.pf2e-bestiary-tracking .pf2e-bestiary-tracking-toggle-section.gm.toggle-section-revealed {
+  border-style: solid;
+}
 .pf2e-bestiary-tracking [data-visibility="gm"]:not(.dice-result > *) {
   background-color: var(--pf2e-subsystem-theming-primary-faded) !important;
   color: var(--pf2e-subsystem-theming-primary-color);
@@ -2325,6 +2336,9 @@ form.pf2e-bestiary-tracking.application > header .header-control {
 }
 .pf2e-bestiary-tracking.bestiary-text-dialog .primary-editor {
   width: 100%;
+}
+.pf2e-bestiary-tracking.bestiary-text-dialog .editor-content.ProseMirror .pf2e-bestiary-tracking-toggle-section {
+  background: var(--pf2e-subsystem-theming-primary-faded);
 }
 .pf2e-bestiary-tracking.bestiary-text-dialog .value-dialog-container {
   display: flex;

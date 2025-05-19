@@ -3,13 +3,14 @@ const { HandlebarsApplicationMixin, ApplicationV2 } = foundry.applications.api;
 export default class TextDialog extends HandlebarsApplicationMixin(
   ApplicationV2,
 ) {
-  constructor(resolve, reject, initialText, label) {
+  constructor(resolve, reject, initialText, label, path) {
     super({});
 
     this.resolve = resolve;
     this.reject = reject;
     this.initialText = initialText;
     this.label = label;
+    this.path = path;
   }
 
   get title() {
@@ -35,6 +36,7 @@ export default class TextDialog extends HandlebarsApplicationMixin(
   async _prepareContext(_options) {
     const context = await super._prepareContext(_options);
     context.text = this.initialText;
+    context.path = this.path;
     context.enrichedText =
       await foundry.applications.ux.TextEditor.implementation.enrichHTML(
         context.text,
