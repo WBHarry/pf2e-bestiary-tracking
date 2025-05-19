@@ -235,12 +235,12 @@
         </div>
     </div>
     <div class="tab {{this.tabs.notes.cssClass}}" data-group="npc" data-tab="notes">
-        <div class="bestiary-notes-page">
+            <div class="bestiary-notes-page">
             <fieldset class="bestiary-notes-legend player-notes primary-container-faded">
                 <legend>
                     <div class="data-container primary-container">{{localize "PF2EBestiary.Bestiary.PlayerNotes.Title"}}</div>
                 </legend>
-                <prose-mirror class="primary-editor pf2e-bestiary-tracking-editor" name="system.notes.player.value" data-document-u-u-i-d="{{this.creatureData.uuid}}" value="{{this.creatureData.system.notes.player.value}}" collaborate="true" toggled="true" data-path="system.notes.player.value">
+                <prose-mirror class="primary-editor" name="system.notes.player.value" data-document-u-u-i-d="{{this.creatureData.uuid}}" value="{{this.creatureData.system.notes.player.value}}" collaborate="true" toggled="true">
                     {{{this.creatureData.system.notes.player.enriched}}}
                 </prose-mirror>
             </fieldset>
@@ -252,7 +252,7 @@
                 <legend title="{{localize "PF2EBestiary.Bestiary.NPC.GMTextZoneTip"}}">
                     <div class="data-container primary-container">{{localize "PF2EBestiary.Bestiary.GMNotes.Title"}}</div>
                 </legend>
-                <prose-mirror class="primary-editor pf2e-bestiary-tracking-editor" name="system.notes.gm.value" data-document-u-u-i-d="{{this.creatureData.uuid}}" value="{{this.creatureData.system.notes.gm.value}}" toggled="true" data-path="system.notes.gm.value">
+                <prose-mirror class="primary-editor" name="system.notes.gm.value" data-document-u-u-i-d="{{this.creatureData.uuid}}" value="{{this.creatureData.system.notes.gm.value}}" toggled="true">
                     {{{this.creatureData.system.notes.gm.enriched}}}
                 </prose-mirror>
             </fieldset>

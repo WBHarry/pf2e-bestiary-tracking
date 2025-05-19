@@ -14672,10 +14672,12 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         event.addEventListener("change", this.updateNPCCategorySort.bind(this)),
       );
 
-    if(game.user.isGM) {
+    if (game.user.isGM) {
       htmlElement
         .querySelectorAll(".pf2e-bestiary-tracking-toggle-section")
-        .forEach(event => event.addEventListener("click", this.updateToggleSection.bind(this)));
+        .forEach((event) =>
+          event.addEventListener("click", this.updateToggleSection.bind(this)),
+        );
     }
 
     const bestiarySearchBar = htmlElement.querySelector(".bestiary-search-bar");
@@ -17577,12 +17579,23 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     const toggleSectionId = event.currentTarget.id;
     const dataPath = event.currentTarget.dataset.path;
     const current = foundry.utils.getProperty(this.selected.monster, dataPath);
-    const currentlyToggled = current.includes(`<div id="${toggleSectionId}" class="toggle-section-revealed`);
-    if(currentlyToggled){
-      await this.selected.monster.update({ [dataPath]: current.replaceAll(`<div id="${toggleSectionId}" class="toggle-section-revealed `, `<div id="${toggleSectionId}" class="`) });
-    }
-    else {
-      await this.selected.monster.update({ [dataPath]: current.replaceAll(`<div id="${toggleSectionId}" class="pf2e-bestiary-tracking-toggle-section`, `<div id="${toggleSectionId}" class="toggle-section-revealed pf2e-bestiary-tracking-toggle-section`) });
+    const currentlyToggled = current.includes(
+      `<div id="${toggleSectionId}" class="toggle-section-revealed`,
+    );
+    if (currentlyToggled) {
+      await this.selected.monster.update({
+        [dataPath]: current.replaceAll(
+          `<div id="${toggleSectionId}" class="toggle-section-revealed `,
+          `<div id="${toggleSectionId}" class="`,
+        ),
+      });
+    } else {
+      await this.selected.monster.update({
+        [dataPath]: current.replaceAll(
+          `<div id="${toggleSectionId}" class="pf2e-bestiary-tracking-toggle-section`,
+          `<div id="${toggleSectionId}" class="toggle-section-revealed pf2e-bestiary-tracking-toggle-section`,
+        ),
+      });
     }
 
     await game.socket.emit(`module.pf2e-bestiary-tracking`, {
@@ -17599,7 +17612,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     //   event.currentTarget.classList.replace('pf2e-bestiary-tracking-toggle-section', 'toggle-section-revealed');
     //   event.currentTarget.classList.add('pf2e-bestiary-tracking-toggle-section');
     // }
-  };
+  }
 
   async toggleIsNPC() {
     if (!this.selected.monster) return;
@@ -18753,20 +18766,27 @@ Hooks.once("setup", () => {
       },
     );
 
-    libWrapper.register('pf2e-bestiary-tracking', 'foundry.applications.ux.TextEditor.implementation.enrichHTML', function (wrapped, ...args) {
-      
+    libWrapper.register(
+      "pf2e-bestiary-tracking",
+      "foundry.applications.ux.TextEditor.implementation.enrichHTML",
+      function (wrapped, ...args) {
+        let html = args[0];
+        if (game.user.isGM) {
+          html = html.replaceAll(
+            "pf2e-bestiary-tracking-toggle-section",
+            "pf2e-bestiary-tracking-toggle-section primary-hover-container gm",
+          );
+        } else {
+          html = html.replaceAll(
+            'class="pf2e-bestiary-tracking-toggle-section"',
+            'class="pf2e-bestiary-tracking-toggle-section" data-visibility="gm"',
+          );
+        }
 
-      let html = args[0];
-      if (game.user.isGM) {
-        html = html.replaceAll('pf2e-bestiary-tracking-toggle-section', 'pf2e-bestiary-tracking-toggle-section primary-hover-container gm');
-      }
-      else {
-        html = html.replaceAll('class="pf2e-bestiary-tracking-toggle-section"', 'class="pf2e-bestiary-tracking-toggle-section" data-visibility="gm"');
-      }
-
-      args[0] = html;
-      return wrapped(...args);
-    });
+        args[0] = html;
+        return wrapped(...args);
+      },
+    );
   }
 });
 
@@ -19502,7 +19522,11 @@ Hooks.on("renderActorSheet", (sheet) => {
 
 Hooks.on("getProseMirrorMenuDropDowns", (menu, dropdowns) => {
   const domElement = menu.view.dom;
-  if(domElement.parentElement?.classList?.contains('pf2e-bestiary-tracking-editor')){
+  if (
+    domElement.parentElement?.classList?.contains(
+      "pf2e-bestiary-tracking-editor",
+    )
+  ) {
     dropdowns.format.entries = [
       ...dropdowns.format.entries,
       {
@@ -19510,21 +19534,35 @@ Hooks.on("getProseMirrorMenuDropDowns", (menu, dropdowns) => {
         children: [
           {
             action: "pf2e-bestiary-tracking-toggle-section",
-            attrs: { _preserve: { class: "pf2e-bestiary-tracking-toggle-section" } },
+            attrs: {
+              _preserve: { class: "pf2e-bestiary-tracking-toggle-section" },
+            },
             class: "pf2e-bestiary-tracking-toggle-section",
             node: menu.schema.nodes.div,
             cmd: () => {
-              menu._toggleBlock(menu.schema.nodes.div, foundry.prosemirror.commands.wrapIn, {
-                  attrs: { _preserve: { id: foundry.utils.randomID(), class: "pf2e-bestiary-tracking-toggle-section", "data-path": menu.view.dom.parentElement?.parentElement?.dataset?.path } },
-              });
+              menu._toggleBlock(
+                menu.schema.nodes.div,
+                foundry.prosemirror.commands.wrapIn,
+                {
+                  attrs: {
+                    _preserve: {
+                      id: foundry.utils.randomID(),
+                      class: "pf2e-bestiary-tracking-toggle-section",
+                      "data-path":
+                        menu.view.dom.parentElement?.parentElement?.dataset
+                          ?.path,
+                    },
+                  },
+                },
+              );
               return true;
             },
             priortiy: 1,
-            title: game.i18n.localize("Toggle Section")
-          }
+            title: game.i18n.localize("Toggle Section"),
+          },
         ],
         title: game.i18n.localize("Bestiary"),
-      }
+      },
     ];
   }
 });
