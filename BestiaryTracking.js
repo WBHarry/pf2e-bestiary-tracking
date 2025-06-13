@@ -691,7 +691,7 @@ const savingThrowPerceptionTable = {
       low: 36,
       terrible: 32,
     },
-    24: {
+    25: {
       extreme: 48,
       high: 44,
       moderate: 40,
@@ -1441,7 +1441,7 @@ const skillTable = {
         low: 33,
       },
     },
-    24: {
+    25: {
       extreme: 50,
       high: 47,
       moderate: 42,
@@ -2057,7 +2057,7 @@ const spellDCTable = {
       high: 48,
       moderate: 45,
     },
-    24: {
+    25: {
       extreme: 54,
       high: 50,
       moderate: 47,
