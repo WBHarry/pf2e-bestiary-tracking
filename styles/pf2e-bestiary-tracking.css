@@ -1711,7 +1711,7 @@
 .theme-dark .bestiary-settings-menu .menu-category .form-group.underlined {
   border-bottom: 1px solid #ababab;
 }
-:not([data-dorako-ui-scope]) .tagify {
+:not([data-dorako-ui-scope]) .bestiary-settings-menu .tagify {
   border-color: black;
   background: #cfcfcf;
 }
