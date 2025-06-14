@@ -18771,7 +18771,7 @@ Hooks.once("setup", () => {
       "foundry.applications.ux.TextEditor.implementation.enrichHTML",
       function (wrapped, ...args) {
         let html = args[0];
-        if(!html) return wrapped(...args);
+        if (!html) return wrapped(...args);
 
         if (game.user.isGM) {
           html = html.replaceAll(
