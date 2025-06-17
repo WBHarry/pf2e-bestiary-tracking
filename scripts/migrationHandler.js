@@ -1817,7 +1817,10 @@ const handleDeactivatedPages = async () => {
   }, []);
 
   for (var deactivated of deactivatedArray) {
-    await deactivated.page.update(deactivated.data);
+    await deactivated.page.update({
+      ...deactivated.data,
+      [`==system`]: deactivated.data.system,
+    });
     await deactivated.page.unsetFlag(
       "pf2e-bestiary-tracking",
       "deactivated-data",

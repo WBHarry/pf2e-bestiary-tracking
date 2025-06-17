@@ -9313,7 +9313,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$8(
   }
 }
 
-const currentVersion = "1.3.1";
+const currentVersion = "1.3.3";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -12721,7 +12721,7 @@ const handleDeactivatedPages = async () => {
   }, []);
 
   for (var deactivated of deactivatedArray) {
-    await deactivated.page.update(deactivated.data);
+    await deactivated.page.update({ ...deactivated.data, [`==system`]: deactivated.data.system  });
     await deactivated.page.unsetFlag(
       "pf2e-bestiary-tracking",
       "deactivated-data",
@@ -19233,12 +19233,12 @@ Hooks.on("renderJournalDirectory", (_, html) => {
 });
 
 Hooks.on("renderDependencyResolution", (dependencyResolution, html) => {
-  if (dependencyResolution.object.id === "pf2e-bestiary-tracking") {
+  if (dependencyResolution.options.root.id === "pf2e-bestiary-tracking") {
     const lastText = [...html.querySelectorAll("form p")].at(-1);
     lastText.insertAdjacentHTML(
       "beforeend",
       `
-      <h2 style="margin-bottom: 4px; border-bottom: 0;">${game.i18n.format("PF2EBestiary.Macros.DeactivateModule.DependencyResolutionWarning", { name: `<strong>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Name")}</strong>` })}</h2>
+      <h4 style="margin: 8px 0 -24px 0; border-bottom: 0;">${game.i18n.format("PF2EBestiary.Macros.DeactivateModule.DependencyResolutionWarning", { name: `<strong>${game.i18n.localize("PF2EBestiary.Macros.DeactivateModule.Name")}</strong>` })}</h4>
     `,
     );
   }
