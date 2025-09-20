@@ -638,7 +638,9 @@ export class Creature extends foundry.abstract.TypeDataModel {
       ...Object.keys(this.speeds.values).reduce((acc, speed) => {
         acc[`values.${speed}`] = {
           ...this.speeds.values[speed],
-          name: CONFIG.PF2E.speedTypes[this.speeds.values[speed].type],
+          name: game.i18n.localize(
+            `PF2E.Actor.Speed.Type.${this.speeds.values[speed].type.capitalize()}`,
+          ),
         };
 
         return acc;

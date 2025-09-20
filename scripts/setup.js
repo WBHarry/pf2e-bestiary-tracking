@@ -24,7 +24,7 @@ import {
   dispositionIconSize,
 } from "../data/bestiaryContents.js";
 
-export const currentVersion = "1.3.4";
+export const currentVersion = "1.3.5";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
