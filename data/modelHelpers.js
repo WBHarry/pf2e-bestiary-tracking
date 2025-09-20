@@ -209,7 +209,7 @@ export const getCreatureData = async (actor, pcBase) => {
             revealed: defaultRevealed.speeds,
           },
           ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
-            acc[speed.label] = {
+            acc[speed.type] = {
               type: speed.type,
               value: speed.value,
               revealed: defaultRevealed.speeds,

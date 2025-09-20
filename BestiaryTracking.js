@@ -3177,7 +3177,7 @@ const getCreatureData = async (actor, pcBase) => {
             revealed: defaultRevealed.speeds,
           },
           ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
-            acc[speed.label] = {
+            acc[speed.type] = {
               type: speed.type,
               value: speed.value,
               revealed: defaultRevealed.speeds,
@@ -9313,7 +9313,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$8(
   }
 }
 
-const currentVersion = "1.3.3";
+const currentVersion = "1.3.4";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -12574,6 +12574,29 @@ const migrateBestiaryPages = async (bestiary) => {
         },
       });
     }
+    if (versionCompare(page.system.version, "1.3.4")) {
+      const update = {
+          system: {
+            version: "1.3.4",
+          },
+        };
+      if(['pf2e-bestiary-tracking.creature', 'pf2e-bestiary-tracking.npc'].includes(page.type)) { 
+        update.system.speeds = {
+          ...page.system.speeds,
+          values: Object.keys(page.system.speeds.values).reduce((acc, key) => {
+            const speed = page.system.speeds.values[key];
+            if(key === 'undefined') {
+              acc['-=undefined'] = null;
+            } 
+
+            acc[speed.type] = speed;
+            return acc;
+          }, {})
+        };
+      }
+
+      await page.update(update);
+    }
   }
 };
 
@@ -12721,7 +12744,10 @@ const handleDeactivatedPages = async () => {
   }, []);
 
   for (var deactivated of deactivatedArray) {
-    await deactivated.page.update({ ...deactivated.data, [`==system`]: deactivated.data.system  });
+    await deactivated.page.update({
+      ...deactivated.data,
+      [`==system`]: deactivated.data.system,
+    });
     await deactivated.page.unsetFlag(
       "pf2e-bestiary-tracking",
       "deactivated-data",

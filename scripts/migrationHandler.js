@@ -1670,6 +1670,34 @@ export const migrateBestiaryPages = async (bestiary) => {
         },
       });
     }
+    if (versionCompare(page.system.version, "1.3.4")) {
+      const update = {
+        system: {
+          version: "1.3.4",
+        },
+      };
+      if (
+        [
+          "pf2e-bestiary-tracking.creature",
+          "pf2e-bestiary-tracking.npc",
+        ].includes(page.type)
+      ) {
+        update.system.speeds = {
+          ...page.system.speeds,
+          values: Object.keys(page.system.speeds.values).reduce((acc, key) => {
+            const speed = page.system.speeds.values[key];
+            if (key === "undefined") {
+              acc["-=undefined"] = null;
+            }
+
+            acc[speed.type] = speed;
+            return acc;
+          }, {}),
+        };
+      }
+
+      await page.update(update);
+    }
   }
 };
 
