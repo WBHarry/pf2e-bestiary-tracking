@@ -24,10 +24,6 @@
       "AddMonster": {
         "Name": "Add Monster",
         "Hint": "Adds the currently selected or targeted creature to the bestiary"
-      },
-      "ViewAsPlayer": {
-        "Name": "View Bestiary As Player",
-        "Hint": "Holding this key lets you view the bestiary as if you were a player"
       }
     },
     "Themes": {
@@ -155,8 +151,8 @@
     "Bestiary": {
       "Title": "Bestiary",
       "PreviewTitle": "Preview Bestiary",
+      "ViewAsPlayer": "View As Player",
       "ToggleActorSheet": "Toggle Actor Sheet",
-      "UsingPlayerView": "Using Player View",
       "DeleteMonsterTitle": "Delete Monster",
       "DeleteMonsterText": "Are you sure you want to remove the creature from the Bestiary?",
       "GlobalSearch": {

@@ -24,7 +24,7 @@ import {
   dispositionIconSize,
 } from "../data/bestiaryContents.js";
 
-export const currentVersion = "1.3.5";
+export const currentVersion = "1.3.6";
 export const bestiaryFolder = "BestiaryTracking Bestiares";
 
 export const dataTypeSetup = () => {
@@ -88,21 +88,6 @@ export const registerKeyBindings = () => {
     onDown: () =>
       game.modules.get("pf2e-bestiary-tracking").macros.addMonster(),
     onUp: () => {},
-    restricted: true,
-    reservedModifiers: [],
-    precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,
-  });
-
-  game.keybindings.register("pf2e-bestiary-tracking", "view-as-player", {
-    name: game.i18n.localize("PF2EBestiary.KeyBindings.ViewAsPlayer.Name"),
-    hint: game.i18n.localize("PF2EBestiary.KeyBindings.ViewAsPlayer.Hint"),
-    uneditable: [],
-    editable: [
-      {
-        key: "KeyP",
-        modifiers: ["CONTROL"],
-      },
-    ],
     restricted: true,
     reservedModifiers: [],
     precedence: CONST.KEYBINDING_PRECEDENCE.NORMAL,

@@ -245,6 +245,32 @@
 .pf2e-bestiary-tracking.bestiary .tab.minor .left-monster-container .data-section {
   overflow: hidden;
 }
+.pf2e-bestiary-tracking.bestiary .window-header .toggle-player-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--pf2e-subsystem-theming-secondary);
+  color: var(--pf2e-subsystem-theming-primary-color);
+  opacity: 0.4;
+}
+.pf2e-bestiary-tracking.bestiary .window-header .toggle-player-button.active {
+  opacity: 1;
+}
+.pf2e-bestiary-tracking.bestiary .window-header .toggle-player-button.active .marker .active-marker {
+  opacity: 1;
+}
+.pf2e-bestiary-tracking.bestiary .window-header .toggle-player-button .marker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.pf2e-bestiary-tracking.bestiary .window-header .toggle-player-button .marker .active-marker {
+  font-size: 10px;
+  position: absolute;
+  opacity: 0;
+}
 .pf2e-bestiary-tracking.bestiary .window-content {
   overflow: visible;
   height: calc(100% - 75px);

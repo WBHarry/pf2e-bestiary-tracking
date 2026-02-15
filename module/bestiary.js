@@ -118,9 +118,6 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
     this._dragDrop = this._createDragDropHandlers();
 
-    document.addEventListener("keydown", this.switchPlayerMode);
-    document.addEventListener("keyup", this.resetPlayerMode);
-
     this.onUpdateBestiaryId = Hooks.on(
       socketEvent.UpdateBestiary,
       this.onBestiaryUpdate.bind(this),
@@ -475,7 +472,38 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       this.setPosition(positionUpdate);
   }
 
+  /**@inheritdoc */
+  async _renderFrame(options) {
+    const frame = await super._renderFrame(options);
+
+    if (game.user.isGM) {
+      const element = await foundry.applications.handlebars.renderTemplate(
+        "modules/pf2e-bestiary-tracking/templates/bestiaryPlayerModeToggle.hbs",
+        {
+          label: game.i18n.localize("PF2EBestiary.Bestiary.ViewAsPlayer"),
+          active: !this.gmView,
+        },
+      );
+
+      this.window.controls.insertAdjacentHTML("beforebegin", element);
+
+      this.window.header
+        .querySelector(".toggle-player-button")
+        .addEventListener("click", this.togglePlayerMode.bind(this));
+    }
+
+    return frame;
+  }
+
   _updateFrame(options) {
+    if (game.user.isGM) {
+      const togglePlayerButton = this.window.header.querySelector(
+        ".toggle-player-button",
+      );
+      if (this.gmView) togglePlayerButton.classList.remove("active");
+      else togglePlayerButton.classList.add("active");
+    }
+
     if (this.selected.monster) {
       super._updateFrame({ window: { controls: true } });
     } else {
@@ -2986,6 +3014,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     });
   }
 
+  togglePlayerMode = () => {
+    if (!game.user.isGM || this.npcData.editMode) return;
+
+    this.gmView = !this.gmView;
+    this.render();
+  };
+
   bestiaryGlobalSearchUpdate(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -3902,51 +3937,9 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
     });
   }
 
-  switchPlayerMode = (e) => {
-    if (!game.user.isGM || this.npcData.editMode) return;
-
-    if (
-      game.keybindings
-        .get("pf2e-bestiary-tracking", "view-as-player")
-        .some(
-          (binding) =>
-            binding.key === e.code &&
-            (binding.modifiers.length === 0 ||
-              (binding.modifiers.includes("Control") && e.ctrlKey) ||
-              (binding.modifiers.includes("Shift") && e.shiftKey)),
-        )
-    ) {
-      this.gmView = false;
-      this.render();
-    }
-  };
-
-  resetPlayerMode = (e) => {
-    if (!game.user.isGM || this.npcData.editMode) return;
-
-    if (
-      game.keybindings
-        .get("pf2e-bestiary-tracking", "view-as-player")
-        .some(
-          (binding) =>
-            binding.key === e.code ||
-            (binding.modifiers.length > 0 &&
-              ((binding.modifiers.includes("Control") &&
-                (e.code === "ControlLeft" || e.code === "ControlRight")) ||
-                (binding.modifiers.includes("Shift") &&
-                  (e.code === "ShiftLeft" || e.code === "RightShift")))),
-        )
-    ) {
-      this.gmView = true;
-      this.render();
-    }
-  };
-
   close = async (options) => {
     Hooks.off(socketEvent.UpdateBestiary, this.onUpdateBestiaryId);
     Hooks.off("deleteCombat", this.onDeleteCombatId);
-    document.removeEventListener("keydown", this.switchPlayerMode);
-    document.removeEventListener("keyup", this.resetPlayerMode);
     await this.removeActorSheet();
 
     return super.close(options);

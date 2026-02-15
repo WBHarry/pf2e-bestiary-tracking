@@ -1,13 +1,4 @@
 <div class="primary-text-container bestiary-container">
-    <div class="gm-view-label-container">
-        {{#if (and this.user.isGM (not this.gmView))}}
-            <div class="gm-view-text-container">
-                <span class="exclamation-container left primary-icon">!</span>
-                <span class="tertiary-container primary-text-container primary-border-container">{{localize "PF2EBestiary.Bestiary.UsingPlayerView"}}</span>
-                <span class="exclamation-container primary-icon">!</span>
-            </div>
-        {{/if}}
-    </div>
     {{#if this.selected.type}}
         <header class="bestiary-header">
             <div class="return-container text-shadow-container" data-action="returnButton" data-context-type="{{this.selected.type}}">

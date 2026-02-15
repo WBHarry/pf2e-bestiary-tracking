@@ -236,6 +236,39 @@
       }
     }
 
+    .window-header {
+      .toggle-player-button {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--pf2e-subsystem-theming-secondary);
+        color: var(--pf2e-subsystem-theming-primary-color);
+        opacity: 0.4;
+
+        &.active {
+          opacity: 1;
+
+          .marker .active-marker {
+            opacity: 1;
+          }
+        }
+
+        .marker {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 18px;
+
+          .active-marker {
+            font-size: 10px;
+            position: absolute;
+            opacity: 0;
+          }
+        }
+      }
+    }
+
     .window-content {
       overflow: visible;
       height: calc(100% - 75px); // Ugly

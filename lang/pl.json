@@ -24,10 +24,6 @@
       "AddMonster": {
         "Name": "Dodaj potwora",
         "Hint": "Dodaje aktualnie wybraną lub namierzoną istotę do bestiariusza"
-      },
-      "ViewAsPlayer": {
-        "Name": "Wyświetl bestiariusz jako gracz",
-        "Hint": "Przytrzymanie tego klawisza pozwala przeglądać bestiariusz tak, jakbyś był graczem"
       }
     },
     "Themes": {
@@ -156,7 +152,6 @@
       "Title": "Bestiariusz",
       "PreviewTitle": "Podgląd Bestiariusza",
       "ToggleActorSheet": "Przełącz kartę aktora",
-      "UsingPlayerView": "Używanie widoku gracza",
       "DeleteMonsterTitle": "Usuń potwora",
       "DeleteMonsterText": "Czy na pewno chcesz usunąć stworzenie z Bestiariusza?",
       "GlobalSearch": {
