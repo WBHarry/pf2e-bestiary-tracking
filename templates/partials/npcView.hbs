@@ -21,7 +21,7 @@
                 <div class="data-body disposition-container primary-border-container flex1">
                     {{#each this.partyDispositions}}
                         <div class="disposition-inner-container">
-                            <h4 class="disposition-label">{{this.name}}</h4>
+                            <h4 class="disposition-label primary-text-container">{{this.name}}</h4>
                             {{#if ../npcState.editMode}}
                                 <select class="data-input secondary-container" name="{{concat "system.npcData.general.disposition." this.id}}">
                                     {{selectOptions ../dispositions selected=this.value valueAttr="value" labelAttr="name" localize=true}}
@@ -59,7 +59,7 @@
                     <div class="recall-knowledge-info-container">
                         {{#each this.creatureData.system.recallKnowledgeAttempts}}
                             <div class="flexcol">
-                                <h4 class="recall-knowledge-label {{#if ../gmView}}primary-hover-container{{/if}}" {{#if ../gmView}}data-action="resetRecallAttempts" data-character="{{this.id}}"{{/if}}>
+                                <h4 class="recall-knowledge-label primary-text-container {{#if ../gmView}}primary-hover-container{{/if}}" {{#if ../gmView}}data-action="resetRecallAttempts" data-character="{{this.id}}"{{/if}}>
                                     {{this.name}}
                                 </h4>
                                 <div class="recall-knowledge-attempt-container">

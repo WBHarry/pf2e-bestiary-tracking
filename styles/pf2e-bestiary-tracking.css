@@ -91,9 +91,6 @@
 .theme-dark .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container .monster-return-icon {
   top: 2px;
 }
-.theme-dark .pf2e-bestiary-tracking.bestiary .monster-container .toggle-container {
-  border-color: #ababab;
-}
 .theme-dark .pf2e-bestiary-tracking.bestiary.application .window-content {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
