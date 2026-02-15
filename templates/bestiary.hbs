@@ -243,15 +243,15 @@
                 </div>
                 <div class="type-overview-container">
                     {{#if (eq this.bookmarkEntities.length 0)}}
-                        {{#if (eq this.selected.type 'unknown')}}
-                            {{localize "PF2EBestiary.Bestiary.CategoryView.UnknownText"}}
-                        {{else}}
-                            {{#if (eq this.selected.type 'unaffiliated')}}
+                        <div class="type-overview-empty-label">
+                            {{#if (eq this.selected.type 'unknown')}}
+                                {{localize "PF2EBestiary.Bestiary.CategoryView.UnknownText"}}
+                            {{else if (eq this.selected.type 'unaffiliated')}}
                                 {{localize "PF2EBestiary.Bestiary.CategoryView.UnaffiliatedText"}}
                             {{else}}
                                 {{this.typeTitle}}
                             {{/if}}
-                        {{/if}}
+                        </div>
                     {{else}}
                         {{#each this.bookmarkEntities}}
                             <div class="type-container primary-container {{#if (eq ../layout.categories.layout 1)}}trio{{/if}}{{#if (eq ../layout.categories.layout 2)}}quarter{{/if}}" data-action="selectMonster" data-monster="{{this.id}}">

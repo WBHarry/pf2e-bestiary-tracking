@@ -707,7 +707,7 @@
   font-style: italic;
   margin-bottom: 4px;
   display: flex;
-  justify-content: center;
+  text-align: center;
   flex-wrap: wrap;
 }
 .pf2e-bestiary-tracking.bestiary .type-overview-container {
@@ -715,6 +715,10 @@
   flex-wrap: wrap;
   overflow-y: auto;
   gap: 8px;
+}
+.pf2e-bestiary-tracking.bestiary .type-overview-container .type-overview-empty-label {
+  width: 100%;
+  text-align: center;
 }
 .pf2e-bestiary-tracking.bestiary .type-overview-container .type-container {
   position: relative;
@@ -1107,6 +1111,7 @@
   border-radius: 4px 4px 0 0;
   border-width: 1px;
   border-style: solid;
+  border-radius: 6px 6px 0 0;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .data-header .data-header-inner {
   display: flex;
@@ -1312,10 +1317,26 @@
   display: flex;
   align-items: center;
 }
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .tagify.tagify--empty .tagify__input::before {
+  opacity: 0.8;
+}
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .tagify .tagify__input {
   display: flex;
   align-items: center;
   padding: 0;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .tagify .tagify__input:focus:empty::before {
+  opacity: 0.8;
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .tagify .tagify__input::before {
+  color: var(--pf2e-subsystem-theming-primary-color);
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .tagify .tagify__tag {
+  border-radius: 3px;
+  background: var(--pf2e-subsystem-theming-tertiary);
+}
+.pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .tagify .tagify__tag > div::before {
+  inset: 100%;
 }
 .pf2e-bestiary-tracking.bestiary .monster-container .right-monster-container .monster-name-container {
   display: flex;
@@ -1596,6 +1617,7 @@
 }
 .pf2e-bestiary-tracking.bestiary .right-bookmark-container .bookmark-container .hide-icon.visible {
   opacity: 1;
+  background: var(--pf2e-subsystem-theming-primary-faded);
 }
 .pf2e-bestiary-tracking.bestiary .bookmark {
   width: 104px;
