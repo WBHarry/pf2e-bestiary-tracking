@@ -5928,7 +5928,12 @@ class Creature extends foundry.abstract.TypeDataModel {
   }
 
   get initialType() {
-    const types = getCreaturesTypes(this.traits).map((x) => x.key);
+    const types = getCreaturesTypes(this.traits).reduce((acc, trait) => {
+      if(game.user.isGM || trait.revealed)
+        acc.push(trait.key);
+
+      return acc;
+    }, []);
     return types.length > 0 ? types[0] : "unknown";
   }
 
@@ -7347,7 +7352,12 @@ class Hazard extends foundry.abstract.TypeDataModel {
   }
 
   get initialType() {
-    const types = getHazardTypes(this.traits).map((x) => x.key);
+    const types = getHazardTypes(this.traits).reduce((acc, trait) => {
+      if(game.user.isGM || trait.revealed)
+        acc.push(trait.key);
+
+      return acc;
+    }, []);
     return types.length > 0 ? types[0] : "unknown";
   }
 

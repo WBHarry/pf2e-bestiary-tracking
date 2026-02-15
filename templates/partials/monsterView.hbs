@@ -69,7 +69,7 @@
                     {{/each}}
                 {{else}}
                     {{#PF2EBTFilter 'revealed' '?' 10 this.system.immunities }}
-                        <div class="secondary-container {{PF2EBTToggleContainer ../gmView this}}" data-action="toggleRevealed" data-path="{{concat 'immunities.' @key}}" data-fake="{{this.fake}}">
+                        <div class="secondary-container {{PF2EBTToggleContainer ../gmView this}}" data-action="toggleRevealed" data-path="{{concat 'immunities.' key}}" data-fake="{{this.fake}}">
                             {{PF2EBTCaptialize (localize this.label)}}
                             {{#if (or (not ../detailedInformation.exceptionsDouble) (gt (PF2EBTNrKeys this.exceptions 'revealed') 0))}}
                                 {{#if (gt (PF2EBTNrKeys this.exceptions) 0)}}<span>({{localize "PF2EBestiary.Miscellaneous.Except"}}</span>{{/if}}
@@ -138,7 +138,7 @@
                         <div 
                             class="secondary-container {{PF2EBTToggleContainer ../gmView this}}"
                             data-action="toggleRevealed" 
-                            data-path="{{concat 'system.weaknesses.' @key}}" 
+                            data-path="{{concat 'system.weaknesses.' key}}" 
                             data-fake="{{this.fake}}"
                         >
                             {{#if (and ../vagueDescriptions.properties.weaknesses this.category)}}{{localize this.category}}{{/if}}
@@ -235,7 +235,7 @@
                         <div 
                             class="secondary-container {{PF2EBTToggleContainer ../gmView this}}"
                             data-action="toggleRevealed" 
-                            data-path="{{concat 'system.resistances.' @key}}" 
+                            data-path="{{concat 'system.resistances.' key}}" 
                             data-fake="{{this.fake}}"
                         >
                             {{#if (and ../vagueDescriptions.properties.resistances this.category)}}{{localize this.category}}{{/if}}
