@@ -1169,7 +1169,7 @@ export const getHazardData = (actor) => {
         revealed: defaultRevealed.reset,
       },
       ac: {
-        value: Number.parseInt(actor.system.attributes.ac.value),
+        value: Number.parseInt(actor.system.attributes.ac.value ?? 0),
         details: actor.system.attributes.ac.details,
         revealed: defaultRevealed.ac,
       },

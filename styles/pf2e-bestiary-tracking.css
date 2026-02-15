@@ -84,6 +84,9 @@
   border-radius: 2px;
   box-shadow: 0 0 0 1px var(--tertiary), 0 0 0 2px #9f725b, inset 0 0 var(--inset-shadow-length) rgba(0, 0, 0, 0.5);
 }
+.theme-dark .pf2e-bestiary-tracking {
+  border-width: 0;
+}
 .theme-dark .pf2e-bestiary-tracking.bestiary .right-bookmark-container {
   top: 0;
   height: 100%;

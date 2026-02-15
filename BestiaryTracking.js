@@ -4137,7 +4137,7 @@ const getHazardData = (actor) => {
         revealed: defaultRevealed.reset,
       },
       ac: {
-        value: Number.parseInt(actor.system.attributes.ac.value),
+        value: Number.parseInt(actor.system.attributes.ac.value??0),
         details: actor.system.attributes.ac.details,
         revealed: defaultRevealed.ac,
       },
@@ -5929,8 +5929,7 @@ class Creature extends foundry.abstract.TypeDataModel {
 
   get initialType() {
     const types = getCreaturesTypes(this.traits).reduce((acc, trait) => {
-      if(game.user.isGM || trait.revealed)
-        acc.push(trait.key);
+      if (game.user.isGM || trait.revealed) acc.push(trait.key);
 
       return acc;
     }, []);
@@ -7353,8 +7352,7 @@ class Hazard extends foundry.abstract.TypeDataModel {
 
   get initialType() {
     const types = getHazardTypes(this.traits).reduce((acc, trait) => {
-      if(game.user.isGM || trait.revealed)
-        acc.push(trait.key);
+      if (game.user.isGM || trait.revealed) acc.push(trait.key);
 
       return acc;
     }, []);
