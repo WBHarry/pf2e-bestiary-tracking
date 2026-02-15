@@ -3190,7 +3190,7 @@ const getCreatureData = async (actor, pcBase) => {
         acc[key] = {
           key: key,
           mod: actor.system.abilities[key].mod,
-          revealed: defaultRevealed.abilities,
+          revealed: defaultRevealed.attributes,
         };
         return acc;
       }, {}),
@@ -3734,7 +3734,7 @@ const getPCCreatureData = async (actor) => {
         acc[key] = {
           key: key,
           mod: actor.system.abilities[key].mod,
-          revealed: defaultRevealed.abilities,
+          revealed: defaultRevealed.attributes,
         };
         return acc;
       }, {}),
@@ -14864,30 +14864,34 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   /**@inheritdoc */
   async _renderFrame(options) {
-      const frame = await super._renderFrame(options);
+    const frame = await super._renderFrame(options);
 
-      if (game.user.isGM) {
-        const element = await foundry.applications.handlebars.renderTemplate(
-          "modules/pf2e-bestiary-tracking/templates/bestiaryPlayerModeToggle.hbs",
-          {
-            label: game.i18n.localize('PF2EBestiary.Bestiary.ViewAsPlayer'),
-            active: !this.gmView
-          }
-        );
+    if (game.user.isGM) {
+      const element = await foundry.applications.handlebars.renderTemplate(
+        "modules/pf2e-bestiary-tracking/templates/bestiaryPlayerModeToggle.hbs",
+        {
+          label: game.i18n.localize("PF2EBestiary.Bestiary.ViewAsPlayer"),
+          active: !this.gmView,
+        },
+      );
 
-        this.window.controls.insertAdjacentHTML('beforebegin', element);
+      this.window.controls.insertAdjacentHTML("beforebegin", element);
 
-        this.window.header.querySelector('.toggle-player-button').addEventListener('click', this.togglePlayerMode.bind(this));
-      }
+      this.window.header
+        .querySelector(".toggle-player-button")
+        .addEventListener("click", this.togglePlayerMode.bind(this));
+    }
 
-      return frame;
+    return frame;
   }
 
   _updateFrame(options) {
     if (game.user.isGM) {
-      const togglePlayerButton = this.window.header.querySelector('.toggle-player-button');
-      if (this.gmView) togglePlayerButton.classList.remove('active');
-      else togglePlayerButton.classList.add('active');
+      const togglePlayerButton = this.window.header.querySelector(
+        ".toggle-player-button",
+      );
+      if (this.gmView) togglePlayerButton.classList.remove("active");
+      else togglePlayerButton.classList.add("active");
     }
 
     if (this.selected.monster) {

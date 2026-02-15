@@ -222,7 +222,7 @@ export const getCreatureData = async (actor, pcBase) => {
         acc[key] = {
           key: key,
           mod: actor.system.abilities[key].mod,
-          revealed: defaultRevealed.abilities,
+          revealed: defaultRevealed.attributes,
         };
         return acc;
       }, {}),
@@ -766,7 +766,7 @@ const getPCCreatureData = async (actor) => {
         acc[key] = {
           key: key,
           mod: actor.system.abilities[key].mod,
-          revealed: defaultRevealed.abilities,
+          revealed: defaultRevealed.attributes,
         };
         return acc;
       }, {}),
