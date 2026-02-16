@@ -151,6 +151,7 @@
     "Bestiary": {
       "Title": "Bestiariusz",
       "PreviewTitle": "Podgląd Bestiariusza",
+      "ViewAsPlayer": "Wyświetl jako gracz",
       "ToggleActorSheet": "Przełącz kartę aktora",
       "DeleteMonsterTitle": "Usuń potwora",
       "DeleteMonsterText": "Czy na pewno chcesz usunąć stworzenie z Bestiariusza?",
@@ -171,7 +172,7 @@
         "ExportBestiary": "Eksportuj bestiariusz",
         "TransformCreature": "Przekształcenie w BN",
         "TransformNPC": "Przekształcenie w stworzenie",
-        "GetOpenMacro": "Uzyskaj otwarte makro"
+        "GetOpenMacro": "Makro otwarcia bestiariusza"
       },
       "Category": {
         "Creatures": "Stworzenia",
@@ -198,7 +199,7 @@
         }
       },
       "ReturnMessages": {
-        "ReturnToCategory": "Powrót do kategorii {type}",
+        "ReturnToCategory": "Powrót do kategorii - {type}",
         "ReturnToWelcome": "Powrót do strony głównej"
       },
       "CategoryView": {
@@ -355,7 +356,7 @@
         "AlreadyExistsInBestiary": "[{creatures}] już istnieje w Bestiariuszu.",
         "BestiaryEntryLinkTip": "Kopiuj link (+Alt, aby wysłać do czatu)",
         "BestiaryEntryLink": "Wpis z bestiariusza {entity} został skopiowany do schowka.",
-        "BestiaryOpenMacro": "Otwarcie makra Bestiariusza skopiowane do schowka.",
+        "BestiaryOpenMacro": "Makro otwierające Bestiariusz skopiowane do schowka.",
         "RefreshStarted": "Rozpoczęto odświeżanie bestiariusza",
         "RefreshFinished": "Odświeżanie bestiariusza zakończone",
         "RefreshFinishedPartial": "Zakończono odświeżanie bestiariusza. Niektóre jednostki nie miały powiązanych aktorów i nie zostały odświeżone [{entities}]."
@@ -731,7 +732,7 @@
           "SecondPart": "Jeśli usuniesz zawartość tego folderu i ponownie aktywujesz moduł, dane Bestiariusza znikną.",
           "Link": "https://github.com/WBHarry/pf2e-bestiary-tracking/wiki/Module-Deactivation"
         },
-        "DependencyResolutionWarning": "Zamiast tego należy użyć makra {name}, aby uniknąć błędów konsoli po dezaktywacji."
+        "DependencyResolutionWarning": "Użyj makra {name}, aby uniknąć błędów konsoli po dezaktywacji."
       }
     },
     "Interactivity": {
