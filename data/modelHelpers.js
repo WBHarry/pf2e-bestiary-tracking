@@ -430,7 +430,12 @@ export const getCreatureData = async (actor, pcBase) => {
                   label: action.name,
                   category: action.system.category,
                   deathNote: action.system.deathNote,
-                  actions: action.system.actions.value ?? "R",
+                  actions:
+                    action.system.actionType.value === "reaction"
+                      ? "R"
+                      : action.system.actionType.value === "free"
+                        ? "F"
+                        : action.system.actions.value,
                   traits: action.system.traits.value.reduce((acc, trait) => {
                     acc[trait] = { value: trait };
                     return acc;
