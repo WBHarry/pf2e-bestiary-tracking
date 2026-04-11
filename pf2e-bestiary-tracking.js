@@ -387,7 +387,7 @@ Hooks.on("renderActorDirectory", (tab, html, _, options) => {
     buttons.insertAdjacentHTML(
       "afterbegin",
       `
-            <button id="pf2e-bestiary-tracker">
+            <button id="pf2e-bestiary-tracker" class="flexrow">
                 <i class="fa-solid fa-spaghetti-monster-flying" />
                 <span style="font-weight: 400; font-family: var(--font-sans);">${game.i18n.localize("PF2EBestiary.Name")}</span>
             </button>`,

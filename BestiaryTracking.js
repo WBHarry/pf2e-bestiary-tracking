@@ -3167,16 +3167,13 @@ const getCreatureData = async (actor, pcBase) => {
       },
       speeds: {
         details: {
-          name: actor.system.attributes.speed.details,
+          name: actor._source.system.attributes.speed.details,
           revealed: defaultRevealed.speeds,
         },
         values: {
-          land: {
-            type: "land",
-            value: actor.system.attributes.speed.value,
-            revealed: defaultRevealed.speeds,
-          },
-          ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
+          ...Object.values(actor.system.movement.speeds).reduce((acc, speed) => {
+            if(!speed || speed.type === 'travel') return acc;
+
             acc[speed.type] = {
               type: speed.type,
               value: speed.value,
@@ -3398,10 +3395,12 @@ const getCreatureData = async (actor, pcBase) => {
                   label: action.name,
                   category: action.system.category,
                   deathNote: action.system.deathNote,
-                  actions: 
-                    action.system.actionType.value === 'reaction' ? 'R' : 
-                    action.system.actionType.value === 'free' ? 'F' :
-                    action.system.actions.value,
+                  actions:
+                    action.system.actionType.value === "reaction"
+                      ? "R"
+                      : action.system.actionType.value === "free"
+                        ? "F"
+                        : action.system.actions.value,
                   traits: action.system.traits.value.reduce((acc, trait) => {
                     acc[trait] = { value: trait };
                     return acc;
@@ -3714,17 +3713,14 @@ const getPCCreatureData = async (actor) => {
       },
       speeds: {
         details: {
-          name: actor.system.attributes.speed.details,
+          name: null,
           revealed: defaultRevealed.speeds,
         },
         values: {
-          land: {
-            type: "land",
-            value: actor.system.attributes.speed.value,
-            revealed: defaultRevealed.speeds,
-          },
-          ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
-            acc[speed.label] = {
+          ...Object.values(actor.system.movement.speeds).reduce((acc, speed) => {
+            if(!speed || speed.type === 'travel') return acc;
+
+            acc[speed.type] = {
               type: speed.type,
               value: speed.value,
               revealed: defaultRevealed.speeds,
@@ -9326,7 +9322,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$8(
   }
 }
 
-const currentVersion = "1.3.6";
+const currentVersion = "1.3.8";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -19000,7 +18996,7 @@ Hooks.on("renderActorDirectory", (tab, html, _, options) => {
     buttons.insertAdjacentHTML(
       "afterbegin",
       `
-            <button id="pf2e-bestiary-tracker">
+            <button id="pf2e-bestiary-tracker" class="flexrow">
                 <i class="fa-solid fa-spaghetti-monster-flying" />
                 <span style="font-weight: 400; font-family: var(--font-sans);">${game.i18n.localize("PF2EBestiary.Name")}</span>
             </button>`,

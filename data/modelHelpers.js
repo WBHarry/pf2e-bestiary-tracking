@@ -199,23 +199,23 @@ export const getCreatureData = async (actor, pcBase) => {
       },
       speeds: {
         details: {
-          name: actor.system.attributes.speed.details,
+          name: actor._source.system.attributes.speed.details,
           revealed: defaultRevealed.speeds,
         },
         values: {
-          land: {
-            type: "land",
-            value: actor.system.attributes.speed.value,
-            revealed: defaultRevealed.speeds,
-          },
-          ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
-            acc[speed.type] = {
-              type: speed.type,
-              value: speed.value,
-              revealed: defaultRevealed.speeds,
-            };
-            return acc;
-          }, {}),
+          ...Object.values(actor.system.movement.speeds).reduce(
+            (acc, speed) => {
+              if (!speed || speed.type === "travel") return acc;
+
+              acc[speed.type] = {
+                type: speed.type,
+                value: speed.value,
+                revealed: defaultRevealed.speeds,
+              };
+              return acc;
+            },
+            {},
+          ),
         },
       },
       abilities: Object.keys(actor.system.abilities).reduce((acc, key) => {
@@ -748,23 +748,23 @@ const getPCCreatureData = async (actor) => {
       },
       speeds: {
         details: {
-          name: actor.system.attributes.speed.details,
+          name: null,
           revealed: defaultRevealed.speeds,
         },
         values: {
-          land: {
-            type: "land",
-            value: actor.system.attributes.speed.value,
-            revealed: defaultRevealed.speeds,
-          },
-          ...actor.system.attributes.speed.otherSpeeds.reduce((acc, speed) => {
-            acc[speed.label] = {
-              type: speed.type,
-              value: speed.value,
-              revealed: defaultRevealed.speeds,
-            };
-            return acc;
-          }, {}),
+          ...Object.values(actor.system.movement.speeds).reduce(
+            (acc, speed) => {
+              if (!speed || speed.type === "travel") return acc;
+
+              acc[speed.type] = {
+                type: speed.type,
+                value: speed.value,
+                revealed: defaultRevealed.speeds,
+              };
+              return acc;
+            },
+            {},
+          ),
         },
       },
       abilities: Object.keys(actor.system.abilities).reduce((acc, key) => {
