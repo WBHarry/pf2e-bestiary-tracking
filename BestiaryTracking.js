@@ -2871,7 +2871,8 @@ const defaultRevealing = {
     languages:
       "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Languages",
     attacks: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attacks",
-    damageStats: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.DamageStats",
+    damageStats:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.DamageStats",
     abilities:
       "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Abilities",
     spells: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Spells",
@@ -2890,7 +2891,8 @@ const defaultRevealing = {
   },
   hazard: {
     attacks: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attacks",
-    damageStats: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.DamageStats",
+    damageStats:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.DamageStats",
     abilities:
       "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Abilities",
     name: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Name",
@@ -11641,7 +11643,10 @@ const handleDataMigration = async () => {
 
   if (versionCompare(version, "1.3.9")) {
     version = "1.3.9";
-    const defaultRevealed = game.settings.get("pf2e-bestiary-tracking", "default-revealed");
+    const defaultRevealed = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "default-revealed",
+    );
     await game.settings.set("pf2e-bestiary-tracking", "default-revealed", {
       ...defaultRevealed,
       creature: {
@@ -11651,7 +11656,7 @@ const handleDataMigration = async () => {
       hazard: {
         ...defaultRevealed.hazard,
         damageStats: false,
-      }
+      },
     });
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
