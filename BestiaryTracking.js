@@ -3171,16 +3171,19 @@ const getCreatureData = async (actor, pcBase) => {
           revealed: defaultRevealed.speeds,
         },
         values: {
-          ...Object.values(actor.system.movement.speeds).reduce((acc, speed) => {
-            if(!speed || speed.type === 'travel') return acc;
+          ...Object.values(actor.system.movement.speeds).reduce(
+            (acc, speed) => {
+              if (!speed || speed.type === "travel") return acc;
 
-            acc[speed.type] = {
-              type: speed.type,
-              value: speed.value,
-              revealed: defaultRevealed.speeds,
-            };
-            return acc;
-          }, {}),
+              acc[speed.type] = {
+                type: speed.type,
+                value: speed.value,
+                revealed: defaultRevealed.speeds,
+              };
+              return acc;
+            },
+            {},
+          ),
         },
       },
       abilities: Object.keys(actor.system.abilities).reduce((acc, key) => {
@@ -3717,16 +3720,19 @@ const getPCCreatureData = async (actor) => {
           revealed: defaultRevealed.speeds,
         },
         values: {
-          ...Object.values(actor.system.movement.speeds).reduce((acc, speed) => {
-            if(!speed || speed.type === 'travel') return acc;
+          ...Object.values(actor.system.movement.speeds).reduce(
+            (acc, speed) => {
+              if (!speed || speed.type === "travel") return acc;
 
-            acc[speed.type] = {
-              type: speed.type,
-              value: speed.value,
-              revealed: defaultRevealed.speeds,
-            };
-            return acc;
-          }, {}),
+              acc[speed.type] = {
+                type: speed.type,
+                value: speed.value,
+                revealed: defaultRevealed.speeds,
+              };
+              return acc;
+            },
+            {},
+          ),
         },
       },
       abilities: Object.keys(actor.system.abilities).reduce((acc, key) => {
@@ -9322,7 +9328,7 @@ class BestiaryDisplayMenu extends HandlebarsApplicationMixin$8(
   }
 }
 
-const currentVersion = "1.3.8";
+const currentVersion = "1.3.9";
 const bestiaryFolder = "BestiaryTracking Bestiares";
 
 const dataTypeSetup = () => {
@@ -16265,13 +16271,13 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       data: {},
     });
 
-    this.toggleControls(false);
+    this.toggleControls?.(false);
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
   static async refreshBestiary() {
     if (!game.user.isGM) return;
-    this.toggleControls(false);
+    this.toggleControls?.(false);
 
     ui.notifications.info(
       game.i18n.localize("PF2EBestiary.Bestiary.Info.RefreshStarted"),
@@ -16304,7 +16310,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async handleSaveSlots() {
     if (!game.user.isGM) return;
-    this.toggleControls(false);
+    this.toggleControls?.(false);
 
     await new BestiarySelection().render(true);
   }
@@ -16312,7 +16318,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
   static async resetBestiary() {
     const successfull = await resetBestiary();
     if (successfull) {
-      this.toggleControls(false);
+      this.toggleControls?.(false);
       this.render();
     }
   }
@@ -17053,7 +17059,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       "text/json",
       `${slugify(this.selected.monster.system.name.value)}.json`,
     );
-    this.toggleControls(false);
+    this.toggleControls?.(false);
   }
 
   static async importEntity() {
@@ -17076,7 +17082,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         reject,
       ).render(true);
     }).then(this.importFromJSONData.bind(this));
-    this.toggleControls(false);
+    this.toggleControls?.(false);
   }
 
   async importFromJSONData(data) {

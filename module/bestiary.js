@@ -1868,13 +1868,13 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       data: {},
     });
 
-    this.toggleControls(false);
+    this.toggleControls?.(false);
     Hooks.callAll(socketEvent.UpdateBestiary, {});
   }
 
   static async refreshBestiary() {
     if (!game.user.isGM) return;
-    this.toggleControls(false);
+    this.toggleControls?.(false);
 
     ui.notifications.info(
       game.i18n.localize("PF2EBestiary.Bestiary.Info.RefreshStarted"),
@@ -1907,7 +1907,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
 
   static async handleSaveSlots() {
     if (!game.user.isGM) return;
-    this.toggleControls(false);
+    this.toggleControls?.(false);
 
     await new BestiarySelection().render(true);
   }
@@ -1915,7 +1915,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
   static async resetBestiary() {
     const successfull = await resetBestiary();
     if (successfull) {
-      this.toggleControls(false);
+      this.toggleControls?.(false);
       this.render();
     }
   }
@@ -2656,7 +2656,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
       "text/json",
       `${slugify(this.selected.monster.system.name.value)}.json`,
     );
-    this.toggleControls(false);
+    this.toggleControls?.(false);
   }
 
   static async importEntity() {
@@ -2679,7 +2679,7 @@ export default class PF2EBestiary extends HandlebarsApplicationMixin(
         reject,
       ).render(true);
     }).then(this.importFromJSONData.bind(this));
-    this.toggleControls(false);
+    this.toggleControls?.(false);
   }
 
   async importFromJSONData(data) {
