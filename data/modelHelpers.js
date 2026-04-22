@@ -358,6 +358,7 @@ export const getCreatureData = async (actor, pcBase) => {
 
               acc[attack.item.id] = {
                 revealed: defaultRevealed.attacks,
+                damageStatsRevealed: defaultRevealed.damageStats,
                 label: attack.label,
                 actions: attack.glyph,
                 totalModifier: attack.totalModifier,
@@ -404,6 +405,7 @@ export const getCreatureData = async (actor, pcBase) => {
           : {
               empty: {
                 revealed: defaultRevealed.attacks,
+                damageStatsRevealed: defaultRevealed.damageStats,
                 empty: true,
                 label: "PF2EBestiary.Miscellaneous.None",
                 totalModifier: 0,
@@ -604,6 +606,7 @@ const getPCCreatureData = async (actor) => {
     const damageInstances = parseDamageInstancesFromFormula(damage);
     attacks[attack.item.id] = {
       revealed: defaultRevealed.attacks,
+      damageStatsRevealed: defaultRevealed.damageStats,
       label: attack.label,
       actions: attack.glyph,
       totalModifier: attack.totalModifier,
@@ -644,6 +647,7 @@ const getPCCreatureData = async (actor) => {
   if (Object.keys(attacks).length === 0) {
     attacks.empty = {
       revealed: defaultRevealed.attacks,
+      damageStatsRevealed: defaultRevealed.damageStats,
       empty: true,
       label: "PF2EBestiary.Miscellaneous.None",
       totalModifier: 0,
@@ -1333,6 +1337,7 @@ export const getHazardData = (actor) => {
               if (item.type === "melee" || item.type === "equipment") {
                 acc[attack.item.id] = {
                   revealed: defaultRevealed.attacks,
+                  damageStatsRevealed: defaultRevealed.damageStats,
                   label: attack.label,
                   actions: attack.glyph,
                   totalModifier: attack.totalModifier,
@@ -1380,6 +1385,7 @@ export const getHazardData = (actor) => {
           : {
               empty: {
                 revealed: defaultRevealed.attacks,
+                damageStatsRevealed: defaultRevealed.damageStats,
                 empty: true,
                 label: "PF2EBestiary.Miscellaneous.None",
                 totalModifier: 0,

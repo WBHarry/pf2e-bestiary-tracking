@@ -725,6 +725,26 @@ export const handleDataMigration = async () => {
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
 
+  if (versionCompare(version, "1.3.9")) {
+    version = "1.3.9";
+    const defaultRevealed = game.settings.get(
+      "pf2e-bestiary-tracking",
+      "default-revealed",
+    );
+    await game.settings.set("pf2e-bestiary-tracking", "default-revealed", {
+      ...defaultRevealed,
+      creature: {
+        ...defaultRevealed.creature,
+        damageStats: false,
+      },
+      hazard: {
+        ...defaultRevealed.hazard,
+        damageStats: false,
+      },
+    });
+    await game.settings.set("pf2e-bestiary-tracking", "version", version);
+  }
+
   await handleBestiaryMigration(
     game.settings.get("pf2e-bestiary-tracking", "bestiary-tracking"),
   );

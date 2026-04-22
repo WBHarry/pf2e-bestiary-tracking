@@ -83,6 +83,8 @@ export const defaultRevealing = {
     languages:
       "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Languages",
     attacks: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attacks",
+    damageStats:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.DamageStats",
     abilities:
       "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Abilities",
     spells: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Spells",
@@ -101,6 +103,8 @@ export const defaultRevealing = {
   },
   hazard: {
     attacks: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attacks",
+    damageStats:
+      "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.DamageStats",
     abilities:
       "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Abilities",
     name: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Name",

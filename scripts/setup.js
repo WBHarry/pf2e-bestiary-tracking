@@ -733,6 +733,7 @@ const bestiaryIntegration = () => {
         skills: false,
         languages: false,
         attacks: false,
+        damageStatsRevealed: false,
         abilities: false,
         spells: false,
       },
@@ -745,6 +746,7 @@ const bestiaryIntegration = () => {
       },
       hazard: {
         attacks: false,
+        damageStatsRevealed: false,
         abilities: false,
         name: false,
         traits: false,

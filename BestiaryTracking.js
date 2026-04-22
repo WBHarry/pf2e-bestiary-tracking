@@ -2871,6 +2871,7 @@ const defaultRevealing = {
     languages:
       "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Languages",
     attacks: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attacks",
+    damageStats: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.DamageStats",
     abilities:
       "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Abilities",
     spells: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Spells",
@@ -2889,6 +2890,7 @@ const defaultRevealing = {
   },
   hazard: {
     attacks: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Attacks",
+    damageStats: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.DamageStats",
     abilities:
       "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Abilities",
     name: "PF2EBestiary.Menus.BestiaryIntegration.DefaultRevealed.Name",
@@ -3326,6 +3328,7 @@ const getCreatureData = async (actor, pcBase) => {
 
               acc[attack.item.id] = {
                 revealed: defaultRevealed.attacks,
+                damageStatsRevealed: defaultRevealed.damageStats,
                 label: attack.label,
                 actions: attack.glyph,
                 totalModifier: attack.totalModifier,
@@ -3372,6 +3375,7 @@ const getCreatureData = async (actor, pcBase) => {
           : {
               empty: {
                 revealed: defaultRevealed.attacks,
+                damageStatsRevealed: defaultRevealed.damageStats,
                 empty: true,
                 label: "PF2EBestiary.Miscellaneous.None",
                 totalModifier: 0,
@@ -3572,6 +3576,7 @@ const getPCCreatureData = async (actor) => {
     const damageInstances = parseDamageInstancesFromFormula(damage);
     attacks[attack.item.id] = {
       revealed: defaultRevealed.attacks,
+      damageStatsRevealed: defaultRevealed.damageStats,
       label: attack.label,
       actions: attack.glyph,
       totalModifier: attack.totalModifier,
@@ -3612,6 +3617,7 @@ const getPCCreatureData = async (actor) => {
   if (Object.keys(attacks).length === 0) {
     attacks.empty = {
       revealed: defaultRevealed.attacks,
+      damageStatsRevealed: defaultRevealed.damageStats,
       empty: true,
       label: "PF2EBestiary.Miscellaneous.None",
       totalModifier: 0,
@@ -4301,6 +4307,7 @@ const getHazardData = (actor) => {
               if (item.type === "melee" || item.type === "equipment") {
                 acc[attack.item.id] = {
                   revealed: defaultRevealed.attacks,
+                  damageStatsRevealed: defaultRevealed.damageStats,
                   label: attack.label,
                   actions: attack.glyph,
                   totalModifier: attack.totalModifier,
@@ -4348,6 +4355,7 @@ const getHazardData = (actor) => {
           : {
               empty: {
                 revealed: defaultRevealed.attacks,
+                damageStatsRevealed: defaultRevealed.damageStats,
                 empty: true,
                 label: "PF2EBestiary.Miscellaneous.None",
                 totalModifier: 0,
@@ -10037,6 +10045,7 @@ const bestiaryIntegration = () => {
         skills: false,
         languages: false,
         attacks: false,
+        damageStatsRevealed: false,
         abilities: false,
         spells: false,
       },
@@ -10049,6 +10058,7 @@ const bestiaryIntegration = () => {
       },
       hazard: {
         attacks: false,
+        damageStatsRevealed: false,
         abilities: false,
         name: false,
         traits: false,
@@ -11626,6 +11636,23 @@ const handleDataMigration = async () => {
       ...additionalCreatures.map((creature) => ({ ...creature, values: [] })),
     ]);
 
+    await game.settings.set("pf2e-bestiary-tracking", "version", version);
+  }
+
+  if (versionCompare(version, "1.3.9")) {
+    version = "1.3.9";
+    const defaultRevealed = game.settings.get("pf2e-bestiary-tracking", "default-revealed");
+    await game.settings.set("pf2e-bestiary-tracking", "default-revealed", {
+      ...defaultRevealed,
+      creature: {
+        ...defaultRevealed.creature,
+        damageStats: false,
+      },
+      hazard: {
+        ...defaultRevealed.hazard,
+        damageStats: false,
+      }
+    });
     await game.settings.set("pf2e-bestiary-tracking", "version", version);
   }
 
