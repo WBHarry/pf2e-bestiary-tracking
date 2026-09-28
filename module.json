@@ -22,7 +22,7 @@
         "manifest": "https://raw.githubusercontent.com/foundryvtt/pf2e/master/system.json",
         "compatibility": {
           "minimum": "7.1.0",
-          "verified": "8.0.3"
+          "verified": "8.5.1"
         }
       },
       {
@@ -30,8 +30,8 @@
         "type": "system",
         "manifest": "https://raw.githubusercontent.com/foundryvtt/pf2e/refs/heads/v13-dev/system.sf2e.json",
         "compatibility": {
-          "minimum": "0.0.3",
-          "verified": "1.0.0"
+          "minimum": "1.0.0",
+          "verified": "1.5.1"
         }
       }
     ],

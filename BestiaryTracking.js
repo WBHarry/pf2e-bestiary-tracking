@@ -2944,7 +2944,7 @@ const imageSettings = {
   },
   hazard: {
     hideState: 0,
-    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
+    hideImage: "systems/pf2e/icons/default-icons/hazard.svg",
   },
 };
 
@@ -6620,7 +6620,7 @@ class NPC extends Creature {
     );
 
     return this.imageState.hideState === 2
-      ? imageSettings.hideImage
+      ? (this.imageState.hideImage ?? imageSettings.hideImage)
       : game.settings.get("pf2e-bestiary-tracking", "use-token-art")
         ? this.texture
         : this.img;
@@ -7359,7 +7359,7 @@ class Hazard extends foundry.abstract.TypeDataModel {
     );
 
     return this.imageState.hideState === 2
-      ? imageSettings.hideImage
+      ? (this.imageState.hideImage ?? imageSettings.hideImage)
       : game.settings.get("pf2e-bestiary-tracking", "use-token-art")
         ? this.texture
         : this.img;

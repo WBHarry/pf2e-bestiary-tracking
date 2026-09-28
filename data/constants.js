@@ -156,7 +156,7 @@ export const imageSettings = {
   },
   hazard: {
     hideState: 0,
-    hideImage: "systems/pf2e/icons/default-icons/npc.svg",
+    hideImage: "systems/pf2e/icons/default-icons/hazard.svg",
   },
 };
 
