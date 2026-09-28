@@ -772,7 +772,7 @@
                                         )</div>
                                     {{/if}}
                                 </div>
-                                <div class="action-description {{#if (includes ../selected.abilities.actions key)}}expanded{{/if}}">
+                                <div class="action-description {{#if (PF2EBTIncludes ../selected.abilities.actions key)}}expanded{{/if}}">
                                     {{{action.enrichedDescription}}}
                                 </div>
                             </div>
@@ -800,7 +800,7 @@
                                         </div>
                                     {{/if}}
                                 </div>
-                                <div class="action-description {{#if (includes ../selected.abilities.actions this.key)}}expanded{{/if}}">
+                                <div class="action-description {{#if (PF2EBTIncludes ../selected.abilities.actions this.key)}}expanded{{/if}}">
                                     {{{this.enrichedDescription}}}
                                 </div>
                             </div>
@@ -844,7 +844,9 @@
                                         )</div>
                                     {{/if}}
                                 </div>
-                                <div class="action-description {{#if (includes ../selected.abilities.passives key)}}expanded{{/if}}">
+                                {{log key}}
+                                {{log @root.selected.abilities.passives}}
+                                <div class="action-description {{#if (PF2EBTIncludes ../selected.abilities.passives key)}}expanded{{/if}}">
                                     {{{passive.enrichedDescription}}}
                                 </div>
                             </div>
@@ -871,7 +873,7 @@
                                         </div>
                                     {{/if}}
                                 </div>
-                                <div class="action-description {{#if (includes ../selected.abilities.passives this.key)}}expanded{{/if}}">
+                                <div class="action-description {{#if (PF2EBTIncludes ../selected.abilities.passives this.key)}}expanded{{/if}}">
                                     {{{this.enrichedDescription}}}
                                 </div>
                             </div>
@@ -949,7 +951,7 @@
                                                     <td class="spell-cell defense">{{this.defense.label}}</td>
                                                     <td class="spell-cell range">{{this.range}}</td>
                                                 </tr>
-                                                <tr class="spell-body-row description {{#if (includes ../../../selected.abilities.spells @key)}}expanded{{/if}}">
+                                                <tr class="spell-body-row description {{#if (PF2EBTIncludes ../../../selected.abilities.spells @key)}}expanded{{/if}}">
                                                     <td colspan="3">
                                                         <div class="spell-description">
                                                             {{{this.enrichedDescription}}}

@@ -18397,12 +18397,20 @@ class RegisterHandlebarsHelpers {
       PF2EBTSub: this.sub,
       PF2EBTEven: this.even,
       PF2EBTTest: this.test,
+      PF2EBTIncludes: this.includes,
     });
   }
 
   static test(a) {
     console.log(a);
     return "a";
+  }
+
+  static includes(obj, key) {
+    if (!obj || !key) return false;
+    
+    if (obj.has) return obj.has(key);
+    return Boolean(obj[key]);
   }
 
   static nrKeys(obj, prop, context) {
