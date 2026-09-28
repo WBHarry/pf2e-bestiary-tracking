@@ -655,6 +655,9 @@
   height: unset;
   overflow: hidden auto;
 }
+.pf2e-bestiary-tracking.bestiary .bestiary-tab.empty label {
+  opacity: 0.4;
+}
 .pf2e-bestiary-tracking.bestiary .bestiary-toolbar-container {
   height: 100%;
   display: flex;

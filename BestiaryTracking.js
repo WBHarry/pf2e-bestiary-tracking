@@ -15003,7 +15003,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       },
       spells: {
         active: false,
-        cssClass: "",
+        cssClass: !this.selected?.monster?.system.spells?.entries.length
+          ? "empty"
+          : "",
         group: "creature",
         id: "spells",
         icon: null,
@@ -15021,7 +15023,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
 
     tabs["notes"] = {
       active: false,
-      cssClass: "",
+      cssClass: !this.selected?.monster?.system.notes.player.value
+        ? "empty"
+        : "",
       group: "creature",
       id: "notes",
       icon: null,
@@ -15039,7 +15043,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
           : v.active;
       }
 
-      v.cssClass = v.active ? "active" : "";
+      v.cssClass = v.active ? "active" : v.cssClass;
     }
 
     return tabs;
@@ -15067,9 +15071,25 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     };
 
     if (game.modules.get("pf2e-subsystems")?.active) {
+      const hasEvents = !this.selected?.monster
+        ? false
+        : Object.values(
+            game.settings.get("pf2e-subsystems", "influence").events,
+          ).reduce((acc, curr) => {
+            if (
+              this.selected.monster.system.npcData.influenceEventIds.includes(
+                curr.id,
+              )
+            ) {
+              return true;
+            }
+
+            return acc;
+          }, false);
+
       tabs.influence = {
         active: false,
-        cssClass: "",
+        cssClass: !hasEvents ? "empty" : "",
         group: "npc",
         id: "influence",
         icon: null,
@@ -15079,9 +15099,15 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       };
     }
 
+    const recallAttempts =
+      this.selected?.monster?.system.recallKnowledgeAttempts ?? [];
+    const recallsMade = recallAttempts.some((x) =>
+      Object.values(x.values).some((v) => v.value !== "none"),
+    );
+    const notes = this.selected?.monster?.system.notes.player.value;
     tabs.notes = {
       active: false,
-      cssClass: "",
+      cssClass: !recallsMade && !notes ? "empty" : "",
       group: "npc",
       id: "notes",
       icon: null,
@@ -15091,7 +15117,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
     if (this.gmView) {
       tabs.gm = {
         active: false,
-        cssClass: "",
+        cssClass: !this.selected?.monster?.system.notes.gm.value ? "empty" : "",
         group: "npc",
         id: "gm",
         icon: null,
@@ -15109,7 +15135,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
         v.active = this.tabGroups[v.group]
           ? this.tabGroups[v.group] === v.id
           : v.active;
-        v.cssClass = v.active ? "active" : "";
+        v.cssClass = v.active ? "active" : v.cssClass;
       }
     }
 
@@ -15128,7 +15154,9 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       },
       notes: {
         active: false,
-        cssClass: "",
+        cssClass: !this.selected?.monster?.system.notes.player.value
+          ? "empty"
+          : "",
         group: "hazard",
         id: "notes",
         icon: null,
@@ -15140,7 +15168,7 @@ class PF2EBestiary extends HandlebarsApplicationMixin(
       v.active = this.tabGroups[v.group]
         ? this.tabGroups[v.group] === v.id
         : v.active;
-      v.cssClass = v.active ? "active" : "";
+      v.cssClass = v.active ? "active" : v.cssClass;
     }
 
     return tabs;
@@ -18408,7 +18436,7 @@ class RegisterHandlebarsHelpers {
 
   static includes(obj, key) {
     if (!obj || !key) return false;
-    
+
     if (obj.has) return obj.has(key);
     return Boolean(obj[key]);
   }
