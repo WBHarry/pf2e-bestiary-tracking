@@ -1,3 +1,4 @@
+import { registerKnowledgeAPI } from "./scripts/knowledge-api.mjs";
 const slugify = (name) => {
   return name.toLowerCase().replaceAll(" ", "-").replaceAll(".", "");
 };
@@ -18777,6 +18778,7 @@ Hooks.once("init", () => {
 });
 
 Hooks.once("ready", async () => {
+  registerKnowledgeAPI(game);
   game.modules.get("pf2e-bestiary-tracking").macros = macros;
 
   handleDataMigration();

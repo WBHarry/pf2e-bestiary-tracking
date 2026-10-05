@@ -1,3 +1,4 @@
+import { registerKnowledgeAPI } from "./scripts/knowledge-api.mjs";
 import PF2EBestiary from "./module/bestiary.js";
 import RegisterHandlebarsHelpers from "./scripts/handlebarHelpers.js";
 import {
@@ -94,6 +95,7 @@ Hooks.once("init", () => {
 });
 
 Hooks.once("ready", async () => {
+  registerKnowledgeAPI(game);
   game.modules.get("pf2e-bestiary-tracking").macros = macros;
 
   handleDataMigration();

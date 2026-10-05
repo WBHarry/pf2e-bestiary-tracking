@@ -13,6 +13,9 @@ jobs:
     - name: Install Dependencies
       run: npm ci
 
+    - name: Test Knowledge API
+      run: node --test tests/knowledge-api.test.mjs
+
     - name: Build Packs
       run: npm run pullYMLtoLDB
 
@@ -34,7 +37,7 @@ jobs:
         download: https://github.com/${{github.repository}}/releases/download/${{github.event.release.tag_name}}/module.zip
 
     # Create a zip file with all files required by the module to add to the release
-    - run: zip -r ./module.zip module.json README.md LICENSE BestiaryTracking.js templates/ styles/pf2e-bestiary-tracking.css packs/ lang/
+    - run: zip -r ./module.zip module.json README.md LICENSE BestiaryTracking.js scripts/knowledge-api.mjs templates/ styles/pf2e-bestiary-tracking.css packs/ lang/
 
     # Create a release for this specific version
     - name: Update Release with Files
